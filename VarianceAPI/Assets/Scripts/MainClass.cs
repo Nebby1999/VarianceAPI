@@ -15,18 +15,18 @@ using UnityEngine;
 namespace VarianceAPI
 {
 	[BepInPlugin("com.Nebby.VarianceAPI", "VarianceAPI", "0.0.1")]
-	public class MainClass : BaseUnityPlugin
+	internal class MainClass : BaseUnityPlugin
     {
         public static MainClass instance;
         public static AssetBundle varianceAPIAssets = null;
         internal static string assetBundleName = "VarianceAPIAssets";
 
-        public void Awake()
+        internal void Awake()
         {
             instance = this;
             //LoadAssetsAndRegisterContentPack();
         }
-        public void LoadAssetsAndRegisterContentPack()
+        internal void LoadAssetsAndRegisterContentPack()
         {
             var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
             varianceAPIAssets = AssetBundle.LoadFromFile(Path.Combine(path, assetBundleName));

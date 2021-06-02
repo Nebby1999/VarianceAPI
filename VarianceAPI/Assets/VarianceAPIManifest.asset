@@ -78,7 +78,7 @@ MonoBehaviour:
   ErrorMessage: 
   StagingPaths:
   - <ManifestStagingRoot>
-  url: https://github.com/Nebby1999
+  url: https://github.com/Nebby1999/VarianceAPI
 --- !u!114 &114427628956727544
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -17,6 +17,12 @@ Currently supports all *(i think)* the previous features of MonsterVariants, alo
 
 
 ## Changelog
+'0.0.2'
+
+* Added Github Link.
+
+* Made changes to the scriptable objects, now they can be made in Thunderkit instead of on RunTime.
+
 '0.0.1'
 
 * Initial Release
