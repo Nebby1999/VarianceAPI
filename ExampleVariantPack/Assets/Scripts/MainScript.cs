@@ -38,6 +38,8 @@ namespace ExampleVariantPack
 			var REV = new RegisterExampleVariants();
 			Debug.Log("Registering Variants hopefully...");
 			REV.RegisterVariants();
+			var ECV = new ExampleCodedVariant();
+			ECV.RegisterVariants();
         }
 
         public void LoadAssetsAndRegisterContentPack()
