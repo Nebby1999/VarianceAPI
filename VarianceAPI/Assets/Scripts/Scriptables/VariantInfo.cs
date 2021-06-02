@@ -33,6 +33,11 @@ namespace VarianceAPI.Scriptables
         public bool unique;
 
         /// <summary>
+        /// Wether the body for this variant comes from a mod, this is important.
+        /// </summary>
+        public bool isModded;
+
+        /// <summary>
         /// The AI Modifier to apply to this variant.
         /// <para>Default causes no changes.</para>
         /// <para>Unstable causes the variant to use their desperation attack regardless of health.</para>

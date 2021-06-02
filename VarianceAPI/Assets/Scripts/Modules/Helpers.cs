@@ -149,12 +149,12 @@ namespace VarianceAPI.Modules
             return newInfos;
         }
 
-        internal static ItemInfo SimpleItem(string itemName)
+        public static ItemInfo SimpleItem(string itemName)
         {
             return SimpleItem(itemName, 1);
         }
 
-        internal static ItemInfo SimpleItem(string itemName, int itemCount)
+        public static ItemInfo SimpleItem(string itemName, int itemCount)
         {
             ItemInfo info = ScriptableObject.CreateInstance<ItemInfo>();
             info.itemString = itemName;
@@ -311,10 +311,11 @@ namespace VarianceAPI.Modules
         {
             if(!bodyPrefab)
             {
-                Debug.LogError("Failed to add Variant! the body prefab could not be found.");
+                Debug.LogError("VarianceAPI: Failed to add Variant! the body prefab could not be found.");
                 return;
             }
 
+            Debug.Log("VarianceAPI: Adding " + info.identifierName + " VariantHandler for the bodyPrefab of name " + info.bodyName + "Body!");
             VariantHandler variantHandler = bodyPrefab.AddComponent<VariantHandler>();
             variantHandler.Init(info);
         }
@@ -333,10 +334,10 @@ namespace VarianceAPI.Modules
                 GameObject bodyPrefab = BodyCatalog.FindBodyPrefab(info.bodyName + "Body");
                 if(!bodyPrefab)
                 {
-                    Debug.LogError("Failed to add variant: " + info.bodyName + "Body does not exist.");
+                    Debug.LogError("Variance API: Failed to add variant: " + info.bodyName + "Body does not exist.");
                     return;
                 }
-
+                Debug.Log("VarianceAPI: Adding " + info.identifierName + " VariantHandler for the bodyPrefab of name " + info.bodyName + "Body!");
                 bodyPrefab.AddComponent<VariantHandler>().Init(info);
             };
         }

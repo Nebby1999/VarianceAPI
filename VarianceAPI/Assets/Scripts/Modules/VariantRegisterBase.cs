@@ -5,10 +5,25 @@ using VarianceAPI.Scriptables;
 
 namespace VarianceAPI.Modules
 {
+    /// <summary>
+    /// A class for simplifying the registration of Variants created in Thunderkit.
+    /// </summary>
     public class VariantRegisterBase
     {
+        /// <summary>
+        /// The Asset bundle where the VariantsInfo are located in.
+        /// </summary>
         public AssetBundle assetBundle;
+
+        /// <summary>
+        /// All the VariantInfos located in the AssetBundle
+        /// </summary>
         public VariantInfo[] variantInfos;
+
+        /// <summary>
+        /// The main loading method
+        /// </summary>
+        /// <param name="assets">This must be your custom assetBundle.</param>
         public virtual void Init(AssetBundle assets)
         {
             assetBundle = assets;
@@ -25,8 +40,14 @@ namespace VarianceAPI.Modules
             }
             foreach(VariantInfo i in variantInfos)
             {
-                Debug.Log("VarianceAPI: Adding " + i.identifierName + " VariantHandler for the bodyPrefab of name " + i.bodyName + "Body!");
-                Helpers.AddVariant(i);
+                if(i.isModded)
+                {
+                    Helpers.AddModdedVariant(i);
+                }
+                else
+                {
+                    Helpers.AddVariant(i);
+                }
             }
         }
     }
