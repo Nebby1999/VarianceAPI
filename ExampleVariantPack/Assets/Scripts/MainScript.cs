@@ -33,10 +33,11 @@ namespace ExampleVariantPack
 
 		}
 
-        public static void Init()
+        public void Init()
         {
+			var REV = new RegisterExampleVariants();
 			Debug.Log("Registering Variants hopefully...");
-			RegisterExampleVariants.Init();
+			REV.RegisterVariants();
         }
 
         public void LoadAssetsAndRegisterContentPack()
