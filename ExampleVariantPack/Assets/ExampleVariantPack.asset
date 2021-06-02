@@ -10,13 +10,13 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e563561e08b6a3642a487177f5cfbb37, type: 3}
-  m_Name: Default-BepInEx
+  m_Name: ExampleVariantPack
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114211852988908172}
   - {fileID: 114107831304456238}
   - {fileID: 114431642618062350}
-  Identity: {fileID: 0}
+  identity: {fileID: 114211852988908172}
 --- !u!114 &114107831304456238
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -33,7 +33,8 @@ MonoBehaviour:
   ErrorMessage: 
   StagingPaths:
   - <ManifestPluginStaging>
-  definitions: []
+  definitions:
+  - {fileID: 5897886265953266890, guid: ed0c593db22edc449889aa0017ef1817, type: 3}
 --- !u!114 &114211852988908172
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -50,12 +51,15 @@ MonoBehaviour:
   ErrorMessage: 
   StagingPaths:
   - <ManifestPluginStaging>
-  Author: 
-  Name: 
+  Author: Nebby
+  Name: ExampleVariantPack
   Icon: {fileID: 0}
-  Description: 
+  Description: An Example variant pack, includes how to create Variants in Thunderkit
   Version: 0.0.1
-  Dependencies: []
+  Dependencies:
+  - {fileID: 11400000, guid: 00000000000000000000000000000000, type: 0}
+  - {fileID: 11400000, guid: 6893422731aa6d67012f5f4d8209c304, type: 2}
+  - {fileID: 11400000, guid: 23f884c4522b4c3dd0a4eced6363c896, type: 2}
 --- !u!114 &114431642618062350
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -72,4 +76,7 @@ MonoBehaviour:
   ErrorMessage: 
   StagingPaths:
   - <ManifestPluginStaging>
-  assetBundles: []
+  assetBundles:
+  - assetBundleName: ExampleVariantPackAssets
+    assets:
+    - {fileID: 102900000, guid: 060432c8c0de88e429e3c0724fe5d314, type: 3}

@@ -10,7 +10,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: -1230585875, guid: 11bb6a14bbead0d40afe82d1b80d2b56, type: 3}
-  m_Name: ItemInfo
+  m_Name: Behemoths
   m_EditorClassIdentifier: 
-  itemString: 
-  count: 0
+  itemString: Behemoth
+  count: 2

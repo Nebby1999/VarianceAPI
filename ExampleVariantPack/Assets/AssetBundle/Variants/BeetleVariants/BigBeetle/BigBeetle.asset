@@ -12,14 +12,16 @@ MonoBehaviour:
   m_Script: {fileID: 1852376608, guid: 11bb6a14bbead0d40afe82d1b80d2b56, type: 3}
   m_Name: BigBeetle
   m_EditorClassIdentifier: 
-  identifierName: 
-  bodyName: 
-  overrideName: 
+  identifierName: EVP_BigBeetle
+  bodyName: Beetle
+  overrideName: Beeg Beetl
   unique: 0
-  aiModifier: 0
-  spawnRate: 0
+  aiModifier: 2
+  spawnRate: 50
   variantTier: 0
-  customInventory: []
+  customInventory:
+  - {fileID: 11400000, guid: 4f1003cc813b7584baf5c4398e0f56a3, type: 2}
+  - {fileID: 11400000, guid: 3833986373677cc48814be9c0768a3b5, type: 2}
   customEquipment: {fileID: 0}
   usesEquipment: 0
   meshReplacement: []
@@ -27,12 +29,12 @@ MonoBehaviour:
   skillReplacement: []
   sizeModifier: {fileID: 0}
   buff: []
-  healthMultiplier: 0
-  moveSpeedMultiplier: 0
-  attackSpeedMultiplier: 0
-  damageMultiplier: 0
-  armorMultiplier: 0
-  armorBonus: 0
+  healthMultiplier: 2
+  moveSpeedMultiplier: 0.75
+  attackSpeedMultiplier: 0.75
+  damageMultiplier: 3
+  armorMultiplier: 1.5
+  armorBonus: 10
   givesRewards: 0
   variantRewards: {fileID: 0}
-  arrivalMessage: 
+  arrivalMessage: BeegBeetleTime

@@ -18,6 +18,7 @@ using ExampleVariantPack.Variants;
 namespace ExampleVariantPack
 {
     [BepInPlugin("com.Nebby.ExampleVariantPack", "ExampleVariantPack", "0.0.1")]
+	[BepInDependency("com.Nebby.VarianceAPI", BepInDependency.DependencyFlags.HardDependency)]
     public class MainScript : BaseUnityPlugin
     {
         public static MainScript instance;
@@ -28,12 +29,14 @@ namespace ExampleVariantPack
         {
             instance = this;
 			LoadAssetsAndRegisterContentPack();
-            RoR2.ContentManagement.ContentManager.onContentPacksAssigned += Init;
+			Init();
+
 		}
 
-        private void Init(HG.ReadOnlyArray<ReadOnlyContentPack> obj)
+        public static void Init()
         {
-			VariantRegistration.RegisterVariants();
+			Debug.Log("Registering Variants hopefully...");
+			RegisterExampleVariants.Init();
         }
 
         public void LoadAssetsAndRegisterContentPack()

@@ -1,0 +1,22 @@
+ManifestFileVersion: 0
+CRC: 4291481094
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: b710f805d04d8b339d62bf70aceb9d40
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: 6bddbad6a98eefb653a1597553eb52e6
+HashAppended: 0
+ClassTypes:
+- Class: 114
+  Script: {fileID: -1230585875, guid: 11bb6a14bbead0d40afe82d1b80d2b56, type: 3}
+- Class: 114
+  Script: {fileID: 1852376608, guid: 11bb6a14bbead0d40afe82d1b80d2b56, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+Assets:
+- Assets/AssetBundle/Variants/BeetleVariants/BigBeetle/BigBeetle.asset
+- Assets/AssetBundle/Variants/BeetleVariants/BigBeetle/Inventory/Medkits.asset
+- Assets/AssetBundle/Variants/BeetleVariants/BigBeetle/Inventory/Behemoths.asset
+Dependencies: []
