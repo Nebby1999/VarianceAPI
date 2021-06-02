@@ -1,10 +1,36 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using UnityEngine;
 using VarianceAPI.Scriptables;
 
 namespace VarianceAPI.Modules
 {
-    public abstract class VariantRegisterBase<T> : VariantRegisterBase where T : VariantRegisterBase<T>
+    public class VariantRegisterBase
+    {
+        public AssetBundle assetBundle;
+        public VariantInfo[] variantInfos;
+        public virtual void Init(AssetBundle assets)
+        {
+            assetBundle = assets;
+            if(assetBundle == null)
+            {
+                Debug.LogError("AssetBundle is null!");
+                return;
+            }
+            variantInfos = assetBundle.LoadAllAssets<VariantInfo>();
+            if(variantInfos == null)
+            {
+                Debug.LogError("VariantInfo array is empty!");
+                return;
+            }
+            foreach(VariantInfo i in variantInfos)
+            {
+                Debug.Log("Adding " + i.identifierName + "VariantHandler for the bodyPrefab of name " + i.bodyName + "Body!");
+                Helpers.AddVariant(i);
+            }
+        }
+    }
+    /*public abstract class VariantRegisterBase<T> : VariantRegisterBase where T : VariantRegisterBase<T>
     {
         public static T instance { get; private set; }
     }
@@ -42,5 +68,5 @@ namespace VarianceAPI.Modules
                 Helpers.AddVariant(variant);
             }
         }
-    }
+    }*/
 }

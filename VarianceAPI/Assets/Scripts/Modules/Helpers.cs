@@ -299,7 +299,7 @@ namespace VarianceAPI.Modules
         /// <param name="info">the specific information for the variant.</param>
         public static void AddVariant(VariantInfo info)
         {
-            AddVariant(Resources.Load <GameObject>("Prefabs/CharacterBodies/" + info.bodyName + "Body"), info);
+            AddVariant(Resources.Load<GameObject>("Prefabs/CharacterBodies/" + info.bodyName + "Body"), info);
         }
 
         /// <summary>
