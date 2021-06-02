@@ -16,6 +16,8 @@ MonoBehaviour:
   - {fileID: 114211852988908172}
   - {fileID: 114107831304456238}
   - {fileID: 114431642618062350}
+  - {fileID: 114157824692288168}
+  - {fileID: 114146417775704492}
   identity: {fileID: 114211852988908172}
 --- !u!114 &114107831304456238
 MonoBehaviour:
@@ -35,6 +37,42 @@ MonoBehaviour:
   - <ManifestPluginStaging>
   definitions:
   - {fileID: 5897886265953266890, guid: ed0c593db22edc449889aa0017ef1817, type: 3}
+--- !u!114 &114146417775704492
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  StagingPaths:
+  - <ManifestStagingRoot>
+  files:
+  - {fileID: 2800000, guid: 589258d1a008b7c4da295da57419204e, type: 3}
+  - {fileID: 4900000, guid: 922f9156e4589bd4ba58d2bb3f51cfc7, type: 3}
+--- !u!114 &114157824692288168
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a82fec78ebc734d9ad1346cd40b5f9, type: 3}
+  m_Name: ThunderstoreData
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  StagingPaths:
+  - <ManifestStagingRoot>
+  url: https://github.com/Nebby1999/VarianceAPI
 --- !u!114 &114211852988908172
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -53,11 +91,11 @@ MonoBehaviour:
   - <ManifestPluginStaging>
   Author: Nebby
   Name: ExampleVariantPack
-  Icon: {fileID: 0}
+  Icon: {fileID: 2800000, guid: 589258d1a008b7c4da295da57419204e, type: 3}
   Description: An Example variant pack, includes how to create Variants in Thunderkit
   Version: 0.0.1
   Dependencies:
-  - {fileID: 11400000, guid: 00000000000000000000000000000000, type: 0}
+  - {fileID: 11400000, guid: c8c954e10545f6cd0045de066bc4846b, type: 2}
   - {fileID: 11400000, guid: 6893422731aa6d67012f5f4d8209c304, type: 2}
   - {fileID: 11400000, guid: 23f884c4522b4c3dd0a4eced6363c896, type: 2}
 --- !u!114 &114431642618062350
