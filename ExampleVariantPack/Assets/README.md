@@ -4,7 +4,7 @@ The example variant pack is a simple variant pack designed to showcase how the m
 
 Despite the lack of comments and a proper guide, it still showcases a few things:
 
-1.- How to use the VariantRegisterBase, which allows you to easily add Variants created in Thunderkit
+1.- How to use the VariantInfoHandler, which allows you to easily add Variants created in Thunderkit
 2.- How to create a very simple variant in Thunderkit
 3.- How to create a very simple variant in code
 
@@ -17,6 +17,11 @@ Currently it adds 2 variants, these variants are not intended to be balanced nor
     * Eventually Transform this into a Boilerplate for variants.
 
 ## Changelog
+'0.0.2'
+
+* Updated to use the latest methods from VarianceAPI
+
+* Next update will come with a lot of comments in the code for the coded creation of Variants
 
 '0.0.1'
 

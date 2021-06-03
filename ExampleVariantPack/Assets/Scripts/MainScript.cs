@@ -18,7 +18,7 @@ using ExampleVariantPack.CodedMadeVariants;
 #pragma warning restore CS0618 // Type or member is obsolete
 namespace ExampleVariantPack
 {
-    [BepInPlugin("com.Nebby.ExampleVariantPack", "ExampleVariantPack", "0.0.1")]
+    [BepInPlugin("com.Nebby.ExampleVariantPack", "ExampleVariantPack", "0.0.2")]
 	[BepInDependency("com.Nebby.VarianceAPI", BepInDependency.DependencyFlags.HardDependency)]
     public class MainScript : BaseUnityPlugin
     {
