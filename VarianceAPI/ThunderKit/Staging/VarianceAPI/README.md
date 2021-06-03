@@ -12,10 +12,25 @@ Currently supports all *(i think)* the previous features of MonsterVariants, alo
 ## Todo's
 
 	- Continue development of the API
-	- Create a helper for easily creating SpawnChances for Variants.
 
 
 ## Changelog
+'0.2.0'
+
+* VariantInfo now contains VariantConfig scriptable object, VariantConfig is used to create the config entries for your Variants.
+
+	- VariantConfig allows you to:
+		
+		- Set the spawn chance of a Variant.
+
+		- Wether the variant is unique or not.
+
+* Removed VariantRegisterBase
+
+* Added VariantInfoHandler, use this now to register your variants, as it streamlines the process.
+
+* Added Helpers for creating VariantConfig Scriptable Objects in code, one for Vanilla entities and another one for Modded entities.
+
 '0.1.1'
 
 * Forgot to call the method that makes the config, whoops.
