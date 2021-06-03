@@ -293,6 +293,36 @@ namespace VarianceAPI.Modules
             return sizeModifier;
         }
 
+        public static VariantConfig CreateConfig(VariantInfo variantInfo)
+        {
+            VariantConfig config = ScriptableObject.CreateInstance<VariantConfig>();
+            config.identifier = variantInfo.identifierName;
+            config.spawnRate = variantInfo.spawnRate;
+            config.isUnique = variantInfo.unique;
+            if(variantInfo.isModded)
+            {
+                Debug.LogError("Variance API: Error! Given variant info is for a modded variant! use CreateModdedConfig instead!");
+                return null;
+            }
+            return config;
+        }
+        public static VariantConfig CreateModdedConfig(VariantInfo variantInfo, string modAuthor, string modName)
+        {
+            VariantConfig config = ScriptableObject.CreateInstance<VariantConfig>();
+            config.identifier = variantInfo.identifierName;
+            config.spawnRate = variantInfo.spawnRate;
+            config.isUnique = variantInfo.unique;
+            config.isModded = variantInfo.isModded;
+            config.modAuthor = modAuthor;
+            config.modName = modName;
+            if (!variantInfo.isModded)
+            {
+                Debug.LogError("Variance API: Error! Given variant info is for a vanilla variant! use CreateConfig instead!");
+                return null;
+            }
+            return config;
+        }
+
         /// <summary>
         /// Main method to add new variants
         /// </summary>
