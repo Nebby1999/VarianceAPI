@@ -15,6 +15,11 @@ namespace VarianceAPI.Modules
 
         //VariantRewardHandler settings
         internal static ConfigEntry<bool> ItemRewardsSpawnsOnPlayer;
+        internal static ConfigEntry<string> HiddenRealmItemdropBehaviorConfig;
+        internal static ConfigEntry<bool> EnableGoldRewards;
+        internal static ConfigEntry<bool> EnableXPRewards;
+        internal static ConfigEntry<bool> EnableItemRewards;
+
         internal static ConfigEntry<float> CommonVariantGoldMultiplier;
         internal static ConfigEntry<float> CommonVariantXPMultiplier;
         internal static ConfigEntry<float> CommonVariantWhiteItemDropChance;
@@ -44,7 +49,11 @@ namespace VarianceAPI.Modules
             VariantsGiveRewards = config.Bind<bool>("1 - Global Settings", "All Variants Give Rewards", true, "When this is set to True, all variants who have the \"givesRewards\" bool have extra rewards.\nVariants who dont have the givesRewards bool active never drop rewards");
 
             //VariantRewardHandlerSettings
+            EnableGoldRewards = config.Bind<bool>("2 - VariantRewardHandler Settings", "Enable Gold Rewards", true, "If this is set to True, then Variants will drop extra gold based off a Multiplier");
+            EnableXPRewards = config.Bind<bool>("2 - VariantRewardHandler Settings", "Enable XP Rewards", true, "If this is set to True, then Variants will drop extra XP based off a Multiplier.");
+            EnableItemRewards = config.Bind<bool>("2 - VariantRewardHandlerSettings", "Enable Item Rewards", true, "If this is set to True, then Variants have a chance to drop an Item on death.");
             ItemRewardsSpawnsOnPlayer = config.Bind<bool>("2 - VariantRewardHandler Settings", "Item Rewards Spawns on Player", false, "Normally the item reward's droplet spawns from the center of the slain Variant.\nThis can cause some issues with killing Variants that are on top of the death plane, or get knocked back onto it, Since the item will be lost in the process.\nSetting this to True causes all Item Rewards to be spawned at the center of the Player who killed the variant.");
+            HiddenRealmItemdropBehaviorConfig = config.Bind<string>("2 - VariantRewardHandler Settings", "Item Rewards in Hidden Realm Behavior", "Unchanged", "How the VariantRewardHandler component spawns items in hidden realms\nThere are 3 Accepted Values, ranging from \"Unchanged\", \"Halved\", and \"Never\".\nUnchanged: No Changes are made, item drop rates are the same as they are in normal stages.\nHalved: Item drop rates are lowered by 50%\nNever: Variants never drop items in hidden realms.");
             InitializeVariantRewardsHandlerConfigs(config);
         }
         public static void InitializeVariantRewardsHandlerConfigs(ConfigFile config)

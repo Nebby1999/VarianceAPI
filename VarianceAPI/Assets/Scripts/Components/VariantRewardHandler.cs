@@ -61,7 +61,7 @@ namespace VarianceAPI.Components
             this.redChance = customVariantReward.redItemChance;
 
             ModifyRewards();
-            RoR2.GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
+            RoR2.GlobalEventManager.onCharacterDeathGlobal += SpawnDroplet;
         }
 
         public void Init()
@@ -71,12 +71,18 @@ namespace VarianceAPI.Components
             CalculateRewards(VariantHandlers);
             CheckItemDropChance();
             ModifyRewards();
-            RoR2.GlobalEventManager.onCharacterDeathGlobal += GlobalEventManager_onCharacterDeathGlobal;
+            RoR2.GlobalEventManager.onCharacterDeathGlobal += SpawnDroplet;
         }
         private void ModifyRewards()
         {
-            deathRewards.expReward = (uint)((deathRewards.expReward + bonusXP) * xpMult);
-            deathRewards.goldReward = (uint)((deathRewards.goldReward + bonusGold) * goldMult);
+            if(ConfigLoader.EnableGoldRewards.Value)
+            {
+                deathRewards.expReward = (uint)((deathRewards.expReward + bonusXP) * xpMult);
+            }
+            if(ConfigLoader.EnableXPRewards.Value)
+            {
+                deathRewards.goldReward = (uint)((deathRewards.goldReward + bonusGold) * goldMult);
+            }
         }
         private void CalculateRewards(VariantHandler[] variantHandlers)
         {
@@ -137,22 +143,49 @@ namespace VarianceAPI.Components
                     break;
             }
         }
-        private void GlobalEventManager_onCharacterDeathGlobal(DamageReport obj)
+        private void SpawnDroplet(DamageReport obj)
         {
-            if(obj.victimBody == this.characterBody)
+            if(ConfigLoader.EnableItemRewards.Value)
             {
-                var rng = UnityEngine.Random.Range(0f, 100f);
-                if (rng < redChance)
+                if(Run.instance.isRunStopwatchPaused && ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value != "Unchanged")
                 {
-                    CreateDroplet(redItems, nextRedItem, obj.victimBody, obj.attackerBody);
+                    if(ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value == "Halved")
+                    {
+                        int rng = UnityEngine.Random.Range(1, 20);
+                        if (rng > 10)
+                        {
+                            TrySpawnDroplet(obj);
+                        }
+                    }
+                    else
+                    {
+                    }
                 }
-                else if (rng < greenChance + redChance)
+                else
                 {
-                    CreateDroplet(greenItems, nextGreenItem, obj.victimBody, obj.attackerBody);
+                    TrySpawnDroplet(obj);
                 }
-                else if (rng < whiteChance + greenChance + redChance)
+            }
+        }
+        private void TrySpawnDroplet(DamageReport damageReport)
+        {
+            if (damageReport.victimBody == this.characterBody)
+            {
+                if (damageReport.victimTeamIndex != TeamIndex.Player)
                 {
-                    CreateDroplet(whiteItems, nextWhiteItem, obj.victimBody, obj.attackerBody);
+                    var rng = UnityEngine.Random.Range(0f, 100f);
+                    if (rng < redChance)
+                    {
+                        CreateDroplet(redItems, nextRedItem, damageReport.victimBody, damageReport.attackerBody);
+                    }
+                    else if (rng < greenChance + redChance)
+                    {
+                        CreateDroplet(greenItems, nextGreenItem, damageReport.victimBody, damageReport.attackerBody);
+                    }
+                    else if (rng < whiteChance + greenChance + redChance)
+                    {
+                        CreateDroplet(whiteItems, nextWhiteItem, damageReport.victimBody, damageReport.attackerBody);
+                    }
                 }
             }
         }
