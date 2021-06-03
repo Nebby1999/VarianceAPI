@@ -143,5 +143,7 @@ namespace VarianceAPI.Scriptables
         /// Message to display on chat when the variant spawns, only works if the variant is Legendary
         /// </summary>
         public string arrivalMessage;
+
+        public VariantConfig variantConfig;
     }
 }
