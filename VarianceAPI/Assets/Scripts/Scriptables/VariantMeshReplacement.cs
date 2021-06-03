@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "VariantMeshReplacement", menuName = "VarianceAPI/VariantMeshReplacement", order = 5)]
+    [CreateAssetMenu(fileName = "VariantMeshReplacement", menuName = "VarianceAPI/VariantMeshReplacement", order = 9)]
     public class VariantMeshReplacement : ScriptableObject
     {
         /// <summary>

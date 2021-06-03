@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "ItemInfo", menuName = "VarianceAPI/ItemInfo", order = 2)]
+    [CreateAssetMenu(fileName = "ItemInfo", menuName = "VarianceAPI/ItemInfo", order = 3)]
     public class ItemInfo : ScriptableObject
     {
         /// <summary>

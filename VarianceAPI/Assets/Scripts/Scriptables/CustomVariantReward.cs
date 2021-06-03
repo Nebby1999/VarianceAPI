@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "CustomVariantRewards", menuName = "VarianceAPI/CustomVariantRewards", order = 1)]
+    [CreateAssetMenu(fileName = "CustomVariantRewards", menuName = "VarianceAPI/CustomVariantRewards", order = 2)]
     public class CustomVariantReward : ScriptableObject
     {
         public uint goldBonus;
