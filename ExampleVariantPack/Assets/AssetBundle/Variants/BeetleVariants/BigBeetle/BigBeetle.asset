@@ -36,6 +36,7 @@ MonoBehaviour:
   damageMultiplier: 3
   armorMultiplier: 1.5
   armorBonus: 10
-  givesRewards: 0
-  variantRewards: {fileID: 0}
+  givesRewards: 1
+  customVariantReward: {fileID: 11400000, guid: 8b16a8c820a627a4da62fd1c5b9fdd69,
+    type: 2}
   arrivalMessage: BeegBeetleTime

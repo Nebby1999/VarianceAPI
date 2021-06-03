@@ -1,12 +1,12 @@
 ManifestFileVersion: 0
-CRC: 1488007010
+CRC: 2139958125
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: d6a531be490ce3198f8afc9287ffe1b2
+    Hash: d1cdcae6bb78186971ca0b1b4692cd9d
   TypeTreeHash:
     serializedVersion: 2
-    Hash: a84c08b72303c3fad62e946fdd9a0095
+    Hash: 6ecd48ccafe14cb6af73f3bcb82240d0
 HashAppended: 0
 ClassTypes:
 - Class: 114
@@ -15,11 +15,14 @@ ClassTypes:
   Script: {fileID: 1852376608, guid: 11bb6a14bbead0d40afe82d1b80d2b56, type: 3}
 - Class: 114
   Script: {fileID: 497398634, guid: 11bb6a14bbead0d40afe82d1b80d2b56, type: 3}
+- Class: 114
+  Script: {fileID: 1688901911, guid: 11bb6a14bbead0d40afe82d1b80d2b56, type: 3}
 - Class: 115
   Script: {instanceID: 0}
 Assets:
 - Assets/AssetBundle/Variants/BeetleVariants/BigBeetle/BigBeetle.asset
 - Assets/AssetBundle/Variants/BeetleVariants/BigBeetle/Inventory/Medkits.asset
 - Assets/AssetBundle/Variants/BeetleVariants/BigBeetle/SizeModifier.asset
+- Assets/AssetBundle/Variants/BeetleVariants/BigBeetle/Reward.asset
 - Assets/AssetBundle/Variants/BeetleVariants/BigBeetle/Inventory/Behemoths.asset
 Dependencies: []

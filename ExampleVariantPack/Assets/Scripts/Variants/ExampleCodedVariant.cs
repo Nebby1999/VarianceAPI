@@ -21,7 +21,8 @@ namespace ExampleVariantPack.Variants
                 identifierName = "EVP_BigAssWisp",
                 bodyName = "Wisp",
                 overrideName = "Big Ass Wisp",
-                spawnRate = 25f,
+                spawnRate = 50f,
+                givesRewards = true,
                 variantTier = VariantTier.Common,
                 customInventory = bigAssWispInventory,
                 sizeModifier = Helpers.FlyingSizeModifier(5.0f),
@@ -31,7 +32,7 @@ namespace ExampleVariantPack.Variants
                 damageMultiplier = 10f,
                 armorMultiplier = 1f,
                 armorBonus = -100f,
-            });
+            });;
         }
 
         private static readonly ItemInfo[] bigAssWispInventory = new ItemInfo[]
