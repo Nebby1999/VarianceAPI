@@ -18,7 +18,7 @@ MonoBehaviour:
   unique: 0
   isModded: 0
   aiModifier: 2
-  spawnRate: 50
+  spawnRate: 0
   variantTier: 3
   customInventory:
   - {fileID: 11400000, guid: 4f1003cc813b7584baf5c4398e0f56a3, type: 2}
@@ -40,3 +40,4 @@ MonoBehaviour:
   customVariantReward: {fileID: 11400000, guid: 8b16a8c820a627a4da62fd1c5b9fdd69,
     type: 2}
   arrivalMessage: BeegBeetleTime
+  variantConfig: {fileID: 11400000, guid: 1df55456ca67709409bd5b168d0d5c96, type: 2}
