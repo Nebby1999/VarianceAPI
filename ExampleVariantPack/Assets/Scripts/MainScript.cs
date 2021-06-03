@@ -36,7 +36,6 @@ namespace ExampleVariantPack
         public void Init()
         {
 			var REV = new RegisterExampleVariants();
-			Debug.Log("Registering Variants hopefully...");
 			REV.RegisterVariants();
 			var ECV = new ExampleCodedVariant();
 			ECV.RegisterVariants();

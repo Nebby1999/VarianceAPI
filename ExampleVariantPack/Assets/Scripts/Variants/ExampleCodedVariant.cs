@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using VarianceAPI.Modules;
 using VarianceAPI.Scriptables;
 using VarianceAPI;
+using UnityEngine;
 
 namespace ExampleVariantPack.Variants
 {
@@ -14,28 +15,41 @@ namespace ExampleVariantPack.Variants
      */
     public class ExampleCodedVariant
     {
+        internal List<VariantInfo> CodedVariants;
         public void RegisterVariants()
         {
-            Helpers.AddVariant(new VariantInfo
+            var ExampleCodedVariant = ScriptableObject.CreateInstance<VariantInfo>();
             {
-                identifierName = "EVP_BigAssWisp",
-                bodyName = "Wisp",
-                overrideName = "Big Ass Wisp",
-                spawnRate = 50f,
-                givesRewards = true,
-                variantTier = VariantTier.Common,
-                customInventory = bigAssWispInventory,
-                sizeModifier = Helpers.FlyingSizeModifier(5.0f),
-                healthMultiplier = 10f,
-                moveSpeedMultiplier = 0.1f,
-                attackSpeedMultiplier = 0.1f,
-                damageMultiplier = 10f,
-                armorMultiplier = 1f,
-                armorBonus = -100f,
-            });;
-        }
+                ExampleCodedVariant.identifierName = "EVP_ExampleCodedVariant";
+                ExampleCodedVariant.bodyName = "Wisp";
+                ExampleCodedVariant.overrideName = "Example Coded Variant";
+                ExampleCodedVariant.spawnRate = 50f;
+                ExampleCodedVariant.givesRewards = true;
+                ExampleCodedVariant.variantTier = VariantTier.Common;
+                ExampleCodedVariant.customInventory = EVP_exampleCodedVariantInventory;
+                ExampleCodedVariant.sizeModifier = Helpers.FlyingSizeModifier(5.0f);
+                ExampleCodedVariant.healthMultiplier = 10f;
+                ExampleCodedVariant.moveSpeedMultiplier = 0.1f;
+                ExampleCodedVariant.attackSpeedMultiplier = 0.1f;
+                ExampleCodedVariant.damageMultiplier = 10f;
+                ExampleCodedVariant.armorMultiplier = 1f;
+                ExampleCodedVariant.armorBonus = -50f;
 
-        private static readonly ItemInfo[] bigAssWispInventory = new ItemInfo[]
+                CodedVariants.Add(ExampleCodedVariant);
+            }
+            foreach (VariantInfo variant in CodedVariants)
+            {
+                if(variant.isModded)
+                {
+                    Helpers.AddModdedVariant(variant);
+                }
+                else
+                {
+                    Helpers.AddVariant(variant);
+                }
+            }
+        }
+        private static readonly ItemInfo[] EVP_exampleCodedVariantInventory = new ItemInfo[]
         {
             Helpers.SimpleItem("ExtraLife"),
             Helpers.SimpleItem("AlienHead", 10)
