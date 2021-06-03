@@ -9,7 +9,8 @@ using System.Security.Permissions;
 using System.Reflection;
 using System.IO;
 using RoR2.ContentManagement;
-using ExampleVariantPack.Variants;
+using ExampleVariantPack.ThunderkitMadeVariants;
+using ExampleVariantPack.CodedMadeVariants;
 
 [module: UnverifiableCode]
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -35,10 +36,10 @@ namespace ExampleVariantPack
 
         public void Init()
         {
-			var REV = new RegisterExampleVariants();
-			REV.RegisterVariants();
+			var VR = new VariantRegister();
+			VR.RegisterConfigs(exampleVariancePackAssets, Config);
 			var ECV = new ExampleCodedVariant();
-			ECV.RegisterVariants();
+			ECV.Init(Config);
         }
 
         public void LoadAssetsAndRegisterContentPack()
