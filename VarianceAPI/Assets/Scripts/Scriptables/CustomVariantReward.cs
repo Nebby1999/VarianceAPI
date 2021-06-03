@@ -7,9 +7,17 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "VariantRewards", menuName = "VarianceAPI/VariantRewards", order = 1)]
-    public class VariantRewards : ScriptableObject
+    [CreateAssetMenu(fileName = "CustomVariantRewards", menuName = "VarianceAPI/CustomVariantRewards", order = 1)]
+    public class CustomVariantReward : ScriptableObject
     {
+        public uint goldBonus;
+
+        public float goldMultiplier;
+
+        public uint xpBonus;
+
+        public float xpMultiplier;
+        
         /// <summary>
         /// The chance for the variant to drop a white item
         /// </summary>
