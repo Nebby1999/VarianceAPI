@@ -51,7 +51,7 @@ namespace VarianceAPI.Modules
             //VariantRewardHandlerSettings
             EnableGoldRewards = config.Bind<bool>("2 - VariantRewardHandler Settings", "Enable Gold Rewards", true, "If this is set to True, then Variants will drop extra gold based off a Multiplier");
             EnableXPRewards = config.Bind<bool>("2 - VariantRewardHandler Settings", "Enable XP Rewards", true, "If this is set to True, then Variants will drop extra XP based off a Multiplier.");
-            EnableItemRewards = config.Bind<bool>("2 - VariantRewardHandlerSettings", "Enable Item Rewards", true, "If this is set to True, then Variants have a chance to drop an Item on death.");
+            EnableItemRewards = config.Bind<bool>("2 - VariantRewardHandler Settings", "Enable Item Rewards", true, "If this is set to True, then Variants have a chance to drop an Item on death.");
             ItemRewardsSpawnsOnPlayer = config.Bind<bool>("2 - VariantRewardHandler Settings", "Item Rewards Spawns on Player", false, "Normally the item reward's droplet spawns from the center of the slain Variant.\nThis can cause some issues with killing Variants that are on top of the death plane, or get knocked back onto it, Since the item will be lost in the process.\nSetting this to True causes all Item Rewards to be spawned at the center of the Player who killed the variant.");
             HiddenRealmItemdropBehaviorConfig = config.Bind<string>("2 - VariantRewardHandler Settings", "Item Rewards in Hidden Realm Behavior", "Unchanged", "How the VariantRewardHandler component spawns items in hidden realms\nThere are 3 Accepted Values, ranging from \"Unchanged\", \"Halved\", and \"Never\".\nUnchanged: No Changes are made, item drop rates are the same as they are in normal stages.\nHalved: Item drop rates are lowered by 50%\nNever: Variants never drop items in hidden realms.");
             InitializeVariantRewardsHandlerConfigs(config);
@@ -87,11 +87,11 @@ namespace VarianceAPI.Modules
         {
             if(rewardType == "Gold")
             {
-                return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant's " + rewardType + " Multiplier"), defaultValue, new ConfigDescription("Multiplier that's applied to the Gold reward for killing a " + variantTier + "Variant.\n(Set this value to 1.0 to disable)"));
+                return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant " + rewardType + " Multiplier"), defaultValue, new ConfigDescription("Multiplier that's applied to the Gold reward for killing a " + variantTier + "Variant.\n(Set this value to 1.0 to disable)"));
             }
             else if(rewardType == "XP")
             {
-                return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant's " + rewardType + " Multiplier"), defaultValue, new ConfigDescription("Multiplier that's applied to the XP reward for killing a " + variantTier + "Variant.\n(Set this value to 1.0 to disable)"));
+                return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant " + rewardType + " Multiplier"), defaultValue, new ConfigDescription("Multiplier that's applied to the XP reward for killing a " + variantTier + "Variant.\n(Set this value to 1.0 to disable)"));
             }
             Debug.LogError("Variance API: DeathRewardConfig's rewardType goes out of bounds!");
             return null;
@@ -99,7 +99,7 @@ namespace VarianceAPI.Modules
 
         private static ConfigEntry<float> ItemRewardConfig(ConfigFile config, float defaultValue, string variantTier, string itemTier)
         {
-            return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant's " + itemTier + " Item Drop Chance"), defaultValue, new ConfigDescription("The chance for a " + variantTier + " Variant drops a single " + itemTier + " Item on death.\nAccepted values range from 0 to 100.\n(Set this value to 0 to Disable)"));
+            return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant " + itemTier + " Item Drop Chance"), defaultValue, new ConfigDescription("The chance for a " + variantTier + " Variant drops a single " + itemTier + " Item on death.\nAccepted values range from 0 to 100.\n(Set this value to 0 to Disable)"));
         }
     }
 }

@@ -4,9 +4,9 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Assets.Scripts.Modules
+namespace VarianceAPI.Modules
 {
-    class VariantConfigBase
+    public class VariantConfigBase
     {
     }
 }
