@@ -13,8 +13,6 @@ Currently supports all *(i think)* the previous features of MonsterVariants, alo
 
 	- Continue development of the API
 
-	- Start working on proper Thunderkit support
-
 
 ## Changelog
 '0.0.2'
@@ -22,6 +20,8 @@ Currently supports all *(i think)* the previous features of MonsterVariants, alo
 * Added Github Link.
 
 * Made changes to the scriptable objects, now they can be made in Thunderkit instead of on RunTime.
+
+* Added VariantRegisterBase, a helper for easily register variants made in Thunderkit.
 
 '0.0.1'
 
