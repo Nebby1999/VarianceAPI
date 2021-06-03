@@ -137,7 +137,7 @@ namespace VarianceAPI.Scriptables
         /// The rewards the variant gives when it dies.
         /// Replaces the default rewards given by it's tier.
         /// </summary>
-        public VariantRewards variantRewards;
+        public CustomVariantReward customVariantReward;
 
         /// <summary>
         /// Message to display on chat when the variant spawns, only works if the variant is Legendary
