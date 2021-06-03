@@ -87,11 +87,11 @@ namespace VarianceAPI.Modules
         {
             if(rewardType == "Gold")
             {
-                return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant " + rewardType + " Multiplier"), defaultValue, new ConfigDescription("Multiplier that's applied to the Gold reward for killing a " + variantTier + "Variant.\n(Set this value to 1.0 to disable)"));
+                return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant " + rewardType + " Multiplier"), defaultValue, new ConfigDescription("Multiplier that's applied to the Gold reward for killing a " + variantTier + " Variant.\n(Set this value to 1.0 to disable)"));
             }
             else if(rewardType == "XP")
             {
-                return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant " + rewardType + " Multiplier"), defaultValue, new ConfigDescription("Multiplier that's applied to the XP reward for killing a " + variantTier + "Variant.\n(Set this value to 1.0 to disable)"));
+                return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant " + rewardType + " Multiplier"), defaultValue, new ConfigDescription("Multiplier that's applied to the XP reward for killing a " + variantTier + " Variant.\n(Set this value to 1.0 to disable)"));
             }
             Debug.LogError("Variance API: DeathRewardConfig's rewardType goes out of bounds!");
             return null;
