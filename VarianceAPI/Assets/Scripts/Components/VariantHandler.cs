@@ -43,11 +43,12 @@ namespace VarianceAPI.Components
         public VariantMeshReplacement[] meshReplacements;
         public VariantSkillReplacement[] skillReplacements;
         public VariantSizeModifier sizeModifier;
-        public VariantRewards variantRewards;
+        public CustomVariantReward customVariantReward;
 
         public VariantBuff[] buff;
         public ItemInfo[] customInventory;
         public EquipmentInfo customEquipment;
+        public GameObject thisGameObject;
 
         private CharacterBody body;
         private CharacterMaster master;
@@ -81,7 +82,7 @@ namespace VarianceAPI.Components
             this.meshReplacements = info.meshReplacement;
             this.skillReplacements = info.skillReplacement;
             this.sizeModifier = info.sizeModifier;
-            this.variantRewards = info.variantRewards;
+            this.customVariantReward = info.customVariantReward;
 
             this.buff = info.buff;
 
@@ -98,6 +99,7 @@ namespace VarianceAPI.Components
             if (Util.CheckRoll(this.spawnRate))
             {
                 this.isVariant = true;
+                thisGameObject = this.gameObject;
             }
             if (this.meshReplacements != null && this.isVariant)
             {
@@ -132,9 +134,6 @@ namespace VarianceAPI.Components
                     if (this.master)
                     {
                         this.ApplyBuffs();
-                        if(this.givesRewards)
-                        {
-                        }
                         if (this.aiModifier.HasFlag(VariantAIModifier.Unstable))
                         {
                             foreach (AISkillDriver i in this.master.GetComponents<AISkillDriver>())
@@ -159,6 +158,40 @@ namespace VarianceAPI.Components
                                 }
                             }
                         }
+                    }
+                    if(givesRewards)
+                    {
+                        Debug.Log("Variant gives rewards");
+                        if(customVariantReward != null)
+                        {
+                            Debug.Log("Variant has custom Rewards");
+                            if(thisGameObject.GetComponent<VariantRewardHandler>())
+                            {
+                                Debug.Log("Variant has a VariantRewardHandler, aborting...");
+                            }
+                            else
+                            {
+                                Debug.Log("Variant does not have a VariantRewardHandler component, adding one.");
+                                thisGameObject.AddComponent<VariantRewardHandler>().InitCustomRewards(customVariantReward);
+                            }
+                        }
+                        else
+                        {
+                            Debug.Log("Variant does not have custom Rewards");
+                            if(thisGameObject.GetComponent<VariantRewardHandler>())
+                            {
+                                Debug.Log("Variant has a VariantRewardHandler, aborting...");
+                            }
+                            else
+                            {
+                                Debug.Log("Variant does not have a VariantRewardHandler component, adding one.");
+                                thisGameObject.AddComponent<VariantRewardHandler>().Init();
+                            }
+                        }
+                    }
+                    else
+                    {
+                        Debug.Log("variant does not give rewards");
                     }
                 }
             }
