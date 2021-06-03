@@ -8,7 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-using VarianceAPI;
+using VarianceAPI.Modules;
 using VarianceAPI.Scriptables;
 
 namespace VarianceAPI.Components
@@ -159,39 +159,31 @@ namespace VarianceAPI.Components
                             }
                         }
                     }
-                    if(givesRewards)
+                    if(ConfigLoader.VariantsGiveRewards.Value)
                     {
-                        Debug.Log("Variant gives rewards");
-                        if(customVariantReward != null)
+                        if(givesRewards)
                         {
-                            Debug.Log("Variant has custom Rewards");
-                            if(thisGameObject.GetComponent<VariantRewardHandler>())
+                            if(customVariantReward != null)
                             {
-                                Debug.Log("Variant has a VariantRewardHandler, aborting...");
+                                if(thisGameObject.GetComponent<VariantRewardHandler>())
+                                {
+                                }
+                                else
+                                {
+                                    thisGameObject.AddComponent<VariantRewardHandler>().InitCustomRewards(customVariantReward);
+                                }
                             }
                             else
                             {
-                                Debug.Log("Variant does not have a VariantRewardHandler component, adding one.");
-                                thisGameObject.AddComponent<VariantRewardHandler>().InitCustomRewards(customVariantReward);
+                                if(thisGameObject.GetComponent<VariantRewardHandler>())
+                                {
+                                }
+                                else
+                                {
+                                    thisGameObject.AddComponent<VariantRewardHandler>().Init();
+                                }
                             }
                         }
-                        else
-                        {
-                            Debug.Log("Variant does not have custom Rewards");
-                            if(thisGameObject.GetComponent<VariantRewardHandler>())
-                            {
-                                Debug.Log("Variant has a VariantRewardHandler, aborting...");
-                            }
-                            else
-                            {
-                                Debug.Log("Variant does not have a VariantRewardHandler component, adding one.");
-                                thisGameObject.AddComponent<VariantRewardHandler>().Init();
-                            }
-                        }
-                    }
-                    else
-                    {
-                        Debug.Log("variant does not give rewards");
                     }
                 }
             }

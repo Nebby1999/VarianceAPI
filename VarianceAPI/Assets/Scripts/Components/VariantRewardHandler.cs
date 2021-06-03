@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
+using VarianceAPI.Modules;
 using VarianceAPI.Scriptables;
 
 namespace VarianceAPI.Components
@@ -26,7 +27,6 @@ namespace VarianceAPI.Components
 
         private DeathRewards deathRewards;
         private CharacterBody characterBody;
-        private Transform thisTransform;
 
         private VariantHandler[] VariantHandlers;
         
@@ -42,7 +42,6 @@ namespace VarianceAPI.Components
         private void GetStuff()
         {
             this.deathRewards = base.GetComponent<DeathRewards>();
-            this.thisTransform = base.GetComponent<Transform>();
             this.characterBody = base.GetComponent<CharacterBody>();
             this.nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
             this.nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
@@ -90,20 +89,20 @@ namespace VarianceAPI.Components
                 switch(variant.tier)
                 {
                     case VariantTier.Common:
-                        goldMult += 1.3f;
-                        xpMult += 1.3f;
+                        goldMult += ConfigLoader.CommonVariantGoldMultiplier.Value;
+                        xpMult += ConfigLoader.CommonVariantXPMultiplier.Value;
                         break;
                     case VariantTier.Uncommon:
-                        goldMult += 1.6f;
-                        xpMult += 1.6f;
+                        goldMult += ConfigLoader.UncommonVariantGoldMultiplier.Value;
+                        xpMult += ConfigLoader.UncommonVariantXPMultiplier.Value;
                         break;
                     case VariantTier.Rare:
-                        goldMult += 2.0f;
-                        xpMult += 2.0f;
+                        goldMult += ConfigLoader.RareVariantGoldMultiplier.Value;
+                        xpMult += ConfigLoader.RareVariantXPMultiplier.Value;
                         break;
                     case VariantTier.Legendary:
-                        goldMult += 3.0f;
-                        xpMult += 3.0f;
+                        goldMult += ConfigLoader.LegendaryVariantGoldMultiplier.Value;
+                        xpMult += ConfigLoader.LegendaryVariantXPMultiplier.Value;
                         break;
                 }
                 if(variant.tier > highestTier)
@@ -117,24 +116,24 @@ namespace VarianceAPI.Components
             switch (highestTier)
             {
                 case VariantTier.Common:
-                    this.whiteChance = 3;
-                    this.greenChance = 0;
-                    this.redChance = 0;
+                    this.whiteChance = ConfigLoader.CommonVariantWhiteItemDropChance.Value;
+                    this.greenChance = ConfigLoader.CommonVariantGreenItemDropChance.Value;
+                    this.redChance = ConfigLoader.CommonVariantRedItemDropChance.Value;
                     break;
                 case VariantTier.Uncommon:
-                    this.whiteChance = 5;
-                    this.greenChance = 1;
-                    this.redChance = 0;
+                    this.whiteChance = ConfigLoader.UncommonVariantWhiteItemDropChance.Value;
+                    this.greenChance = ConfigLoader.UncommonVariantGreenItemDropChance.Value;
+                    this.redChance = ConfigLoader.UncommonVariantRedItemDropChance.Value;
                     break;
                 case VariantTier.Rare:
-                    this.whiteChance = 10;
-                    this.greenChance = 5;
-                    this.redChance = 1;
+                    this.whiteChance = ConfigLoader.RareVariantWhiteItemDropChance.Value;
+                    this.greenChance = ConfigLoader.RareVariantGreenItemDropChance.Value;
+                    this.redChance = ConfigLoader.RareVariantRedItemDropChance.Value;
                     break;
                 case VariantTier.Legendary:
-                    this.whiteChance = 25;
-                    this.greenChance = 10;
-                    this.redChance = 5;
+                    this.whiteChance = ConfigLoader.LegendaryVariantWhiteItemDropChance.Value;
+                    this.greenChance = ConfigLoader.LegendaryVariantGreenItemDropChance.Value;
+                    this.redChance = ConfigLoader.LegendaryVariantRedItemDropChance.Value;
                     break;
             }
         }
@@ -145,16 +144,27 @@ namespace VarianceAPI.Components
                 var rng = UnityEngine.Random.Range(0f, 100f);
                 if (rng < redChance)
                 {
-                    PickupDropletController.CreatePickupDroplet(redItems[nextRedItem], thisTransform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
+                    CreateDroplet(redItems, nextRedItem, obj.victimBody, obj.attackerBody);
                 }
                 else if (rng < greenChance + redChance)
                 {
-                    PickupDropletController.CreatePickupDroplet(greenItems[nextGreenItem], thisTransform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
+                    CreateDroplet(greenItems, nextGreenItem, obj.victimBody, obj.attackerBody);
                 }
                 else if (rng < whiteChance + greenChance + redChance)
                 {
-                    PickupDropletController.CreatePickupDroplet(whiteItems[nextWhiteItem], thisTransform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
+                    CreateDroplet(whiteItems, nextWhiteItem, obj.victimBody, obj.attackerBody);
                 }
+            }
+        }
+        private static void CreateDroplet(List<PickupIndex> itemList, int nextItem, CharacterBody variantBody, CharacterBody playerBody)
+        {
+            if(ConfigLoader.ItemRewardsSpawnsOnPlayer.Value)
+            {
+                PickupDropletController.CreatePickupDroplet(itemList[nextItem], playerBody.transform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
+            }
+            else
+            {
+                PickupDropletController.CreatePickupDroplet(itemList[nextItem], variantBody.transform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
             }
         }
     }
