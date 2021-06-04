@@ -25,7 +25,6 @@ namespace VarianceAPI.Components
 
         public string identifierName;
         public string bodyName;
-        public string overrideName;
         public string arrivalMessage;
 
         public float spawnRate = 1f;
@@ -42,6 +41,7 @@ namespace VarianceAPI.Components
         public VariantMaterialReplacement[] materialReplacements;
         public VariantMeshReplacement[] meshReplacements;
         public VariantSkillReplacement[] skillReplacements;
+        public VariantOverrideName[] overrideNames;
         public VariantSizeModifier sizeModifier;
         public CustomVariantReward customVariantReward;
 
@@ -64,7 +64,7 @@ namespace VarianceAPI.Components
 
             this.identifierName = info.identifierName;
             this.bodyName = info.bodyName;
-            this.overrideName = info.overrideName;
+            this.overrideNames = info.overrideName;
             this.arrivalMessage = info.arrivalMessage;
 
             this.spawnRate = info.spawnRate;
@@ -232,9 +232,20 @@ namespace VarianceAPI.Components
 
         private void ModifyStats()
         {
-            if (this.overrideName != "")
+            if (this.overrideNames != null)
             {
-                this.body.baseNameToken = this.overrideName;
+                for (int i = 0; i < overrideNames.Length; i++)
+                {
+                    VariantOverrideName overrideName = overrideNames[i];
+                    if(overrideName.overrideOrder == OverrideNameOrder.Preffix)
+                    {
+                        this.body.baseNameToken = overrideName.textToAdd + this.body.baseNameToken;
+                    }
+                    else if(overrideName.overrideOrder == OverrideNameOrder.Suffix)
+                    {
+                        this.body.baseNameToken = this.body.baseNameToken + overrideName.textToAdd;
+                    }
+                }
             }
             this.body.baseMaxHealth *= this.healthModifier;
             this.body.baseMoveSpeed *= this.moveSpeedModifier;
