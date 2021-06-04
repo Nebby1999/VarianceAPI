@@ -7,12 +7,11 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "EquipmentInfo", menuName = "VarianceAPI/EquipmentInfo", order = 4)]
+    [CreateAssetMenu(fileName = "EquipmentInfo", menuName = "VarianceAPI/EquipmentInfo", order = 5)]
     public class EquipmentInfo : ScriptableObject
     {
-        /// <summary>
-        /// The internal name of the equipment, refer to the equipment's EQUIPMENTDEF
-        /// </summary>
-        public string equipmentString;
+        [Header("Equipment Info")]
+            [Tooltip("The Equipment to give to this Variant\nMUST be the same as the Equipment's EquipmentDef!")]
+            public string equipmentString;
     }
 }

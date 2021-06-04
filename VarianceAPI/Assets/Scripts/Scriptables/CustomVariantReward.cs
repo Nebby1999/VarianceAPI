@@ -7,30 +7,35 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "CustomVariantRewards", menuName = "VarianceAPI/CustomVariantRewards", order = 2)]
+    [CreateAssetMenu(fileName = "CustomVariantRewards", menuName = "VarianceAPI/CustomVariantRewards", order = 3)]
     public class CustomVariantReward : ScriptableObject
     {
-        public uint goldBonus;
+        [Header("Death Rewards")]
+            [Tooltip("How much extra gold the Variant drops when it's killed, Bonus can be negative")]
+            public uint goldBonus;
+            
+            [Tooltip("Multiplier that's applied to the Variant's gold reward when it's Killed")]
+            [Min(0)]
+            public float goldMultiplier;
 
-        public float goldMultiplier;
+            [Tooltip("How much extra gold the Variant drops when it's killed, Bonus can be negative")]
+            public uint xpBonus;
 
-        public uint xpBonus;
-
-        public float xpMultiplier;
+            [Tooltip("Multiplier that's applied to the Variant's XP reward when it's Killed")]
+            [Min(0)]
+            public float xpMultiplier;
         
-        /// <summary>
-        /// The chance for the variant to drop a white item
-        /// </summary>
-        public float whiteItemChance;
+        [Header("Item Drop Chances")]
+            [Tooltip("The Chance for the Variant to drop a White Item")]
+            [Range(0, 100)]
+            public float whiteItemChance;
 
-        /// <summary>
-        /// The chance for the variant to drop a green item
-        /// </summary>
-        public float greenItemChance;
-
-        /// <summary>
-        /// The Chance for the variant to drop a red item
-        /// </summary>
-        public float redItemChance;
+            [Tooltip("The Chance for the Variant to drop a Green Item")]
+            [Range(0, 100)]
+            public float greenItemChance;
+        
+            [Tooltip("The Chance for the Variant to drop a Red Item")]
+            [Range(0, 100)]
+            public float redItemChance;
     }
 }

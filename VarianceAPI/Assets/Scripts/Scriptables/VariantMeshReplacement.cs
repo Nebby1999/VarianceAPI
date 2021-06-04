@@ -7,17 +7,15 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "VariantMeshReplacement", menuName = "VarianceAPI/VariantMeshReplacement", order = 9)]
+    [CreateAssetMenu(fileName = "VariantMeshReplacement", menuName = "VarianceAPI/VariantMeshReplacement", order = 8)]
     public class VariantMeshReplacement : ScriptableObject
     {
-        /// <summary>
-        /// Which rendererInfo youre trying to replace the mesh of
-        /// </summary>
-        public int rendererIndex;
-
-        /// <summary>
-        /// Mesh to replace it with
-        /// </summary>
-        public Mesh mesh;
+        [Header("Variant Mesh Replacement - NYI")]
+            [Tooltip("Which RendererIndex You're Targetting")]
+            [Min(0)]
+            public int rendererIndex;
+        
+            [Tooltip("The Replacement Mesh")]
+            public Mesh mesh;
     }
 }

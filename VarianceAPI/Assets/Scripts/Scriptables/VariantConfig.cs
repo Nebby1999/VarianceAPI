@@ -7,15 +7,28 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "VariantConfig", menuName = "VarianceAPI/VariantConfig", order = 1)]
+    [CreateAssetMenu(fileName = "VariantConfig", menuName = "VarianceAPI/VariantConfig", order = 2)]
     public class VariantConfig : ScriptableObject
     {
-        public float spawnRate;
-        public bool isUnique;
-        public string identifier;
+        [Header("Variant Config")]
+            [Tooltip("The spawnrate of the Variant\\nAccepted Values range from 0 to 100")]
+            [Range(0,100)]
+            public float spawnRate;
 
-        public bool isModded;
-        public string modAuthor;
-        public string modName;
+            [Tooltip("Whether the Variant youre creating can overlap with other variants")]
+            public bool isUnique;
+
+            [Tooltip("Identifier of the Variant, must be the same as the Identifier of the VariantInfo youre attatching this scriptable object to.")]
+            public string identifier;
+
+        [Header("Mod Atributes")]
+            [Tooltip("Wether the Variant youre created is from a mod. Doesn't override the value set in VariantInfo\nOnly used in the Config file.")]
+            public bool isModded;
+            
+            [Tooltip("The name of the mod the user needs to have installed for this variant to be added.")]
+            public string modName;
+
+            [Tooltip("The author of the original mod.")]
+            public string modAuthor;
     }
 }

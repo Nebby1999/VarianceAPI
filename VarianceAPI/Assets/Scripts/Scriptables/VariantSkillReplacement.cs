@@ -12,14 +12,12 @@ namespace VarianceAPI.Scriptables
     [CreateAssetMenu(fileName = "VariantSkillReplacement", menuName = "VarianceAPI/VariantSkillReplacement", order = 7)]
     public class VariantSkillReplacement : ScriptableObject
     {
-        /// <summary>
-        /// Which skill slot to replace
-        /// </summary>
-        public SkillSlot skillSlot;
+        [Header("Variant Skill Replacement")]
 
-        /// <summary>
-        /// replacement skill
-        /// </summary>
-        public SkillDef skillDef;
+            [Tooltip("Skillslot to apply the replacement\nYou can use DevDebugToolkit's Spawn_As Command for knowing what skillslot you must target")]
+            public SkillSlot skillSlot;
+
+            [Tooltip("The Replacement Skill")]
+            public SkillDef skillDef;
     }
 }

@@ -7,16 +7,16 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "ItemInfo", menuName = "VarianceAPI/ItemInfo", order = 3)]
+    [CreateAssetMenu(fileName = "ItemInfo", menuName = "VarianceAPI/ItemInfo", order = 4)]
     public class ItemInfo : ScriptableObject
     {
-        /// <summary>
-        /// The internal name of the item, Refer to the item's ITEMDEF.
-        /// </summary>
-        public string itemString;
-        /// <summary>
-        /// The amount of copies the variant has
-        /// </summary>
-        public int count;
+        [Header("Item Info")]
+        
+            [Tooltip("The item to give to the Variant\nMUST be the same as the Item's ItemDef!")]
+            public string itemString;
+
+            [Tooltip("How many items to give")]
+            [Min(0)]
+            public int count;
     }
 }

@@ -7,17 +7,15 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "VariantMaterialReplacement", menuName = "VarianceAPI/VariantMaterialReplacement", order = 8)]
+    [CreateAssetMenu(fileName = "VariantMaterialReplacement", menuName = "VarianceAPI/VariantMaterialReplacement", order = 9)]
     public class VariantMaterialReplacement : ScriptableObject
     {
-        /// <summary>
-        /// Which rendererInfo youre trying to replace the material of
-        /// </summary>
-        public int rendererIndex;
+        [Header("Variant Material Replacement")]
+            [Tooltip("Which RendererIndex You're Targetting")]
+            [Min(0)]
+            public int rendererIndex;
 
-        /// <summary>
-        /// Material to replace it with
-        /// </summary>
-        public Material material;
+            [Tooltip("The Replacement Material")]
+            public Material material;
     }
 }
