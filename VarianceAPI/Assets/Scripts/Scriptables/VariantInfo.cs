@@ -12,138 +12,95 @@ namespace VarianceAPI.Scriptables
     [CreateAssetMenu(fileName = "VariantInfo", menuName = "VarianceAPI/VariantInfo", order = 0)]
     public class VariantInfo : ScriptableObject
     {
-        /// <summary>
-        /// Unique identifier of the variant
-        /// </summary>
-        public string identifierName;
+        [Header("Important Settings")]
+            [Tooltip("Unique name of this Variant")]
+            public string identifierName;
 
-        /// <summary>
-        /// name of the body to apply this variant info to
-        /// </summary>
-        public string bodyName;
+            [Tooltip("The BodyName prefab to modify")]
+            public string bodyName;
 
-        /// <summary>
-        /// new name for the variant, this name will pop up when the entity is pinged.
-        /// </summary>
-        public string overrideName;
+            [Tooltip("The overrideName, maximum 2 per Variant\nCan be null")]
+            public VariantOverrideName[] overrideName = new VariantOverrideName[2];
 
-        /// <summary>
-        /// Wether this variant is unique or not, unique variants cannot overlap with other variants.
-        /// </summary>
-        public bool unique;
+            [Tooltip("Whether the body youre trying to access is from a mod, this is important.")]
+            public bool isModded;
 
-        /// <summary>
-        /// Wether the body for this variant comes from a mod, this is important.
-        /// </summary>
-        public bool isModded;
+            [Tooltip("The Variant's Config Entries\nIf null, the variant cannot be configured\nCreates Config entries for the Variant's SpawnRate and wether it's Unique or not")]
+            public VariantConfig variantConfig;
 
-        /// <summary>
-        /// The AI Modifier to apply to this variant.
-        /// <para>Default causes no changes.</para>
-        /// <para>Unstable causes the variant to use their desperation attack regardless of health.</para>
-        /// <para>ForceSprint causes the variant to always sprint.</para>
-        /// </summary>
-        public VariantAIModifier aiModifier;
+            [Tooltip("Whether the Variant youre creating can overlap with other variants\nGets overriden by VariantConfig if it exists")]
+            public bool unique;
 
-        /// <summary>
-        /// The variant's Spawn Rate: 0 - 100, accepts decimal numbers
-        /// </summary>
-        public float spawnRate;
+            [Tooltip("The Modifier to give to this variant's AI.\nDefault: No Changes\nUnstable: AI uses it's desperation attack whenever it wants\nForceSprint: AI Always sprints.")]
+            public VariantAIModifier aiModifier;
 
-        /// <summary>
-        /// The tier of the variant.
-        /// <para>Uncommons have a red Health Bar.</para>
-        /// <para>Rares make a unique spawn sound.</para>
-        /// <para>Legendaries announce their arrival in the chat.</para>
-        /// </summary>
-        public VariantTier variantTier;
+            [Tooltip("The Variant's Tier\nCommon: Have no special differences\nUncommon: Have a red healthbar\nRare: Makes an unique sound\nLegendary: Announces arrival on chat.\nThe higher the tier, the more of these identification effects the variant has.")]
+            public VariantTier variantTier;
 
-        /// <summary>
-        /// Inventory the variant spawns with
-        /// </summary>
-        public ItemInfo[] customInventory;
+            [Tooltip("The Variant's SpawnRate\nGets overriden by VariantConfig if it exists.\nAccepted Values range from 0 to 100")]
+            [Range(0,100)]
+            public float spawnRate;
 
-        /// <summary>
-        /// Equipment to give to the variant once it spawns.
-        /// </summary>
-        public EquipmentInfo customEquipment;
+        [Header("Reward Settings")]
+            [Tooltip("Whether the variant gives rewards when it dies.")]
+            public bool givesRewards;
 
-        /// <summary>
-        /// Wether the variant can use equipments
-        /// </summary>
-        public bool usesEquipment;
+            [Tooltip("Whether the variant uses custom rewards or the default reward system\nCan be null")]
+            public CustomVariantReward customVariantReward;
 
-        /// <summary>
-        /// Replaces the variant's mesh, just leave it null unless you know how to grab meshes from other ingame sources or build assetbundles
-        /// </summary>
-        public VariantMeshReplacement[] meshReplacement;
+            [Header("Custom Inventory & Skills")]
 
-        /// <summary>
-        /// Replaces the variant's material, just leave it null unless you know how to grab materials from other ingame sources or build assetBundles
-        /// </summary>
-        public VariantMaterialReplacement[] materialReplacement;
+            [Tooltip("The Variant's Inventory\nCan be null")]
+            public ItemInfo[] customInventory;
 
-        /// <summary>
-        /// Replaces a Variant's Skill, leave it null unless you know what youre doing
-        /// </summary>
-        public VariantSkillReplacement[] skillReplacement;
+            [Tooltip("The Equipment the variant has\nCan Be null")]
+            public EquipmentInfo customEquipment;
 
-        /// <summary>
-        /// Increases or Decreases a variant's size.
-        /// </summary>
-        public VariantSizeModifier sizeModifier;
+            [Tooltip("Whether the variant uses it's equipment")]
+            public bool usesEquipment;
 
-        /// <summary>
-        /// Buff given to the variant once it spawns
-        /// </summary>
-        public VariantBuff[] buff;
+            [Tooltip("Buff given to the variant once it spawns\nCan be null")]
+            public VariantBuff[] buff;
 
-        /// <summary>
-        /// Multiplier applied to the variant's health, where 1.0 = 100% base health
-        /// </summary>
-        public float healthMultiplier;
+            [Tooltip("Replaces a Variant's Skill\nCan be null")]
+            public VariantSkillReplacement[] skillReplacement;
 
-        /// <summary>
-        /// Multiplier applied to the variant's movement speed, where 1.0 = 100% Base Movement Speed
-        /// </summary>
-        public float moveSpeedMultiplier;
+        [Header("Stat Modifiers")]
+            [Tooltip("Multiplier applied to the variant's Health\nWhere 1.0 = 100% Base health")]
+            [Min(0)]
+            public float healthMultiplier = 1;
+            
+            [Tooltip("Multiplier applied to the variant's Movement Speed\nWhere 1.0 = 100% Base Movement Speed")]
+            [Min(0)]
+            public float moveSpeedMultiplier = 1;
 
-        /// <summary>
-        /// Multiplier applied to the variant's attack speed, where 1.0 = 100% Base attack speed
-        /// </summary>
-        public float attackSpeedMultiplier;
+            [Tooltip("Multiplier applied to the variant's Attack Speed\nWhere 1.0 = 100% Base Movement Speed")]
+            [Min(0)]
+            public float attackSpeedMultiplier = 1;
 
-        /// <summary>
-        /// Multiplier applied to the variant's damage stat, where 1.0 = 100% base damage
-        /// </summary>
-        public float damageMultiplier;
+            [Tooltip("Multiplier applied to the variant's Damage\nWhere 1.0 = 100% Base Damage")]
+            [Min(0)]
+            public float damageMultiplier = 1;
 
-        /// <summary>
-        /// Multiplier applied to the variant's armor stat, where 1.0 = 100% base armor
-        /// </summary>
-        public float armorMultiplier;
+            [Tooltip("Multiplier applied to the variant's Armor, where 1.0 = 100% Base Armor")]
+            [Min(0)]
+            public float armorMultiplier = 1;
 
-        /// <summary>
-        /// Extra armor to give to the variant, refer to the wiki's page on armor.
-        /// </summary>
-        public float armorBonus;
+            [Tooltip("Extra armor of the Variant\nRefer to the wiki's page on armor for how to use")]
+            public float armorBonus = 0;
 
-        /// <summary>
-        /// Wether the variant gives rewards when it dies.
-        /// </summary>
-        public bool givesRewards;
+        [Header("Other Settings")]
 
-        /// <summary>
-        /// The rewards the variant gives when it dies.
-        /// Replaces the default rewards given by it's tier.
-        /// </summary>
-        public CustomVariantReward customVariantReward;
+            [Tooltip("Message to Display on chat when the variant spawns, only works if the variant is Legendary")]
+            public string arrivalMessage;
 
-        /// <summary>
-        /// Message to display on chat when the variant spawns, only works if the variant is Legendary
-        /// </summary>
-        public string arrivalMessage;
+            [Tooltip("Replaces the variant's mesh, currently doesnt work.\nCan be null")]
+            public VariantMeshReplacement[] meshReplacement;
 
-        public VariantConfig variantConfig;
+            [Tooltip("Replaces the variant's Material\nCan be null")]
+            public VariantMaterialReplacement[] materialReplacement;
+
+            [Tooltip("Increases or Decreases the variant's Size\nCan be null")]
+            public VariantSizeModifier sizeModifier;
     }
 }
