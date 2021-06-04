@@ -239,11 +239,11 @@ namespace VarianceAPI.Components
                     VariantOverrideName overrideName = overrideNames[i];
                     if(overrideName.overrideOrder == OverrideNameOrder.Preffix)
                     {
-                        this.body.baseNameToken = overrideName.textToAdd + this.body.baseNameToken;
+                        this.body.baseNameToken = overrideName.textToAdd + " " + body.GetDisplayName();
                     }
                     else if(overrideName.overrideOrder == OverrideNameOrder.Suffix)
                     {
-                        this.body.baseNameToken = this.body.baseNameToken + overrideName.textToAdd;
+                        this.body.baseNameToken = body.GetDisplayName() + " " + overrideName.textToAdd;
                     }
                 }
             }
