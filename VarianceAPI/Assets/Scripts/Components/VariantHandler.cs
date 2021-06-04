@@ -284,15 +284,24 @@ namespace VarianceAPI.Components
                 }
 
                 //Replace Meshes
-                if(this.meshReplacements.Length > 0)
+                /*if(this.meshReplacements.Length > 0)
                 {
                     //this.FuckWithBoneStructure();
 
                     for(int i = 0; i < this.meshReplacements.Length; i++)
                     {
-                        model.baseRendererInfos[this.meshReplacements[i].rendererIndex].renderer.GetComponent<SkinnedMeshRenderer>().sharedMesh = this.meshReplacements[i].mesh;
+                        var meshReplacement = this.meshReplacements[i].mesh;
+                        Mesh sharedMesh = model.baseRendererInfos[this.meshReplacements[i].rendererIndex].renderer.GetComponent<SkinnedMeshRenderer>().sharedMesh;
+                        var ogBoneWeights = sharedMesh.boneWeights;
+                        var replacementBoneWeights = meshReplacement.boneWeights;
+                        for (int i1 = 0; i1 < ogBoneWeights.Length; i1++)
+                        {
+                            BoneWeight boneweight = ogBoneWeights[i1];
+                            replacementBoneWeights.SetValue(boneweight, i1);
+                        }
+                        model.baseRendererInfos[this.meshReplacements[i].rendererIndex].renderer.GetComponent<SkinnedMeshRenderer>().sharedMesh = meshReplacement;
                     }
-                }
+                }*/
             }
         }
         private void RestoreEquipment()
@@ -322,29 +331,29 @@ namespace VarianceAPI.Components
             this.master.inventory.SetEquipmentIndex(EquipmentIndex.None);
             this.Invoke("RestoreEquipment", 0.2f);
 
-            List<Transform> t = new List<Transform>();
+            List<Transform> transforms = new List<Transform>();
 
             foreach (var item in this.body.GetComponentsInChildren<Transform>())
             {
                 if (!item.name.Contains("Hurtbox") && !item.name.Contains("BeetleBody") && !item.name.Contains("Mesh") && !item.name.Contains("mdl"))
                 {
-                    t.Add(item);
+                    transforms.Add(item);
                 }
             }
 
-            Transform temp = t[14];
-            t[14] = t[11];
-            t[11] = temp;
-            temp = t[15];
-            t[15] = t[12];
-            t[12] = temp;
-            temp = t[16];
-            t[16] = t[13];
-            t[13] = temp;
+            Transform temp = transforms[14];
+            transforms[14] = transforms[11];
+            transforms[11] = temp;
+            temp = transforms[15];
+            transforms[15] = transforms[12];
+            transforms[12] = temp;
+            temp = transforms[16];
+            transforms[16] = transforms[13];
+            transforms[13] = temp;
 
             foreach (var item in this.body.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
-                item.bones = t.ToArray();
+                item.bones = transforms.ToArray();
             }
         }*/
         private void SwapSkills()
