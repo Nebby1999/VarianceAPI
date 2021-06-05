@@ -17,5 +17,8 @@ namespace VarianceAPI.Scriptables
 
             [Tooltip("The Replacement Material")]
             public Material material;
+
+            [Tooltip("The variable name where the replacement material lies\nUseful for grabbing vanilla ror2 materials using VariantMaterialGrabber")]
+            public string varName;
     }
 }

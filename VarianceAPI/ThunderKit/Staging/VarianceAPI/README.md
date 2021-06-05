@@ -97,7 +97,7 @@
 
 	* Get it here! (just click the icon!)
 
-	[![TO30 Icon](https://cdn.discordapp.com/attachments/850538397647110145/850546340403478528/icon.png)](thunderstore.io/package/Nebby/VariantPack_TheOriginal30/0.0.1/)
+	[![TO30 Icon](https://cdn.discordapp.com/attachments/850538397647110145/850546340403478528/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_TheOriginal30/)
 
 * Nebby still suggests checking out other VariantPacks made by the community! (Currently none :c)
 
@@ -110,6 +110,8 @@
 	- Re-Implement the Artifact of Variance
 
 	- Create a system to replace variants' DeathState states.
+
+	- Sacrifice my firstborn to make a system for loading VariantInfos made in JSON.
 
 	- Continue development of the API
 

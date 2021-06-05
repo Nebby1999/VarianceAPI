@@ -111,6 +111,8 @@
 
 	- Create a system to replace variants' DeathState states.
 
+	- Sacrifice my firstborn to make a system for loading VariantInfos made in JSON.
+
 	- Continue development of the API
 
 

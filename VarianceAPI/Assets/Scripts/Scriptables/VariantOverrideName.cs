@@ -12,7 +12,7 @@ namespace VarianceAPI.Scriptables
     {
         [Header("Variant Override Name")]
             [Tooltip("Override order of this override Name\nPrefix: The text to add is applied before the Variant's original name\nSuffix: The text to add is applied after the Variant's original name")]
-            public OverrideNameOrder overrideOrder;
+            public OverrideNameType overrideOrder;
 
             [Tooltip("The text to add to the variant's original name")]
             public string textToAdd;
