@@ -237,13 +237,17 @@ namespace VarianceAPI.Components
                 for (int i = 0; i < overrideNames.Length; i++)
                 {
                     VariantOverrideName overrideName = overrideNames[i];
-                    if(overrideName.overrideOrder == OverrideNameOrder.Preffix)
+                    switch(overrideName.overrideOrder)
                     {
-                        this.body.baseNameToken = overrideName.textToAdd + " " + body.GetDisplayName();
-                    }
-                    else if(overrideName.overrideOrder == OverrideNameOrder.Suffix)
-                    {
-                        this.body.baseNameToken = body.GetDisplayName() + " " + overrideName.textToAdd;
+                        case OverrideNameType.Preffix:
+                            this.body.baseNameToken = overrideName.textToAdd + " " + body.GetDisplayName();
+                            return;
+                        case OverrideNameType.Suffix:
+                            this.body.baseNameToken = body.GetDisplayName() + " " + overrideName.textToAdd;
+                            return;
+                        case OverrideNameType.CompleteOverride:
+                            this.body.baseNameToken = overrideName.textToAdd;
+                            return;
                     }
                 }
             }
