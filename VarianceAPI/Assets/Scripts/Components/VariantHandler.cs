@@ -115,7 +115,7 @@ namespace VarianceAPI.Components
         {
             if (this.isVariant)
             {
-                if (this.unique)
+                if (this.unique || ConfigLoader.AllVariantsAreUnique.Value)
                 {
                     foreach (VariantHandler i in this.GetComponents<VariantHandler>())
                     {
@@ -440,9 +440,12 @@ namespace VarianceAPI.Components
             this.ScaleBody();
 
             this.body.healthComponent.health = this.body.healthComponent.fullHealth;
-            
+
             //Announce Arrival
-            AnnounceArrival()
+            if(ConfigLoader.VariantsAnnounceArrival.Value)
+            {
+                AnnounceArrival();
+            }
         }
 
         private void ScaleBody()
@@ -475,7 +478,7 @@ namespace VarianceAPI.Components
         {
             if(this.tier >= VariantTier.Rare)
             {
-                Chat.AddMessage(this.arrivalMessage)
+                Chat.AddMessage(this.arrivalMessage);
             }
         }
     }
