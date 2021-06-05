@@ -237,17 +237,13 @@ namespace VarianceAPI.Components
                 for (int i = 0; i < overrideNames.Length; i++)
                 {
                     VariantOverrideName overrideName = overrideNames[i];
-                    switch (overrideName.overrideOrder)
+                    if(overrideName.overrideOrder == OverrideNameOrder.Preffix)
                     {
-                        case OverrideNameType.Preffix:
-                            this.body.baseNameToken = overrideName.textToAdd + " " + body.GetDisplayName();
-                            return;
-                        case OverrideNameType.Suffix:
-                            this.body.baseNameToken = body.GetDisplayName() + " " + overrideName.textToAdd;
-                            return;
-                        case OverrideNameType.CompleteOverride:
-                            this.body.baseNameToken = overrideName.textToAdd;
-                            return;
+                        this.body.baseNameToken = overrideName.textToAdd + " " + body.GetDisplayName();
+                    }
+                    else if(overrideName.overrideOrder == OverrideNameOrder.Suffix)
+                    {
+                        this.body.baseNameToken = body.GetDisplayName() + " " + overrideName.textToAdd;
                     }
                 }
             }
@@ -440,9 +436,6 @@ namespace VarianceAPI.Components
             this.ScaleBody();
 
             this.body.healthComponent.health = this.body.healthComponent.fullHealth;
-            
-            //Announce Arrival
-            AnnounceArrival()
         }
 
         private void ScaleBody()
@@ -468,14 +461,6 @@ namespace VarianceAPI.Components
                         }
                     }
                 }
-            }
-        }
-
-        private void AnnounceArrival()
-        {
-            if(this.tier >= VariantTier.Rare)
-            {
-                Chat.AddMessage(this.arrivalMessage)
             }
         }
     }
