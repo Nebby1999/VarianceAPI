@@ -223,7 +223,7 @@ namespace VarianceAPI.Components
 
                 //Add an infusion to make healthbars red
                 //Note to self, investigate a way to make a custom item do this instead of an infusion to avoid enemies like Scavs getting more HP
-                if(this.tier == VariantTier.Uncommon || this.tier == VariantTier.Rare || this.tier == VariantTier.Legendary)
+                if(this.tier >= VariantTier.Uncommon)
                 {
                     this.master.inventory.GiveItem(RoR2Content.Items.Infusion);
                 }
@@ -237,7 +237,7 @@ namespace VarianceAPI.Components
                 for (int i = 0; i < overrideNames.Length; i++)
                 {
                     VariantOverrideName overrideName = overrideNames[i];
-                    switch(overrideName.overrideOrder)
+                    switch(overrideName.overrideType)
                     {
                         case OverrideNameType.Preffix:
                             this.body.baseNameToken = overrideName.textToAdd + " " + body.GetDisplayName();
