@@ -57,10 +57,9 @@ namespace VarianceAPI
         ForceSprint
     };
 
-    public enum OverrideNameType
+    public enum OverrideNameOrder
     {
         Preffix,
-        Suffix,
-        CompleteOverride
+        Suffix
     }
 }
