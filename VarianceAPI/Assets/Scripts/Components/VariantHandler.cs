@@ -159,13 +159,13 @@ namespace VarianceAPI.Components
                             }
                         }
                     }
-                    if(ConfigLoader.VariantsGiveRewards.Value)
+                    if (ConfigLoader.VariantsGiveRewards.Value)
                     {
-                        if(givesRewards)
+                        if (givesRewards)
                         {
-                            if(customVariantReward != null)
+                            if (customVariantReward != null)
                             {
-                                if(thisGameObject.GetComponent<VariantRewardHandler>())
+                                if (thisGameObject.GetComponent<VariantRewardHandler>())
                                 {
                                 }
                                 else
@@ -175,7 +175,7 @@ namespace VarianceAPI.Components
                             }
                             else
                             {
-                                if(thisGameObject.GetComponent<VariantRewardHandler>())
+                                if (thisGameObject.GetComponent<VariantRewardHandler>())
                                 {
                                 }
                                 else
@@ -223,7 +223,7 @@ namespace VarianceAPI.Components
 
                 //Add an infusion to make healthbars red
                 //Note to self, investigate a way to make a custom item do this instead of an infusion to avoid enemies like Scavs getting more HP
-                if(this.tier >= VariantTier.Uncommon)
+                if (this.tier >= VariantTier.Uncommon)
                 {
                     this.master.inventory.GiveItem(RoR2Content.Items.Infusion);
                 }
@@ -237,7 +237,7 @@ namespace VarianceAPI.Components
                 for (int i = 0; i < overrideNames.Length; i++)
                 {
                     VariantOverrideName overrideName = overrideNames[i];
-                    switch(overrideName.overrideType)
+                    switch (overrideName.overrideType)
                     {
                         case OverrideNameType.Preffix:
                             this.body.baseNameToken = overrideName.textToAdd + " " + body.GetDisplayName();
@@ -265,10 +265,10 @@ namespace VarianceAPI.Components
             //Grab Model
             CharacterModel model = null;
             ModelLocator modelLocator = this.body.GetComponent<ModelLocator>();
-            if(modelLocator)
+            if (modelLocator)
             {
                 Transform modelTransform = modelLocator.modelTransform;
-                if(modelTransform)
+                if (modelTransform)
                 {
                     model = modelTransform.GetComponent<CharacterModel>();
                 }
@@ -285,14 +285,14 @@ namespace VarianceAPI.Components
                 }
 
                 //Replace Materials
-                if(this.materialReplacements.Length > 0)
+                if (this.materialReplacements.Length > 0)
                 {
                     for (int i = 0; i < this.materialReplacements.Length; i++)
                     {
                         model.baseRendererInfos[this.materialReplacements[i].rendererIndex].defaultMaterial = this.materialReplacements[i].material;
                     }
 
-                    if(body.name == "GolemBody(Clone)")
+                    if (body.name == "GolemBody(Clone)")
                     {
                         model.baseLightInfos[0].defaultColor = Color.blue;
                     }
@@ -323,15 +323,15 @@ namespace VarianceAPI.Components
         {
             CharacterModel model = null;
             ModelLocator modelLocator = this.body.GetComponent<ModelLocator>();
-            if(modelLocator)
+            if (modelLocator)
             {
                 Transform modelTransform = modelLocator.modelTransform;
-                if(modelTransform)
+                if (modelTransform)
                 {
                     model = modelTransform.GetComponent<CharacterModel>();
                 }
 
-                if(model && this.storedIDRS != null)
+                if (model && this.storedIDRS != null)
                 {
                     model.itemDisplayRuleSet = this.storedIDRS;
                 }
@@ -373,18 +373,18 @@ namespace VarianceAPI.Components
         }*/
         private void SwapSkills()
         {
-            if(this.skillReplacements == null)
+            if (this.skillReplacements == null)
             {
                 return;
             }
 
             SkillLocator skillLocator = this.body.skillLocator;
 
-            if(skillLocator)
+            if (skillLocator)
             {
                 for (int i = 0; i < skillReplacements.Length; i++)
                 {
-                    switch(skillReplacements[i].skillSlot)
+                    switch (skillReplacements[i].skillSlot)
                     {
                         case SkillSlot.Primary:
                             skillLocator.primary.SetSkillOverride(this.gameObject, skillReplacements[i].skillDef, GenericSkill.SkillOverridePriority.Upgrade);
@@ -423,7 +423,7 @@ namespace VarianceAPI.Components
                             Transform modelTransform = modelLocator.modelTransform;
                             if (modelTransform) modelTransform.gameObject.AddComponent<AddGunToVulture>();
                         }
-                    } */ 
+                    } */
                 }
             }
         }
@@ -432,6 +432,7 @@ namespace VarianceAPI.Components
             this.ModifyStats();
             this.AddItems();
             this.ModifyModel();
+            this.AddExtraComponents();
             this.SwapSkills();
             //Apply stats changes
             this.body.RecalculateStats();
@@ -440,6 +441,11 @@ namespace VarianceAPI.Components
             this.ScaleBody();
 
             this.body.healthComponent.health = this.body.healthComponent.fullHealth;
+        }
+
+        private void AddExtraComponents()
+        {
+
         }
 
         private void ScaleBody()
