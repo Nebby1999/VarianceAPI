@@ -12,8 +12,6 @@ namespace VarianceAPI.Modules
     {
         // Global Settings
         internal static ConfigEntry<bool> VariantsGiveRewards;
-        internal static ConfigEntry<bool> VariantsAnnounceArrival;
-        internal static ConfigEntry<bool> AllVariantsAreUnique;
 
         //VariantRewardHandler settings
         internal static ConfigEntry<bool> ItemRewardsSpawnsOnPlayer;
@@ -49,8 +47,6 @@ namespace VarianceAPI.Modules
         {
             //Global Settings
             VariantsGiveRewards = config.Bind<bool>("1 - Global Settings", "All Variants Give Rewards", true, "When this is set to True, all variants who have the \"givesRewards\" bool have extra rewards.\nVariants who dont have the givesRewards bool active never drop rewards");
-            VariantsAnnounceArrival = config.Bind<bool>("1 - Global Settings", "Variants Announce Arrival", true, "When this is set to True, Rare variants will make a unique sound when spawning\nLegendary variants, alongside the sound, will announce their arrival on chat\nCurrently the unique sound when spawning isnt implemented, so both rare and legendary variants will announce themselves in chat.");
-            AllVariantsAreUnique = config.Bind<bool>("1 - Global Settings", "All Variants are Unique", false, "When this is set to All the variants will be unique regardless of their config options.\nThis effectively removes the Variant Overlapping feature.");
 
             //VariantRewardHandlerSettings
             EnableGoldRewards = config.Bind<bool>("2 - VariantRewardHandler Settings", "Enable Gold Rewards", true, "If this is set to True, then Variants will drop extra gold based off a Multiplier");
