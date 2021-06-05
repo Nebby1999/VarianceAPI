@@ -102,5 +102,8 @@ namespace VarianceAPI.Scriptables
 
             [Tooltip("Increases or Decreases the variant's Size\nCan be null")]
             public VariantSizeModifier sizeModifier;
+            
+            [Tooltip("Extra components to add to the variant, can be null.")]
+            public VariantExtraComponent[] extraComponents;
     }
 }
