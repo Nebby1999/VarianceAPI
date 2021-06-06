@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using VarianceAPI.Components;
 
 namespace VarianceAPI.Scriptables
 {
@@ -11,8 +12,8 @@ namespace VarianceAPI.Scriptables
     public class VariantExtraComponent : ScriptableObject
     {
         [Header("Variant Extra Component")]
-            [Tooltip("What component to add to the Variant")]
-            public UnityEngine.Object componentToAdd;
+            [Tooltip("What component to add to the Variant\nThis needs to be the assembly qualified name.")]
+            public string componentToAdd;
 
             [Tooltip("Wether the component is Aesthetic, such as adding a missile launcher to an enemy")]
             public bool isAesthetic;
