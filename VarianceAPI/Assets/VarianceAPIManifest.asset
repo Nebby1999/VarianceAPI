@@ -115,4 +115,7 @@ MonoBehaviour:
   ErrorMessage: 
   StagingPaths:
   - <ManifestPluginStaging>
-  assetBundles: []
+  assetBundles:
+  - assetBundleName: VarianceAPIAssets
+    assets:
+    - {fileID: 102900000, guid: fbcc3f60847fcb04d9b402bb7f267bbd, type: 3}
