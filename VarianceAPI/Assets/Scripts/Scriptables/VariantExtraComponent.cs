@@ -12,7 +12,7 @@ namespace VarianceAPI.Scriptables
     public class VariantExtraComponent : ScriptableObject
     {
         [Header("Variant Extra Component")]
-            [Tooltip("What component to add to the Variant\nThis needs to be the assembly qualified name.")]
+            [Tooltip("What component to add to the Variant\nThis needs to be the combination of the Namespace, alongside the class name\nExample: YourNameSpace.Component.CustomVariantComponent.")]
             public string componentToAdd;
 
             [Tooltip("Wether the component is Aesthetic, such as adding a missile launcher to an enemy")]
