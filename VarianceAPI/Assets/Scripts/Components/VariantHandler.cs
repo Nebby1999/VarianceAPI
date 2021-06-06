@@ -4,6 +4,7 @@ using RoR2.CharacterAI;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
@@ -42,6 +43,7 @@ namespace VarianceAPI.Components
         public VariantMeshReplacement[] meshReplacements;
         public VariantSkillReplacement[] skillReplacements;
         public VariantOverrideName[] overrideNames;
+        public VariantExtraComponent[] extraComponents;
         public VariantSizeModifier sizeModifier;
         public CustomVariantReward customVariantReward;
 
@@ -81,6 +83,7 @@ namespace VarianceAPI.Components
             this.materialReplacements = info.materialReplacement;
             this.meshReplacements = info.meshReplacement;
             this.skillReplacements = info.skillReplacement;
+            this.extraComponents = info.extraComponents;
             this.sizeModifier = info.sizeModifier;
             this.customVariantReward = info.customVariantReward;
 
@@ -445,7 +448,38 @@ namespace VarianceAPI.Components
 
         private void AddExtraComponents()
         {
-
+            for (int i = 0; i < extraComponents.Length; i++)
+            {
+                VariantExtraComponent extraComponent = extraComponents[i];
+                if (extraComponent.isAesthetic)
+                {
+                    ModelLocator modelLocator = this.body.GetComponent<ModelLocator>();
+                    if (modelLocator)
+                    {
+                        Transform modelTransform = modelLocator.modelTransform;
+                        if (modelTransform)
+                        {
+                            Type type;
+                            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                            if (assemblies != null)
+                            {
+                                foreach (var assembly in assemblies)
+                                {
+                                    type = assembly.GetType(extraComponent.componentToAdd);
+                                    if (type != null)
+                                    {
+                                        if (typeof(VariantComponent).IsAssignableFrom(type))
+                                        {
+                                            Debug.Log("Adding " + type.Name + " Component to " + body.GetDisplayName());
+                                            modelTransform.gameObject.AddComponent(type);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         }
 
         private void ScaleBody()
