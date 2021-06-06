@@ -405,28 +405,6 @@ namespace VarianceAPI.Components
                             //what are you actually trying to do here??
                             break;
                     }
-                    /* unsure what these are for, need to investigate further
-                    // gotta add the missile launcher lmao- maybe a better system for this one day
-                    if (this.skillReplacements[i].skillDef == Modules.Skills.missileLaunchDef)
-                    {
-                        ModelLocator modelLocator = this.body.GetComponent<ModelLocator>();
-                        if (modelLocator)
-                        {
-                            Transform modelTransform = modelLocator.modelTransform;
-                            if (modelTransform) modelTransform.gameObject.AddComponent<AddMissileLauncherToLemurian>();
-                        }
-                    }
-
-                    // aaaaand hardcoding more bullshit
-                    if (this.skillReplacements[i].skillDef == Modules.Skills.doubleTapDef)
-                    {
-                        ModelLocator modelLocator = this.body.GetComponent<ModelLocator>();
-                        if (modelLocator)
-                        {
-                            Transform modelTransform = modelLocator.modelTransform;
-                            if (modelTransform) modelTransform.gameObject.AddComponent<AddGunToVulture>();
-                        }
-                    } */
                 }
             }
         }
@@ -460,7 +438,7 @@ namespace VarianceAPI.Components
                         if (modelTransform)
                         {
                             Type type;
-                            var assemblies = AppDomain.CurrentDomain.GetAssemblies();
+                            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(Assembly => Assembly.GetReferencedAssemblies().Any(AssName => AssName.FullName == "VarianceAPI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"));
                             if (assemblies != null)
                             {
                                 foreach (var assembly in assemblies)
