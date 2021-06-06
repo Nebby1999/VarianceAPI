@@ -15,7 +15,7 @@ using VarianceAPI.Modules;
 #pragma warning restore CS0618 // Type or member is obsolete
 namespace VarianceAPI
 {
-	[BepInPlugin("com.Nebby.VarianceAPI", "VarianceAPI", "0.3.0")]
+	[BepInPlugin("com.Nebby.VarianceAPI", "VarianceAPI", "0.4.0")]
 	internal class MainClass : BaseUnityPlugin
     {
         public static MainClass instance;

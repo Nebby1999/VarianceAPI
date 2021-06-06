@@ -54,6 +54,8 @@
 
 	- New Tiers
 
+	- Ability to add Completely custom Components
+
 	- Custom Equipment (NYI)
 
 	- The Ability to use Equipments (NYI)
@@ -101,6 +103,17 @@
 
 * Nebby still suggests checking out other VariantPacks made by the community! (Currently none :c)
 
+---
+
+### Official VarianceAPI discord server.
+
+* VarianceAPI related discord server, you can join in here to meet other variant pack creators or learn how to create your own.
+
+* Currently barebones, will start getting some love soon
+
+https://discord.gg/kWn8T4fM5W
+
+
 ## Todo's
 
 	- Use KomradeSpectre's ItemModCreationBoilerplate to create a boilerplate for Variant Items.
@@ -115,6 +128,38 @@
 
 
 ## Changelog
+'0.4.0'
+
+* Changes to the OverrideName system
+
+	- Added a new enum which enables the OverrideName to completely override the variant's baseName.
+
+	- System now works with a switch
+
+	- Renamed overrideOrder to overrideType
+
+* Added a new Array in VariantInfo for VariantExtraComponents
+
+* Added a new ScriptableObject called VariantExtraComponents.
+
+	- VariantExtraComponents can be used to add a custom component to a specific variant when it spawns
+
+	- This component *must* inherit from the new VariantComponent component found in the api (VariantComponent inherits from MonoBehaviour)
+
+	Has the following settings:
+
+		- string componentToAdd: The component to add to the Variant. this must be the combination of the Namespace of the component, alongside the class name. For example: TheOriginal30.VariantComponents.AddMissileLauncherToLemurian
+
+		- bool isAesthetic: Wether the component to add just adds a mesh to the original body.
+
+		- Non aesthetic components support haven't been added yet.
+
+	- Used in TheOriginal30's Badass lemurian to attach the Missile Launcher.
+
+* Added discord server to the ReadMe
+
+* Hopefully fixed broken icon.
+
 '0.3.0'
 
 * All of VarianceAPI's ScriptableObjects have Headers and Tooltips, making it easier to create the objects in the UnityEditor
