@@ -47,7 +47,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Active: 0
+  Active: 1
   AssetBundleBuildOptions: 1
   buildTarget: 5
   recurseDirectories: 1
