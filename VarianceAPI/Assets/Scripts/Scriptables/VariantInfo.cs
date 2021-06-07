@@ -105,5 +105,8 @@ namespace VarianceAPI.Scriptables
             
             [Tooltip("Extra components to add to the variant, can be null.")]
             public VariantExtraComponent[] extraComponents;
+
+            [Tooltip("Wether or not to replace a Variant's DeathState\nThis needs to be the combination of the Namespace, alongside the class name\nExample: YourNameSpace.VariantEntityStates.Jellyfish.MOAJDeathState")]
+            public string customDeathState;
     }
 }
