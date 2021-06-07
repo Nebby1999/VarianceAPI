@@ -452,7 +452,7 @@ namespace VarianceAPI.Components
 
         private void ReplaceDeathState()
         {
-            if(this.customDeathState != null)
+            if(this.customDeathState != "")
             {
                 deathBehavior.deathState = new SerializableEntityStateType(customDeathState);
             }
