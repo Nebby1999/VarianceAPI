@@ -22,6 +22,12 @@
 
 ![](https://cdn.discordapp.com/attachments/850538397647110145/850539440274145290/db4b9fe789a08d6816dd03ca70bb0cd2.png)
 
+* Plus, VarianceAPI contains base classes for easing the creation of variants.
+
+	- Automatic ConfigCreation using the VariantConfig scriptable object.
+
+	- Semi-Automatic fetching for Ingame materials, no more AssetBundle bloating!
+
 ### Better VariantOverlapping methods
 
 ---
@@ -56,13 +62,13 @@
 
 	- Ability to add Completely custom Components
 
+	- DeathState replacements
+
 	- Custom Equipment (NYI)
 
 	- The Ability to use Equipments (NYI)
 
 	- Can spawn with Buffs/Debuffs (NYI)
-
-	- DeathState replacements (NYI)
 
 ### New VariantRewardHandler component.
 
@@ -86,6 +92,18 @@
 
 ![](https://cdn.discordapp.com/attachments/850538397647110145/850543234753101894/6d175bdf30f1ce8784c994e20f60873d.png)
 
+### Artifact of Variance
+
+---
+
+![](https://cdn.discordapp.com/attachments/850538397647110145/851543740484419604/VarianceEnabled.png)
+
+* The Artifact of Variance, one of the Features from MonsterVariantsPlus, is now a core component of VarianeAPI.
+
+* The Artifact of Variance, when enabled, multiplies all Variant's spawn rates by the amount specified in the Config file.
+
+* Just like in the Original MonsterVariantsPlus, the Artifact of Variance can be enabled or disabled in the Config file.
+
 
 ### Official Variant Packs (Variant Packs made by Nebby)
 
@@ -95,7 +113,7 @@
 
 	* The original 30 is a complete port of Rob's 30 original MonsterVariants.
 
-	* It's incomplete, but currently re-adds some of the Variants
+	* It's incomplete, but currently re-adds ~~some~~ 13! of the Variants
 
 	* Get it here! (just click the icon!)
 
@@ -128,6 +146,36 @@ https://discord.gg/kWn8T4fM5W
 
 
 ## Changelog
+'0.5.0'
+
+* Added back the Artifact of Variance
+
+* Fixed issue in VariantHandler causing certain stat multipliers not applying
+
+* Added a PreventRecursion system. Variants may not recieve extra Dio's Best Friends when resurrecting.
+
+* Added Custom Death States
+
+	- Custom Death State can be specified in the VariantInfo Scriptable Object.
+
+	- Leave it null unless you know how to get the required string to make it work.
+
+* Removed no longer needed classes
+
+* Added an identifier to VariantMaterialReplacement scriptable object.
+
+	- It's main goal is to help with creating VariantMaterials in Thunderkit.
+
+* Added the base class VariantMaterialGrabber.
+
+	- Works by loading all the "incomplete" VariantMaterialReplacements in your AssetBundle.
+
+		- An incomplete VariantMaterialReplacement has it's material set to null, and has it's identifier filled.
+
+	- Proceeds to then compare the incomplete versions with complete ones made in code. if it matches one, it'll replace the material with the correct one.
+
+	- TL;DR: This class helps reduce bloated AssetBundle sizes by allowing the player to fetch ingame materials instead of copying them and placing them in their AssetBundle.
+
 '0.4.0'
 
 * Changes to the OverrideName system

@@ -17,7 +17,7 @@ using Path = System.IO.Path;
 #pragma warning restore CS0618 // Type or member is obsolete
 namespace VarianceAPI
 {
-	[BepInPlugin("com.Nebby.VarianceAPI", "VarianceAPI", "0.4.0")]
+	[BepInPlugin("com.Nebby.VarianceAPI", "VarianceAPI", "0.5.0")]
 	internal class MainClass : BaseUnityPlugin
     {
         public static MainClass instance;
