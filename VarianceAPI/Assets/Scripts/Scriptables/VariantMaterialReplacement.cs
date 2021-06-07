@@ -15,7 +15,10 @@ namespace VarianceAPI.Scriptables
             [Min(0)]
             public int rendererIndex;
 
-            [Tooltip("The Replacement Material")]
+            [Tooltip("The Replacement Material\nIf you want to use a vanilla material, leave this null and load the VariantMaterialReplacement in your class that inherits from VariantMaterialGrabber")]
             public Material material;
+
+            [Tooltip("Unique identifier of this material replacement.\nUsed on a class that inherits from VariantMaterialGrabber")]
+            public string identifier;
     }
 }
