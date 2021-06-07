@@ -43,6 +43,10 @@ namespace VarianceAPI.Modules
         internal static ConfigEntry<float> LegendaryVariantWhiteItemDropChance;
         internal static ConfigEntry<float> LegendaryVariantGreenItemDropChance;
         internal static ConfigEntry<float> LegendaryVariantRedItemDropChance;
+
+        //Artifact of Variance settings
+        internal static ConfigEntry<bool> EnableArtifactOfVariance;
+        internal static ConfigEntry<float> VarianceMultiplier;
         public static void SetupConfigLoader(ConfigFile config)
         {
             //Global Settings
@@ -54,6 +58,9 @@ namespace VarianceAPI.Modules
             EnableItemRewards = config.Bind<bool>("2 - VariantRewardHandler Settings", "Enable Item Rewards", true, "If this is set to True, then Variants have a chance to drop an Item on death.");
             ItemRewardsSpawnsOnPlayer = config.Bind<bool>("2 - VariantRewardHandler Settings", "Item Rewards Spawns on Player", false, "Normally the item reward's droplet spawns from the center of the slain Variant.\nThis can cause some issues with killing Variants that are on top of the death plane, or get knocked back onto it, Since the item will be lost in the process.\nSetting this to True causes all Item Rewards to be spawned at the center of the Player who killed the variant.");
             HiddenRealmItemdropBehaviorConfig = config.Bind<string>("2 - VariantRewardHandler Settings", "Item Rewards in Hidden Realm Behavior", "Unchanged", "How the VariantRewardHandler component spawns items in hidden realms\nThere are 3 Accepted Values, ranging from \"Unchanged\", \"Halved\", and \"Never\".\nUnchanged: No Changes are made, item drop rates are the same as they are in normal stages.\nHalved: Item drop rates are lowered by 50%\nNever: Variants never drop items in hidden realms.");
+
+            EnableArtifactOfVariance = config.Bind<bool>("3 - Artifact of Variance Settings", "Enable the Artifact of Variance", true, "Wether or not the Artifact of Variance is Enabled.");
+            VarianceMultiplier = config.Bind<float>("3 - Artifact of Variance Settings", "Artifact of Variance Multiplier", 2.0f, "When the Artifact of Variance is enabled in a run, All variant's Spawn Rates will be multiplied by this amount.");
             InitializeVariantRewardsHandlerConfigs(config);
         }
         public static void InitializeVariantRewardsHandlerConfigs(ConfigFile config)
