@@ -16,7 +16,6 @@ namespace VarianceAPI.Components
 {
     public class VariantHandler : NetworkBehaviour
     {
-        internal ArtifactDef VarianceArtifact;
         [SyncVar]
         public bool isVariant = false;
 
@@ -99,6 +98,23 @@ namespace VarianceAPI.Components
             {
                 return;
             }
+            //Run artifact code ONLY if it's enabled in the config loader.
+            if(ConfigLoader.EnableArtifactOfVariance.Value)
+            {
+                if (RunArtifactManager.instance.IsArtifactEnabled(ContentPackProvider.contentPack.artifactDefs.Find("VarianceDef")))
+                {
+                    this.spawnRate *= ConfigLoader.VarianceMultiplier.Value;
+                    //Prevent bad values
+                    if (this.spawnRate < 0)
+                    {
+                        this.spawnRate = 0;
+                    }
+                    else if (this.spawnRate > 100)
+                    {
+                        this.spawnRate = 100;
+                    }
+                }
+            }
             if (Util.CheckRoll(this.spawnRate))
             {
                 this.isVariant = true;
@@ -170,6 +186,7 @@ namespace VarianceAPI.Components
                             {
                                 if (thisGameObject.GetComponent<VariantRewardHandler>())
                                 {
+                                    
                                 }
                                 else
                                 {
@@ -235,6 +252,16 @@ namespace VarianceAPI.Components
 
         private void ModifyStats()
         {
+            this.body.baseMaxHealth *= this.healthModifier;
+            this.body.baseMoveSpeed *= this.moveSpeedModifier;
+            this.body.baseAttackSpeed *= this.attackSpeedModifier;
+            this.body.baseDamage *= this.damageModifier;
+            this.body.levelDamage = this.body.baseDamage * 0.2f;
+            this.body.baseArmor *= this.armorModifier;
+            this.body.baseArmor += this.armorBonus;
+        }
+        private void ModifyName()
+        {
             if (this.overrideNames != null)
             {
                 for (int i = 0; i < overrideNames.Length; i++)
@@ -254,15 +281,7 @@ namespace VarianceAPI.Components
                     }
                 }
             }
-            this.body.baseMaxHealth *= this.healthModifier;
-            this.body.baseMoveSpeed *= this.moveSpeedModifier;
-            this.body.baseAttackSpeed *= this.attackSpeedModifier;
-            this.body.baseDamage *= this.damageModifier;
-            this.body.levelDamage = this.body.baseDamage * 0.2f;
-            this.body.baseArmor *= this.armorModifier;
-            this.body.baseArmor += this.armorBonus;
         }
-
         private void ModifyModel()
         {
             //Grab Model
@@ -413,15 +432,15 @@ namespace VarianceAPI.Components
             this.ModifyStats();
             this.AddItems();
             this.ModifyModel();
-            this.AddExtraComponents();
             this.SwapSkills();
-            //Apply stats changes
-            this.body.RecalculateStats();
+            this.AddExtraComponents();
+            this.ModifyName()
 
             //Change Size
             this.ScaleBody();
 
             this.body.healthComponent.health = this.body.healthComponent.fullHealth;
+            this.body.RecalculateStats();
         }
 
         private void AddExtraComponents()
