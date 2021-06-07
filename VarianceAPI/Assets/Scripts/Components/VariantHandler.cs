@@ -1,4 +1,5 @@
-﻿using KinematicCharacterController;
+﻿using EntityStates;
+using KinematicCharacterController;
 using RoR2;
 using RoR2.CharacterAI;
 using System;
@@ -26,6 +27,7 @@ namespace VarianceAPI.Components
         public string identifierName;
         public string bodyName;
         public string arrivalMessage;
+        public string customDeathState;
 
         public float spawnRate = 1f;
         public float healthModifier = 1f;
@@ -56,6 +58,7 @@ namespace VarianceAPI.Components
         private EquipmentIndex storedEquipment;
         private DeathRewards deathRewards;
         private ItemDisplayRuleSet storedIDRS;
+        private CharacterDeathBehavior deathBehavior;
 
         public void Init(VariantInfo info)
         {
@@ -67,6 +70,7 @@ namespace VarianceAPI.Components
             this.bodyName = info.bodyName;
             this.overrideNames = info.overrideName;
             this.arrivalMessage = info.arrivalMessage;
+            this.customDeathState = info.customDeathState;
 
             this.spawnRate = info.spawnRate;
             this.healthModifier = info.healthMultiplier;
@@ -149,6 +153,7 @@ namespace VarianceAPI.Components
                 if (this.body)
                 {
                     this.master = this.body.master;
+                    this.deathBehavior = base.GetComponent<CharacterDeathBehavior>();
 
                     if (this.master)
                     {
@@ -223,17 +228,18 @@ namespace VarianceAPI.Components
                     for (int i = 0; i < this.customInventory.Length; i++)
                     {
                         bool giveItem = true;
-                        /*if (this.customInventory[i].itemString == "ExtraLife")
+                        //Prevent variant to resurrect multiple times
+                        if (this.customInventory[i].itemString == "ExtraLife")
                         {
-                            if (this.master.GetComponent<PreventJellyfishRecursion>())
+                            if (this.master.GetComponent<PreventRecursion>())
                             {
                                 giveItem = false;
                             }
                             else
                             {
-                                this.master.gameObject.AddComponent<PreventJellyfishRecursion>();
+                                this.master.gameObject.AddComponent<PreventRecursion>();
                             }
-                        }*/
+                        }
                         if (giveItem)
                         {
                             this.master.inventory.GiveItemString(this.customInventory[i].itemString, this.customInventory[i].count);
@@ -434,13 +440,22 @@ namespace VarianceAPI.Components
             this.ModifyModel();
             this.SwapSkills();
             this.AddExtraComponents();
-            this.ModifyName()
+            this.ModifyName();
+            this.ReplaceDeathState();
 
             //Change Size
             this.ScaleBody();
 
             this.body.healthComponent.health = this.body.healthComponent.fullHealth;
             this.body.RecalculateStats();
+        }
+
+        private void ReplaceDeathState()
+        {
+            if(this.customDeathState != null)
+            {
+                deathBehavior.deathState = new SerializableEntityStateType(customDeathState);
+            }
         }
 
         private void AddExtraComponents()
