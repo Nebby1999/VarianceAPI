@@ -323,6 +323,58 @@ namespace VarianceAPI.Modules
             return config;
         }
 
+        public static VariantOverrideName[] CreateOverrideName(string textToAdd, OverrideNameType overrideNameType)
+        {
+            List<VariantOverrideName> thingToReturn = new List<VariantOverrideName>();
+
+            VariantOverrideName variantOverrideName = ScriptableObject.CreateInstance<VariantOverrideName>();
+            variantOverrideName.textToAdd = textToAdd;
+            variantOverrideName.overrideType = overrideNameType;
+
+            return thingToReturn.ToArray();
+        }
+        public static VariantOverrideName[] CreateOverrideName(string firstText, OverrideNameType firstOverrideType, string secondText, OverrideNameType secondOverrideType)
+        {
+            List<VariantOverrideName> thingToReturn = new List<VariantOverrideName>();
+
+            VariantOverrideName firstVariantOverrideName = ScriptableObject.CreateInstance<VariantOverrideName>();
+            firstVariantOverrideName.textToAdd = firstText;
+            firstVariantOverrideName.overrideType = firstOverrideType;
+            thingToReturn.Add(firstVariantOverrideName);
+
+            VariantOverrideName variantOverrideName = ScriptableObject.CreateInstance<VariantOverrideName>();
+            firstVariantOverrideName.textToAdd = secondText;
+            firstVariantOverrideName.overrideType = secondOverrideType;
+            thingToReturn.Add(firstVariantOverrideName);
+
+            return thingToReturn.ToArray();
+        }
+
+        public static CustomVariantReward CreateVariantReward(float goldMultiplier, uint bonusGold, float xpMultiplier, uint bonusXP, float whiteChance, float greenChance, float redChance)
+        {
+            CustomVariantReward customVariantReward = ScriptableObject.CreateInstance<CustomVariantReward>();
+            customVariantReward.goldMultiplier = goldMultiplier;
+            customVariantReward.goldBonus = bonusGold;
+            customVariantReward.xpMultiplier = xpMultiplier;
+            customVariantReward.xpBonus = bonusXP;
+            customVariantReward.whiteItemChance = whiteChance;
+            customVariantReward.greenItemChance = whiteChance;
+            customVariantReward.redItemChance = redChance;
+
+            return customVariantReward;
+        }
+
+        public static CustomVariantReward CreateVariantReward(float goldMultiplier, float xpMultiplier, float whiteChance, float greenChance, float redChance)
+        {
+            CustomVariantReward customVariantReward = ScriptableObject.CreateInstance<CustomVariantReward>();
+            customVariantReward.goldMultiplier = goldMultiplier;
+            customVariantReward.xpMultiplier = xpMultiplier;
+            customVariantReward.whiteItemChance = whiteChance;
+            customVariantReward.greenItemChance = whiteChance;
+            customVariantReward.redItemChance = redChance;
+
+            return customVariantReward;
+        }
         /// <summary>
         /// Main method to add new variants
         /// </summary>
