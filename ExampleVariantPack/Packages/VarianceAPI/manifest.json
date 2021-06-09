@@ -1,1 +1,0 @@
-{"name":"VarianceAPI","author":"Nebby","version_number":"0.0.1","website_url":"https://github.com/Nebby1999","description":"A Continuation of Rob's MonsterVariants, VarianceAPI lays down the groundwork for virtually anyone to create their own variants.","dependencies":["tristanmcpherson-R2API-3.0.30","bbepis-BepInExPack-5.4.9"]}
