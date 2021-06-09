@@ -5,6 +5,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VarianceAPI.Components;
 using VarianceAPI.Scriptables;
+using Logger = VarianceAPI.MainClass;
 
 namespace VarianceAPI.Modules
 {
@@ -299,9 +300,9 @@ namespace VarianceAPI.Modules
             config.identifier = variantInfo.identifierName;
             config.spawnRate = variantInfo.spawnRate;
             config.isUnique = variantInfo.unique;
-            if(variantInfo.isModded)
+            if (variantInfo.isModded)
             {
-                Debug.LogError("Variance API: Error! Given variant info is for a modded variant! use CreateModdedConfig instead!");
+                Logger.Log.LogError("Error! Given variant info is for a modded variant! use CreateModdedConfig instead!");
                 return null;
             }
             return config;
@@ -317,7 +318,7 @@ namespace VarianceAPI.Modules
             config.modName = modName;
             if (!variantInfo.isModded)
             {
-                Debug.LogError("Variance API: Error! Given variant info is for a vanilla variant! use CreateConfig instead!");
+                Logger.Log.LogError("Error! Given variant info is for a vanilla variant! use CreateConfig instead!");
                 return null;
             }
             return config;
@@ -342,10 +343,10 @@ namespace VarianceAPI.Modules
             firstVariantOverrideName.overrideType = firstOverrideType;
             thingToReturn.Add(firstVariantOverrideName);
 
-            VariantOverrideName variantOverrideName = ScriptableObject.CreateInstance<VariantOverrideName>();
-            firstVariantOverrideName.textToAdd = secondText;
-            firstVariantOverrideName.overrideType = secondOverrideType;
-            thingToReturn.Add(firstVariantOverrideName);
+            VariantOverrideName secondVariantOverrideName = ScriptableObject.CreateInstance<VariantOverrideName>();
+            secondVariantOverrideName.textToAdd = secondText;
+            secondVariantOverrideName.overrideType = secondOverrideType;
+            thingToReturn.Add(secondVariantOverrideName);
 
             return thingToReturn.ToArray();
         }
@@ -358,7 +359,7 @@ namespace VarianceAPI.Modules
             customVariantReward.xpMultiplier = xpMultiplier;
             customVariantReward.xpBonus = bonusXP;
             customVariantReward.whiteItemChance = whiteChance;
-            customVariantReward.greenItemChance = whiteChance;
+            customVariantReward.greenItemChance = greenChance;
             customVariantReward.redItemChance = redChance;
 
             return customVariantReward;
@@ -370,7 +371,7 @@ namespace VarianceAPI.Modules
             customVariantReward.goldMultiplier = goldMultiplier;
             customVariantReward.xpMultiplier = xpMultiplier;
             customVariantReward.whiteItemChance = whiteChance;
-            customVariantReward.greenItemChance = whiteChance;
+            customVariantReward.greenItemChance = greenChance;
             customVariantReward.redItemChance = redChance;
 
             return customVariantReward;
@@ -393,11 +394,10 @@ namespace VarianceAPI.Modules
         {
             if(!bodyPrefab)
             {
-                Debug.LogError("VarianceAPI: Failed to add Variant! the body prefab could not be found.");
+                Logger.Log.LogError("Failed to add Variant! the body prefab could not be found...");
                 return;
             }
-
-            Debug.Log("VarianceAPI: Adding " + info.identifierName + " VariantHandler for the bodyPrefab of name " + info.bodyName + "Body!");
+            Logger.Log.LogMessage("Adding " + info.identifierName + " VariantHandler to the BodyPrefab of name " + info.bodyName + "Body!");
             VariantHandler variantHandler = bodyPrefab.AddComponent<VariantHandler>();
             variantHandler.Init(info);
         }
@@ -416,10 +416,11 @@ namespace VarianceAPI.Modules
                 GameObject bodyPrefab = BodyCatalog.FindBodyPrefab(info.bodyName + "Body");
                 if(!bodyPrefab)
                 {
+                    Logger.Log.LogError("Failed to add variant! " + info.bodyName + "Body does not exist. (Are you missing a mod?)");
                     Debug.LogError("Variance API: Failed to add variant: " + info.bodyName + "Body does not exist.");
                     return;
                 }
-                Debug.Log("VarianceAPI: Adding " + info.identifierName + " VariantHandler for the bodyPrefab of name " + info.bodyName + "Body!");
+                Logger.Log.LogMessage("Adding " + info.identifierName + " VariantHandler to the BodyPrefab of name " + info.bodyName + "Body!");
                 bodyPrefab.AddComponent<VariantHandler>().Init(info);
             };
         }

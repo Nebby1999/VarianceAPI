@@ -20,7 +20,17 @@ MonoBehaviour:
   skillDefs: []
   skillFamilies: []
   sceneDefs: []
-  itemDefs: []
+  itemDefs:
+  - {fileID: 11400000, guid: 024911f476b080d47b98727188dce042, type: 2}
+  - {fileID: 11400000, guid: d7a243d34a599044ca350306f37d1119, type: 2}
+  - {fileID: 11400000, guid: 1c8095478d265ac49bd8ac3b861e6392, type: 2}
+  - {fileID: 11400000, guid: 4021b39d99f4b7a4997a7cd902e06acf, type: 2}
+  - {fileID: 11400000, guid: 88e30fe40250a424f9860368812842f6, type: 2}
+  - {fileID: 11400000, guid: 19ee59a8501fc444e963ca3df41d40ba, type: 2}
+  - {fileID: 11400000, guid: bbba328ed1a9e2b47ac823fb207c9105, type: 2}
+  - {fileID: 11400000, guid: 82e412205bd92f041a62e7ee7ebf7f87, type: 2}
+  - {fileID: 11400000, guid: 5c04b71378843424a8d4746ffc96ad6e, type: 2}
+  - {fileID: 11400000, guid: a2a82a10e9342d646b28637fa5fd4f2f, type: 2}
   equipmentDefs: []
   buffDefs: []
   eliteDefs: []

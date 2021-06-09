@@ -10,8 +10,8 @@
         "BepInEx.dll",
         "R2API.dll",
         "HGCSharpUtils.dll",
-        "Assembly-CSharp.dll",
-        "MMHOOK_Assembly-CSharp.dll"
+        "MMHOOK_Assembly-CSharp.dll",
+        "StubbedAssembly-CSharp.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": []

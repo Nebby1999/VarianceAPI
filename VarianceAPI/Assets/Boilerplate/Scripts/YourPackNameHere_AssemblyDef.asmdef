@@ -1,6 +1,8 @@
 {
     "name": "YourPackNameHere_AssemblyDef",
-    "references": [],
+    "references": [
+        "VarianceAPI"
+    ],
     "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
