@@ -1,4 +1,4 @@
-﻿/*using RoR2;
+﻿using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -49,7 +49,7 @@ namespace VarianceAPI.Modules.Items
                         var itemCount = inventory.GetItemCount(ItemDef);
                         if (itemCount > 0)
                         {
-                            HealthBarInfo.color = color;
+                            self.barInfoCollection.healthBarInfo.color = color;
                         }
                     }
                 }
@@ -57,4 +57,3 @@ namespace VarianceAPI.Modules.Items
         }
     }
 }
-*/
