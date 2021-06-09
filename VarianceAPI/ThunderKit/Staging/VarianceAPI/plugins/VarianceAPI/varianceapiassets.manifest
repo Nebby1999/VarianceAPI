@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 165078390
+CRC: 2972355755
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: a43e5c60a7f663dccccef3f4d117f3ae
+    Hash: dc215c4822f8f3e5e0f847fe8d1b59e4
   TypeTreeHash:
     serializedVersion: 2
     Hash: 1e8e43dab70bfcce4c3ee6044fe43966
@@ -22,7 +22,6 @@ ClassTypes:
 - Class: 213
   Script: {instanceID: 0}
 Assets:
-- Assets/AssetBundle/ItemDefs/VAPI_PurpleHealthbar.asset
 - Assets/AssetBundle/ItemDefs/VAPI_SpecialCDR.asset
 - Assets/AssetBundle/VarianceAPIContent.asset
 - Assets/AssetBundle/VarianceDef.asset
@@ -33,6 +32,7 @@ Assets:
 - Assets/AssetBundle/ItemDefs/VAPI_ExtraSpecial.asset
 - Assets/AssetBundle/Sprites/VarianceDisabled.png
 - Assets/AssetBundle/ItemDefs/VAPI_PrimaryCDR.asset
+- Assets/AssetBundle/ItemDefs/VAPI_GlobalCDR.asset
 - Assets/AssetBundle/ItemDefs/VAPI_ExtraUtility.asset
 - Assets/AssetBundle/ItemDefs/VAPI_SecondaryCDR.asset
 - Assets/AssetBundle/Sprites/VarianceEnabled.png

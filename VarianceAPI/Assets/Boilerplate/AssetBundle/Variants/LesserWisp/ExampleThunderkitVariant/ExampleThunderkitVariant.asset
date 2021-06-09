@@ -9,38 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 1852376608, guid: 91e3b6a7d537db04fb019de1253564fd, type: 3}
+  m_Script: {fileID: 0}
   m_Name: ExampleThunderkitVariant
   m_EditorClassIdentifier: 
-  identifierName: YVPN_ExampleThunderkitVariant
-  bodyName: Wisp
-  overrideName:
-  - {fileID: 11400000, guid: 4ca6415c2b42f2143998165a836fabcf, type: 2}
-  - {fileID: 11400000, guid: 179dc8969f5349a4daabb6b69a9a826e, type: 2}
-  isModded: 0
-  variantConfig: {fileID: 11400000, guid: 116683b9d451181469432f665cadacd8, type: 2}
-  unique: 0
-  aiModifier: 0
-  variantTier: 2
-  spawnRate: 0
-  givesRewards: 1
-  customVariantReward: {fileID: 0}
-  customInventory:
-  - {fileID: 11400000, guid: 7c06c649143d2fc49bfd15ae6677c052, type: 2}
-  customEquipment: {fileID: 0}
-  usesEquipment: 0
-  buff: []
-  skillReplacement: []
-  healthMultiplier: 5
-  moveSpeedMultiplier: 0.9
-  attackSpeedMultiplier: 2
-  damageMultiplier: 1
-  armorMultiplier: 1
-  armorBonus: 0
-  arrivalMessage: 
-  meshReplacement: []
-  materialReplacement:
-  - {fileID: 11400000, guid: ca91b3f3ef17c184f9bf9435780ee8e3, type: 2}
-  sizeModifier: {fileID: 11400000, guid: d3f8869e45f128d4a922855e9eebfa59, type: 2}
-  extraComponents: []
-  customDeathState: 
+  m_Name: ExampleThunderkitVariant
+  m_EditorClassIdentifier: 

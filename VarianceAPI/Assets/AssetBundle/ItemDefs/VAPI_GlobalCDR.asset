@@ -12,14 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: -1284244208, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
   m_Name: VAPI_GlobalCDR
   m_EditorClassIdentifier: 
-  tier: 0
-  nameToken: 
-  pickupToken: 
-  descriptionToken: 
-  loreToken: 
+  tier: 5
+  nameToken: VAPI_GlobalCDR
+  pickupToken: VAPI_GlobalCDR
+  descriptionToken: VAPI_GlobalCDR_Desc
+  loreToken: VAPI_GlobalCDR_Lore
   unlockableDef: {fileID: 0}
   pickupModelPrefab: {fileID: 0}
   pickupIconSprite: {fileID: 0}
   hidden: 0
   canRemove: 1
-  tags: 
+  tags: 04000000

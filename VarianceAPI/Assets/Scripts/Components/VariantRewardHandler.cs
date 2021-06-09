@@ -16,10 +16,10 @@ namespace VarianceAPI.Components
         static readonly float Offset = 2f * Mathf.PI / Run.instance.participatingPlayerCount;
         
         public uint bonusGold;
-        public float goldMult;
+        public float goldMult = 1;
 
         public uint bonusXP;
-        public float xpMult;
+        public float xpMult = 1;
 
         public float whiteChance;
         public float greenChance;
@@ -95,20 +95,20 @@ namespace VarianceAPI.Components
                 switch(variant.tier)
                 {
                     case VariantTier.Common:
-                        goldMult += ConfigLoader.CommonVariantGoldMultiplier.Value;
-                        xpMult += ConfigLoader.CommonVariantXPMultiplier.Value;
+                        goldMult += ConfigLoader.CommonVariantGoldMultiplier.Value -1;
+                        xpMult += ConfigLoader.CommonVariantXPMultiplier.Value - 1;
                         break;
                     case VariantTier.Uncommon:
-                        goldMult += ConfigLoader.UncommonVariantGoldMultiplier.Value;
-                        xpMult += ConfigLoader.UncommonVariantXPMultiplier.Value;
+                        goldMult += ConfigLoader.UncommonVariantGoldMultiplier.Value - 1;
+                        xpMult += ConfigLoader.UncommonVariantXPMultiplier.Value - 1;
                         break;
                     case VariantTier.Rare:
-                        goldMult += ConfigLoader.RareVariantGoldMultiplier.Value;
-                        xpMult += ConfigLoader.RareVariantXPMultiplier.Value;
+                        goldMult += ConfigLoader.RareVariantGoldMultiplier.Value - 1;
+                        xpMult += ConfigLoader.RareVariantXPMultiplier.Value - 1;
                         break;
                     case VariantTier.Legendary:
-                        goldMult += ConfigLoader.LegendaryVariantGoldMultiplier.Value;
-                        xpMult += ConfigLoader.LegendaryVariantXPMultiplier.Value;
+                        goldMult += ConfigLoader.LegendaryVariantGoldMultiplier.Value - 1;
+                        xpMult += ConfigLoader.LegendaryVariantXPMultiplier.Value - 1;
                         break;
                 }
                 if(variant.tier > highestTier)
