@@ -100,6 +100,9 @@ namespace VarianceAPI.Scriptables
             [Tooltip("Replaces the variant's Material\nCan be null")]
             public VariantMaterialReplacement[] materialReplacement;
 
+        [Tooltip("Replaces the Variant's Light emitting properties\nCan be null")]
+        public VariantLightReplacement[] lightReplacement;
+
             [Tooltip("Increases or Decreases the variant's Size\nCan be null")]
             public VariantSizeModifier sizeModifier;
             
