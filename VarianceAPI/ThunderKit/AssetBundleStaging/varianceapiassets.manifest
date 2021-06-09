@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2972355755
+CRC: 1211037280
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: dc215c4822f8f3e5e0f847fe8d1b59e4
+    Hash: 171ab96af469afbe0e95eceef46ebef6
   TypeTreeHash:
     serializedVersion: 2
     Hash: 1e8e43dab70bfcce4c3ee6044fe43966
@@ -22,6 +22,7 @@ ClassTypes:
 - Class: 213
   Script: {instanceID: 0}
 Assets:
+- Assets/AssetBundle/ItemDefs/VAPI_PurpleHealthbar.asset
 - Assets/AssetBundle/ItemDefs/VAPI_SpecialCDR.asset
 - Assets/AssetBundle/VarianceAPIContent.asset
 - Assets/AssetBundle/VarianceDef.asset

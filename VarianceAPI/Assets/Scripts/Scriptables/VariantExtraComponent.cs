@@ -8,7 +8,7 @@ using VarianceAPI.Components;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "VariantExtraComponent", menuName = "VarianceAPI/VariantExtraComponent", order = 11)]
+    [CreateAssetMenu(fileName = "VariantExtraComponent", menuName = "VarianceAPI/VariantExtraComponent", order = 12)]
     public class VariantExtraComponent : ScriptableObject
     {
         [Header("Variant Extra Component")]
