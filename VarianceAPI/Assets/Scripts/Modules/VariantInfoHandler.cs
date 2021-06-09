@@ -39,9 +39,9 @@ namespace VarianceAPI.Modules
             variantInfo.unique = variantConfig.isUnique;
 
             Logger.Log.LogMessage("Creating Config Entries for " + variantInfo.identifierName);
-            var variantSpawnRateConfig = config.Bind<float>(new ConfigDefinition("Config Entries for " + variantInfo.identifierName, variantInfo.identifierName + " Spawn Rate"), variantConfig.spawnRate, new ConfigDescription("Chance for the " + variantInfo.identifierName + " variant to Spawn\n(Percentage, 0-100)"));
+            var variantSpawnRateConfig = config.Bind<float>(new ConfigDefinition(variantInfo.bodyName + " Variants", variantInfo.identifierName + " Spawn Rate"), variantConfig.spawnRate, new ConfigDescription("Chance for the " + variantInfo.identifierName + " variant to Spawn\n(Percentage, 0-100)"));
             Logger.Log.LogMessage("Created SpawnRate config entry for " + variantInfo.identifierName);
-            var variantIsUniqueConfig = config.Bind<bool>(new ConfigDefinition("Config Entries for " + variantInfo.identifierName, variantInfo.identifierName + " is Unique"), variantConfig.isUnique, new ConfigDescription("Wether or not " + variantInfo.identifierName + " is Unique"));
+            var variantIsUniqueConfig = config.Bind<bool>(new ConfigDefinition(variantInfo.bodyName + " Variants", variantInfo.identifierName + " is Unique"), variantConfig.isUnique, new ConfigDescription("Wether or not " + variantInfo.identifierName + " is Unique"));
             Logger.Log.LogMessage("Created IsUnique config entry for " + variantInfo.identifierName);
 
             variantInfo.spawnRate = variantSpawnRateConfig.Value;
