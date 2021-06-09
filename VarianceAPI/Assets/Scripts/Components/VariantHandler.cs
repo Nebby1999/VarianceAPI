@@ -12,6 +12,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using VarianceAPI.Modules;
 using VarianceAPI.Scriptables;
+using Logger = VarianceAPI.MainClass;
 
 namespace VarianceAPI.Components
 {
@@ -482,7 +483,7 @@ namespace VarianceAPI.Components
                                     {
                                         if (typeof(VariantComponent).IsAssignableFrom(type))
                                         {
-                                            Debug.Log("Adding " + type.Name + " Component to " + body.GetDisplayName());
+                                            Logger.Log.LogMessage("Adding " + type.Name + " Component to " + body.GetDisplayName());
                                             modelTransform.gameObject.AddComponent(type);
                                         }
                                     }

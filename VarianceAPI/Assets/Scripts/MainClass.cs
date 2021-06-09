@@ -1,14 +1,17 @@
 ﻿using BepInEx;
+using BepInEx.Logging;
 using RoR2;
 using RoR2.ContentManagement;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Reflection;
 using System.Security;
 using System.Security.Permissions;
 using UnityEngine;
 using VarianceAPI.Modules;
+using VarianceAPI.Modules.Items.ItemBases;
 using Path = System.IO.Path;
 
 [module: UnverifiableCode]
@@ -21,11 +24,16 @@ namespace VarianceAPI
 	internal class MainClass : BaseUnityPlugin
     {
         public static MainClass instance;
+		public static ManualLogSource Log;
         public static AssetBundle varianceAPIAssets = null;
         internal static string assetBundleName = "VarianceAPIAssets";
 
+		public List<R2API_ItemBase> R2APIItems = new List<R2API_ItemBase>();
+		public List<Thunderkit_ItemBase> Items = new List<Thunderkit_ItemBase>();
+
         internal void Awake()
         {
+			Log = Logger;
             instance = this;
 			ConfigLoader.SetupConfigLoader(Config);
             LoadAssetsAndRegisterContentPack();
@@ -37,6 +45,8 @@ namespace VarianceAPI
 			FinishArtifactOfVariance();
 			ContentPackProvider.serializedContentPack = varianceAPIAssets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
 			ContentPackProvider.Initialize();
+			Log.LogMessage("Adding VarianceAPI's Intrinsic Items...");
+			FinishIntrinsicItems();
         }
 		internal void FinishArtifactOfVariance()
         {
@@ -44,18 +54,28 @@ namespace VarianceAPI
 			var VarianceContent = varianceAPIAssets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
 			if(ConfigLoader.EnableArtifactOfVariance.Value)
             {
-				Debug.Log("VarianceAPI: Registering Artifact Of Variance...");
+				Log.LogMessage("Adding the Artifact of Variance...");
 				ArtifactDef[] ArtifactDefs = new ArtifactDef[] { VarianceDef };
 				VarianceDef.descriptionToken = "All Variant's Spawn Rates are Multiplied by " + ConfigLoader.VarianceMultiplier.Value;
 				VarianceContent.artifactDefs = ArtifactDefs;
 				if(VarianceContent.artifactDefs != null)
                 {
-					Debug.Log("VarianceAPI: Succesfully added " + VarianceDef.nameToken + " to " + ContentPackProvider.contentPackName);
+					Logger.LogMessage("Succesfully added " + VarianceDef.nameToken + " to " + ContentPackProvider.contentPackName);
                 }
             }
 			else
             {
 				return;
+            }
+        }
+		internal void FinishIntrinsicItems()
+        {
+			var ItemTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(Thunderkit_ItemBase)));
+
+			foreach (var itemType in ItemTypes)
+            {
+				Thunderkit_ItemBase item = (Thunderkit_ItemBase)System.Activator.CreateInstance(itemType);
+				item.Init();
             }
         }
 	}
@@ -77,7 +97,7 @@ namespace VarianceAPI
 
 		internal static void Initialize()
 		{
-			Debug.Log("VarianceAPI: Registering VarianceAPIContent...");
+			MainClass.Log.LogMessage("Registering VarianceAPIContent...");
 			contentPack = serializedContentPack.CreateContentPack();
 			ContentManager.collectContentPackProviders += AddCustomContent;
 		}

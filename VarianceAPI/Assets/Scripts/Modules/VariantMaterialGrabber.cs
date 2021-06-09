@@ -4,6 +4,7 @@ using UnityEngine;
 using VarianceAPI.Scriptables;
 using System.Linq;
 using System.Reflection;
+using Logger = VarianceAPI.MainClass;
 
 namespace VarianceAPI.Modules
 {
@@ -37,7 +38,7 @@ namespace VarianceAPI.Modules
         /// <param name="yourAssets"> Your mod's Asset Bundle.</param>
         public virtual void GrabIncompleteVariantMaterials(AssetBundle yourAssets)
         {
-            Debug.Log("VarianceAPI: Grabbing the Incomplete Variant Materials from " + yourAssets.name);
+            Logger.Log.LogMessage("Grabbing the Incomplete Variant Materials from " + yourAssets.name);
             incompleteVariantMaterials = assetBundle.LoadAllAssets<VariantMaterialReplacement>().Where(
                 VMR => VMR.material == null && VMR.identifier != null).ToList();
         }
@@ -45,7 +46,7 @@ namespace VarianceAPI.Modules
         {
             if(incompleteVariantMaterials == null)
             {
-                Debug.LogError("VarianceAPI: IncompleteVariantMaterials list is null! Aborting...");
+                Logger.Log.LogError("IncompleteVariantMaterials list is null! Aborting...");
                 return;
             }
             foreach(VariantMaterialReplacement variantMaterialReplacement in incompleteVariantMaterials)
@@ -60,9 +61,9 @@ namespace VarianceAPI.Modules
             {
                 if(incompleteVariantMaterial.identifier == completeReplacement.identifier)
                 {
-                    Debug.Log("VarianceAPI: Found matching VariantMaterialReplacement! fixing the Incomplete variant material...");
+                    Logger.Log.LogMessage("Found matching VariantMaterialReplacement! fixing the Incomplete variant material...");
                     incompleteVariantMaterial.material = completeReplacement.material;
-                    Debug.Log("VarianceAPI: Replaced " + incompleteVariantMaterial.identifier + "'s Material with the correct one!");
+                    Logger.Log.LogMessage("Replaced " + incompleteVariantMaterial.identifier + "'s Material with the correct one!");
                 }
                 else
                 {
