@@ -42,6 +42,7 @@ namespace VarianceAPI.Components
         public VariantAIModifier aiModifier;
 
         public VariantMaterialReplacement[] materialReplacements;
+        public VariantLightReplacement[] lightReplacements;
         public VariantMeshReplacement[] meshReplacements;
         public VariantSkillReplacement[] skillReplacements;
         public VariantOverrideName[] overrideNames;
@@ -85,6 +86,7 @@ namespace VarianceAPI.Components
             this.aiModifier = info.aiModifier;
 
             this.materialReplacements = info.materialReplacement;
+            this.lightReplacements = info.lightReplacement;
             this.meshReplacements = info.meshReplacement;
             this.skillReplacements = info.skillReplacement;
             this.extraComponents = info.extraComponents;
@@ -247,12 +249,10 @@ namespace VarianceAPI.Components
                         }
                     }
                 }
-
-                //Add an infusion to make healthbars red
-                //Note to self, investigate a way to make a custom item do this instead of an infusion to avoid enemies like Scavs getting more HP
+                //Makes healthbars purple
                 if (this.tier >= VariantTier.Uncommon)
                 {
-                    this.master.inventory.GiveItem(RoR2Content.Items.Infusion);
+                    this.master.inventory.GiveItem(ContentPackProvider.contentPack.itemDefs.Find("VAPI_PurpleHealthbar"));
                 }
             }
         }
@@ -312,6 +312,10 @@ namespace VarianceAPI.Components
                 {
                     this.meshReplacements = new VariantMeshReplacement[0];
                 }
+                if(this.lightReplacements == null)
+                {
+                    this.lightReplacements = new VariantLightReplacement[0];
+                }
 
                 //Replace Materials
                 if (this.materialReplacements.Length > 0)
@@ -320,10 +324,13 @@ namespace VarianceAPI.Components
                     {
                         model.baseRendererInfos[this.materialReplacements[i].rendererIndex].defaultMaterial = this.materialReplacements[i].material;
                     }
-
-                    if (body.name == "GolemBody(Clone)")
+                }
+                //Replaces lights
+                if(this.lightReplacements.Length > 0)
+                {
+                    for(int i = 0; i< this.lightReplacements.Length; i++)
                     {
-                        model.baseLightInfos[0].defaultColor = Color.blue;
+                        model.baseLightInfos[this.lightReplacements[i].rendererIndex].defaultColor = this.lightReplacements[i].color;
                     }
                 }
 
