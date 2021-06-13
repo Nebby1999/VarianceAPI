@@ -13,5 +13,9 @@ namespace VarianceAPI.Scriptables
         [Header("Equipment Info")]
             [Tooltip("The Equipment to give to this Variant\nMUST be the same as the Equipment's EquipmentDef!")]
             public string equipmentString;
+            
+            [Header("Minimum health fraction")]
+            [Tooltip("This is a Chance curve that dictate")]
+            public AnimationCurve animationCurve;
     }
 }
