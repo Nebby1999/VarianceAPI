@@ -39,18 +39,16 @@ namespace VarianceAPI
 			Log = Logger;
             instance = this;
 			ConfigLoader.SetupConfigLoader(Config);
-            LoadAssetsAndRegisterContentPack();
-        }
-        internal void LoadAssetsAndRegisterContentPack()
-        {
-            var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-            varianceAPIAssets = AssetBundle.LoadFromFile(Path.Combine(path, assetBundleName));
+			LoadAssets();
 			FinishArtifactOfVariance();
-			ContentPackProvider.serializedContentPack = varianceAPIAssets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
-			ContentPackProvider.Initialize();
-			Log.LogMessage("Adding VarianceAPI's Intrinsic Items...");
+			RegisterContentPack();
 			FinishIntrinsicItems();
-        }
+		}
+		internal void LoadAssets()
+        {
+			var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			varianceAPIAssets = AssetBundle.LoadFromFile(Path.Combine(path, assetBundleName));
+		}
 		internal void FinishArtifactOfVariance()
         {
 			var VarianceDef = varianceAPIAssets.LoadAsset<ArtifactDef>("VarianceDef");
@@ -80,6 +78,11 @@ namespace VarianceAPI
 				Thunderkit_ItemBase item = (Thunderkit_ItemBase)System.Activator.CreateInstance(itemType);
 				item.Init();
             }
+        }
+        internal void RegisterContentPack()
+        {
+			ContentPackProvider.serializedContentPack = varianceAPIAssets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
+			ContentPackProvider.Initialize();
         }
 	}
 	public class ContentPackProvider : IContentPackProvider
