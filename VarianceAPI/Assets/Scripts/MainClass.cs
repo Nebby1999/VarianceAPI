@@ -5,6 +5,8 @@ using RoR2.ContentManagement;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using R2API;
+using R2API.Utils;
 using System.Linq;
 using System.Reflection;
 using System.Security;
@@ -21,6 +23,7 @@ using Path = System.IO.Path;
 namespace VarianceAPI
 {
 	[BepInPlugin("com.Nebby.VarianceAPI", "VarianceAPI", "0.5.0")]
+	[R2APISubmoduleDependency(nameof(ItemAPI), nameof(PrefabAPI), nameof(ProjectileAPI))]
 	internal class MainClass : BaseUnityPlugin
     {
         public static MainClass instance;
