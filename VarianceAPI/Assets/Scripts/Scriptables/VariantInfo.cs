@@ -48,16 +48,13 @@ namespace VarianceAPI.Scriptables
             [Tooltip("Whether the variant uses custom rewards or the default reward system\nCan be null")]
             public CustomVariantReward customVariantReward;
 
-            [Header("Custom Inventory & Skills")]
+        [Header("Custom Inventory & Skills")]
 
             [Tooltip("The Variant's Inventory\nCan be null")]
             public ItemInfo[] customInventory;
 
             [Tooltip("The Equipment the variant has\nCan Be null")]
             public EquipmentInfo customEquipment;
-
-            [Tooltip("Whether the variant uses it's equipment")]
-            public bool usesEquipment;
 
             [Tooltip("Buff given to the variant once it spawns\nCan be null")]
             public VariantBuff[] buff;
