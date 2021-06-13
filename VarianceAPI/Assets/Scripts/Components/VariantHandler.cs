@@ -23,7 +23,6 @@ namespace VarianceAPI.Components
 
         public bool unique;
         public bool givesRewards;
-        public bool usesEquipment;
 
         public string identifierName;
         public string bodyName;
@@ -66,7 +65,6 @@ namespace VarianceAPI.Components
         {
             this.unique = info.unique;
             this.givesRewards = info.givesRewards;
-            this.usesEquipment = info.usesEquipment;
 
             this.identifierName = info.identifierName;
             this.bodyName = info.bodyName;
@@ -220,6 +218,7 @@ namespace VarianceAPI.Components
         {
             this.ModifyStats();
             this.AddItems();
+            this.AddEquipment();
             this.ModifyModel();
             this.SwapSkills();
             this.AddExtraComponents();
@@ -279,6 +278,21 @@ namespace VarianceAPI.Components
                 if (this.tier >= VariantTier.Uncommon)
                 {
                     this.master.inventory.GiveItem(ContentPackProvider.contentPack.itemDefs.Find("VAPI_PurpleHealthbar"));
+                }
+            }
+        }
+        private void AddEquipment()
+        {
+            if(this.master.inventory)
+            {
+                if(customEquipment)
+                {
+                    master.inventory.GiveEquipmentString(customEquipment.equipmentString);
+                    thisGameObject.AddComponent<VariantEquipmentHandler>().equipmentInfo = customEquipment;
+                }
+                else
+                {
+                    return;
                 }
             }
         }
