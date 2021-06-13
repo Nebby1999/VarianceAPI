@@ -216,6 +216,32 @@ namespace VarianceAPI.Components
                 }
             }
         }
+        private void ApplyBuffs()
+        {
+            this.ModifyStats();
+            this.AddItems();
+            this.ModifyModel();
+            this.SwapSkills();
+            this.AddExtraComponents();
+            this.ModifyName();
+            this.ReplaceDeathState();
+
+            //Change Size
+            this.ScaleBody();
+
+            this.body.healthComponent.health = this.body.healthComponent.fullHealth;
+            this.body.RecalculateStats();
+        }
+        private void ModifyStats()
+        {
+            this.body.baseMaxHealth *= this.healthModifier;
+            this.body.baseMoveSpeed *= this.moveSpeedModifier;
+            this.body.baseAttackSpeed *= this.attackSpeedModifier;
+            this.body.baseDamage *= this.damageModifier;
+            this.body.levelDamage = this.body.baseDamage * 0.2f;
+            this.body.baseArmor *= this.armorModifier;
+            this.body.baseArmor += this.armorBonus;
+        }
 
         private void AddItems()
         {
@@ -253,39 +279,6 @@ namespace VarianceAPI.Components
                 if (this.tier >= VariantTier.Uncommon)
                 {
                     this.master.inventory.GiveItem(ContentPackProvider.contentPack.itemDefs.Find("VAPI_PurpleHealthbar"));
-                }
-            }
-        }
-
-        private void ModifyStats()
-        {
-            this.body.baseMaxHealth *= this.healthModifier;
-            this.body.baseMoveSpeed *= this.moveSpeedModifier;
-            this.body.baseAttackSpeed *= this.attackSpeedModifier;
-            this.body.baseDamage *= this.damageModifier;
-            this.body.levelDamage = this.body.baseDamage * 0.2f;
-            this.body.baseArmor *= this.armorModifier;
-            this.body.baseArmor += this.armorBonus;
-        }
-        private void ModifyName()
-        {
-            if (this.overrideNames != null)
-            {
-                for (int i = 0; i < overrideNames.Length; i++)
-                {
-                    VariantOverrideName overrideName = overrideNames[i];
-                    switch (overrideName.overrideType)
-                    {
-                        case OverrideNameType.Preffix:
-                            this.body.baseNameToken = overrideName.textToAdd + " " + body.GetDisplayName();
-                            return;
-                        case OverrideNameType.Suffix:
-                            this.body.baseNameToken = body.GetDisplayName() + " " + overrideName.textToAdd;
-                            return;
-                        case OverrideNameType.CompleteOverride:
-                            this.body.baseNameToken = overrideName.textToAdd;
-                            return;
-                    }
                 }
             }
         }
@@ -355,6 +348,130 @@ namespace VarianceAPI.Components
                 }*/
             }
         }
+        private void SwapSkills()
+        {
+            if (this.skillReplacements == null)
+            {
+                return;
+            }
+
+            SkillLocator skillLocator = this.body.skillLocator;
+
+            if (skillLocator)
+            {
+                for (int i = 0; i < skillReplacements.Length; i++)
+                {
+                    switch (skillReplacements[i].skillSlot)
+                    {
+                        case SkillSlot.Primary:
+                            skillLocator.primary.SetSkillOverride(this.gameObject, skillReplacements[i].skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                            break;
+                        case SkillSlot.Secondary:
+                            skillLocator.secondary.SetSkillOverride(this.gameObject, skillReplacements[i].skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                            break;
+                        case SkillSlot.Utility:
+                            skillLocator.utility.SetSkillOverride(this.gameObject, skillReplacements[i].skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                            break;
+                        case SkillSlot.Special:
+                            skillLocator.special.SetSkillOverride(this.gameObject, skillReplacements[i].skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                            break;
+                        case SkillSlot.None:
+                            //what are you actually trying to do here??
+                            break;
+                    }
+                }
+            }
+        }
+        private void AddExtraComponents()
+        {
+            for (int i = 0; i < extraComponents.Length; i++)
+            {
+                VariantExtraComponent extraComponent = extraComponents[i];
+                if (extraComponent.isAesthetic)
+                {
+                    ModelLocator modelLocator = this.body.GetComponent<ModelLocator>();
+                    if (modelLocator)
+                    {
+                        Transform modelTransform = modelLocator.modelTransform;
+                        if (modelTransform)
+                        {
+                            Type type;
+                            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(Assembly => Assembly.GetReferencedAssemblies().Any(AssName => AssName.FullName == "VarianceAPI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"));
+                            if (assemblies != null)
+                            {
+                                foreach (var assembly in assemblies)
+                                {
+                                    type = assembly.GetType(extraComponent.componentToAdd);
+                                    if (type != null)
+                                    {
+                                        if (typeof(VariantComponent).IsAssignableFrom(type))
+                                        {
+                                            Logger.Log.LogMessage("Adding " + type.Name + " Component to " + body.GetDisplayName());
+                                            modelTransform.gameObject.AddComponent(type);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        private void ModifyName()
+        {
+            if (this.overrideNames != null)
+            {
+                for (int i = 0; i < overrideNames.Length; i++)
+                {
+                    VariantOverrideName overrideName = overrideNames[i];
+                    switch (overrideName.overrideType)
+                    {
+                        case OverrideNameType.Preffix:
+                            this.body.baseNameToken = overrideName.textToAdd + " " + body.GetDisplayName();
+                            return;
+                        case OverrideNameType.Suffix:
+                            this.body.baseNameToken = body.GetDisplayName() + " " + overrideName.textToAdd;
+                            return;
+                        case OverrideNameType.CompleteOverride:
+                            this.body.baseNameToken = overrideName.textToAdd;
+                            return;
+                    }
+                }
+            }
+        }
+        private void ReplaceDeathState()
+        {
+            if(this.customDeathState != "")
+            {
+                deathBehavior.deathState = new SerializableEntityStateType(customDeathState);
+            }
+        }
+        private void ScaleBody()
+        {
+            if(this.sizeModifier == null)
+            {
+                return;
+            }
+
+            ModelLocator modelLocator = this.body.GetComponent<ModelLocator>();
+            if(modelLocator)
+            {
+                Transform modelTransform = modelLocator.modelBaseTransform;
+                if (modelTransform)
+                {
+                    modelTransform.localScale *= this.sizeModifier.newSize;
+
+                    if (this.sizeModifier.scaleCollider)
+                    {
+                        foreach (KinematicCharacterMotor kinematicCharacterMotor in this.body.GetComponentsInChildren<KinematicCharacterMotor>())
+                        {
+                            if (kinematicCharacterMotor) kinematicCharacterMotor.SetCapsuleDimensions(kinematicCharacterMotor.Capsule.radius * this.sizeModifier.newSize, kinematicCharacterMotor.Capsule.height * this.sizeModifier.newSize, this.sizeModifier.newSize);
+                        }
+                    }
+                }
+            }
+        }
         private void RestoreEquipment()
         {
             CharacterModel model = null;
@@ -407,125 +524,7 @@ namespace VarianceAPI.Components
                 item.bones = transforms.ToArray();
             }
         }*/
-        private void SwapSkills()
-        {
-            if (this.skillReplacements == null)
-            {
-                return;
-            }
 
-            SkillLocator skillLocator = this.body.skillLocator;
 
-            if (skillLocator)
-            {
-                for (int i = 0; i < skillReplacements.Length; i++)
-                {
-                    switch (skillReplacements[i].skillSlot)
-                    {
-                        case SkillSlot.Primary:
-                            skillLocator.primary.SetSkillOverride(this.gameObject, skillReplacements[i].skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                            break;
-                        case SkillSlot.Secondary:
-                            skillLocator.secondary.SetSkillOverride(this.gameObject, skillReplacements[i].skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                            break;
-                        case SkillSlot.Utility:
-                            skillLocator.utility.SetSkillOverride(this.gameObject, skillReplacements[i].skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                            break;
-                        case SkillSlot.Special:
-                            skillLocator.special.SetSkillOverride(this.gameObject, skillReplacements[i].skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                            break;
-                        case SkillSlot.None:
-                            //what are you actually trying to do here??
-                            break;
-                    }
-                }
-            }
-        }
-        private void ApplyBuffs()
-        {
-            this.ModifyStats();
-            this.AddItems();
-            this.ModifyModel();
-            this.SwapSkills();
-            this.AddExtraComponents();
-            this.ModifyName();
-            this.ReplaceDeathState();
-
-            //Change Size
-            this.ScaleBody();
-
-            this.body.healthComponent.health = this.body.healthComponent.fullHealth;
-            this.body.RecalculateStats();
-        }
-
-        private void ReplaceDeathState()
-        {
-            if(this.customDeathState != "")
-            {
-                deathBehavior.deathState = new SerializableEntityStateType(customDeathState);
-            }
-        }
-
-        private void AddExtraComponents()
-        {
-            for (int i = 0; i < extraComponents.Length; i++)
-            {
-                VariantExtraComponent extraComponent = extraComponents[i];
-                if (extraComponent.isAesthetic)
-                {
-                    ModelLocator modelLocator = this.body.GetComponent<ModelLocator>();
-                    if (modelLocator)
-                    {
-                        Transform modelTransform = modelLocator.modelTransform;
-                        if (modelTransform)
-                        {
-                            Type type;
-                            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(Assembly => Assembly.GetReferencedAssemblies().Any(AssName => AssName.FullName == "VarianceAPI, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null"));
-                            if (assemblies != null)
-                            {
-                                foreach (var assembly in assemblies)
-                                {
-                                    type = assembly.GetType(extraComponent.componentToAdd);
-                                    if (type != null)
-                                    {
-                                        if (typeof(VariantComponent).IsAssignableFrom(type))
-                                        {
-                                            Logger.Log.LogMessage("Adding " + type.Name + " Component to " + body.GetDisplayName());
-                                            modelTransform.gameObject.AddComponent(type);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        private void ScaleBody()
-        {
-            if(this.sizeModifier == null)
-            {
-                return;
-            }
-
-            ModelLocator modelLocator = this.body.GetComponent<ModelLocator>();
-            if(modelLocator)
-            {
-                Transform modelTransform = modelLocator.modelBaseTransform;
-                if (modelTransform)
-                {
-                    modelTransform.localScale *= this.sizeModifier.newSize;
-
-                    if (this.sizeModifier.scaleCollider)
-                    {
-                        foreach (KinematicCharacterMotor kinematicCharacterMotor in this.body.GetComponentsInChildren<KinematicCharacterMotor>())
-                        {
-                            if (kinematicCharacterMotor) kinematicCharacterMotor.SetCapsuleDimensions(kinematicCharacterMotor.Capsule.radius * this.sizeModifier.newSize, kinematicCharacterMotor.Capsule.height * this.sizeModifier.newSize, this.sizeModifier.newSize);
-                        }
-                    }
-                }
-            }
-        }
     }
 }
