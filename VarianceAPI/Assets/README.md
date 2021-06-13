@@ -64,6 +64,8 @@
 
 	- DeathState replacements
 
+	- LightRendererInfos replacements
+
 	- Custom Equipment (NYI)
 
 	- The Ability to use Equipments (NYI)
@@ -104,6 +106,33 @@
 
 * Just like in the Original MonsterVariantsPlus, the Artifact of Variance can be enabled or disabled in the Config file.
 
+### Intrinsic Items for Variants
+
+---
+
+* VarianceAPI comes bundled with KomradeSpectre's ItemModCreationBoilerplate.
+
+* Due to this, VarianceAPI comes bundled with Intrinsic items that've been created for exclusive use for Variants.
+
+* These items are AI Blacklisted, meaning that Enemies in the void fields will never get this item, and they should never appear in a normal run (if otherwise please contact me!)
+
+* These items are...
+
+		VAPI_GlobalCDR: Reduces all cooldowns by 1% linearly per stack
+
+		VAPI_PrimaryCDR: Reduces the Primary's cooldown by 1% linearly per stack
+		VAPI_SecondaryCDR: Reduces the Secondary's cooldown by 1% linearly per stack
+		VAPI_UtilityCDR: Reduces the Utility's cooldown by 1% linearly per stack
+		VAPI_SpecialCDR: Reduces the Special's cooldown by 1% linearly per stack
+
+		VAPI_ExtraPrimary: Adds an extra primary use per stack
+		VAPI_ExtraSecondary: Adds an extra secondary use per stack
+		VAPI_ExtraUtility: Adds an extra utility use per stack
+		VAPI_ExtraSpecial: Adds an extra utility use per stack
+
+		VAPI_PurpleHealthbar: Makes the healthbar purple, automatically given to any variant who's tier is Uncommon or higher.
+
+		VAPI_Plus1Crit: Increases critical strike chance by 1% per stack linearly.
 
 ### Official Variant Packs (Variant Packs made by Nebby)
 
@@ -113,11 +142,31 @@
 
 	* The original 30 is a complete port of Rob's 30 original MonsterVariants.
 
-	* It's incomplete, but currently re-adds ~~some~~ 13! of the Variants
+	* The original 30 includes QoL changes to variants, such as using VarianceAPI's intrinsic items, and having new features such as slight rebalancing and better override names.
 
 	* Get it here! (just click the icon!)
 
 	[![TO30 Icon](https://cdn.discordapp.com/attachments/850538397647110145/850546340403478528/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_TheOriginal30/)
+
+* Nebby's Wrath
+
+	* Nebby's Wrath is a complete port of all the non-"OtherVariants" of MonsterVariantsPlus.
+
+	* Currently the pack is nonexistent, but it will eventually come out.
+
+	* Get it here! (just click the icon!)
+
+	[[REDACTED]](http://www.nyan.cat)
+
+* Nebby's New Friends
+
+	* Nebby's New Friends is a complete port of all the "OtherVariants" of MonsterVariantsPlus
+
+	* Currently the pack is nonexistent, but it will eventually come out.
+
+	* Get it here! (just click  the icon!)
+
+	[[REDACTED]](https://findtheinvisiblecow.com)
 
 * Nebby still suggests checking out other VariantPacks made by the community! (Currently none :c)
 
@@ -134,18 +183,56 @@ https://discord.gg/kWn8T4fM5W
 
 ## Todo's
 
-	- Use KomradeSpectre's ItemModCreationBoilerplate to create a boilerplate for Variant Items.
-
-		* Create said VariantItems so variants dont use Alienheads/Critglasses, and instead use these custom items
-
-	- Re-Implement the Artifact of Variance
-
-	- Create a system to replace variants' DeathState states.
-
 	- Continue development of the API
 
 
 ## Changelog
+'0.6.0'
+
+* Added missing methods for Helpers.cs
+
+	- Added method for creating VariantOverrideNames
+
+	- Added methods for creating CustomVariantRewards
+
+* Added the first iteration of the MyVariantPack boilerplate
+
+	- Boilerplate is installed thru a unity package that you can install when youre developping in Thunderkit
+
+	- Boilerplate code fully documented.
+
+	- Boilerplate includes the following examples:
+
+		- Creation of a Variant in code
+
+		- Creating a Variant in Thunderkit
+
+		- Communicating with VarianceAPI
+
+		- Using the VariantInfoHandler to register variants
+
+		- Using the VariantMaterialGrabber to grab vanilla materials.
+
+* All logger messages now use the Bepinex Logger instead of the Unity Logger.
+
+* Added KomradeSpectre's ItemModCreationBoilerplate to VarianceAPI.
+
+	* Added a version for creating items in thunderkit, alongside the default one that uses R2API.
+
+	* As listed above, VariantAPI comes now with Intrinsic variant items that are used in VariantCreation
+
+* Fixed the VariantRewardHandler not being as close as possible as the original rewards system
+
+* Added the Ability to replace Light colors in BaseLightRenderer infos of a CharacterModel.
+
+* Changed config creation process, only the section version.
+
+	- Now each config section follows the following format:
+
+		*variantInfo.bodyName + " variants"
+
+* Uncommon Variants now use a Purple healthbar instead of a Red healthbar thanks to the new intrinsic items.
+
 '0.5.0'
 
 * Added back the Artifact of Variance
