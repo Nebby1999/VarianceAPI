@@ -66,9 +66,7 @@
 
 	- LightRendererInfos replacements
 
-	- Custom Equipment (NYI)
-
-	- The Ability to use Equipments (NYI)
+	- The Ability to use Equipments
 
 	- Can spawn with Buffs/Debuffs (NYI)
 
@@ -134,39 +132,39 @@
 
 		VAPI_Plus1Crit: Increases critical strike chance by 1% per stack linearly.
 
-### Official Variant Packs (Variant Packs made by Nebby)
+## Official Variant Packs (Variant Packs made by Nebby)
 
 ---
 
-* The Original 30
+### The Original 30
 
-	* The original 30 is a complete port of Rob's 30 original MonsterVariants.
+* The original 30 is a complete port of Rob's 30 original MonsterVariants.
 
-	* The original 30 includes QoL changes to variants, such as using VarianceAPI's intrinsic items, and having new features such as slight rebalancing and better override names.
+* The original 30 includes QoL changes to variants, such as using VarianceAPI's intrinsic items, and having new features such as slight rebalancing and better override names.
 
-	* Get it here! (just click the icon!)
+* Get it here! (just click the icon!)
 
-	[![TO30 Icon](https://cdn.discordapp.com/attachments/850538397647110145/850546340403478528/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_TheOriginal30/)
+[![TO30 Icon](https://cdn.discordapp.com/attachments/850538397647110145/850546340403478528/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_TheOriginal30/)
 
-* Nebby's Wrath
+### Nebby's Wrath
 
-	* Nebby's Wrath is a complete port of all the non-"OtherVariants" of MonsterVariantsPlus.
+* Nebby's Wrath is a complete port of all the non-"OtherVariants" of MonsterVariantsPlus.
 
-	* Currently the pack is nonexistent, but it will eventually come out.
+* All the non "OtherVariants" encompass all variants except the ones for Squid Turrets, Empathy Cores & the Beetle Guards froms the Queen's Gland.
 
-	* Get it here! (just click the icon!)
+* Get it here! (just click the icon!)
 
-	[[REDACTED]](http://www.nyan.cat)
+[![NW Icon](https://cdn.discordapp.com/attachments/850538397647110145/853771355766259712/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_NebbysWrath/)
 
-* Nebby's New Friends
+### Nebby's New Friends
 
-	* Nebby's New Friends is a complete port of all the "OtherVariants" of MonsterVariantsPlus
+* Nebby's New Friends is a complete port of all the "OtherVariants" of MonsterVariantsPlus
 
-	* Currently the pack is nonexistent, but it will eventually come out.
+* Currently the pack is nonexistent, but it will eventually come out.
 
-	* Get it here! (just click  the icon!)
+* Get it here! (just click  the icon!)
 
-	[[REDACTED]](https://findtheinvisiblecow.com)
+[[REDACTED]](https://findtheinvisiblecow.com)
 
 * Nebby still suggests checking out other VariantPacks made by the community! (Currently none :c)
 
@@ -187,6 +185,32 @@ https://discord.gg/kWn8T4fM5W
 
 
 ## Changelog
+'0.7.0'
+
+*  Added PrefabBase, a very simple prefab creation system used for creating Projectiles based off existing ones.
+
+* Added missing R2API Submodule dependencies.
+
+* Changes to the VariantInfo scriptable Object:
+
+	- usesEquipment no longer exists.
+
+* Internal changes to how VariantHandler is structured.
+
+* Added a new Component, VariantEquipmentHandler.
+
+	- Component is added automatically to the Variant when it detects that EquipmentInfo has an Equipment and is not null.
+
+	- Component is used for Variants so they can use Equipment.
+
+	- How the variant uses the Equipment is based off an Animation Curve
+
+	- Special Thanks to TheMysticSword, since he helped me in using the AnimationCurve and most of the code is based off his code from AspectAbilities
+
+* Changes to the EquipmentInfo scriptable object:
+
+	- Now requires an AnimationCurve which tells when to use the Equipment.
+
 '0.6.0'
 
 * Added missing methods for Helpers.cs
