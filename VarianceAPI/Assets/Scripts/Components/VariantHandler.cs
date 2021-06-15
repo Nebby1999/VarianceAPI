@@ -53,6 +53,7 @@ namespace VarianceAPI.Components
         public VariantInventory inventory;
         public EquipmentInfo customEquipment;
         public GameObject thisGameObject;
+        public string announcement;
 
         private CharacterBody body;
         private CharacterMaster master;
@@ -95,6 +96,7 @@ namespace VarianceAPI.Components
 
             this.inventory = info.variantInventory;
             this.customEquipment = info.customEquipment;
+            this.announcement = info.arrivalMessage;
         }
 
         private void Awake()
@@ -124,6 +126,10 @@ namespace VarianceAPI.Components
             {
                 this.isVariant = true;
                 thisGameObject = this.gameObject;
+                if(this.tier == VariantTier.Legendary && this.arrivalMessage != "")
+                {
+                    Chat.AddMessage(announcement);
+                }
             }
             if (this.meshReplacements != null && this.isVariant)
             {
