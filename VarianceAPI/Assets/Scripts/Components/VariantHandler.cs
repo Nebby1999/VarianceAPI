@@ -273,11 +273,11 @@ namespace VarianceAPI.Components
                             this.master.inventory.GiveItemString(inventory.itemStrings[i], inventory.counts[i]);
                         }
                     }
-                    //Makes healthbars purple
-                    if (this.tier >= VariantTier.Uncommon)
-                    {
-                        this.master.inventory.GiveItem(ContentPackProvider.contentPack.itemDefs.Find("VAPI_PurpleHealthbar"));
-                    }
+                }
+                //Makes healthbars purple
+                if (this.tier >= VariantTier.Uncommon)
+                {
+                    this.master.inventory.GiveItem(ContentPackProvider.contentPack.itemDefs.Find("VAPI_PurpleHealthbar"));
                 }
             }
         }
