@@ -122,49 +122,6 @@ namespace VarianceAPI.Modules
         }
 
         /// <summary>
-        /// Helper for creating an inventory with only one item
-        /// </summary>
-        /// <param name="itemName">the item's ItemDef</param>
-        /// <returns></returns>
-        public static ItemInfo[] SimpleInventory(string itemName)
-        {
-            return SimpleInventory(itemName, 1);
-        }
-        
-        /// <summary>
-        /// Helper for creating an inventory with one item with the amount of N
-        /// </summary>
-        /// <param name="itemName">The item's ItemDef</param>
-        /// <param name="itemCount">How Many items to give</param>
-        /// <returns></returns>
-        public static ItemInfo[] SimpleInventory(string itemName, int itemCount)
-        {
-            ItemInfo info = SimpleItem(itemName, itemCount);
-
-            List<ItemInfo> infos = new List<ItemInfo>();
-            
-            infos.Add(info);
-
-            ItemInfo[] newInfos = infos.ToArray();
-
-            return newInfos;
-        }
-
-        public static ItemInfo SimpleItem(string itemName)
-        {
-            return SimpleItem(itemName, 1);
-        }
-
-        public static ItemInfo SimpleItem(string itemName, int itemCount)
-        {
-            ItemInfo info = ScriptableObject.CreateInstance<ItemInfo>();
-            info.itemString = itemName;
-            info.count = itemCount;
-
-            return info;
-        }
-
-        /// <summary>
         /// Method for replacing a variant's skill
         /// </summary>
         /// <param name="skillSlot">Skill slot to target</param>

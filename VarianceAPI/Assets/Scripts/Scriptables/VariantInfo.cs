@@ -49,9 +49,13 @@ namespace VarianceAPI.Scriptables
             public CustomVariantReward customVariantReward;
 
         [Header("Custom Inventory & Skills")]
-
+            
+            [Obsolete("ItemInfo[] is Deprecated, use VariantInventory instead.")]
             [Tooltip("The Variant's Inventory\nCan be null")]
             public ItemInfo[] customInventory;
+
+            [Tooltip("The Variant's Inventory\nCan be null")]
+            public VariantInventory variantInventory;
 
             [Tooltip("The Equipment the variant has\nCan Be null")]
             public EquipmentInfo customEquipment;

@@ -50,7 +50,7 @@ namespace VarianceAPI.Components
         public CustomVariantReward customVariantReward;
 
         public VariantBuff[] buff;
-        public ItemInfo[] customInventory;
+        public VariantInventory inventory;
         public EquipmentInfo customEquipment;
         public GameObject thisGameObject;
 
@@ -93,7 +93,7 @@ namespace VarianceAPI.Components
 
             this.buff = info.buff;
 
-            this.customInventory = info.customInventory;
+            this.inventory = info.variantInventory;
             this.customEquipment = info.customEquipment;
         }
 
@@ -246,18 +246,12 @@ namespace VarianceAPI.Components
         {
             if (this.master.inventory)
             {
-                if (this.customInventory == null)
+                if (this.inventory != null)
                 {
-                    this.customInventory = new ItemInfo[0];
-                }
-                //Adds items from the set inventory
-                if (this.customInventory.Length > 0)
-                {
-                    for (int i = 0; i < this.customInventory.Length; i++)
+                    for (int i = 0; i < inventory.counts.Length; i++)
                     {
                         bool giveItem = true;
-                        //Prevent variant to resurrect multiple times
-                        if (this.customInventory[i].itemString == "ExtraLife")
+                        if (inventory.itemStrings[i] == "ExtraLife")
                         {
                             if (this.master.GetComponent<PreventRecursion>())
                             {
@@ -270,14 +264,14 @@ namespace VarianceAPI.Components
                         }
                         if (giveItem)
                         {
-                            this.master.inventory.GiveItemString(this.customInventory[i].itemString, this.customInventory[i].count);
+                            this.master.inventory.GiveItemString(inventory.itemStrings[i], inventory.counts[i]);
                         }
                     }
-                }
-                //Makes healthbars purple
-                if (this.tier >= VariantTier.Uncommon)
-                {
-                    this.master.inventory.GiveItem(ContentPackProvider.contentPack.itemDefs.Find("VAPI_PurpleHealthbar"));
+                    //Makes healthbars purple
+                    if (this.tier >= VariantTier.Uncommon)
+                    {
+                        this.master.inventory.GiveItem(ContentPackProvider.contentPack.itemDefs.Find("VAPI_PurpleHealthbar"));
+                    }
                 }
             }
         }

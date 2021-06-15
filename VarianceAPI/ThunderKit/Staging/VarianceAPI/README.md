@@ -185,6 +185,24 @@ https://discord.gg/kWn8T4fM5W
 
 
 ## Changelog
+'0.7.1'
+
+* Changed how inventories work.
+
+	* Inventories are no longer an Array of ItemInfos, instead, inventories are stored in the VariantInventory scriptable object.
+
+		- a VariantInventory scriptable object consists of a itemStrings array, and an itemCount array.
+
+		- The itemString's index must match the itemCount's index.
+
+		- The lengths of both arrays MUST be the same.
+
+	* Removed helpers that created ItemInfo Arrays, new helpers comming soon.
+
+	* Due to this switch, ItemInfo[] is deprecated, but it will remain in VariantInfo so that people can switch to the VariantInventory scriptable Object.
+
+	* ItemInfo will be removed on the next major update (0.8.0)
+
 '0.7.0'
 
 *  Added PrefabBase, a very simple prefab creation system used for creating Projectiles based off existing ones.

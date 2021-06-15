@@ -18,13 +18,14 @@ namespace YourPackNameHere.Variants
         /// This list will contain all your variants made in code, ALWAYS add the variant youre creating to this list.
         /// </summary>
         internal List<VariantInfo> CodedVariants = new List<VariantInfo>();
-        
+
         /// <summary>
         /// The init method is your main method where you create your Variants.
         /// </summary>
         /// <param name="config">Your Plugin's Config File.</param>
         public void Init(ConfigFile config)
         {
+            CreateInventories();
             //We start by declaring a new instance of VariantInfo using ScriptableObject.CreateInstance()
             var exampleCodedVariant = ScriptableObject.CreateInstance<VariantInfo>();
             //Example Coded Variant
@@ -38,7 +39,7 @@ namespace YourPackNameHere.Variants
                 exampleCodedVariant.spawnRate = 50f;
                 exampleCodedVariant.givesRewards = true;
                 exampleCodedVariant.customVariantReward = Helpers.CreateVariantReward(10f, 420, 1f, 69, 50f, 25f, 10f);
-                exampleCodedVariant.customInventory = YPNH_ExampleCodedVariantInventory;
+                exampleCodedVariant.variantInventory = YPNH_ExampleCoddedVariantInventory;
                 exampleCodedVariant.healthMultiplier = 10f;
                 exampleCodedVariant.moveSpeedMultiplier = 0.5f;
                 exampleCodedVariant.attackSpeedMultiplier = 2;
@@ -67,10 +68,12 @@ namespace YourPackNameHere.Variants
         /// <summary>
         /// This is an easy way of creating an Inventory for a variant that has more than 2 items.
         /// </summary>
-        private static readonly ItemInfo[] YPNH_ExampleCodedVariantInventory = new ItemInfo[]
+        internal VariantInventory YPNH_ExampleCoddedVariantInventory = ScriptableObject.CreateInstance<VariantInventory>();
+
+        internal void CreateInventories()
         {
-            Helpers.SimpleItem("CritGlasses", 10),
-            Helpers.SimpleItem("Behemoth", 5)
-        };
+            YPNH_ExampleCoddedVariantInventory.counts = new int[2] { 10, 4 };
+            YPNH_ExampleCoddedVariantInventory.itemStrings = new string[2] { "CritGlasses", "Behemoth" };
+        }
     }
 }

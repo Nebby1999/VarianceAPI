@@ -7,7 +7,8 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "ItemInfo", menuName = "VarianceAPI/ItemInfo", order = 4)]
+    [CreateAssetMenu(fileName = "ItemInfo", menuName = "VarianceAPI/DEPRECATED_ItemInfo", order = 4)]
+    [Obsolete("ItemInfo is Deprecated, use VariantInventory instead.")]
     public class ItemInfo : ScriptableObject
     {
         [Header("Item Info")]
