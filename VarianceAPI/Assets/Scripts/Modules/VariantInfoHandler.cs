@@ -59,7 +59,15 @@ namespace VarianceAPI.Modules
         {
             if(variantInfo.isModded)
             {
-                Helpers.AddModdedVariant(variantInfo);
+                var checkForMod = BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey(variantInfo.variantConfig.modGUID);
+                if(checkForMod)
+                {
+                    Helpers.AddModdedVariant(variantInfo);
+                }
+                else
+                {
+                    Logger.Log.LogError("Cannot add " + variantInfo.identifierName + " Modded Variant! youre missing a mod with the following GUID: " + variantInfo.variantConfig.modGUID);
+                }
             }
             else
             {
