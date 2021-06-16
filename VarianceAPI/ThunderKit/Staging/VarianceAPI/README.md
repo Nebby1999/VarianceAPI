@@ -154,7 +154,7 @@
 
 * Get it here! (just click the icon!)
 
-[![NW Icon](https://cdn.discordapp.com/attachments/850538397647110145/853771355766259712/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_NebbysWrath/)
+[![NW Icon](https://cdn.discordapp.com/attachments/850538397647110145/854535054658895892/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_NebbysWrath/)
 
 ### Nebby's New Friends
 
@@ -185,6 +185,22 @@ https://discord.gg/kWn8T4fM5W
 
 
 ## Changelog
+'0.8.0'
+
+* Added Functionality to Legendary Variants (They'll announce their arrival in Chat.)
+
+* Fixed bug that caused Variants with no VariantInventory to not recieve their purple healthbar if the tier was greater than common.
+
+* Added Support for Modded Variants.
+
+	- VariantConfig now has modGUID string.
+
+	- This string MUST match the mod's internal GUID.
+
+* VariantInfoHandler now has a failsafe when you attempt to add a Variant without the mod installed.
+
+* Removed completely ItemInfos
+
 '0.7.1'
 
 * Changed how inventories work.
