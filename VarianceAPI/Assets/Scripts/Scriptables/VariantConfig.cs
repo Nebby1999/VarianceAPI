@@ -30,5 +30,8 @@ namespace VarianceAPI.Scriptables
 
             [Tooltip("The author of the original mod.")]
             public string modAuthor;
+
+            [Tooltip("The required mod's GUID for the variant to register.\nGUID is NOT the Dependency string found in the Thunderstore site.")]
+            public string modGUID;
     }
 }
