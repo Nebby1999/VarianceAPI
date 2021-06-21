@@ -84,7 +84,7 @@ namespace VarianceAPI.Modules
             RareVariantRedItemDropChance = ItemRewardConfig(config, 1f, "Rare", "Red");
 
             LegendaryVariantGoldMultiplier = DeathRewardConfig("Gold", config, 3.0f, "Legendary");
-            LegendaryVariantXPMultiplier = DeathRewardConfig("Gold", config, 3.0f, "Legendary");
+            LegendaryVariantXPMultiplier = DeathRewardConfig("XP", config, 3.0f, "Legendary");
             LegendaryVariantWhiteItemDropChance = ItemRewardConfig(config, 25f, "Legendary", "White");
             LegendaryVariantGreenItemDropChance = ItemRewardConfig(config, 10f, "Legendary", "Green");
             LegendaryVariantRedItemDropChance = ItemRewardConfig(config, 5f, "Legendary", "Red");
