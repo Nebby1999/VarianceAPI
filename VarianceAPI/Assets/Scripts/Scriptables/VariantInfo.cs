@@ -29,6 +29,7 @@ namespace VarianceAPI.Scriptables
             public VariantConfig variantConfig;
 
             [Tooltip("Whether the Variant youre creating can overlap with other variants\nGets overriden by VariantConfig if it exists")]
+            [HideInInspector()]
             public bool unique;
 
             [Tooltip("The Modifier to give to this variant's AI.\nDefault: No Changes\nUnstable: AI uses it's desperation attack whenever it wants\nForceSprint: AI Always sprints.")]
@@ -39,6 +40,7 @@ namespace VarianceAPI.Scriptables
 
             [Tooltip("The Variant's SpawnRate\nGets overriden by VariantConfig if it exists.\nAccepted Values range from 0 to 100")]
             [Range(0,100)]
+            [HideInInspector()]
             public float spawnRate;
 
         [Header("Reward Settings")]
