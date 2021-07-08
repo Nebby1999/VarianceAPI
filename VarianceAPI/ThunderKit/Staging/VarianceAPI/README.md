@@ -185,6 +185,14 @@ https://discord.gg/kWn8T4fM5W
 
 
 ## Changelog
+'0.8.1'
+
+* Legendary Variant's XP Multiplier is now configurable.
+
+* Fixed bugs that would cause VariantHandler components to be in certain character mods. such as Playable Templar or Tymmey's Lemurian/Imp/Exploder
+
+* VariantInfos with no VariantConfig assigned now properly register instead of crashing the mod.
+
 '0.8.0'
 
 * Added Functionality to Legendary Variants (They'll announce their arrival in Chat.)

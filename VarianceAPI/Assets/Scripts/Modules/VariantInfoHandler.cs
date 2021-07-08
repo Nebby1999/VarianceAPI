@@ -35,6 +35,12 @@ namespace VarianceAPI.Modules
         private void GenerateConfigs(VariantInfo variantInfo, ConfigFile config)
         {
             var variantConfig = variantInfo.variantConfig;
+            if(variantConfig == null)
+            {
+                Logger.Log.LogMessage(variantInfo.identifierName + " Has no VariantConfig. Aborting creation of Configs and registering the variant.");
+                RegisterVariant(variantInfo);
+                return;
+            }
             variantInfo.spawnRate = variantConfig.spawnRate;
             variantInfo.unique = variantConfig.isUnique;
 
