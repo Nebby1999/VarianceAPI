@@ -342,24 +342,16 @@ namespace VarianceAPI.Components
                 }
 
                 //Replace Meshes
-                /*if(this.meshReplacements.Length > 0)
+                if (this.meshReplacements.Length > 0)
                 {
+                    // only run this method on beetles- don't bother changing it for now since there's no other mesh replacements
                     //this.FuckWithBoneStructure();
 
-                    for(int i = 0; i < this.meshReplacements.Length; i++)
+                    for (int i = 0; i < this.meshReplacements.Length; i++)
                     {
-                        var meshReplacement = this.meshReplacements[i].mesh;
-                        Mesh sharedMesh = model.baseRendererInfos[this.meshReplacements[i].rendererIndex].renderer.GetComponent<SkinnedMeshRenderer>().sharedMesh;
-                        var ogBoneWeights = sharedMesh.boneWeights;
-                        var replacementBoneWeights = meshReplacement.boneWeights;
-                        for (int i1 = 0; i1 < ogBoneWeights.Length; i1++)
-                        {
-                            BoneWeight boneweight = ogBoneWeights[i1];
-                            replacementBoneWeights.SetValue(boneweight, i1);
-                        }
-                        model.baseRendererInfos[this.meshReplacements[i].rendererIndex].renderer.GetComponent<SkinnedMeshRenderer>().sharedMesh = meshReplacement;
+                        model.baseRendererInfos[this.meshReplacements[i].rendererIndex].renderer.GetComponent<SkinnedMeshRenderer>().sharedMesh = this.meshReplacements[i].mesh;
                     }
-                }*/
+                }
             }
         }
         private void SwapSkills()
