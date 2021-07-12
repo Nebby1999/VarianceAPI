@@ -185,13 +185,53 @@ https://discord.gg/kWn8T4fM5W
 
 
 ## Changelog
-'0.8.1'
+'0.9.0'
+
+* Changes to VariantInfo & Variant Handler:
+
+	- VariantInfos with no VariantConfig assigned now properly register instead of crashing the mod
+
+	- Enabled VariantMeshReplacements. Currently undocumented, guide will appear eventually since theyre difficult to implement.
+
+	- Enabled VariantBuffs.
+
+		- Variants can be given a buff when they spawn.
+
+		- Buff can be permanent, or expiring on a timer.
+
+	- SpawnRate and IsUnique are now hidden from the inspector when using unity, since theyre set on the VariantConfig.
+
+	- Arrival Messages now apply for both Rare and Legendary variants.
+
+		- If no custom arrival message is given, it uses a generic spawn string.
+
+	- The VariantHandler component now catches when certain mistakes happens and lets you know on the console screen
+
+* Changes to CustomVariantReward & VariantRewardHandler
+
+	- Cleaned up code
+
+	- Added ItemList for VariantRewardHandler
+
+		- Custom variant reward now can specify what items can be droped from a variant.
+
+* Changes to VariantBuff:
+
+	- VariantBuff now actually works
+
+	- Variants can now be given a buff that lasts permanently, or lasts a certain amount of time
+
+* Changes to VariantHandler component:
+
+	- The component now catches when certain mistakes happens and lets you know on the Console screen.
 
 * Legendary Variant's XP Multiplier is now configurable.
 
 * Fixed bugs that would cause VariantHandler components to be in certain character mods. such as Playable Templar or Tymmey's Lemurian/Imp/Exploder
 
-* VariantInfos with no VariantConfig assigned now properly register instead of crashing the mod.
+* Added MeshType Enum, used on Mesh Replacements
+
+* Added Documentation on ScriptableObjects in the Github's Wiki.
 
 '0.8.0'
 

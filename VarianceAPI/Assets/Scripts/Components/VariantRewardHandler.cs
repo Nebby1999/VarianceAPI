@@ -8,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using VarianceAPI.Modules;
 using VarianceAPI.Scriptables;
+using Logger = VarianceAPI.MainClass;
 
 namespace VarianceAPI.Components
 {
@@ -30,26 +31,20 @@ namespace VarianceAPI.Components
 
         private VariantHandler[] VariantHandlers;
         
-        private readonly List<PickupIndex> redItems = Run.instance.availableTier3DropList;
-        private readonly List<PickupIndex> greenItems = Run.instance.availableTier2DropList;
-        private readonly List<PickupIndex> whiteItems = Run.instance.availableTier1DropList;
+        private List<PickupIndex> redItems = Run.instance.availableTier3DropList;
+        private List<PickupIndex> greenItems = Run.instance.availableTier2DropList;
+        private List<PickupIndex> whiteItems = Run.instance.availableTier1DropList;
         
         private int nextRedItem;
         private int nextGreenItem;
         private int nextWhiteItem;
 
         private VariantTier highestTier;
-        private void GetStuff()
+        public void InitCustomRewards(CustomVariantReward customVariantReward)
         {
             this.deathRewards = base.GetComponent<DeathRewards>();
             this.characterBody = base.GetComponent<CharacterBody>();
-            this.nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
-            this.nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
-            this.nextWhiteItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
-        }
-        public void InitCustomRewards(CustomVariantReward customVariantReward)
-        {
-            GetStuff();
+
             this.bonusGold = customVariantReward.goldBonus;
             this.goldMult = customVariantReward.goldMultiplier;
 
@@ -60,18 +55,67 @@ namespace VarianceAPI.Components
             this.greenChance = customVariantReward.greenItemChance;
             this.redChance = customVariantReward.redItemChance;
 
+            this.nextWhiteItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
+            this.nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
+            this.nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
+            if(customVariantReward.ItemList != null)
+            {
+                SortList(customVariantReward.ItemList);
+            }
+
             ModifyRewards();
             RoR2.GlobalEventManager.onCharacterDeathGlobal += SpawnDroplet;
         }
 
         public void Init()
         {
-            GetStuff();
+            this.deathRewards = base.GetComponent<DeathRewards>();
+            this.characterBody = base.GetComponent<CharacterBody>();
+
+            this.whiteItems = Run.instance.availableTier1DropList;
+            this.nextWhiteItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
+
+            this.greenItems = Run.instance.availableTier2DropList;
+            this.nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
+
+            this.redItems = Run.instance.availableTier3DropList;
+            this.nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
+
             VariantHandlers = base.GetComponents<VariantHandler>();
             CalculateRewards(VariantHandlers);
             CheckItemDropChance();
             ModifyRewards();
             RoR2.GlobalEventManager.onCharacterDeathGlobal += SpawnDroplet;
+        }
+        private void SortList(string[] itemList)
+        {
+            foreach(string item in itemList)
+            {
+                var ItemDef = ItemCatalog.GetItemDef(ItemCatalog.FindItemIndex(item));
+
+                if(ItemDef == null)
+                {
+                    Logger.Log.LogWarning(item + " is not a valid ItemString!");
+                    continue;
+                }
+                else if(ItemDef.tier > ItemTier.Tier3)
+                {
+                    Logger.Log.LogWarning(item + " is a ItemString that does not belong in White, Green or Red tier!");
+                    continue;
+                }
+                switch (ItemDef.tier)
+                {
+                    case ItemTier.Tier1:
+                        whiteItems.Add(PickupCatalog.FindPickupIndex(ItemDef.itemIndex));
+                        break;
+                    case ItemTier.Tier2:
+                        greenItems.Add(PickupCatalog.FindPickupIndex(ItemDef.itemIndex));
+                        break;
+                    case ItemTier.Tier3:
+                        greenItems.Add(PickupCatalog.FindPickupIndex(ItemDef.itemIndex));
+                        break;
+                }
+            }
         }
         private void ModifyRewards()
         {
@@ -199,6 +243,11 @@ namespace VarianceAPI.Components
             {
                 PickupDropletController.CreatePickupDroplet(itemList[nextItem], variantBody.transform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
             }
+        }
+
+        private void OnDestroy()
+        {
+            RoR2.GlobalEventManager.onCharacterDeathGlobal -= SpawnDroplet;
         }
     }
 }

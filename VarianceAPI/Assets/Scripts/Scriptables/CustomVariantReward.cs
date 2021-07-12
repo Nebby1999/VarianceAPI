@@ -37,5 +37,8 @@ namespace VarianceAPI.Scriptables
             [Tooltip("The Chance for the Variant to drop a Red Item")]
             [Range(0, 100)]
             public float redItemChance;
+        [Header("Item List")]
+            [Tooltip("The list of items the variant might drop on a succesful roll.\nAutomatically sorted into their respective tiers.")]
+            public string[] ItemList;
     }
 }

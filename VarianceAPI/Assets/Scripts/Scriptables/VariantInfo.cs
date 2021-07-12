@@ -20,7 +20,7 @@ namespace VarianceAPI.Scriptables
             public string bodyName;
 
             [Tooltip("The overrideName, maximum 2 per Variant\nCan be null")]
-            public VariantOverrideName[] overrideName = new VariantOverrideName[2];
+            public VariantOverrideName[] overrideName;
 
             [Tooltip("Whether the body youre trying to access is from a mod, this is important.")]
             public bool isModded;
@@ -29,7 +29,7 @@ namespace VarianceAPI.Scriptables
             public VariantConfig variantConfig;
 
             [Tooltip("Whether the Variant youre creating can overlap with other variants\nGets overriden by VariantConfig if it exists")]
-            [HideInInspector()]
+            [HideInInspector]
             public bool unique;
 
             [Tooltip("The Modifier to give to this variant's AI.\nDefault: No Changes\nUnstable: AI uses it's desperation attack whenever it wants\nForceSprint: AI Always sprints.")]
@@ -40,7 +40,7 @@ namespace VarianceAPI.Scriptables
 
             [Tooltip("The Variant's SpawnRate\nGets overriden by VariantConfig if it exists.\nAccepted Values range from 0 to 100")]
             [Range(0,100)]
-            [HideInInspector()]
+            [HideInInspector]
             public float spawnRate;
 
         [Header("Reward Settings")]
@@ -93,7 +93,7 @@ namespace VarianceAPI.Scriptables
             [Tooltip("Message to Display on chat when the variant spawns, only works if the variant is Legendary")]
             public string arrivalMessage;
 
-            [Tooltip("Replaces the variant's mesh, currently doesnt work.\nCan be null")]
+            [Tooltip("Replaces the variant's mesh.\nCan be null")]
             public VariantMeshReplacement[] meshReplacement;
 
             [Tooltip("Replaces the variant's Material\nCan be null")]

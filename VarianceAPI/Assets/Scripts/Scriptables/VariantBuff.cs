@@ -11,20 +11,20 @@ namespace VarianceAPI.Scriptables
     [CreateAssetMenu(fileName = "VariantBuff", menuName = "VarianceAPI/VariantBuff", order = 6)]
     public class VariantBuff : ScriptableObject
     {
-        public struct Test
-        {
-            public string penis;
-            public BuffDef penis2;
-        }
         [Header("VariantBuff")]
             [Tooltip("The buff to give to the enemy, MUST be the same as the Buff's BuffDef!")]
             public string buffDef;
-            
+
+        [Header("Timed Settings")]
             [Tooltip("Wether the Buff Expires on a Timer")]
             public bool isTimed;
 
             [Tooltip("How Long the Timed Buff Lasts")]
             [Min(0)]
             public float time;
+
+            [Tooltip("How many stacks to give the timed buff.")]
+            [Min(0)]
+            public int stacks;
     }
 }

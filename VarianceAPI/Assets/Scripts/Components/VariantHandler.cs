@@ -126,10 +126,6 @@ namespace VarianceAPI.Components
             {
                 this.isVariant = true;
                 thisGameObject = this.gameObject;
-                if(this.tier == VariantTier.Legendary && this.arrivalMessage != "")
-                {
-                    Chat.AddMessage(announcement);
-                }
             }
             if (this.meshReplacements != null && this.isVariant)
             {
@@ -147,6 +143,7 @@ namespace VarianceAPI.Components
             {
                 if (this.unique)
                 {
+                    Logger.Log.LogInfo(identifierName + " is unique, attempting to remove unecesary componenets.");
                     foreach (VariantHandler i in this.GetComponents<VariantHandler>())
                     {
                         if (i && i != this)
@@ -159,6 +156,18 @@ namespace VarianceAPI.Components
                 this.body = base.GetComponent<CharacterBody>();
                 if (this.body)
                 {
+                    if (this.tier >= VariantTier.Rare && this.arrivalMessage != "")
+                    {
+                        if (this.arrivalMessage != "")
+                        {
+                            Chat.AddMessage(announcement);
+                        }
+                        else
+                        {
+                            Logger.Log.LogMessage(identifierName + " Variant is Rare or Legendary but doesnt have an arrival message set! using generic message.");
+                            Chat.AddMessage("A " + body.GetDisplayName() + " with unique qualities has appeared!");
+                        }
+                    }
                     this.master = this.body.master;
                     this.deathBehavior = base.GetComponent<CharacterDeathBehavior>();
 
@@ -230,6 +239,7 @@ namespace VarianceAPI.Components
             this.AddExtraComponents();
             this.ModifyName();
             this.ReplaceDeathState();
+            this.AddBuffs();
 
             //Change Size
             this.ScaleBody();
@@ -239,6 +249,14 @@ namespace VarianceAPI.Components
         }
         private void ModifyStats()
         {
+            List<float> multipliers = new List<float>() { this.healthModifier, this.moveSpeedModifier, this.attackSpeedModifier, this.damageModifier, this.armorModifier };
+            foreach(float multiplier in multipliers)
+            {
+                if(multiplier < 0)
+                {
+                    Logger.Log.LogWarning("One of " + this.identifierName + "'s stat multipliers is set to a negative number! Continuing but expect unstable things, here be dragons!");
+                }
+            }
             this.body.baseMaxHealth *= this.healthModifier;
             this.body.baseMoveSpeed *= this.moveSpeedModifier;
             this.body.baseAttackSpeed *= this.attackSpeedModifier;
@@ -254,24 +272,47 @@ namespace VarianceAPI.Components
             {
                 if (this.inventory != null)
                 {
-                    for (int i = 0; i < inventory.counts.Length; i++)
+                    if(inventory.itemStrings.Length == inventory.counts.Length)
                     {
-                        bool giveItem = true;
-                        if (inventory.itemStrings[i] == "ExtraLife")
+                        for (int i = 0; i < inventory.counts.Length; i++)
                         {
-                            if (this.master.GetComponent<PreventRecursion>())
+                            bool giveItem = true;
+                            if (inventory.itemStrings[i] == "ExtraLife")
                             {
-                                giveItem = false;
+                                if (this.master.GetComponent<PreventRecursion>())
+                                {
+                                    giveItem = false;
+                                }
+                                else
+                                {
+                                    this.master.gameObject.AddComponent<PreventRecursion>();
+                                }
                             }
-                            else
+                            if (giveItem)
                             {
-                                this.master.gameObject.AddComponent<PreventRecursion>();
+                                ItemDef itemDef = ItemCatalog.GetItemDef(ItemCatalog.FindItemIndex(inventory.itemStrings[i]));
+                                var amount = inventory.counts[i];
+                                if(itemDef != null && amount > 0)
+                                {
+                                    this.master.inventory.GiveItemString(inventory.itemStrings[i], inventory.counts[i]);
+                                }
+                                else
+                                {
+                                    if(itemDef == null)
+                                    {
+                                        Logger.Log.LogWarning("Could not find itemDef matching ItemString \"" + inventory.itemStrings[i] + "\". Aborting adding said item.");
+                                    }
+                                    if(amount <= 0)
+                                    {
+                                        Logger.Log.LogWarning(inventory.itemStrings[i] + "'s amount was 0 or lower.");
+                                    }
+                                }   
                             }
                         }
-                        if (giveItem)
-                        {
-                            this.master.inventory.GiveItemString(inventory.itemStrings[i], inventory.counts[i]);
-                        }
+                    }
+                    else
+                    {
+                        Logger.Log.LogError(identifierName + "'s VariantInventory's arrays are not the same size! aborting adding items from the inventory!");
                     }
                 }
                 //Makes healthbars purple
@@ -287,12 +328,16 @@ namespace VarianceAPI.Components
             {
                 if(customEquipment)
                 {
-                    master.inventory.GiveEquipmentString(customEquipment.equipmentString);
-                    thisGameObject.AddComponent<VariantEquipmentHandler>().equipmentInfo = customEquipment;
-                }
-                else
-                {
-                    return;
+                    EquipmentDef equipmentDef = EquipmentCatalog.GetEquipmentDef(EquipmentCatalog.FindEquipmentIndex(customEquipment.equipmentString));
+                    if(equipmentDef)
+                    {
+                        master.inventory.GiveEquipmentString(customEquipment.equipmentString);
+                        thisGameObject.AddComponent<VariantEquipmentHandler>().equipmentInfo = customEquipment;
+                    }
+                    else
+                    {
+                        Logger.Log.LogWarning("Could not find EquipmentDef matching EquipmentString \"" + customEquipment.equipmentString + "\". Aborting adding said Equipment.");
+                    }
                 }
             }
         }
@@ -344,8 +389,7 @@ namespace VarianceAPI.Components
                 //Replace Meshes
                 if (this.meshReplacements.Length > 0)
                 {
-                    // only run this method on beetles- don't bother changing it for now since there's no other mesh replacements
-                    //this.FuckWithBoneStructure();
+                    this.TryFuckWithBoneStructure();
 
                     for (int i = 0; i < this.meshReplacements.Length; i++)
                     {
@@ -382,7 +426,7 @@ namespace VarianceAPI.Components
                             skillLocator.special.SetSkillOverride(this.gameObject, skillReplacements[i].skillDef, GenericSkill.SkillOverridePriority.Upgrade);
                             break;
                         case SkillSlot.None:
-                            //what are you actually trying to do here??
+                            Logger.Log.LogWarning(identifierName + "'s " + i + " skill replacement has its skill slot set to none.");
                             break;
                     }
                 }
@@ -421,6 +465,10 @@ namespace VarianceAPI.Components
                         }
                     }
                 }
+                else
+                {
+                    Logger.Log.LogMessage("Variant Components that are not aesthetic have yet to be implemented, we're sorry for this inconvenience.");
+                }
             }
         }
 
@@ -451,6 +499,44 @@ namespace VarianceAPI.Components
             if(this.customDeathState != "")
             {
                 deathBehavior.deathState = new SerializableEntityStateType(customDeathState);
+            }
+        }
+
+        private void AddBuffs()
+        {
+            if(this.body)
+            {
+                if(this.buff != null)
+                {
+                    for (int i = 0; i < buff.Length; i++)
+                    {
+                        var currentBuffIndex = buff[i];
+
+                        var BuffToGive = BuffCatalog.GetBuffDef(BuffCatalog.FindBuffIndex(currentBuffIndex.buffDef));
+                        if(BuffToGive != null)
+                        {
+                            if(currentBuffIndex.isTimed)
+                            {
+                                if(currentBuffIndex.stacks == 0)
+                                {
+                                    this.body.AddTimedBuff(BuffToGive, currentBuffIndex.time);
+                                }
+                                else
+                                {
+                                    this.body.AddTimedBuff(BuffToGive, currentBuffIndex.time, currentBuffIndex.stacks);
+                                }
+                            }
+                            else
+                            {
+                                this.body.AddBuff(BuffToGive);
+                            }
+                        }
+                        else
+                        {
+                            Logger.Log.LogWarning("Could not find BuffDef matching BuffString \"" + currentBuffIndex.buffDef + "\". Aborting adding said Buff.");
+                        }
+                    }
+                }
             }
         }
         private void ScaleBody()
@@ -499,38 +585,105 @@ namespace VarianceAPI.Components
             }
         }
         //No clue what this is for, used for beetles apparently, will need to test why rob had to fuck with the bone structure
-        /*private void FuckWithBoneStructure()
+        private void TryFuckWithBoneStructure()
         {
             this.storedEquipment = this.master.inventory.GetEquipmentIndex();
             this.master.inventory.SetEquipmentIndex(EquipmentIndex.None);
             this.Invoke("RestoreEquipment", 0.2f);
 
-            List<Transform> transforms = new List<Transform>();
-
-            foreach (var item in this.body.GetComponentsInChildren<Transform>())
+            foreach (VariantMeshReplacement meshReplacement in meshReplacements)
             {
-                if (!item.name.Contains("Hurtbox") && !item.name.Contains("BeetleBody") && !item.name.Contains("Mesh") && !item.name.Contains("mdl"))
+                switch(meshReplacement.meshType)
                 {
-                    transforms.Add(item);
+                    case MeshType.Default:
+                        RestoreEquipment();
+                        break;
+                    case MeshType.Beetle:
+                        FuckBoneStructure(MeshType.Beetle);
+                        RestoreEquipment();
+                        break;
+                    case MeshType.BeetleGuard:
+                        Logger.Log.LogWarning("Beetle Guard MeshSwaps are not supported! your variant will not appear correctly ingame.");
+                        RestoreEquipment();
+                        break;
+                    case MeshType.MiniMushrum:
+                        FuckBoneStructure(MeshType.MiniMushrum);
+                        RestoreEquipment();
+                        break;
+                    case MeshType.MagmaWorm:
+                        Logger.Log.LogWarning("MagmaWorm MeshSwaps are not supported! your variant will not appear correctly ingame.");
+                        RestoreEquipment();
+                        break;
+                    case MeshType.OverloadingWorm:
+                        Logger.Log.LogWarning("Overloading Worm MeshSwaps are not supported! your variant will not appear correctly ingame.");
+                        RestoreEquipment();
+                        break;
                 }
             }
-
-            Transform temp = transforms[14];
-            transforms[14] = transforms[11];
-            transforms[11] = temp;
-            temp = transforms[15];
-            transforms[15] = transforms[12];
-            transforms[12] = temp;
-            temp = transforms[16];
-            transforms[16] = transforms[13];
-            transforms[13] = temp;
-
-            foreach (var item in this.body.GetComponentsInChildren<SkinnedMeshRenderer>())
+        }
+        //Code courtesy of the guys at Moisture upset
+        private void FuckBoneStructure(MeshType meshType)
+        {
+            if(meshType == MeshType.Beetle)
             {
-                item.bones = transforms.ToArray();
+                List<Transform> transforms = new List<Transform>();
+                foreach (var item in body.GetComponentsInChildren<Transform>())
+                {
+                    if(!item.name.Contains("Hurtbox") && !item.name.Contains("BeetleBody") && !item.name.Contains("Mesh") && !item.name.Contains("mdl"))
+                    {
+                        transforms.Add(item);
+                    }
+                }
+
+                Transform temp = transforms[14];
+                transforms[14] = transforms[11];
+                transforms[11] = temp;
+                temp = transforms[15];
+                transforms[15] = transforms[12];
+                transforms[12] = temp;
+                temp = transforms[16];
+                transforms[16] = transforms[13];
+                transforms[13] = temp;
+                foreach (var item in body.GetComponentsInChildren<SkinnedMeshRenderer>())
+                {
+                    item.bones = transforms.ToArray();
+                }
             }
-        }*/
-
-
+            else if (meshType == MeshType.BeetleGuard)
+            {
+                List<Transform> transforms = new List<Transform>();
+                foreach (var item in body.GetComponentsInChildren<Transform>())
+                {
+                    if (!item.name.Contains("Hurtbox") && !item.name.Contains("IK") && !item.name.Contains("_end"))
+                    {
+                        transforms.Add(item);
+                    }
+                }
+                foreach (var item in body.GetComponentsInChildren<SkinnedMeshRenderer>())
+                {
+                    item.bones = transforms.ToArray();
+                }
+                transforms.Clear();
+            }
+            else if(meshType == MeshType.MiniMushrum)
+            {
+                List<Transform> transforms = new List<Transform>();
+                foreach (var item in body.GetComponentsInChildren<Transform>())
+                {
+                    if(!item.name.Contains("Hurtbox") && !item.name.Contains("IK") && !item.name.Contains("_end") && !item.name.Contains("miniMush_R_Palps_02"))
+                    {
+                        transforms.Add(item);
+                    }
+                }
+                for (int i = 0; i < 7; i++)
+                {
+                    transforms.RemoveAt(transforms.Count - 1);
+                }
+                foreach (var item in body.GetComponentsInChildren<SkinnedMeshRenderer>())
+                {
+                    item.bones = transforms.ToArray();
+                }
+            }
+        }
     }
 }
