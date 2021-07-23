@@ -19,7 +19,7 @@ namespace VarianceAPI.Modules.Items
             ItemDef = ContentPackProvider.contentPack.itemDefs.Find("VAPI_PurpleHealthbar");
             if (ItemDef)
             {
-                color = new Color32(231, 0, 231, byte.MaxValue);
+                color = new Color32(211, 127, 188, byte.MaxValue);
                 Hooks();
             }
             else
