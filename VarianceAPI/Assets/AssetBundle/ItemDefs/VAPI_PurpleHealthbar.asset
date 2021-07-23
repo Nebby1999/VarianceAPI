@@ -19,7 +19,7 @@ MonoBehaviour:
   loreToken: VAPI_PurpleHealthbar_Lore
   unlockableDef: {fileID: 0}
   pickupModelPrefab: {fileID: 0}
-  pickupIconSprite: {fileID: 0}
+  pickupIconSprite: {fileID: 21300000, guid: 1a4ec7c69f91aab42992db9da0b15927, type: 3}
   hidden: 0
   canRemove: 1
   tags: 04000000

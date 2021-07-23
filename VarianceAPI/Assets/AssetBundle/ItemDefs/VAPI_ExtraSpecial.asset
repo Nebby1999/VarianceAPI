@@ -19,7 +19,7 @@ MonoBehaviour:
   loreToken: VAPI_ExtraSpecial_Lore
   unlockableDef: {fileID: 0}
   pickupModelPrefab: {fileID: 0}
-  pickupIconSprite: {fileID: 0}
+  pickupIconSprite: {fileID: 21300000, guid: 65d133edf3d61c84da0adcacc064bf2d, type: 3}
   hidden: 0
   canRemove: 1
   tags: 04000000
