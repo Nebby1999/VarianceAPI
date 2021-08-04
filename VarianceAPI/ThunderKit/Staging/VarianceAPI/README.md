@@ -28,6 +28,18 @@
 
 	- Semi-Automatic fetching for Ingame materials, no more AssetBundle bloating!
 
+###Documentation
+
+---
+
+* VarianceAPI is in the process of being documented extensively with how it works, its scriptable objects and its modular classes.
+
+* Currently the GithubWiki contains documentation on the ScriptableObjects VarianceAPI has.
+
+![](https://media.discordapp.net/attachments/786037647263924227/864195958719381504/3c362376a68695fb531f4e602e13e0bc.png)
+
+The Wiki can be found [here](https://github.com/Nebby1999/VarianceAPI/wiki)
+
 ### Better VariantOverlapping methods
 
 ---
@@ -68,7 +80,9 @@
 
 	- The Ability to use Equipments
 
-	- Can spawn with Buffs/Debuffs (NYI)
+	- Can spawn with Buffs/Debuffs
+
+	- Complex MeshSwaps
 
 ### New VariantRewardHandler component.
 
@@ -150,7 +164,7 @@
 
 * Nebby's Wrath is a complete port of all the non-"OtherVariants" of MonsterVariantsPlus.
 
-* All the non "OtherVariants" encompass all variants except the ones for Squid Turrets, Empathy Cores & the Beetle Guards froms the Queen's Gland.
+* All the non "OtherVariants" encompass all variants except the ones for Squid Turrets, Empathy Cores & the Beetle Guards from the Queen's Gland.
 
 * Get it here! (just click the icon!)
 
@@ -166,7 +180,9 @@
 
 [[REDACTED]](https://findtheinvisiblecow.com)
 
-* Nebby still suggests checking out other VariantPacks made by the community! (Currently none :c)
+* Bellow is a list of community made VariantPacks
+
+	- [HIFUVariants](https://thunderstore.io/package/HIFU/HIFUVariants/)
 
 ---
 
@@ -185,13 +201,55 @@ https://discord.gg/kWn8T4fM5W
 
 
 ## Changelog
-'0.8.1'
+'0.9.0'
+
+* Changes to VariantInfo & Variant Handler:
+
+	- VariantInfos with no VariantConfig assigned now properly register instead of crashing the mod
+
+	- Enabled VariantMeshReplacements. Currently undocumented, guide will appear eventually since theyre difficult to implement.
+
+	- Enabled VariantBuffs.
+
+		- Variants can be given a buff when they spawn.
+
+		- Buff can be permanent, or expiring on a timer.
+
+	- SpawnRate and IsUnique are now hidden from the inspector when using unity, since theyre set on the VariantConfig.
+
+	- Arrival Messages now apply for both Rare and Legendary variants.
+
+		- If no custom arrival message is given, it uses a generic spawn string.
+
+	- The VariantHandler component now catches when certain mistakes happens and lets you know on the console screen
+
+	- Moved basically all the code from start to its separate method, so it can be called from other places.
+
+* Changes to CustomVariantReward & VariantRewardHandler
+
+	- Cleaned up code
+
+	- Added ItemList for VariantRewardHandler
+
+		- Custom variant reward now can specify what items can be droped from a variant.
+
+* Changes to VariantBuff:
+
+	- VariantBuff now actually works
+
+	- Variants can now be given a buff that lasts permanently, or lasts a certain amount of time
+
+* Changes to VariantHandler component:
+
+	- The component now catches when certain mistakes happens and lets you know on the Console screen.
 
 * Legendary Variant's XP Multiplier is now configurable.
 
 * Fixed bugs that would cause VariantHandler components to be in certain character mods. such as Playable Templar or Tymmey's Lemurian/Imp/Exploder
 
-* VariantInfos with no VariantConfig assigned now properly register instead of crashing the mod.
+* Added MeshType Enum, used on Mesh Replacements
+
+* Added Documentation on ScriptableObjects in the Github's Wiki.
 
 '0.8.0'
 
@@ -285,7 +343,7 @@ https://discord.gg/kWn8T4fM5W
 
 	* Added a version for creating items in thunderkit, alongside the default one that uses R2API.
 
-	* As listed above, VariantAPI comes now with Intrinsic variant items that are used in VariantCreation
+	* As listed above, VarianceAPI comes now with Intrinsic variant items that are used in VariantCreation
 
 * Fixed the VariantRewardHandler not being as close as possible as the original rewards system
 

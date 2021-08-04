@@ -125,8 +125,8 @@ namespace VarianceAPI.Components
             if (Util.CheckRoll(this.spawnRate))
             {
                 this.isVariant = true;
-                thisGameObject = this.gameObject;
             }
+            thisGameObject = this.gameObject;
             if (this.meshReplacements != null && this.isVariant)
             {
                 if (this.meshReplacements.Length > 0)
@@ -141,88 +141,92 @@ namespace VarianceAPI.Components
         {
             if (this.isVariant)
             {
-                if (this.unique)
+                Modify();
+            }
+        }
+        public void Modify()
+        {
+            if (this.unique)
+            {
+                Logger.Log.LogInfo(identifierName + " is unique, attempting to remove unecesary componenets.");
+                foreach (VariantHandler i in this.GetComponents<VariantHandler>())
                 {
-                    Logger.Log.LogInfo(identifierName + " is unique, attempting to remove unecesary componenets.");
-                    foreach (VariantHandler i in this.GetComponents<VariantHandler>())
+                    if (i && i != this)
                     {
-                        if (i && i != this)
+                        Destroy(i);
+                    }
+                }
+            }
+
+            this.body = base.GetComponent<CharacterBody>();
+            if (this.body)
+            {
+                if (this.tier >= VariantTier.Rare && this.arrivalMessage != "")
+                {
+                    if (this.arrivalMessage != "")
+                    {
+                        Chat.AddMessage(announcement);
+                    }
+                    else
+                    {
+                        Logger.Log.LogMessage(identifierName + " Variant is Rare or Legendary but doesnt have an arrival message set! using generic message.");
+                        Chat.AddMessage("A " + body.GetDisplayName() + " with unique qualities has appeared!");
+                    }
+                }
+                this.master = this.body.master;
+                this.deathBehavior = base.GetComponent<CharacterDeathBehavior>();
+
+                if (this.master)
+                {
+                    this.ApplyBuffs();
+                    if (this.aiModifier.HasFlag(VariantAIModifier.Unstable))
+                    {
+                        foreach (AISkillDriver i in this.master.GetComponents<AISkillDriver>())
                         {
-                            Destroy(i);
+                            if (i)
+                            {
+                                i.minTargetHealthFraction = Mathf.NegativeInfinity;
+                                i.maxTargetHealthFraction = Mathf.Infinity;
+                                i.minUserHealthFraction = Mathf.NegativeInfinity;
+                                i.maxUserHealthFraction = Mathf.Infinity;
+                            }
+                        }
+                    }
+
+                    if (this.aiModifier.HasFlag(VariantAIModifier.ForceSprint))
+                    {
+                        foreach (AISkillDriver i in this.master.GetComponents<AISkillDriver>())
+                        {
+                            if (i)
+                            {
+                                i.shouldSprint = true;
+                            }
                         }
                     }
                 }
-
-                this.body = base.GetComponent<CharacterBody>();
-                if (this.body)
+                if (ConfigLoader.VariantsGiveRewards.Value)
                 {
-                    if (this.tier >= VariantTier.Rare && this.arrivalMessage != "")
+                    if (givesRewards)
                     {
-                        if (this.arrivalMessage != "")
+                        if (customVariantReward != null)
                         {
-                            Chat.AddMessage(announcement);
-                        }
-                        else
-                        {
-                            Logger.Log.LogMessage(identifierName + " Variant is Rare or Legendary but doesnt have an arrival message set! using generic message.");
-                            Chat.AddMessage("A " + body.GetDisplayName() + " with unique qualities has appeared!");
-                        }
-                    }
-                    this.master = this.body.master;
-                    this.deathBehavior = base.GetComponent<CharacterDeathBehavior>();
+                            if (thisGameObject.GetComponent<VariantRewardHandler>())
+                            {
 
-                    if (this.master)
-                    {
-                        this.ApplyBuffs();
-                        if (this.aiModifier.HasFlag(VariantAIModifier.Unstable))
-                        {
-                            foreach (AISkillDriver i in this.master.GetComponents<AISkillDriver>())
-                            {
-                                if (i)
-                                {
-                                    i.minTargetHealthFraction = Mathf.NegativeInfinity;
-                                    i.maxTargetHealthFraction = Mathf.Infinity;
-                                    i.minUserHealthFraction = Mathf.NegativeInfinity;
-                                    i.maxUserHealthFraction = Mathf.Infinity;
-                                }
-                            }
-                        }
-
-                        if (this.aiModifier.HasFlag(VariantAIModifier.ForceSprint))
-                        {
-                            foreach (AISkillDriver i in this.master.GetComponents<AISkillDriver>())
-                            {
-                                if (i)
-                                {
-                                    i.shouldSprint = true;
-                                }
-                            }
-                        }
-                    }
-                    if (ConfigLoader.VariantsGiveRewards.Value)
-                    {
-                        if (givesRewards)
-                        {
-                            if (customVariantReward != null)
-                            {
-                                if (thisGameObject.GetComponent<VariantRewardHandler>())
-                                {
-                                    
-                                }
-                                else
-                                {
-                                    thisGameObject.AddComponent<VariantRewardHandler>().InitCustomRewards(customVariantReward);
-                                }
                             }
                             else
                             {
-                                if (thisGameObject.GetComponent<VariantRewardHandler>())
-                                {
-                                }
-                                else
-                                {
-                                    thisGameObject.AddComponent<VariantRewardHandler>().Init();
-                                }
+                                thisGameObject.AddComponent<VariantRewardHandler>().InitCustomRewards(customVariantReward);
+                            }
+                        }
+                        else
+                        {
+                            if (thisGameObject.GetComponent<VariantRewardHandler>())
+                            {
+                            }
+                            else
+                            {
+                                thisGameObject.AddComponent<VariantRewardHandler>().Init();
                             }
                         }
                     }

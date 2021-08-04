@@ -25,7 +25,7 @@ namespace VarianceAPI
 	[BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("com.Tymmey.Templar", BepInDependency.DependencyFlags.SoftDependency)]
 	[BepInDependency("com.Tymmey.Lemurian", BepInDependency.DependencyFlags.SoftDependency)]
-	[BepInPlugin("com.Nebby.VarianceAPI", "VarianceAPI", "0.5.0")]
+	[BepInPlugin("com.Nebby.VarianceAPI", "VarianceAPI", "0.9.0")]
 	[R2APISubmoduleDependency(nameof(ItemAPI), nameof(PrefabAPI), nameof(ProjectileAPI))]
 	internal class MainClass : BaseUnityPlugin
     {
