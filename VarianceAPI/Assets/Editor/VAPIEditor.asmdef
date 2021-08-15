@@ -1,0 +1,18 @@
+{
+    "name": "VAPIEditor",
+    "references": [
+        "ThunderKit.Core",
+        "VarianceAPI"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "Assembly-CSharp.dll",
+        ""
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

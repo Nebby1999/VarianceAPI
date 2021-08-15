@@ -1,0 +1,52 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a3695521163bdd74fa2845bbd3438240, type: 3}
+  m_Name: GemBuild
+  m_EditorClassIdentifier: 
+  Data:
+  - {fileID: 114609266966800418}
+  - {fileID: 114144958465600800}
+  manifest: {fileID: 11400000, guid: d8cc3751f6276ce44a4dc5f481417dcd, type: 2}
+--- !u!114 &114144958465600800
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
+  m_Name: ExecutePipeline
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  OverrideManifest: 1
+  executePipeline: {fileID: 11400000, guid: 32be823de2721214ea396e03720f7743, type: 2}
+--- !u!114 &114609266966800418
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 50df4f9027e15e04b931a8d460fb22c5, type: 3}
+  m_Name: ExecutePipeline
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  Active: 1
+  OverrideManifest: 1
+  executePipeline: {fileID: 11400000, guid: 2a69b242b64c25e4eaa61b44fd01b327, type: 2}
