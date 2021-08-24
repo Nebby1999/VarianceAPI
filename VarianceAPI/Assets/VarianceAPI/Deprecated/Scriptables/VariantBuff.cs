@@ -8,7 +8,6 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "VariantBuff", menuName = "VarianceAPI/VariantBuff", order = 6)]
     public class VariantBuff : ScriptableObject
     {
         [Header("VariantBuff")]

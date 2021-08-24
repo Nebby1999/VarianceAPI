@@ -1,145 +1,60 @@
 ﻿using RoR2;
-using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
-using VarianceAPI.Modules;
-using VarianceAPI.Scriptables;
-using Logger = VarianceAPI.MainClass;
+using VarianceAPI.ScriptableObjects;
 
 namespace VarianceAPI.Components
 {
-    public class VariantRewardHandler : NetworkBehaviour
+    public class VariantRewardHandler : MonoBehaviour
     {
         static readonly float Offset = 2f * Mathf.PI / Run.instance.participatingPlayerCount;
-        
-        public uint bonusGold;
-        public float goldMult = 1;
 
-        public uint bonusXP;
-        public float xpMult = 1;
+        public VariantInfo[] VariantInfos;
+        private VariantTier highestTier;
+
+        private DeathRewards deathRewards;
+        private CharacterBody characterBody;
+
+        public float goldMult;
+        public float xpMult;
 
         public float whiteChance;
         public float greenChance;
         public float redChance;
 
-        private DeathRewards deathRewards;
-        private CharacterBody characterBody;
-
-        private VariantHandler[] VariantHandlers;
-        
         private List<PickupIndex> redItems = Run.instance.availableTier3DropList;
         private List<PickupIndex> greenItems = Run.instance.availableTier2DropList;
         private List<PickupIndex> whiteItems = Run.instance.availableTier1DropList;
-        
+
         private int nextRedItem;
         private int nextGreenItem;
         private int nextWhiteItem;
 
-        private VariantTier highestTier;
-        public void InitCustomRewards(CustomVariantReward customVariantReward)
+        public void Start()
         {
-            this.deathRewards = base.GetComponent<DeathRewards>();
-            this.characterBody = base.GetComponent<CharacterBody>();
+            deathRewards = gameObject.GetComponent<DeathRewards>();
+            characterBody = gameObject.GetComponent<CharacterBody>();
 
-            this.bonusGold = customVariantReward.goldBonus;
-            this.goldMult = customVariantReward.goldMultiplier;
+            nextWhiteItem = Run.instance.treasureRng.RangeInt(0, whiteItems.Count);
+            nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
+            nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
 
-            this.bonusXP = customVariantReward.xpBonus;
-            this.xpMult = customVariantReward.xpMultiplier;
-
-            this.whiteChance = customVariantReward.whiteItemChance;
-            this.greenChance = customVariantReward.greenItemChance;
-            this.redChance = customVariantReward.redItemChance;
-
-            this.nextWhiteItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
-            this.nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
-            this.nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
-            if(customVariantReward.ItemList != null)
+            if(ConfigLoader.EnableItemRewards.Value)
             {
-                SortList(customVariantReward.ItemList);
-            }
-
-            ModifyRewards();
-            RoR2.GlobalEventManager.onCharacterDeathGlobal += SpawnDroplet;
-        }
-
-        public void Init()
-        {
-            this.deathRewards = base.GetComponent<DeathRewards>();
-            this.characterBody = base.GetComponent<CharacterBody>();
-
-            this.whiteItems = Run.instance.availableTier1DropList;
-            this.nextWhiteItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
-
-            this.greenItems = Run.instance.availableTier2DropList;
-            this.nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
-
-            this.redItems = Run.instance.availableTier3DropList;
-            this.nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
-
-            VariantHandlers = base.GetComponents<VariantHandler>();
-            CalculateRewards(VariantHandlers);
-            CheckItemDropChance();
-            ModifyRewards();
-            RoR2.GlobalEventManager.onCharacterDeathGlobal += SpawnDroplet;
-        }
-        private void SortList(string[] itemList)
-        {
-            foreach(string item in itemList)
-            {
-                var ItemDef = ItemCatalog.GetItemDef(ItemCatalog.FindItemIndex(item));
-
-                if(ItemDef == null)
-                {
-                    Logger.Log.LogWarning(item + " is not a valid ItemString!");
-                    continue;
-                }
-                else if(ItemDef.tier > ItemTier.Tier3)
-                {
-                    Logger.Log.LogWarning(item + " is a ItemString that does not belong in White, Green or Red tier!");
-                    continue;
-                }
-                switch (ItemDef.tier)
-                {
-                    case ItemTier.Tier1:
-                        whiteItems.Add(PickupCatalog.FindPickupIndex(ItemDef.itemIndex));
-                        break;
-                    case ItemTier.Tier2:
-                        greenItems.Add(PickupCatalog.FindPickupIndex(ItemDef.itemIndex));
-                        break;
-                    case ItemTier.Tier3:
-                        greenItems.Add(PickupCatalog.FindPickupIndex(ItemDef.itemIndex));
-                        break;
-                }
+                GlobalEventManager.onCharacterDeathGlobal += SpawnDroplet;
             }
         }
-        private void ModifyRewards()
+
+        public void Modify()
         {
-            if(ConfigLoader.EnableGoldRewards.Value)
+            #region Gold and XP Multiplier
+            foreach (VariantInfo variantInfo in VariantInfos)
             {
-                deathRewards.expReward = (uint)((deathRewards.expReward + bonusXP) * xpMult);
-            }
-            if(ConfigLoader.EnableXPRewards.Value)
-            {
-                deathRewards.goldReward = (uint)((deathRewards.goldReward + bonusGold) * goldMult);
-            }
-        }
-        private void CalculateRewards(VariantHandler[] variantHandlers)
-        {
-            foreach (VariantHandler variant in variantHandlers)
-            {
-                if(!variant.isVariant)
-                {
-                    continue;
-                }
-                switch(variant.tier)
+                switch (variantInfo.variantTier)
                 {
                     case VariantTier.Common:
-                        goldMult += ConfigLoader.CommonVariantGoldMultiplier.Value -1;
+                        goldMult += ConfigLoader.CommonVariantGoldMultiplier.Value - 1;
                         xpMult += ConfigLoader.CommonVariantXPMultiplier.Value - 1;
                         break;
                     case VariantTier.Uncommon:
@@ -155,14 +70,14 @@ namespace VarianceAPI.Components
                         xpMult += ConfigLoader.LegendaryVariantXPMultiplier.Value - 1;
                         break;
                 }
-                if(variant.tier > highestTier)
+                if (variantInfo.variantTier > highestTier)
                 {
-                    highestTier = variant.tier;
+                    highestTier = variantInfo.variantTier;
                 }
             }
-        }
-        private void CheckItemDropChance()
-        {
+            #endregion
+
+            #region Item Chances
             switch (highestTier)
             {
                 case VariantTier.Common:
@@ -186,68 +101,62 @@ namespace VarianceAPI.Components
                     this.redChance = ConfigLoader.LegendaryVariantRedItemDropChance.Value;
                     break;
             }
+            #endregion
         }
-        private void SpawnDroplet(DamageReport obj)
+
+        private void SpawnDroplet(DamageReport damageReport)
         {
-            if(ConfigLoader.EnableItemRewards.Value)
+            if (Run.instance.isRunStopwatchPaused && ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value != "Unchanged")
             {
-                if(Run.instance.isRunStopwatchPaused && ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value != "Unchanged")
+                if (ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value == "Halved")
                 {
-                    if(ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value == "Halved")
+                    int rng = UnityEngine.Random.Range(1, 20);
+                    if (rng > 10)
                     {
-                        int rng = UnityEngine.Random.Range(1, 20);
-                        if (rng > 10)
-                        {
-                            TrySpawnDroplet(obj);
-                        }
-                    }
-                    else
-                    {
+                        TrySpawnDroplet(damageReport);
                     }
                 }
                 else
                 {
-                    TrySpawnDroplet(obj);
                 }
-            }
-        }
-        private void TrySpawnDroplet(DamageReport damageReport)
-        {
-            if (damageReport.victimBody == this.characterBody)
-            {
-                if (damageReport.victimTeamIndex != TeamIndex.Player)
-                {
-                    var rng = UnityEngine.Random.Range(0f, 100f);
-                    if (rng < redChance)
-                    {
-                        CreateDroplet(redItems, nextRedItem, damageReport.victimBody, damageReport.attackerBody);
-                    }
-                    else if (rng < greenChance + redChance)
-                    {
-                        CreateDroplet(greenItems, nextGreenItem, damageReport.victimBody, damageReport.attackerBody);
-                    }
-                    else if (rng < whiteChance + greenChance + redChance)
-                    {
-                        CreateDroplet(whiteItems, nextWhiteItem, damageReport.victimBody, damageReport.attackerBody);
-                    }
-                }
-            }
-        }
-        private static void CreateDroplet(List<PickupIndex> itemList, int nextItem, CharacterBody variantBody, CharacterBody playerBody)
-        {
-            if(ConfigLoader.ItemRewardsSpawnsOnPlayer.Value)
-            {
-                PickupDropletController.CreatePickupDroplet(itemList[nextItem], playerBody.transform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
             }
             else
             {
-                PickupDropletController.CreatePickupDroplet(itemList[nextItem], variantBody.transform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
+                TrySpawnDroplet(damageReport);
             }
         }
 
-        private void OnDestroy()
+        private void TrySpawnDroplet(DamageReport damageReport)
         {
-            RoR2.GlobalEventManager.onCharacterDeathGlobal -= SpawnDroplet;
+            if(damageReport.victimBody == characterBody)
+            {
+                if (damageReport.victimTeamIndex != TeamIndex.Player)
+                {
+                    if (Util.CheckRoll(redChance))
+                    {
+                        CreateDroplet(redItems, nextRedItem, damageReport);
+                    }
+                    else if (Util.CheckRoll(redChance + greenChance))
+                    {
+                        CreateDroplet(greenItems, nextGreenItem, damageReport);
+                    }
+                    else if (Util.CheckRoll(redChance + greenChance + whiteChance))
+                    {
+                        CreateDroplet(whiteItems, nextWhiteItem, damageReport);
+                    }
+                }
+            }
+        }
+        private static void CreateDroplet(List<PickupIndex> itemList, int nextItem, DamageReport damageReport)
+        {
+            if (ConfigLoader.ItemRewardsSpawnsOnPlayer.Value)
+            {
+                PickupDropletController.CreatePickupDroplet(itemList[nextItem], damageReport.attackerBody.transform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
+            }
+            else
+            {
+                PickupDropletController.CreatePickupDroplet(itemList[nextItem], damageReport.victimBody.transform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
+            }
         }
     }
 }

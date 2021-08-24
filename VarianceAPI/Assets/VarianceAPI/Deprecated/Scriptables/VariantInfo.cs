@@ -6,10 +6,11 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 using VarianceAPI;
+using VarianceAPI.ScriptableObjects;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "VariantInfo", menuName = "VarianceAPI/VariantInfo", order = 0)]
+    [CreateAssetMenu(fileName = "ass", menuName = "Ass")]
     public class VariantInfo : ScriptableObject
     {
         [Header("Important Settings")]
@@ -46,9 +47,6 @@ namespace VarianceAPI.Scriptables
         [Header("Reward Settings")]
             [Tooltip("Whether the variant gives rewards when it dies.")]
             public bool givesRewards;
-
-            [Tooltip("Whether the variant uses custom rewards or the default reward system\nCan be null")]
-            public CustomVariantReward customVariantReward;
 
         [Header("Custom Inventory & Skills")]
 

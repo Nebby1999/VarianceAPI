@@ -1,4 +1,4 @@
-﻿using BepInEx.Configuration;
+﻿/*using BepInEx.Configuration;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -82,3 +82,4 @@ namespace VarianceAPI.Modules
         }
     }
 }
+*/

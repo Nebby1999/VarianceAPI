@@ -10,9 +10,10 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "Assembly-CSharp.dll",
-        ""
+        "StubbedAssembly-CSharp.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": []
+    "defineConstraints": [
+        "UNITY_EDITOR"
+    ]
 }

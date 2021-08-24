@@ -5,9 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace VarianceAPI.Scriptables
+namespace VarianceAPI.ScriptableObjects
 {
-    [CreateAssetMenu(fileName = "VariantSizeModifier", menuName = "VarianceAPI/VariantSizeModifier", order = 11)]
+    [CreateAssetMenu(fileName = "VariantSizeModifier", menuName = "VarianceAPI/VariantSizeModifier")]
     public class VariantSizeModifier : ScriptableObject
     {
         [Header("Variant Size Modifier")]

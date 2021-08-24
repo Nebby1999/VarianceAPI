@@ -4,12 +4,10 @@ using UnityEngine;
 using System.IO;
 using System;
 
-namespace VarianceAPI.Modules
+namespace VarianceAPI
 {
     public static class Assets
     {
-        public static string AssetBundleName = "VAPIAssets";
-
         public static string assemblyPath
         {
             get

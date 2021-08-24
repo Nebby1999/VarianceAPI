@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
 
-namespace VarianceAPI.Modules
+namespace VarianceAPI
 {
     public static class ConfigLoader
     {

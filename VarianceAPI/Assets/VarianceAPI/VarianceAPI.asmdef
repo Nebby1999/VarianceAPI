@@ -11,7 +11,9 @@
         "R2API.dll",
         "HGCSharpUtils.dll",
         "MMHOOK_Assembly-CSharp.dll",
-        "StubbedAssembly-CSharp.dll"
+        "StubbedAssembly-CSharp.dll",
+        "MonoMod.Utils.dll",
+        "Mono.Cecil.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": []

@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "VariantInventory", menuName = "VarianceAPI/VariantInventory", order = 4)]
     public class VariantInventory : ScriptableObject
     {
         [Header("Variant Inventory")]

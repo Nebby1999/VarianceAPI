@@ -7,7 +7,6 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "VariantConfig", menuName = "VarianceAPI/VariantConfig", order = 2)]
     public class VariantConfig : ScriptableObject
     {
         [Header("Variant Config")]

@@ -18,7 +18,7 @@ namespace VarianceAPI.Components
 {
     public class VariantEquipmentHandler : NetworkBehaviour
     {
-        public EquipmentInfo equipmentInfo;
+        public AnimationCurve animationCurve;
         public float aiUseDelay = 1f;
         public float aiUseDelayMax = 1f;
         public float aiMaxDistance = 60;
@@ -77,7 +77,7 @@ namespace VarianceAPI.Components
                         }
                     }
 
-                    float randomChance = equipmentInfo.animationCurve.Evaluate(1f - (self.healthComponent ? self.healthComponent.combinedHealthFraction : 1f)) * 100f;
+                    float randomChance = animationCurve.Evaluate(1f - (self.healthComponent ? self.healthComponent.combinedHealthFraction : 1f)) * 100f;
                     if(!spawning && Util.CheckRoll(randomChance) && enemyNearby)
                     {
                         self.inputBank.activateEquipment.PushState(true);

@@ -198,12 +198,12 @@ public class ReriggingBullshitTools {
 
         List<Transform> children = selected.GetComponentsInChildren<Transform>(true).ToList();
 
-        locator.TransformPairs = new ChildLocator.NameTransformPair[storedChildLocator.TransformPairs.Length];
+        locator.transformPairs = new ChildLocator.NameTransformPair[storedChildLocator.transformPairs.Length];
 
-        for (int i = 0; i < locator.TransformPairs.Length; i++) {
+        for (int i = 0; i < locator.transformPairs.Length; i++) {
 
-            ChildLocator.NameTransformPair pair = locator.TransformPairs[i];
-            ChildLocator.NameTransformPair storedPair = storedChildLocator.TransformPairs[i];
+            ChildLocator.NameTransformPair pair = locator.transformPairs[i];
+            ChildLocator.NameTransformPair storedPair = storedChildLocator.transformPairs[i];
 
             pair.name = storedPair.name;
 
@@ -219,7 +219,7 @@ public class ReriggingBullshitTools {
                 Debug.Log($"couldn't find {pair.name} to {storedPair.transform.name}");
             }
 
-            locator.TransformPairs[i] = pair;
+            locator.transformPairs[i] = pair;
         }
     }
 
