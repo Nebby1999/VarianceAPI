@@ -48,6 +48,9 @@ namespace VarianceAPI.Scriptables
             [Tooltip("Whether the variant gives rewards when it dies.")]
             public bool givesRewards;
 
+            [Tooltip("Whether the variant uses custom rewards or the default reward system\nCan be null")]
+            public CustomVariantReward customVariantReward;
+
         [Header("Custom Inventory & Skills")]
 
             [Tooltip("The Variant's Inventory\nCan be null")]

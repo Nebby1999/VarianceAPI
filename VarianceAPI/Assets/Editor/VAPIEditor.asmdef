@@ -2,7 +2,8 @@
     "name": "VAPIEditor",
     "references": [
         "ThunderKit.Core",
-        "VarianceAPI"
+        "VarianceAPI",
+        "ThunderKit.Common"
     ],
     "optionalUnityReferences": [],
     "includePlatforms": [],

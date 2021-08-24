@@ -18,6 +18,7 @@ MonoBehaviour:
   - {fileID: 114431642618062350}
   - {fileID: 114287076171223896}
   - {fileID: 114427628956727544}
+  - {fileID: 114299820332819136}
   identity: {fileID: 114211852988908172}
 --- !u!114 &114107831304456238
 MonoBehaviour:
@@ -78,6 +79,23 @@ MonoBehaviour:
   StagingPaths:
   - <ManifestStagingRoot>
   url: https://github.com/Nebby1999/VarianceAPI
+--- !u!114 &114299820332819136
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 00bdbe6775dbe6443944039c55e5b7c1, type: 3}
+  m_Name: MissreferencedScriptableObjects
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  StagingPaths: []
+  MisreferencedAssets:
+  - {fileID: 0}
 --- !u!114 &114427628956727544
 MonoBehaviour:
   m_ObjectHideFlags: 0
