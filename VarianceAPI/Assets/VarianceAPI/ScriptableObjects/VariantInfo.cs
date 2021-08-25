@@ -14,11 +14,11 @@ namespace VarianceAPI.ScriptableObjects
         [Serializable]
         public struct VariantOverrideName
         {
-            [Tooltip("Override order of this override Name\nPrefix: The text to add is applied before the Variant's original name\nSuffix: The text to add is applied after the Variant's original name")]
-            public OverrideNameType overrideType;
-
             [Tooltip("The text to add to the variant's original name")]
             public string textToAdd;
+
+            [Tooltip("Override order of this override Name\nPrefix: The text to add is applied before the Variant's original name\nSuffix: The text to add is applied after the Variant's original name")]
+            public OverrideNameType overrideType;
         }
         [Serializable]
         public struct VariantSkillReplacement

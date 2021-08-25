@@ -1,26 +1,23 @@
-﻿/*using System;
+﻿using EntityStates;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using VarianceAPI.ScriptableObjects;
-using System.Threading.Tasks;
-using UnityEngine;
 using System.IO;
 using UnityEditor;
-using EntityStates;
+using UnityEngine;
+using VarianceAPI.ScriptableObjects;
 
 public class VariantInfoCreator : MonoBehaviour
 {
-    public static string Path
-    {
-        get
-        {
-            return CreateFolder();
-        }
-    }
+    public static string Path;
+
+    public static string assetNamePrefix;
     public static void CreateNerVariantInfo(VarianceAPI.Scriptables.VariantInfo v)
     {
+        Path = "";
+        CreateFolder(v);
         var newInfo = ScriptableObject.CreateInstance<VariantInfo>();
+        newInfo.name = v.name;
+        assetNamePrefix = newInfo.name.Replace(".asset", "");
         newInfo.identifier = v.identifierName;
         newInfo.bodyName = v.bodyName + "Body";
         newInfo.overrideNames = CreateOverrideNames(v.overrideName);
@@ -41,14 +38,12 @@ public class VariantInfoCreator : MonoBehaviour
         newInfo.sizeModifier = CreateNewSizeModifier(v.sizeModifier);
         newInfo.arrivalMessage = v.arrivalMessage;
         newInfo.extraComponents = CreateNewExtraComponents(v.extraComponents);
-        var newDeathState = new SerializableEntityStateType();
-        newDeathState.typeName = v.customDeathState;
-        newInfo.customDeathState = newDeathState;
-
-        AssetDatabase.CreateAsset(newInfo, Path);
+        Debug.Log(newInfo.name);
+        AssetDatabase.CreateAsset(newInfo, Path + "\\" + newInfo.name + ".asset");
+        AssetDatabase.Refresh();
     }
 
-    private static string CreateFolder()
+    private static string CreateFolder(VarianceAPI.Scriptables.VariantInfo v)
     {
         var path = "";
         var obj = Selection.activeObject;
@@ -59,16 +54,22 @@ public class VariantInfoCreator : MonoBehaviour
         else
         {
             path = AssetDatabase.GetAssetPath(obj.GetInstanceID());
+            path = path.Replace($"/{v.name}.asset", string.Empty);
         }
-        path = path + "NewVariantInfo";
         if(path.Length > 0)
         {
-            if(!Directory.Exists(path))
+            if(!Directory.Exists(Path))
             {
-                Directory.CreateDirectory(path);
+                Debug.Log("Pain");
+                var thing = AssetDatabase.CreateFolder(path, "Migrated");
+                Path = AssetDatabase.GUIDToAssetPath(thing);
+                Debug.Log(Path);
+                AssetDatabase.Refresh();
             }
-            return path;
+            Selection.activeObject = obj;
+            return Path;
         }
+        Selection.activeObject = obj;
         return "Assets";
     }
     private static VariantInfo.VariantOverrideName[] CreateOverrideNames(VarianceAPI.Scriptables.VariantOverrideName[] overrideNames)
@@ -88,12 +89,39 @@ public class VariantInfoCreator : MonoBehaviour
     private static VariantInventoryInfo CreateNewVariantInventory(VarianceAPI.Scriptables.VariantInventory itemInventory, VarianceAPI.Scriptables.VariantBuff[] variantBuffs, VarianceAPI.Scriptables.EquipmentInfo equipmentInfo)
     {
         var toReturn = ScriptableObject.CreateInstance<VariantInventoryInfo>();
-        toReturn.ItemInventory = CreateItemInventory(itemInventory);
-        toReturn.Buffs = CreateBuffInventory(variantBuffs);
-        toReturn.equipmentDefName = equipmentInfo.equipmentString;
-        toReturn.fireCurve = equipmentInfo.animationCurve;
-
-        AssetDatabase.CreateAsset(toReturn, Path);
+        int flag = 0;
+        toReturn.name = assetNamePrefix + "_VariantInventory.asset";
+        if(itemInventory != null)
+        {
+            toReturn.ItemInventory = CreateItemInventory(itemInventory);
+        }
+        else
+        {
+            flag++;
+        }
+        if(variantBuffs.Length != 0)
+        {
+            toReturn.Buffs = CreateBuffInventory(variantBuffs);
+        }
+        else
+        {
+            flag++;
+        }
+        if(equipmentInfo != null)
+        {
+            toReturn.equipmentDefName = equipmentInfo.equipmentString;
+            toReturn.fireCurve = equipmentInfo.animationCurve;
+        }
+        else
+        {
+            flag++;
+        }
+        Debug.Log("Variant inventory flag count: " + flag);
+        if(flag >= 3)
+        {
+            return null;
+        }
+        AssetDatabase.CreateAsset(toReturn, Path + "\\" + toReturn.name);
         return toReturn;
 
     }
@@ -140,11 +168,40 @@ public class VariantInfoCreator : MonoBehaviour
     private static VariantVisualModifier CreateNewVisualModifier(VarianceAPI.Scriptables.VariantMaterialReplacement[] materialReplacements, VarianceAPI.Scriptables.VariantLightReplacement[] lightReplacements, VarianceAPI.Scriptables.VariantMeshReplacement[] meshReplacements)
     {
         var toReturn = ScriptableObject.CreateInstance<VariantVisualModifier>();
-        toReturn.MaterialReplacements = CreateMaterialReplacements(materialReplacements);
-        toReturn.LightReplacements = CreateLightReplacements(lightReplacements);
-        toReturn.MeshReplacements = CreateMeshReplacements(meshReplacements);
+        toReturn.name = assetNamePrefix + "_VisualModifier.asset";
+        int flag = 0;
+        if(materialReplacements.Length != 0)
+        {
+            toReturn.MaterialReplacements = CreateMaterialReplacements(materialReplacements);
+        }
+        else
+        {
+            flag++;
+        }
+        if(lightReplacements.Length != 0)
+        {
+            toReturn.LightReplacements = CreateLightReplacements(lightReplacements);
+        }
+        else
+        {
+            flag++;
+        }
+        if(meshReplacements.Length != 0)
+        {
+            toReturn.MeshReplacements = CreateMeshReplacements(meshReplacements);
+        }
+        else
+        {
+            flag++;
+        }
 
-        AssetDatabase.CreateAsset(toReturn, Path);
+        Debug.Log("Variant visual modifier flag count: " + flag);
+        if(flag >= 3)
+        {
+            return null;
+        }
+
+        AssetDatabase.CreateAsset(toReturn, Path + "\\" + toReturn.name);
 
         return toReturn;
     }
@@ -199,11 +256,16 @@ public class VariantInfoCreator : MonoBehaviour
 
     private static VariantSizeModifier CreateNewSizeModifier(VarianceAPI.Scriptables.VariantSizeModifier sizeModifier)
     {
+        if(sizeModifier == null)
+        {
+            return null;
+        }
         var toReturn = ScriptableObject.CreateInstance<VariantSizeModifier>();
+        toReturn.name = assetNamePrefix + "_SizeModifier.asset";
         toReturn.newSize = sizeModifier.newSize;
         toReturn.scaleCollider = sizeModifier.scaleCollider;
 
-        AssetDatabase.CreateAsset(toReturn, Path);
+        AssetDatabase.CreateAsset(toReturn, Path + "\\" + toReturn.name);
 
         return toReturn;
     }
@@ -223,4 +285,3 @@ public class VariantInfoCreator : MonoBehaviour
         return toReturn.ToArray();
     }
 }
-*/

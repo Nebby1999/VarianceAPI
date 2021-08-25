@@ -36,7 +36,7 @@ MonoBehaviour:
   StagingPaths:
   - <ManifestPluginStaging>
   definitions:
-  - {fileID: 5897886265953266890, guid: 453c4f08e172d6c42b566d89ef3abdc5, type: 3}
+  - {fileID: 5897886265953266890, guid: 5d710fc051c08cf46a3d1d200d0c595f, type: 3}
 --- !u!114 &114139072834639444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -78,7 +78,7 @@ MonoBehaviour:
   Dependencies:
   - {fileID: 11400000, guid: c8c954e10545f6cd0045de066bc4846b, type: 2}
   - {fileID: 11400000, guid: 6893422731aa6d67012f5f4d8209c304, type: 2}
-  - {fileID: 11400000, guid: 23f884c4522b4c3dd0a4eced6363c896, type: 2}
+  - {fileID: 0}
 --- !u!114 &114256391772626100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -96,8 +96,8 @@ MonoBehaviour:
   StagingPaths:
   - <ManifestStagingRoot>
   files:
-  - {fileID: 2800000, guid: a0c252484dbd23a4bae31e3d1777ebd1, type: 3}
-  - {fileID: 4900000, guid: 0388173002b49354e9fc3466cfc27496, type: 3}
+  - {fileID: 4900000, guid: 05a80cbb688da14419112be45ccb53e1, type: 3}
+  - {fileID: 2800000, guid: abd150eaee78c3545ac8c53fe1f81bc7, type: 3}
 --- !u!114 &114431642618062350
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -117,4 +117,4 @@ MonoBehaviour:
   assetBundles:
   - assetBundleName: TheOriginal30Assets
     assets:
-    - {fileID: 102900000, guid: fb8701cbfebc63940a1bd43f935c93a2, type: 3}
+    - {fileID: 102900000, guid: 82d0af3bc9dc0a646bafc1e4c3970663, type: 3}

@@ -35,8 +35,7 @@ MonoBehaviour:
   armorMultiplier: 1
   armorBonus: 20
   arrivalMessage: 
-  meshReplacement:
-  - {fileID: 11400000, guid: 967dbc3fa52e68443bc2ea8dcf5174af, type: 2}
+  meshReplacement: []
   materialReplacement: []
   lightReplacement: []
   sizeModifier: {fileID: 11400000, guid: b6eee3a335a4477488b9d66176c9b0e0, type: 2}

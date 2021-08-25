@@ -9,8 +9,8 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 48b4156e052eed84fae28211545c996f, type: 3}
-  m_Name: BattleBeetle_SkillReplacement
+  m_Script: {fileID: 11500000, guid: 4d7715e79c1e93248917cab95dc82cbe, type: 3}
+  m_Name: IncineratingElderLemurian_SizeModifier
   m_EditorClassIdentifier: 
-  skillSlot: 0
-  skillDef: {fileID: 11400000, guid: 9962cdd5a8331e04daa47825bc44d71f, type: 2}
+  newSize: 1.25
+  scaleCollider: 0
