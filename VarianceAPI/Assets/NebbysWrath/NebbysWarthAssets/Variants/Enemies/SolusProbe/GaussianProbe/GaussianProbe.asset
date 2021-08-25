@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79a5320670080e4ca1f32487d59fcf7, type: 3}
+  m_Name: GaussianProbe
+  m_EditorClassIdentifier: 
+  identifierName: NW_GaussianProbe
+  bodyName: RoboBallMini
+  overrideName:
+  - {fileID: 11400000, guid: ba3e013c0d4607449b404dbfa3d58427, type: 2}
+  isModded: 0
+  variantConfig: {fileID: 11400000, guid: 41f3c310172683e4ea99c266e85b2439, type: 2}
+  unique: 0
+  aiModifier: 0
+  variantTier: 0
+  spawnRate: 0
+  givesRewards: 1
+  customVariantReward: {fileID: 0}
+  variantInventory: {fileID: 0}
+  customEquipment: {fileID: 0}
+  buff: []
+  skillReplacement:
+  - {fileID: 11400000, guid: b9343941ffc144345a1d3e11cff22f6b, type: 2}
+  healthMultiplier: 2
+  moveSpeedMultiplier: 0.75
+  attackSpeedMultiplier: 1
+  damageMultiplier: 1
+  armorMultiplier: 1
+  armorBonus: 25
+  arrivalMessage: 
+  meshReplacement:
+  - {fileID: 11400000, guid: 96faf7bc6efa2834fa746d5ab2afcf90, type: 2}
+  materialReplacement: []
+  lightReplacement: []
+  sizeModifier: {fileID: 0}
+  extraComponents: []
+  customDeathState: 

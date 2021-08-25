@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
+    [CreateAssetMenu(fileName = "MaterialReplacement", menuName = "VAPI_OLD/MaterialReplacement")]
     public class VariantMaterialReplacement : ScriptableObject
     {
         [Header("Variant Material Replacement")]

@@ -1,0 +1,49 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79a5320670080e4ca1f32487d59fcf7, type: 3}
+  m_Name: ArtilleryVulture
+  m_EditorClassIdentifier: 
+  identifierName: TO30_ArtilleryVulture
+  bodyName: Vulture
+  overrideName:
+  - {fileID: 11400000, guid: 2b8f5088eeb619a4da22392ef65c159d, type: 2}
+  isModded: 0
+  variantConfig: {fileID: 11400000, guid: c47a332bc9f07e04da4c5f3ec7c3bd93, type: 2}
+  unique: 0
+  aiModifier: 0
+  variantTier: 1
+  spawnRate: 0
+  givesRewards: 1
+  customVariantReward: {fileID: 0}
+  customInventory:
+  - {fileID: 11400000, guid: 4f1021fdc61caf64ba72a4fdbe3c3774, type: 2}
+  - {fileID: 11400000, guid: bf25a7fe03b7f084a941ef9b63544d4b, type: 2}
+  - {fileID: 11400000, guid: f2236046299374749835d189ae9ced4f, type: 2}
+  variantInventory: {fileID: 11400000, guid: b187c5de9060ffd449d435fe4bcc516c, type: 2}
+  customEquipment: {fileID: 0}
+  buff: []
+  skillReplacement: []
+  healthMultiplier: 1
+  moveSpeedMultiplier: 1
+  attackSpeedMultiplier: 4
+  damageMultiplier: 0.5
+  armorMultiplier: 1
+  armorBonus: 100
+  arrivalMessage: 
+  meshReplacement: []
+  materialReplacement:
+  - {fileID: 11400000, guid: 4bffbe0904294f148aa6121f8f96afae, type: 2}
+  - {fileID: 11400000, guid: 7ff58a49f469f344682ae0e5e8353776, type: 2}
+  lightReplacement: []
+  sizeModifier: {fileID: 11400000, guid: b3d34d7a69f820748868508b3221b46f, type: 2}
+  extraComponents: []
+  customDeathState: 

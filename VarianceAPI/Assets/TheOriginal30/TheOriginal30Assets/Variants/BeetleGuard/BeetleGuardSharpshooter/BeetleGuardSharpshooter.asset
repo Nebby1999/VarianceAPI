@@ -1,0 +1,44 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79a5320670080e4ca1f32487d59fcf7, type: 3}
+  m_Name: BeetleGuardSharpshooter
+  m_EditorClassIdentifier: 
+  identifierName: TO30_BeetleGuardSharpshooter
+  bodyName: BeetleGuard
+  overrideName:
+  - {fileID: 11400000, guid: 86c5dc153b6433b498c5a151405e99e4, type: 2}
+  isModded: 0
+  variantConfig: {fileID: 11400000, guid: a684179735b1d484ab4e53212fd815a0, type: 2}
+  unique: 0
+  aiModifier: 0
+  variantTier: 0
+  spawnRate: 0
+  givesRewards: 1
+  customVariantReward: {fileID: 0}
+  customInventory: []
+  variantInventory: {fileID: 11400000, guid: a5a0afa3fd4b87a49b28dea2d4f6e0d1, type: 2}
+  customEquipment: {fileID: 0}
+  buff: []
+  skillReplacement: []
+  healthMultiplier: 0.8
+  moveSpeedMultiplier: 0.6
+  attackSpeedMultiplier: 3
+  damageMultiplier: 0.4
+  armorMultiplier: 1
+  armorBonus: 0
+  arrivalMessage: 
+  meshReplacement: []
+  materialReplacement: []
+  lightReplacement: []
+  sizeModifier: {fileID: 11400000, guid: d5b146b14be6180488265ca918ac871b, type: 2}
+  extraComponents: []
+  customDeathState: 

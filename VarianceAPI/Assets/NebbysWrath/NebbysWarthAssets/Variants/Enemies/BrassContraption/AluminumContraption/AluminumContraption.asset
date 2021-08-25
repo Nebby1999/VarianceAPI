@@ -1,0 +1,45 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79a5320670080e4ca1f32487d59fcf7, type: 3}
+  m_Name: AluminumContraption
+  m_EditorClassIdentifier: 
+  identifierName: NW_AluminumContraption
+  bodyName: Bell
+  overrideName:
+  - {fileID: 11400000, guid: 769129a32aa008c4ba6b1c97e28026de, type: 2}
+  isModded: 0
+  variantConfig: {fileID: 11400000, guid: 08c83346a9b2e4449aa3a0b4461983d2, type: 2}
+  unique: 0
+  aiModifier: 0
+  variantTier: 1
+  spawnRate: 0
+  givesRewards: 1
+  customVariantReward: {fileID: 0}
+  customInventory: []
+  variantInventory: {fileID: 11400000, guid: 6694581268baf3944a9226208b6687df, type: 2}
+  customEquipment: {fileID: 0}
+  buff: []
+  skillReplacement: []
+  healthMultiplier: 0.5
+  moveSpeedMultiplier: 2
+  attackSpeedMultiplier: 2
+  damageMultiplier: 0.9
+  armorMultiplier: 1
+  armorBonus: 0
+  arrivalMessage: 
+  meshReplacement: []
+  materialReplacement:
+  - {fileID: 11400000, guid: 14631b48f50faf648ad68ffd22272816, type: 2}
+  lightReplacement: []
+  sizeModifier: {fileID: 11400000, guid: 628684188f14bfd4aa7b2d2f5f704e80, type: 2}
+  extraComponents: []
+  customDeathState: 

@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79a5320670080e4ca1f32487d59fcf7, type: 3}
+  m_Name: AlphaBison
+  m_EditorClassIdentifier: 
+  identifierName: NW_AlphaBison
+  bodyName: Bison
+  overrideName:
+  - {fileID: 11400000, guid: d30df5659accb3340ad3b0af00f3da9d, type: 2}
+  isModded: 0
+  variantConfig: {fileID: 11400000, guid: a0e4f32daa22a2d4f810593d74841d15, type: 2}
+  unique: 0
+  aiModifier: 0
+  variantTier: 1
+  spawnRate: 0
+  givesRewards: 1
+  customVariantReward: {fileID: 0}
+  customInventory: []
+  variantInventory: {fileID: 11400000, guid: bebf7c6c5cdd37f47b78a9292e715eae, type: 2}
+  customEquipment: {fileID: 0}
+  buff: []
+  skillReplacement: []
+  healthMultiplier: 1.3
+  moveSpeedMultiplier: 1
+  attackSpeedMultiplier: 2
+  damageMultiplier: 1
+  armorMultiplier: 1
+  armorBonus: 10
+  arrivalMessage: 
+  meshReplacement: []
+  materialReplacement:
+  - {fileID: 11400000, guid: aab7947ba8278a949a90812e8d46aea7, type: 2}
+  - {fileID: 11400000, guid: 29c0b7d44fa941d4991b2ed1328888c9, type: 2}
+  lightReplacement: []
+  sizeModifier: {fileID: 11400000, guid: 9e886695abeffb24d8b49c8a501f4587, type: 2}
+  extraComponents: []
+  customDeathState: 

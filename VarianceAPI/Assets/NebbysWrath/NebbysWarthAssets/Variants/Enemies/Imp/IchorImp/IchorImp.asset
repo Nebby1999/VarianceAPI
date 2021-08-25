@@ -1,0 +1,46 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79a5320670080e4ca1f32487d59fcf7, type: 3}
+  m_Name: IchorImp
+  m_EditorClassIdentifier: 
+  identifierName: NW_IchorImp
+  bodyName: Imp
+  overrideName:
+  - {fileID: 11400000, guid: 10be1194ea227214d876cabd288d8516, type: 2}
+  isModded: 0
+  variantConfig: {fileID: 11400000, guid: ceba67cdff4413748adb523ec02a6f16, type: 2}
+  unique: 0
+  aiModifier: 0
+  variantTier: 1
+  spawnRate: 0
+  givesRewards: 1
+  customVariantReward: {fileID: 0}
+  customInventory: []
+  variantInventory: {fileID: 11400000, guid: dd1a7afcccf9667499c788c1e20591ee, type: 2}
+  customEquipment: {fileID: 0}
+  buff: []
+  skillReplacement:
+  - {fileID: 11400000, guid: e65ae26ba7a81ce48a06aa8f2c8c4c71, type: 2}
+  healthMultiplier: 1
+  moveSpeedMultiplier: 1
+  attackSpeedMultiplier: 1
+  damageMultiplier: 1
+  armorMultiplier: 1
+  armorBonus: 10
+  arrivalMessage: 
+  meshReplacement: []
+  materialReplacement:
+  - {fileID: 11400000, guid: 711a6fa92d8758c4d8e99b5803dbd2fa, type: 2}
+  lightReplacement: []
+  sizeModifier: {fileID: 0}
+  extraComponents: []
+  customDeathState: 

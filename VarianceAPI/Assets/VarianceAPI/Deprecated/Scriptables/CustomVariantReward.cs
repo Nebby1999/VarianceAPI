@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "CustomVariantReward", menuName = "VarianceAPI/CustomVariantReward")]
+    [CreateAssetMenu(fileName = "CustomVariantReward", menuName = "VAPI_OLD/CustomVariantReward")]
     public class CustomVariantReward : ScriptableObject
     {
         [Header("Death Rewards")]

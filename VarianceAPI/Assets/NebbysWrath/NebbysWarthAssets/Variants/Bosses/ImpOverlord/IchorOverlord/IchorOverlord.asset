@@ -1,0 +1,50 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79a5320670080e4ca1f32487d59fcf7, type: 3}
+  m_Name: IchorOverlord
+  m_EditorClassIdentifier: 
+  identifierName: NW_IchorOverlord
+  bodyName: ImpBoss
+  overrideName:
+  - {fileID: 11400000, guid: 04491446d99e7a24590d331ec948bd75, type: 2}
+  isModded: 0
+  variantConfig: {fileID: 11400000, guid: 95054bcb8f6e11e48a9b5f9a19d0dc4b, type: 2}
+  unique: 0
+  aiModifier: 0
+  variantTier: 0
+  spawnRate: 0
+  givesRewards: 1
+  customVariantReward: {fileID: 0}
+  customInventory: []
+  variantInventory: {fileID: 11400000, guid: 8e3c2e4604b0ba643a65b59a43e6fa7a, type: 2}
+  customEquipment: {fileID: 0}
+  buff: []
+  skillReplacement:
+  - {fileID: 11400000, guid: 568e949e8ce7d124e944dcfa9d73e080, type: 2}
+  healthMultiplier: 1
+  moveSpeedMultiplier: 1
+  attackSpeedMultiplier: 1
+  damageMultiplier: 1
+  armorMultiplier: 1
+  armorBonus: -50
+  arrivalMessage: 
+  meshReplacement: []
+  materialReplacement:
+  - {fileID: 11400000, guid: 41dd66f5a54800b41b4797ae3199f9d4, type: 2}
+  - {fileID: 11400000, guid: 43deb84e867e23743935b256fd0e4c8d, type: 2}
+  - {fileID: 11400000, guid: 938cd09a093218142b8a55f5b5289803, type: 2}
+  lightReplacement:
+  - {fileID: 11400000, guid: c9d01f273882d3348b4b024a6aa3754a, type: 2}
+  - {fileID: 11400000, guid: fb5cc7aa05802ab4f9763d82a8461375, type: 2}
+  sizeModifier: {fileID: 0}
+  extraComponents: []
+  customDeathState: 

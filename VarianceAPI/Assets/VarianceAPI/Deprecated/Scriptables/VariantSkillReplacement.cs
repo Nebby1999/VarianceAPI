@@ -9,6 +9,7 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
+    [CreateAssetMenu(fileName = "SkillReplacement", menuName = "VAPI_OLD/SkillReplacement")]
     public class VariantSkillReplacement : ScriptableObject
     {
         [Header("Variant Skill Replacement")]

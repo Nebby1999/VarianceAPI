@@ -7,6 +7,7 @@ using UnityEngine;
 
 namespace VarianceAPI.Scriptables
 {
+    [CreateAssetMenu(fileName = "OverrideName", menuName = "VAPI_OLD/OverrideName")]
     public class VariantOverrideName : ScriptableObject
     {
         [Header("Variant Override Name")]

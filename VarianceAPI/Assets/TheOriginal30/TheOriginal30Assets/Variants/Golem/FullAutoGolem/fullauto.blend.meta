@@ -1,0 +1,188 @@
+fileFormatVersion: 2
+guid: e2adc36225557f641b8ee4867d409a66
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: Armature
+    100002: armIKpole.l
+    100004: armIKpole.l_end
+    100006: armIKpole.r
+    100008: armIKpole.r_end
+    100010: armIKtarget.l
+    100012: armIKtarget.r
+    100014: base
+    100016: calf.l
+    100018: calf.l_end
+    100020: calf.r
+    100022: calf.r_end
+    100024: chest
+    100026: f1.l
+    100028: f1.l_end
+    100030: f1.r
+    100032: f1.r_end
+    100034: //RootNode
+    100036: golem
+    100038: hand.l
+    100040: hand.r
+    100042: head
+    100044: head_end
+    100046: ik-leg.l
+    100048: ik-leg.r
+    100050: knee.l
+    100052: knee.l_end
+    100054: knee.r
+    100056: knee.r_end
+    100058: lower_arm.l
+    100060: lower_arm.r
+    100062: pelvis
+    100064: ROOT
+    100066: stomach
+    100068: thigh.l
+    100070: thigh.r
+    100072: thumb.l
+    100074: thumb.l_end
+    100076: thumb.r
+    100078: thumb.r_end
+    100080: upper_arm.l
+    100082: upper_arm.l.001
+    100084: upper_arm.l.002
+    100086: upper_arm.r
+    100088: upper_arm.r.001
+    100090: upper_arm.r.002
+    400000: Armature
+    400002: armIKpole.l
+    400004: armIKpole.l_end
+    400006: armIKpole.r
+    400008: armIKpole.r_end
+    400010: armIKtarget.l
+    400012: armIKtarget.r
+    400014: base
+    400016: calf.l
+    400018: calf.l_end
+    400020: calf.r
+    400022: calf.r_end
+    400024: chest
+    400026: f1.l
+    400028: f1.l_end
+    400030: f1.r
+    400032: f1.r_end
+    400034: //RootNode
+    400036: golem
+    400038: hand.l
+    400040: hand.r
+    400042: head
+    400044: head_end
+    400046: ik-leg.l
+    400048: ik-leg.r
+    400050: knee.l
+    400052: knee.l_end
+    400054: knee.r
+    400056: knee.r_end
+    400058: lower_arm.l
+    400060: lower_arm.r
+    400062: pelvis
+    400064: ROOT
+    400066: stomach
+    400068: thigh.l
+    400070: thigh.r
+    400072: thumb.l
+    400074: thumb.l_end
+    400076: thumb.r
+    400078: thumb.r_end
+    400080: upper_arm.l
+    400082: upper_arm.l.001
+    400084: upper_arm.l.002
+    400086: upper_arm.r
+    400088: upper_arm.r.001
+    400090: upper_arm.r.002
+    2100000: matGolem
+    4300000: golem
+    9500000: //RootNode
+    13700000: golem
+    2186277476908879412: ImportLogs
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

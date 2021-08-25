@@ -1,4 +1,4 @@
-﻿using System;
+﻿/*using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -197,7 +197,7 @@ public class VariantInfoCreator : MonoBehaviour
         return toReturn.ToArray();
     }
 
-    private static VariantSizeModifier CreateNewSizeModifier(VariantSizeModifier sizeModifier)
+    private static VariantSizeModifier CreateNewSizeModifier(VarianceAPI.Scriptables.VariantSizeModifier sizeModifier)
     {
         var toReturn = ScriptableObject.CreateInstance<VariantSizeModifier>();
         toReturn.newSize = sizeModifier.newSize;
@@ -223,3 +223,4 @@ public class VariantInfoCreator : MonoBehaviour
         return toReturn.ToArray();
     }
 }
+*/

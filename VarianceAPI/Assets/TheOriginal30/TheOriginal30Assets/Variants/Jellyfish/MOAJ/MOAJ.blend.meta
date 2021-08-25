@@ -1,0 +1,236 @@
+fileFormatVersion: 2
+guid: 26606325349de254cba48fc55b6f6ab0
+ModelImporter:
+  serializedVersion: 23
+  fileIDToRecycleName:
+    100000: Armature
+    100002: Armature.001
+    100004: Base
+    100006: Base 1
+    100008: Hull.1
+    100010: Hull.1 1
+    100012: Hull.2
+    100014: Hull.2 1
+    100016: Hull.3
+    100018: Hull.3 1
+    100020: Hull.3_end
+    100022: Hull.3_end 1
+    100024: JellyArm.l.001
+    100026: JellyArm.l.001 1
+    100028: JellyArm.l.002
+    100030: JellyArm.l.002 1
+    100032: JellyArm.l.003
+    100034: JellyArm.l.003 1
+    100036: JellyArm.l.004
+    100038: JellyArm.l.004 1
+    100040: JellyArm.l.005
+    100042: JellyArm.l.005 1
+    100044: JellyArm.l.006
+    100046: JellyArm.l.006 1
+    100048: JellyArm.l.007
+    100050: JellyArm.l.007 1
+    100052: JellyArm.l.008
+    100054: JellyArm.l.008 1
+    100056: JellyArm.l.008_end
+    100058: JellyArm.l.008_end 1
+    100060: JellyArm.r.001
+    100062: JellyArm.r.001 1
+    100064: JellyArm.r.002
+    100066: JellyArm.r.002 1
+    100068: JellyArm.r.003
+    100070: JellyArm.r.003 1
+    100072: JellyArm.r.004
+    100074: JellyArm.r.004 1
+    100076: JellyArm.r.005
+    100078: JellyArm.r.005 1
+    100080: JellyArm.r.006
+    100082: JellyArm.r.006 1
+    100084: JellyArm.r.007
+    100086: JellyArm.r.007 1
+    100088: JellyArm.r.008
+    100090: JellyArm.r.008 1
+    100092: JellyArm.r.008_end
+    100094: JellyArm.r.008_end 1
+    100096: JellyfishMesh
+    100098: JellyStub.1.001
+    100100: JellyStub.1.001 1
+    100102: JellyStub.1.002
+    100104: JellyStub.1.002 1
+    100106: JellyStub.1.003
+    100108: JellyStub.1.003 1
+    100110: JellyStub.1.004
+    100112: JellyStub.1.004 1
+    100114: JellyStub.1.004_end
+    100116: JellyStub.1.004_end 1
+    100118: JellyStub.1.005
+    100120: JellyStub.1.005 1
+    100122: JellyStub.1.006
+    100124: JellyStub.1.006 1
+    100126: JellyStub.1.007
+    100128: JellyStub.1.007 1
+    100130: JellyStub.1.008
+    100132: JellyStub.1.008 1
+    100134: JellyStub.1.008_end
+    100136: JellyStub.1.008_end 1
+    100138: //RootNode
+    400000: Armature
+    400002: Armature.001
+    400004: Base
+    400006: Base 1
+    400008: Hull.1
+    400010: Hull.1 1
+    400012: Hull.2
+    400014: Hull.2 1
+    400016: Hull.3
+    400018: Hull.3 1
+    400020: Hull.3_end
+    400022: Hull.3_end 1
+    400024: JellyArm.l.001
+    400026: JellyArm.l.001 1
+    400028: JellyArm.l.002
+    400030: JellyArm.l.002 1
+    400032: JellyArm.l.003
+    400034: JellyArm.l.003 1
+    400036: JellyArm.l.004
+    400038: JellyArm.l.004 1
+    400040: JellyArm.l.005
+    400042: JellyArm.l.005 1
+    400044: JellyArm.l.006
+    400046: JellyArm.l.006 1
+    400048: JellyArm.l.007
+    400050: JellyArm.l.007 1
+    400052: JellyArm.l.008
+    400054: JellyArm.l.008 1
+    400056: JellyArm.l.008_end
+    400058: JellyArm.l.008_end 1
+    400060: JellyArm.r.001
+    400062: JellyArm.r.001 1
+    400064: JellyArm.r.002
+    400066: JellyArm.r.002 1
+    400068: JellyArm.r.003
+    400070: JellyArm.r.003 1
+    400072: JellyArm.r.004
+    400074: JellyArm.r.004 1
+    400076: JellyArm.r.005
+    400078: JellyArm.r.005 1
+    400080: JellyArm.r.006
+    400082: JellyArm.r.006 1
+    400084: JellyArm.r.007
+    400086: JellyArm.r.007 1
+    400088: JellyArm.r.008
+    400090: JellyArm.r.008 1
+    400092: JellyArm.r.008_end
+    400094: JellyArm.r.008_end 1
+    400096: JellyfishMesh
+    400098: JellyStub.1.001
+    400100: JellyStub.1.001 1
+    400102: JellyStub.1.002
+    400104: JellyStub.1.002 1
+    400106: JellyStub.1.003
+    400108: JellyStub.1.003 1
+    400110: JellyStub.1.004
+    400112: JellyStub.1.004 1
+    400114: JellyStub.1.004_end
+    400116: JellyStub.1.004_end 1
+    400118: JellyStub.1.005
+    400120: JellyStub.1.005 1
+    400122: JellyStub.1.006
+    400124: JellyStub.1.006 1
+    400126: JellyStub.1.007
+    400128: JellyStub.1.007 1
+    400130: JellyStub.1.008
+    400132: JellyStub.1.008 1
+    400134: JellyStub.1.008_end
+    400136: JellyStub.1.008_end 1
+    400138: //RootNode
+    2100000: matJellyfish
+    2100002: matJellyfish.001
+    4300000: JellyfishMesh
+    9500000: //RootNode
+    13700000: JellyfishMesh
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    useSRGBMaterialColor: 1
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+    previousCalculatedGlobalScale: 1
+    hasPreviousCalculatedGlobalScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+    legacyComputeAllNormalsFromSmoothingGroupsWhenMeshHasBlendShapes: 0
+    blendShapeNormalImportMode: 1
+    normalSmoothingSource: 0
+  importAnimation: 1
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 2
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

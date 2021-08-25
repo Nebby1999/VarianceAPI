@@ -1,0 +1,47 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79a5320670080e4ca1f32487d59fcf7, type: 3}
+  m_Name: InfernalWisp
+  m_EditorClassIdentifier: 
+  identifierName: TO30_InfernalWisp
+  bodyName: Wisp
+  overrideName:
+  - {fileID: 11400000, guid: 5604741f6c4f8ef4492beb21fbde7441, type: 2}
+  isModded: 0
+  variantConfig: {fileID: 11400000, guid: cfd25bf1ce0016744aaf7361ab276cb6, type: 2}
+  unique: 0
+  aiModifier: 0
+  variantTier: 2
+  spawnRate: 0
+  givesRewards: 1
+  customVariantReward: {fileID: 0}
+  customInventory: []
+  variantInventory: {fileID: 11400000, guid: bd81f34451e41ab4a86e7a0fd7cb15e9, type: 2}
+  customEquipment: {fileID: 0}
+  buff: []
+  skillReplacement: []
+  healthMultiplier: 1
+  moveSpeedMultiplier: 0.8
+  attackSpeedMultiplier: 0.6
+  damageMultiplier: 2
+  armorMultiplier: 1
+  armorBonus: 0
+  arrivalMessage: 
+  meshReplacement: []
+  materialReplacement:
+  - {fileID: 11400000, guid: 6d51bd71399016645b59a6a186ad659f, type: 2}
+  - {fileID: 11400000, guid: 55741207e43e4724eac7213c73aa4a7c, type: 2}
+  lightReplacement:
+  - {fileID: 11400000, guid: b7aabbbcfd489424fb9b4fd4679baf87, type: 2}
+  sizeModifier: {fileID: 11400000, guid: b09f23e21d8dadf4e8932255295d6fe6, type: 2}
+  extraComponents: []
+  customDeathState: 

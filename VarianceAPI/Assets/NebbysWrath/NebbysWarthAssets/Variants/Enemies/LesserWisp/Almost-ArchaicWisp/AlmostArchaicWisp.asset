@@ -1,0 +1,48 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c79a5320670080e4ca1f32487d59fcf7, type: 3}
+  m_Name: AlmostArchaicWisp
+  m_EditorClassIdentifier: 
+  identifierName: NW_AlmostArchaicWisp
+  bodyName: Wisp
+  overrideName:
+  - {fileID: 11400000, guid: c91d31a9708cae9498090cd218ffb436, type: 2}
+  isModded: 0
+  variantConfig: {fileID: 11400000, guid: d14ef770e9247bb4d815cd782b975ce3, type: 2}
+  unique: 0
+  aiModifier: 0
+  variantTier: 1
+  spawnRate: 0
+  givesRewards: 1
+  customVariantReward: {fileID: 0}
+  customInventory: []
+  customEquipment: {fileID: 0}
+  usesEquipment: 0
+  buff: []
+  skillReplacement:
+  - {fileID: 11400000, guid: 86e37fff400ce114dbbed227c5962cd3, type: 2}
+  healthMultiplier: 5
+  moveSpeedMultiplier: 1
+  attackSpeedMultiplier: 1
+  damageMultiplier: 1
+  armorMultiplier: 1
+  armorBonus: 0
+  arrivalMessage: 
+  meshReplacement: []
+  materialReplacement:
+  - {fileID: 11400000, guid: e0f9941620d91c34497da8f1bad668f9, type: 2}
+  - {fileID: 11400000, guid: 3a3d95cdb47d16a4f9a92336896e9b03, type: 2}
+  lightReplacement:
+  - {fileID: 11400000, guid: e2596454ac134aa40903252ba9377fd6, type: 2}
+  sizeModifier: {fileID: 11400000, guid: d96a92b697d859f4cacfffb3fe23f2d0, type: 2}
+  extraComponents: []
+  customDeathState: 

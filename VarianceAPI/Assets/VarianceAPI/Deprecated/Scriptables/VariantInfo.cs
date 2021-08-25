@@ -10,7 +10,7 @@ using VarianceAPI.ScriptableObjects;
 
 namespace VarianceAPI.Scriptables
 {
-    [CreateAssetMenu(fileName = "ass", menuName = "Ass")]
+    [CreateAssetMenu(fileName = "VariantInfo", menuName = "VAPI_OLD/VariantInfo")]
     public class VariantInfo : ScriptableObject
     {
         [Header("Important Settings")]
