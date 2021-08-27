@@ -118,7 +118,7 @@ MonoBehaviour:
   Dependencies:
   - {fileID: 11400000, guid: 6893422731aa6d67012f5f4d8209c304, type: 2}
   - {fileID: 11400000, guid: cbb5f83c7c6c0f5c9aa4cc80aa694344, type: 2}
-  - {fileID: 11400000, guid: 00000000000000000000000000000000, type: 0}
+  - {fileID: 11400000, guid: 879868159ff788f429c080c76b024e0c, type: 2}
 --- !u!114 &114906774016037248
 MonoBehaviour:
   m_ObjectHideFlags: 0

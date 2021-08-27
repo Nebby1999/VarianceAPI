@@ -8,8 +8,6 @@ namespace VarianceAPI.Components
 {
     public class VariantRewardHandler : MonoBehaviour
     {
-        static readonly float Offset = 2f * Mathf.PI / Run.instance.participatingPlayerCount;
-
         public VariantInfo[] VariantInfos;
         private VariantTier highestTier;
 
@@ -23,9 +21,9 @@ namespace VarianceAPI.Components
         public float greenChance;
         public float redChance;
 
-        private List<PickupIndex> redItems = Run.instance.availableTier3DropList;
-        private List<PickupIndex> greenItems = Run.instance.availableTier2DropList;
-        private List<PickupIndex> whiteItems = Run.instance.availableTier1DropList;
+        private List<PickupIndex> redItems;
+        private List<PickupIndex> greenItems;
+        private List<PickupIndex> whiteItems;
 
         private int nextRedItem;
         private int nextGreenItem;
@@ -33,12 +31,16 @@ namespace VarianceAPI.Components
 
         public void Start()
         {
-            deathRewards = gameObject.GetComponent<DeathRewards>();
-            characterBody = gameObject.GetComponent<CharacterBody>();
+            deathRewards = base.GetComponent<DeathRewards>();
+            characterBody = base.GetComponent<CharacterBody>();
 
             nextWhiteItem = Run.instance.treasureRng.RangeInt(0, whiteItems.Count);
             nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
             nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
+
+            redItems = Run.instance.availableTier3DropList;
+            greenItems = Run.instance.availableTier2DropList;
+            whiteItems = Run.instance.availableTier1DropList;
 
             if(ConfigLoader.EnableItemRewards.Value)
             {
@@ -102,6 +104,11 @@ namespace VarianceAPI.Components
                     break;
             }
             #endregion
+
+            #region Gold and XP Rewards
+            deathRewards.goldReward *= (uint)goldMult;
+            deathRewards.expReward *= (uint)xpMult;
+            #endregion
         }
 
         private void SpawnDroplet(DamageReport damageReport)
@@ -147,15 +154,22 @@ namespace VarianceAPI.Components
                 }
             }
         }
-        private static void CreateDroplet(List<PickupIndex> itemList, int nextItem, DamageReport damageReport)
+        private void CreateDroplet(List<PickupIndex> itemList, int nextItem, DamageReport damageReport)
         {
             if (ConfigLoader.ItemRewardsSpawnsOnPlayer.Value)
             {
-                PickupDropletController.CreatePickupDroplet(itemList[nextItem], damageReport.attackerBody.transform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
+                PickupDropletController.CreatePickupDroplet(itemList[nextItem], damageReport.attackerBody.transform.position, (Vector3.up * 20) + (Vector3.right * Random.Range(1,5) + (Vector3.forward * Random.Range(1,5))));
             }
             else
             {
-                PickupDropletController.CreatePickupDroplet(itemList[nextItem], damageReport.victimBody.transform.position, (Vector3.up * 20f) + (5 * Vector3.right * Mathf.Cos(Offset)) + (5 * Vector3.forward * Mathf.Sin(Offset)));
+                PickupDropletController.CreatePickupDroplet(itemList[nextItem], damageReport.attackerBody.transform.position, (Vector3.up * 20) + (Vector3.right * Random.Range(1, 5) + (Vector3.forward * Random.Range(1, 5))));
+            }
+        }
+        private void OnDestroy()
+        {
+            if (ConfigLoader.EnableItemRewards.Value)
+            {
+                GlobalEventManager.onCharacterDeathGlobal -= SpawnDroplet;
             }
         }
     }

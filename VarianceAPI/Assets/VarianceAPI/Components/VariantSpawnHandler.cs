@@ -14,8 +14,8 @@ namespace VarianceAPI.Components
     [DisallowMultipleComponent]
     public class VariantSpawnHandler : MonoBehaviour
     {
-        [HideInInspector]
-        internal VariantInfo[] variantInfos;
+        
+        internal VariantInfo[] variantInfos = Array.Empty<VariantInfo>();
 
         public VariantHandler VariantHandler
         {
@@ -37,48 +37,62 @@ namespace VarianceAPI.Components
         {
             get
             {
-                return variantInfos.Where(variantInfo => variantInfo.unique).ToArray();
+                var toReturn = variantInfos.Where(variantInfo => variantInfo.unique == true).ToArray();
+                Debug.Log(toReturn);
+                return toReturn;
             }
         }
         public VariantInfo[] NotUniqueVariantInfos
         {
             get
             {
-                return variantInfos.Where(variantInfo => !variantInfo.unique).ToArray();
+                var toReturn = variantInfos.Where(variantInfo => variantInfo.unique == false).ToArray();
+                Debug.Log(toReturn);
+                return toReturn;
             }
         }
-        public VariantInfo[] EnabledVariantInfos;
+        public VariantInfo[] EnabledVariantInfos = Array.Empty<VariantInfo>();
 
-        public void Awake()
+        public void Start()
         {
             var spawnRateMult = 1f;
             //If artifact is enabled, multiply spawn rates.
-            if (RunArtifactManager.instance.IsArtifactEnabled(Assets.VAPIAssets.LoadAsset<ArtifactDef>("VarianceDef")))
+            if (RunArtifactManager.instance.IsArtifactEnabled(Assets.VAPIAssets.LoadAsset<ArtifactDef>("Variance")))
                 spawnRateMult = ConfigLoader.VarianceMultiplier.Value;
-
+            Debug.Log("Creating list.");
             List<VariantInfo> enabledVariants = new List<VariantInfo>();
-            for(int i = 0; i < UniqueVariantInfos.Length; i++)
+            Debug.Log("made the list");
+            Debug.Log(UniqueVariantInfos.Length);
+            if (UniqueVariantInfos.Length != 0)
             {
-                var variantInfo = UniqueVariantInfos[i];
-                if(Util.CheckRoll(variantInfo.spawnRate * spawnRateMult))
+                Debug.Log("Entering Foreach...");
+                foreach (VariantInfo v in UniqueVariantInfos)
                 {
-                    enabledVariants.Add(variantInfo);
-                    EnabledVariantInfos = enabledVariants.ToArray();
-                    return;
+                    Debug.Log("Foreach!");
+                    if (Util.CheckRoll(v.spawnRate * spawnRateMult))
+                    {
+                        enabledVariants.Add(v);
+                        EnabledVariantInfos = enabledVariants.ToArray();
+                        return;
+                    }
                 }
             }
 
-            for(int i = 0; i < NotUniqueVariantInfos.Length; i++)
+            if (NotUniqueVariantInfos.Length != 0)
             {
-                var variantInfo = NotUniqueVariantInfos[i];
-                if(Util.CheckRoll(variantInfo.spawnRate * spawnRateMult))
+                for (int i = 0; i < NotUniqueVariantInfos.Length; i++)
                 {
-                    enabledVariants.Add(variantInfo);
+                    var variantInfo = NotUniqueVariantInfos[i];
+                    if (Util.CheckRoll(variantInfo.spawnRate * spawnRateMult))
+                    {
+                        enabledVariants.Add(variantInfo);
+                    }
                 }
             }
             EnabledVariantInfos = enabledVariants.ToArray();
+            ModifyComponents();
         }
-        public void Start()
+        public void ModifyComponents()
         {
 
             VariantHandler.VariantInfos = EnabledVariantInfos;
