@@ -132,6 +132,10 @@ public class VariantInfoCreator : MonoBehaviour
         {
             var toAdd = new VariantInventoryInfo.VariantInventory();
             toAdd.amount = itemInventory.counts[i];
+            if(itemInventory.itemStrings[i].StartsWith("VAPI_"))
+            {
+                itemInventory.itemStrings[i] = itemInventory.itemStrings[i].Replace("VAPI_", string.Empty);
+            }
             toAdd.itemDefName = itemInventory.itemStrings[i];
             toReturn.Add(toAdd);
         }

@@ -14,12 +14,13 @@ namespace VarianceAPI
     {
         public static Dictionary<string, List<VariantInfo>> RegisteredVariants = new Dictionary<string, List<VariantInfo>>();
 
-        public static void Awake()
+        public static void Initialize()
         {
-            ContentManager.onContentPacksAssigned += RegisterVariants;
+            RoR2Application.onLoad += RegisterVariants;
+            VAPILog.LogI("Subscribed to RoR2Application.onLoad");
         }
 
-        private static void RegisterVariants(HG.ReadOnlyArray<ReadOnlyContentPack> obj)
+        private static void RegisterVariants()
         {
             VAPILog.LogI("Modifying CharacterBody prefabs...");
             foreach(var kvp in RegisteredVariants)
@@ -27,10 +28,20 @@ namespace VarianceAPI
                 var bodyPrefab = BodyCatalog.FindBodyPrefab(kvp.Key);
                 if((bool)bodyPrefab)
                 {
+                    Debug.Log("A");
                     var spawnHandler = bodyPrefab.AddComponent<VariantSpawnHandler>();
+                    Debug.Log("B");
                     var variantHandler = bodyPrefab.AddComponent<VariantHandler>();
-                    var rewardHandler = ConfigLoader.VariantsGiveRewards.Value ? bodyPrefab.AddComponent<VariantRewardHandler>() : null;
-
+                    Debug.Log("C");
+                    VariantRewardHandler rewardHandler = null;
+                    Debug.Log("D");
+                    if(ConfigLoader.VariantsGiveRewards.Value)
+                    {
+                        Debug.Log("E");
+                        rewardHandler = bodyPrefab.AddComponent<VariantRewardHandler>();
+                        Debug.Log("F");
+                    }
+                    Debug.Log("G");
                     spawnHandler.variantInfos = kvp.Value.ToArray();
 
                     VAPILog.LogI($"Added components {spawnHandler}, {variantHandler}, {rewardHandler} to the bodyPrefab {kvp.Key}");
@@ -69,19 +80,17 @@ namespace VarianceAPI
 
             if(!RegisteredVariants.ContainsKey(variantInfo.bodyName))
             {
+                VAPILog.LogI($"Ass");
                 RegisteredVariants.Add(variantInfo.bodyName, new List<VariantInfo>());
             }
-
-            if (RegisteredVariants[variantInfo.bodyName].Find(x => x.identifier == variantInfo.identifier).identifier == variantInfo.identifier)
-            {
-                RegisteredVariants[variantInfo.bodyName].Add(variantInfo);
-                VAPILog.LogD($"Added {variantInfo.identifier} to the list for {variantInfo.bodyName}");
-            }
-            else
+            VAPILog.LogI("Ass2");
+            RegisteredVariants[variantInfo.bodyName].Add(variantInfo);
+            VAPILog.LogD($"Added {variantInfo.identifier} to the list for {variantInfo.bodyName}");
+            /*else
             {
                 VAPILog.LogW($"A VariantInfo with the identifier {variantInfo.identifier} has already been added to the VariantInfo list for the body of name {variantInfo.bodyName}. Aborting.");
                 return;
-            }
+            }*/
         }
 
         //Adds all the variantInfos found in the AssetBundle.

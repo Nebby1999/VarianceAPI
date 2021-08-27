@@ -47,7 +47,7 @@ namespace VarianceAPI
         //Artifact of Variance settings
         internal static ConfigEntry<bool> EnableArtifactOfVariance;
         internal static ConfigEntry<float> VarianceMultiplier;
-        public static void SetupConfigLoader(ConfigFile config)
+        public static void Initialize(ConfigFile config)
         {
             //Global Settings
             VariantsGiveRewards = config.Bind<bool>("1 - Global Settings", "All Variants Give Rewards", true, "When this is set to True, all variants who have the \"givesRewards\" bool have extra rewards.\nVariants who dont have the givesRewards bool active never drop rewards");

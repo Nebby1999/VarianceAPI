@@ -1,0 +1,33 @@
+{
+    "strings" : {
+        "VAPI_ARTIFACT_VARIANCE_NAME" : "Artifact of Variance",
+        "VAPI_ARTIFACT_VARIANCE_DESC" : "Variant spawn rate is increased.",
+
+        "VAPI_ITEM_EXTRAPRIMARY_NAME" : "Extra Primary Skill",
+        "VAPI_ITEM_EXTRAPRIMARY_PICKUP" : "Gain an additional stack of your primary skill.",
+        "VAPI_ITEM_EXTRASECONDARY_NAME" : "Extra secondary Skill",
+        "VAPI_ITEM_EXTRASECONDARY_PICKUP" : "Gain an additional stack of your secondary skill.",
+        "VAPI_ITEM_EXTRAUTILITY_NAME" : "Extra utility Skill",
+        "VAPI_ITEM_EXTRAUTILITY_PICKUP" : "Gain an additional stack of your utility skill.",
+        "VAPI_ITEM_EXTRASPECIAL_NAME" : "Extra special Skill",
+        "VAPI_ITEM_EXTRASPECIAL_PICKUP" : "Gain an additional stack of your special skill.",
+
+        "VAPI_ITEM_GLOBALCDR_NAME" : "Global Cooldown Reduction",
+        "VAPI_ITEM_GLOBALCDR_PICKUP" : "Reduces the cooldowns of ALL your skills by 1%.",
+        "VAPI_ITEM_PRIMARYCDR_NAME" : "Primary Cooldown Reduction",
+        "VAPI_ITEM_PRIMARYCDR_PICKUP" : "Reduces the cooldown of your primary skill by 1%.",
+        "VAPI_ITEM_SECONDARYCDR_NAME" : "Secondary Cooldown Reduction",
+        "VAPI_ITEM_SECONDARYCDR_PICKUP" : "Reduces the cooldown of your secondary skill by 1%.",
+        "VAPI_ITEM_UTILITYCDR_NAME" : "Utility Cooldown Reduction",
+        "VAPI_ITEM_UTILITYCDR_PICKUP" : "Reduces the cooldown of your utility skill by 1%.",
+        "VAPI_ITEM_SPECIALCDR_NAME" : "Special Cooldown Reduction",
+        "VAPI_ITEM_SPECIALCDR_PICKUP" : "Reduces the cooldown of your special skill by 1%.",
+    
+        "VAPI_ITEM_PLUS1CRIT_NAME" : "+1 Crit",
+        "VAPI_ITEM_PLUS1CRIT_PICKUP" : "Increases your critical strike chance by 1%.",
+        "VAPI_ITEM_PURPLEHEALTHBAR_NAME" : "Purple Healthbar",
+        "VAPI_ITEM_PURPLEHEALTHBAR_PICKUP" : "Your Healthbar is purple."
+    },
+    "es-419" : {
+    }
+}

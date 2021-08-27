@@ -3,6 +3,7 @@ using RoR2;
 using UnityEngine;
 using System.IO;
 using System;
+using RoR2.ContentManagement;
 
 namespace VarianceAPI
 {
@@ -16,13 +17,14 @@ namespace VarianceAPI
             }
         }
 
-        private const string VAPIAssetsName = "VAPIAssets";
+        private const string VAPIAssetsName = "/VAPIAssets";
 
-        public static AssetBundle VAPIAssets { get; private set; }
+        public static AssetBundle VAPIAssets { get; set; }
 
         internal static void Initialize()
         {
             VAPIAssets = AssetBundle.LoadFromFile(assemblyPath + VAPIAssetsName);
+            ContentPacks.serializableContentPack = VAPIAssets.LoadAsset<SerializableContentPack>("VAPIContent");
 
             var GameMaterials = Resources.FindObjectsOfTypeAll<Material>();
             MapMaterials(VAPIAssets.LoadAllAssets<Material>(), GameMaterials);
@@ -30,7 +32,6 @@ namespace VarianceAPI
 
         private static void MapMaterials(Material[] materials, Material[] gameMaterials)
         {
-            throw new NotImplementedException();
         }
     }
 }

@@ -20,37 +20,31 @@ using Path = System.IO.Path;
 #pragma warning restore CS0618 // Type or member is obsolete
 namespace TheOriginal30
 {
-	[BepInPlugin("com.Nebby.TheOriginal30", "VP - The Original 30", "1.1.7")]
+	[BepInPlugin(GUID, NAME, VERSION)]
 	[BepInDependency("com.Nebby.VarianceAPI", BepInDependency.DependencyFlags.HardDependency)]
 	public class MainClass : BaseUnityPlugin
 	{
-		public static MainClass instance;
 		public static AssetBundle theOriginal30Assets = null;
-		internal static string assetBundleName = "TheOriginal30Assets";
+		internal static string assetBundleName = "/TheOriginal30Assets";
+
+		public const string GUID = "com.Nebby.TheOriginal30";
+		public const string NAME = "VP - The Original 30";
+		public const string VERSION = "1.2.0";
 
 		internal static GameObject missileLauncherDisplayPrefab; // gotta cache this for lemurians
 
 		public void Awake()
 		{
-			instance = this;
-			GrabMaterials();
 			LoadAssets();
-			FixMaterials();
 			RegisterContentPack();
-			/*GrabVanillaMaterials();
-			RegisterVariants();*/
-		}
-		private void GrabMaterials()
-		{
-			ItemDisplayRuleSet IDRS = Resources.Load<GameObject>("Prefabs/CharacterBodies/CommandoBody").GetComponent<ModelLocator>().modelTransform.GetComponent<CharacterModel>().itemDisplayRuleSet;
-			missileLauncherDisplayPrefab = IDRS.FindDisplayRuleGroup(RoR2Content.Equipment.CommandMissile).rules[0].followerPrefab;
+			VarianceAPI.VariantRegister.AddVariant(theOriginal30Assets, Config);
 		}
 		private void LoadAssets()
 		{
-			var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			theOriginal30Assets = AssetBundle.LoadFromFile(Path.Combine(path, assetBundleName));
+			var path = Path.GetDirectoryName(Info.Location);
+			theOriginal30Assets = AssetBundle.LoadFromFile(path + assetBundleName);
 		}
-		private void FixMaterials()
+		/*private void FixMaterials()
         {
 			var Materials = theOriginal30Assets.LoadAllAssets<Material>();
 			foreach (Material material in Materials)
@@ -60,12 +54,17 @@ namespace TheOriginal30
 					material.shader = Resources.Load<Shader>("shaders" + material.shader.name.Substring(13));
                 }
             }
-        }
+        }*/
         public void RegisterContentPack()
         {
             ContentPackProvider.serializedContentPack = theOriginal30Assets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
 			ContentPackProvider.Initialize();
         }
+		/*private void GrabMaterials()
+		{
+			ItemDisplayRuleSet IDRS = Resources.Load<GameObject>("Prefabs/CharacterBodies/CommandoBody").GetComponent<ModelLocator>().modelTransform.GetComponent<CharacterModel>().itemDisplayRuleSet;
+			missileLauncherDisplayPrefab = IDRS.FindDisplayRuleGroup(RoR2Content.Equipment.CommandMissile).rules[0].followerPrefab;
+		}*/
 		/*public void GrabVanillaMaterials()
         {
 			var MG = new MaterialGrabber();

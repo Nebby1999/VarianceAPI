@@ -1,0 +1,54 @@
+ManifestFileVersion: 0
+CRC: 1829663920
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 9d1c3495ff5433422009528d58c96765
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: fdcb9b04421d1ad4bccbcaee0eb0c092
+HashAppended: 0
+ClassTypes:
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 1032072274, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
+- Class: 114
+  Script: {fileID: -1284244208, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
+- Class: 114
+  Script: {fileID: -281164913, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
+- Class: 114
+  Script: {fileID: 984998165, guid: 48f7509561f8a1a4b8af8070b9473a91, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+- Class: 213
+  Script: {instanceID: 0}
+Assets:
+- Assets/VarianceAPI/Assets/ItemDefs/PurpleHealthbar.asset
+- Assets/VarianceAPI/Assets/ItemDefs/SpecialCDR.asset
+- Assets/VarianceAPI/Assets/VAPIContent.asset
+- Assets/VarianceAPI/Assets/Artifact/Variance.asset
+- Assets/Icons/icoExtraUtility.png
+- Assets/Icons/icoExtraSpecial.png
+- Assets/VarianceAPI/Assets/ItemDefs/UtilityCDR.asset
+- Assets/Icons/icoExtraPrimary.png
+- Assets/VarianceAPI/Assets/ItemDefs/ExtraSecondary.asset
+- Assets/Icons/icoPlus1Crit.png
+- Assets/VarianceAPI/Assets/ItemDefs/Plus1Crit.asset
+- Assets/VarianceAPI/Assets/ItemDefs/ExtraPrimary.asset
+- Assets/VarianceAPI/Assets/ItemDefs/ExtraSpecial.asset
+- Assets/Icons/icoVarianceDisabled.png
+- Assets/VarianceAPI/Assets/ItemDefs/PrimaryCDR.asset
+- Assets/VarianceAPI/Assets/Artifact/VarianceCode.asset
+- Assets/VarianceAPI/Assets/ItemDefs/GlobalCDR.asset
+- Assets/Icons/icoPurpleHealthbar.png
+- Assets/Icons/icoUtilityCDR.png
+- Assets/Icons/icoSpecialCDR.png
+- Assets/Icons/icoExtraSecondary.png
+- Assets/Icons/icoPrimaryCDR.png
+- Assets/VarianceAPI/Assets/ItemDefs/ExtraUtility.asset
+- Assets/Icons/icoSecondaryCDR.png
+- Assets/VarianceAPI/Assets/ItemDefs/SecondaryCDR.asset
+- Assets/Icons/icoVarianceEnabled.png
+- Assets/Icons/icoGlobalCDR.png
+Dependencies: []

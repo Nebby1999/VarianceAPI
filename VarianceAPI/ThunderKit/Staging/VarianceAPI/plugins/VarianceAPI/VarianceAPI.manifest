@@ -1,7 +1,7 @@
 ManifestFileVersion: 0
-CRC: 886566799
+CRC: 98479127
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
-      Name: varianceapiassets
+      Name: vapiassets
       Dependencies: {}
