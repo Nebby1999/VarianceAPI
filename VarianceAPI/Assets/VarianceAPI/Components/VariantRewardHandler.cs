@@ -29,18 +29,20 @@ namespace VarianceAPI.Components
         private int nextGreenItem;
         private int nextWhiteItem;
 
-        public void Start()
+        public void GetStuff()
         {
             deathRewards = base.GetComponent<DeathRewards>();
+            Debug.Log(deathRewards);
             characterBody = base.GetComponent<CharacterBody>();
-
-            nextWhiteItem = Run.instance.treasureRng.RangeInt(0, whiteItems.Count);
-            nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
-            nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
+            Debug.Log(characterBody);
 
             redItems = Run.instance.availableTier3DropList;
             greenItems = Run.instance.availableTier2DropList;
             whiteItems = Run.instance.availableTier1DropList;
+
+            nextWhiteItem = Run.instance.treasureRng.RangeInt(0, whiteItems.Count);
+            nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
+            nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
 
             if(ConfigLoader.EnableItemRewards.Value)
             {
@@ -50,6 +52,13 @@ namespace VarianceAPI.Components
 
         public void Modify()
         {
+            GetStuff();
+            Debug.Log("Reward handler: " + VariantInfos.Length);
+            if(VariantInfos.Length == 0)
+            {
+                Destroy(this);
+                return;
+            }
             #region Gold and XP Multiplier
             foreach (VariantInfo variantInfo in VariantInfos)
             {
@@ -113,29 +122,31 @@ namespace VarianceAPI.Components
 
         private void SpawnDroplet(DamageReport damageReport)
         {
-            if (Run.instance.isRunStopwatchPaused && ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value != "Unchanged")
+            if(damageReport.victimBody.Equals(characterBody))
             {
-                if (ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value == "Halved")
+                Debug.Log("This shuld only appear once.");
+                if (Run.instance.isRunStopwatchPaused && ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value != "Unchanged")
                 {
-                    int rng = UnityEngine.Random.Range(1, 20);
-                    if (rng > 10)
+                    if (ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value == "Halved")
                     {
-                        TrySpawnDroplet(damageReport);
+                        int rng = UnityEngine.Random.Range(1, 20);
+                        if (rng > 10)
+                        {
+                            TrySpawnDroplet(damageReport);
+                        }
                     }
                 }
                 else
                 {
+                    TrySpawnDroplet(damageReport);
                 }
-            }
-            else
-            {
-                TrySpawnDroplet(damageReport);
             }
         }
 
         private void TrySpawnDroplet(DamageReport damageReport)
         {
-            if(damageReport.victimBody == characterBody)
+            CreateDroplet(redItems, nextRedItem, damageReport);
+            /*if(damageReport.victimBody == characterBody)
             {
                 if (damageReport.victimTeamIndex != TeamIndex.Player)
                 {
@@ -152,7 +163,7 @@ namespace VarianceAPI.Components
                         CreateDroplet(whiteItems, nextWhiteItem, damageReport);
                     }
                 }
-            }
+            }*/
         }
         private void CreateDroplet(List<PickupIndex> itemList, int nextItem, DamageReport damageReport)
         {
@@ -162,7 +173,7 @@ namespace VarianceAPI.Components
             }
             else
             {
-                PickupDropletController.CreatePickupDroplet(itemList[nextItem], damageReport.attackerBody.transform.position, (Vector3.up * 20) + (Vector3.right * Random.Range(1, 5) + (Vector3.forward * Random.Range(1, 5))));
+                PickupDropletController.CreatePickupDroplet(itemList[nextItem], damageReport.victimBody.transform.position, (Vector3.up * 20) + (Vector3.right * Random.Range(1, 5) + (Vector3.forward * Random.Range(1, 5))));
             }
         }
         private void OnDestroy()

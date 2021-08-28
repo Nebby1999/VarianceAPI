@@ -8,6 +8,7 @@ using VarianceAPI.Components;
 using VarianceAPI.ScriptableObjects;
 using BepInEx.Configuration;
 using R2API;
+using UnityEditor;
 
 namespace VarianceAPI
 {
@@ -39,14 +40,12 @@ namespace VarianceAPI
                     {
                         rewardHandler = bodyPrefab.AddComponent<VariantRewardHandler>();
                     }
-                    //spawnHandler.variantInfos = kvp.Value.ToArray();
+                    spawnHandler.variantInfos = kvp.Value.ToArray();
                     VAPILog.LogI($"Added components {spawnHandler}, {variantHandler}, {rewardHandler} to the bodyPrefab {kvp.Key}");
                     VAPILog.LogD($"Available {kvp.Key} variants:");
                     kvp.Value.ForEach(variant =>
                     {
                         VAPILog.LogD(variant);
-                        HG.ArrayUtils.ArrayAppend(ref spawnHandler.variantInfos, variant);
-                        Debug.Log(spawnHandler.variantInfos.Length);
                     });
                 }
                 else
