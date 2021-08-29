@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8a27ed5f14bc4b40913359e7345f6ef, type: 3}
+  m_Name: InfernalWisp
+  m_EditorClassIdentifier: 
+  identifier: TO30_InfernalWisp
+  bodyName: WispBody
+  overrideNames:
+  - textToAdd: TO30_INFERNAL_PREFIX
+    overrideType: 0
+  unique: 0
+  aiModifier: 0
+  variantTier: 2
+  spawnRate: 2
+  givesRewards: 1
+  variantInventory: {fileID: 11400000, guid: d298a1b7427b31349ad56bcfc66db5c0, type: 2}
+  skillReplacements: []
+  healthMultiplier: 1
+  moveSpeedMultiplier: 0.8
+  attackSpeedMultiplier: 0.6
+  damageMultiplier: 2
+  armorMultiplier: 1
+  armorBonus: 0
+  visualModifier: {fileID: 11400000, guid: 772963640c8783249a52a898866a6238, type: 2}
+  sizeModifier: {fileID: 11400000, guid: 2423842180d1ca64b864e45cf91faeec, type: 2}
+  arrivalMessage: TO30_INFERNALWISP_ARRIVAL
+  extraComponents: []
+  customDeathState:
+    _typeName: 

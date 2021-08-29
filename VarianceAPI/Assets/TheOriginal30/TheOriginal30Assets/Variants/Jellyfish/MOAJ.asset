@@ -1,0 +1,41 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8a27ed5f14bc4b40913359e7345f6ef, type: 3}
+  m_Name: MOAJ
+  m_EditorClassIdentifier: 
+  identifier: TO30_MOAJ
+  bodyName: JellyfishBody
+  overrideNames:
+  - textToAdd: TO30_MOAJ_SUFFIX
+    overrideType: 1
+  unique: 0
+  aiModifier: 0
+  variantTier: 2
+  spawnRate: 2
+  givesRewards: 1
+  variantInventory: {fileID: 0}
+  skillReplacements:
+  - skillSlot: 1
+    skillDef: {fileID: 11400000, guid: 6e31996c71989684698470a029456de3, type: 2}
+  healthMultiplier: 40
+  moveSpeedMultiplier: 0.4
+  attackSpeedMultiplier: 1
+  damageMultiplier: 1
+  armorMultiplier: 1
+  armorBonus: 80
+  visualModifier: {fileID: 11400000, guid: 0f7b0157b16866b40aeebbe7fbc619e4, type: 2}
+  sizeModifier: {fileID: 11400000, guid: 015eb87961a610444b3f725e2133638b, type: 2}
+  arrivalMessage: TO30_MOAJ_ARRIVAL
+  extraComponents: []
+  customDeathState:
+    _typeName: TheOriginal30.VariantEntityStates.Jellyfish.DeathStates.SpawnJellies,
+      TheOriginal30, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null

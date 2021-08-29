@@ -14,8 +14,8 @@ namespace VarianceAPI.Components
         private DeathRewards deathRewards;
         private CharacterBody characterBody;
 
-        public float goldMult;
-        public float xpMult;
+        public float goldMult = 1;
+        public float xpMult = 1;
 
         public float whiteChance;
         public float greenChance;
@@ -32,9 +32,7 @@ namespace VarianceAPI.Components
         public void GetStuff()
         {
             deathRewards = base.GetComponent<DeathRewards>();
-            Debug.Log(deathRewards);
             characterBody = base.GetComponent<CharacterBody>();
-            Debug.Log(characterBody);
 
             redItems = Run.instance.availableTier3DropList;
             greenItems = Run.instance.availableTier2DropList;
@@ -53,7 +51,6 @@ namespace VarianceAPI.Components
         public void Modify()
         {
             GetStuff();
-            Debug.Log("Reward handler: " + VariantInfos.Length);
             if(VariantInfos.Length == 0)
             {
                 Destroy(this);
@@ -124,7 +121,6 @@ namespace VarianceAPI.Components
         {
             if(damageReport.victimBody.Equals(characterBody))
             {
-                Debug.Log("This shuld only appear once.");
                 if (Run.instance.isRunStopwatchPaused && ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value != "Unchanged")
                 {
                     if (ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value == "Halved")
@@ -145,8 +141,7 @@ namespace VarianceAPI.Components
 
         private void TrySpawnDroplet(DamageReport damageReport)
         {
-            CreateDroplet(redItems, nextRedItem, damageReport);
-            /*if(damageReport.victimBody == characterBody)
+            if(damageReport.victimBody == characterBody)
             {
                 if (damageReport.victimTeamIndex != TeamIndex.Player)
                 {
@@ -163,7 +158,7 @@ namespace VarianceAPI.Components
                         CreateDroplet(whiteItems, nextWhiteItem, damageReport);
                     }
                 }
-            }*/
+            }
         }
         private void CreateDroplet(List<PickupIndex> itemList, int nextItem, DamageReport damageReport)
         {

@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8a27ed5f14bc4b40913359e7345f6ef, type: 3}
+  m_Name: RushGolem
+  m_EditorClassIdentifier: 
+  identifier: TO30_RushGolem
+  bodyName: GolemBody
+  overrideNames:
+  - textToAdd: TO30_RUSH_PREFIX
+    overrideType: 0
+  unique: 0
+  aiModifier: 0
+  variantTier: 2
+  spawnRate: 2
+  givesRewards: 1
+  variantInventory: {fileID: 0}
+  skillReplacements:
+  - skillSlot: 1
+    skillDef: {fileID: 11400000, guid: 9b9039c62625feb469ce0747c2b76ea7, type: 2}
+  healthMultiplier: 0.9
+  moveSpeedMultiplier: 1.6
+  attackSpeedMultiplier: 1.6
+  damageMultiplier: 2
+  armorMultiplier: 1
+  armorBonus: 100
+  visualModifier: {fileID: 11400000, guid: 15a29d0d739e1be47a9845b62e695635, type: 2}
+  sizeModifier: {fileID: 11400000, guid: 2c6798ddf9db1fc4f8c119cef46f3ee2, type: 2}
+  arrivalMessage: TO30_RUSHGOLEM_ARRIVAL
+  extraComponents: []
+  customDeathState:
+    _typeName: 

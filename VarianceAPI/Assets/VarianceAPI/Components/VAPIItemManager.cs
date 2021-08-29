@@ -15,10 +15,10 @@ namespace VarianceAPI.Components
         void Awake()
         {
             body = gameObject.GetComponent<CharacterBody>();
-            body.onInventoryChanged += CheckForSS2Items;
+            body.onInventoryChanged += CheckForVAPIItems;
         }
 
-        public void CheckForSS2Items()
+        public void CheckForVAPIItems()
         {
             //It seems counter-intuitive to add an item behavior for something even if it has none of them, but the game actually destroys the behavior if there isn't one which is what we want and it doesn't add a component if it doesn't have any of the item
             foreach (var item in Pickups.items)

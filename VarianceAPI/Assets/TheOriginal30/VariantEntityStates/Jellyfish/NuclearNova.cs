@@ -8,8 +8,8 @@ namespace TheOriginal30.VariantEntityStates.Jellyfish
     public class NuclearNova : BaseState
     {
         public static float baseDuration = 1.5f;
-        public static float novaRadius = 24f;
-        public static float novaForce = 2500f;
+        public static float novaRadius = 24;
+        public static float novaForce = 2500;
 
         private bool hasExploded;
         private float duration;

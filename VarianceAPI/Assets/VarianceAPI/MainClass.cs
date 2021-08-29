@@ -46,7 +46,7 @@ namespace VarianceAPI
 			new ContentPacks().Initialize();
 		}
 
-		internal void Initialize()
+        internal void Initialize()
         {
 			VariantRegister.Initialize();
 			Assets.Initialize();

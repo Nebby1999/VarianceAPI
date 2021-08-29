@@ -17,11 +17,11 @@ namespace TheOriginal30.VariantEntityStates.Lemurian
 
 		public static GameObject effectPrefab;
 
-		public static float baseDuration;
+		public static float baseDuration = 0.5f;
 
-		public static float damageCoefficient = 1.2f;
+		public static float damageCoefficient = 1;
 
-		public static float force = 20f;
+		public static float force = 10;
 
 		public static string attackString;
 
@@ -35,9 +35,6 @@ namespace TheOriginal30.VariantEntityStates.Lemurian
 		public override void OnEnter()
 		{
 			projectilePrefab = FireFireball.projectilePrefab;
-			effectPrefab = FireFireball.effectPrefab;
-			attackString = FireFireball.attackString;
-			baseDuration = FireFireball.baseDuration;
 			base.OnEnter();
 			duration = baseDuration / attackSpeedStat;
 			PlayAnimation("Gesture", "FireFireball", "FireFireball.playbackRate", duration);

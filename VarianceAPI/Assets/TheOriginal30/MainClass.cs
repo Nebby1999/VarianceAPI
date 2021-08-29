@@ -13,6 +13,8 @@ using EntityStates;
 using RoR2;
 using BepInEx.Configuration;
 using Path = System.IO.Path;
+using System.Linq;
+using BepInEx.Logging;
 
 [module: UnverifiableCode]
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -31,51 +33,38 @@ namespace TheOriginal30
 		public const string NAME = "VP - The Original 30";
 		public const string VERSION = "1.2.0";
 
-		internal static GameObject missileLauncherDisplayPrefab; // gotta cache this for lemurians
+		public static PluginInfo pluginInfo;
+		public static ManualLogSource logger;
 
 		public void Awake()
 		{
+			logger = Logger;
+			pluginInfo = Info;
 			LoadAssets();
 			RegisterContentPack();
+			InitializeEntityStates();
+			MaterialGrabber.CreateCorrectMaterials();
 			VarianceAPI.VariantRegister.AddVariant(theOriginal30Assets, Config);
+			Debug.Log(typeof(VariantEntityStates.Lemurian.FireFireballnMissile).AssemblyQualifiedName);
 		}
 		private void LoadAssets()
 		{
 			var path = Path.GetDirectoryName(Info.Location);
 			theOriginal30Assets = AssetBundle.LoadFromFile(path + assetBundleName);
 		}
-		/*private void FixMaterials()
-        {
-			var Materials = theOriginal30Assets.LoadAllAssets<Material>();
-			foreach (Material material in Materials)
-            {
-				if(material.shader.name.StartsWith("StubbedShader"))
-                {
-					material.shader = Resources.Load<Shader>("shaders" + material.shader.name.Substring(13));
-                }
-            }
-        }*/
         public void RegisterContentPack()
         {
             ContentPackProvider.serializedContentPack = theOriginal30Assets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
 			ContentPackProvider.Initialize();
         }
-		/*private void GrabMaterials()
+		private void InitializeEntityStates()
 		{
-			ItemDisplayRuleSet IDRS = Resources.Load<GameObject>("Prefabs/CharacterBodies/CommandoBody").GetComponent<ModelLocator>().modelTransform.GetComponent<CharacterModel>().itemDisplayRuleSet;
-			missileLauncherDisplayPrefab = IDRS.FindDisplayRuleGroup(RoR2Content.Equipment.CommandMissile).rules[0].followerPrefab;
-		}*/
-		/*public void GrabVanillaMaterials()
-        {
-			var MG = new MaterialGrabber();
-			MG.StartGrabber(theOriginal30Assets);
-        }
-		public void RegisterVariants()
-        {
-			var VR = new VariantRegister();
-			VR.RegisterConfigs(theOriginal30Assets, Config);
-        }*/
-    }
+			GetType().Assembly.GetTypes()
+				.Where(type => typeof(EntityStates.EntityState).IsAssignableFrom(type))
+				.ToList()
+				.ForEach(state => HG.ArrayUtils.ArrayAppend(ref ContentPackProvider.serializedContentPack.entityStateTypes, new EntityStates.SerializableEntityStateType(state)));
+		}
+	}
 	public class ContentPackProvider : IContentPackProvider
 	{
 		public static SerializableContentPack serializedContentPack;

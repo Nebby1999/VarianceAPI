@@ -15,11 +15,10 @@ namespace TheOriginal30.VariantEntityStates.Jellyfish.DeathStates
     public class SpawnJellies : GenericCharacterDeath
     {
 		public static GameObject enterEffectPrefab;
-		public static int jellies;
+		public static int jellies = 5;
 
 		public override void OnEnter()
 		{
-			jellies = 5;
 			enterEffectPrefab = DeathState.enterEffectPrefab;
 			base.OnEnter();
 			DestroyModel();

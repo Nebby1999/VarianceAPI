@@ -20,6 +20,7 @@ namespace TheOriginal30.VariantComponents
             this.childLocator = base.GetComponentInChildren<ChildLocator>();
 
             this.AddGun();
+            Destroy(this);
         }
 
         private void AddGun()

@@ -13,8 +13,8 @@ namespace TheOriginal30.VariantEntityStates.Jellyfish
     public class SpawnNova : BaseState
     {
         public static float baseDuration = 0.5f;
-        public static int jellyCount;
-        public static float jellyDropRadius = 5f;
+        public static int jellyCount = 5;
+        public static float jellyDropRadius = 5;
 
         private bool hasExploded;
         private float duration;
@@ -28,7 +28,6 @@ namespace TheOriginal30.VariantEntityStates.Jellyfish
         {
             base.OnEnter();
             this.stopwatch = 0f;
-            jellyCount = 5;
             this.duration = SpawnNova.baseDuration / this.attackSpeedStat;
             Transform modelTransform = base.GetModelTransform();
 

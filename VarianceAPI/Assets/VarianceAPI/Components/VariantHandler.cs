@@ -34,6 +34,8 @@ namespace VarianceAPI.Components
         public CharacterDeathBehavior charDeathBehavior;
         public CharacterModel charModel;
         public ItemDef purpleHealthbar;
+        public EquipmentIndex storedEquipment;
+        public ItemDisplayRuleSet storedIDRS;
 
         public float healthModifier = 1;
         public float moveSpeedModifier = 1;
@@ -48,15 +50,10 @@ namespace VarianceAPI.Components
 
         public void GetComponents()
         {
-            Debug.Log("Start");
             charBody = gameObject.GetComponent<CharacterBody>();
-            Debug.Log(charBody);
             charModel = charBody.modelLocator.modelTransform.GetComponent<CharacterModel>();
-            Debug.Log(charModel);
             charMaster = charBody.master;
-            Debug.Log(charMaster);
             charDeathBehavior = gameObject.GetComponent<CharacterDeathBehavior>();
-            Debug.Log(charDeathBehavior);
             purpleHealthbar = Assets.VAPIAssets.LoadAsset<ItemDef>("PurpleHealthbar");
         }
 
@@ -77,7 +74,7 @@ namespace VarianceAPI.Components
                     Debug.Log("Announcing Arrival");
                     if (!string.IsNullOrEmpty(randomVariantInfo.arrivalMessage))
                     {
-                        Chat.AddMessage(randomVariantInfo.arrivalMessage);
+                        Chat.AddMessage(Language.GetStringFormatted(randomVariantInfo.arrivalMessage));
                     }
                     else
                     {
@@ -92,7 +89,6 @@ namespace VarianceAPI.Components
             Debug.Log("Starting AI modification");
             if (aiModifiers.HasFlag(VariantAIModifier.Unstable))
             {
-                Debug.Log("Making unstable");
                 foreach (AISkillDriver i in charMaster.GetComponents<AISkillDriver>())
                 {
                     if (i)
@@ -107,7 +103,6 @@ namespace VarianceAPI.Components
 
             if (aiModifiers.HasFlag(VariantAIModifier.ForceSprint))
             {
-                Debug.Log("Making sprint");
                 foreach (AISkillDriver i in charMaster.GetComponents<AISkillDriver>())
                 {
                     if (i)
@@ -116,18 +111,10 @@ namespace VarianceAPI.Components
                     }
                 }
             }
-            Debug.Log("Finished AI Modification");
             #endregion
 
             #region Stat modification
             Debug.Log("Starting Stat modification");
-            Debug.Log(charBody);
-            Debug.Log(healthModifier);
-            Debug.Log(moveSpeedModifier);
-            Debug.Log(attackSpeedModifier);
-            Debug.Log(damageModifier);
-            Debug.Log(armorModifier);
-            Debug.Log(armorBonus);
             charBody.baseMaxHealth *= healthModifier;
             charBody.baseMoveSpeed *= moveSpeedModifier;
             charBody.baseAttackSpeed *= attackSpeedModifier;
@@ -135,14 +122,11 @@ namespace VarianceAPI.Components
             charBody.levelDamage = charBody.baseDamage * 0.2f;
             charBody.baseArmor *= armorModifier;
             charBody.baseArmor += armorBonus;
-            Debug.Log("Finished stat modification");
             #endregion
 
-            #region Item, Buff and Equipment addition
             Debug.Log("Starting item, buff and equipment addition");
             foreach (VariantInventoryInfo inventoryInfo in InventoryInfos)
             {
-                Debug.Log("Item addition");
                 #region Item Addition
                 foreach (var itemInventory in inventoryInfo.ItemInventory)
                 {
@@ -170,11 +154,9 @@ namespace VarianceAPI.Components
                         }
                     }
                 }
-                Debug.Log("End item addition");
                 #endregion
 
                 #region Buff Addition
-                Debug.Log("Buff addition");
                 foreach (var buffInfo in inventoryInfo.Buffs)
                 {
                     int amount = buffInfo.amount;
@@ -198,19 +180,15 @@ namespace VarianceAPI.Components
                         VAPILog.LogW($"Could not find BuffDef with the name {buffDefName}.");
                     }
                 }
-                Debug.Log("End buff addition");
                 #endregion
             }
-            Debug.Log("Equipment addition");
             #region Equipment Addition
             randomVariantInfo = VariantInfos.Where(x => x.variantInventory != null).PickRandom();
-            Debug.Log(randomVariantInfo);
             if (randomVariantInfo)
             {
                 var inventory = randomVariantInfo.variantInventory;
                 if(inventory.equipmentDefName != "")
                 {
-                    Debug.Log("Equipment moment");
                     EquipmentDef equipmentDef = EquipmentCatalog.GetEquipmentDef(EquipmentCatalog.FindEquipmentIndex(inventory.equipmentDefName));
                     if (equipmentDef)
                     {
@@ -224,20 +202,17 @@ namespace VarianceAPI.Components
                 }
             }
             #endregion
-            Debug.Log("End Equipment Addition");
             //Adds purple healthbar
             if (highestTier >= VariantTier.Uncommon)
             {
                 charMaster.inventory.GiveItem(purpleHealthbar);
             }
-            #endregion
 
             Debug.Log("Start Visual modifiers");
             var VisualModifier = VisualModifiers.PickRandom();
 
             if(VisualModifier != null)
             {
-                Debug.Log("Material Replacements");
                 #region Material replacements
                 if (VisualModifier.MaterialReplacements != null)
                 {
@@ -248,35 +223,33 @@ namespace VarianceAPI.Components
                     }
                 }
                 #endregion
-                Debug.Log("End material replacements");
 
-                Debug.Log("Mesh Replacements");
                 #region Mesh Replacements
                 if(VisualModifier.MeshReplacements != null)
                 {
-                    for(int i = 0; i < VisualModifier.MeshReplacements.Length; i++)
+                    for(int j = 0; j < VisualModifier.MeshReplacements.Length; j++)
                     {
-                        var current = VisualModifier.MeshReplacements[i];
+                        var current = VisualModifier.MeshReplacements[j];
+                        storedIDRS = charModel.itemDisplayRuleSet;
+                        charModel.itemDisplayRuleSet = null;
+                        TryFuckWithBoneStructure(current);
                         charModel.baseRendererInfos[current.rendererIndex].renderer.GetComponent<SkinnedMeshRenderer>().sharedMesh = current.mesh;
                     }
                 }
                 #endregion
-                Debug.Log("Mesh Replacement End");
 
-                Debug.Log("Light Replacement");
                 #region Light Replacements
+                Debug.Log(VisualModifier.LightReplacements.Length);
                 if(VisualModifier.LightReplacements != null)
                 {
-                    for(int i = 0; i < VisualModifier.LightReplacements.Length; i++)
+                    for(int k = 0; k < VisualModifier.LightReplacements.Length; k++)
                     {
-                        var current = VisualModifier.LightReplacements[i];
-                        var lightInfo = charModel.baseLightInfos[current.rendererIndex];
-                        lightInfo.defaultColor = current.color;
-                        lightInfo.light.type = current.lightType;
+                        var current = VisualModifier.LightReplacements[k];
+                        charModel.baseLightInfos[current.rendererIndex].defaultColor = current.color;
+                        charModel.baseLightInfos[current.rendererIndex].light.type = current.lightType;
                     }
                 }
                 #endregion
-                Debug.Log("End Light Replacement");
             }
 
             Debug.Log("Skill Replacement Start");
@@ -294,28 +267,29 @@ namespace VarianceAPI.Components
 
                 foreach(var value in list)
                 {
-                    switch(value.skillSlot)
+                    if(value.skillDef != null)
                     {
-                        case SkillSlot.Primary:
-                            skillLocator.primary?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                            break;
-                        case SkillSlot.Secondary:
-                            skillLocator.secondary?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                            break;
-                        case SkillSlot.Utility:
-                            skillLocator.utility?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                            break;
-                        case SkillSlot.Special:
-                            skillLocator.special?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                            break;
-                        case SkillSlot.None:
-                            //lol
-                            break;
+                        switch (value.skillSlot)
+                        {
+                            case SkillSlot.Primary:
+                                skillLocator.primary?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                                break;
+                            case SkillSlot.Secondary:
+                                skillLocator.secondary?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                                break;
+                            case SkillSlot.Utility:
+                                skillLocator.utility?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                                break;
+                            case SkillSlot.Special:
+                                skillLocator.special?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                                break;
+                            case SkillSlot.None:
+                                break;
+                        }
                     }
                 }
             }
             #endregion
-            Debug.Log("Skill Replacements end");
 
             Debug.Log("Extra Components start");
             #region Extra Components
@@ -330,23 +304,8 @@ namespace VarianceAPI.Components
                         Transform modelTransform = modelLocator.modelTransform;
                         if (modelTransform)
                         {
-                            Type type;
-                            var assemblies = AppDomain.CurrentDomain.GetAssemblies().Where(Assembly => Assembly.GetReferencedAssemblies().Any(AssName => AssName.FullName == typeof(VariantHandler).AssemblyQualifiedName));
-                            if (assemblies != null)
-                            {
-                                foreach (var assembly in assemblies)
-                                {
-                                    type = assembly.GetType(extraComponent.componentToAdd);
-                                    if (type != null)
-                                    {
-                                        if (typeof(VariantComponent).IsAssignableFrom(type))
-                                        {
-                                            VAPILog.LogI("Adding " + type.Name + " Component to " + charBody.GetDisplayName());
-                                            modelTransform.gameObject.AddComponent(type);
-                                        }
-                                    }
-                                }
-                            }
+                            VAPILog.LogI("Adding " + extraComponent.componentToAdd.componentType.Name + " Component to " + charBody.GetDisplayName());
+                            modelTransform.gameObject.AddComponent(extraComponent.componentToAdd.componentType);
                         }
                     }
                 }
@@ -356,39 +315,32 @@ namespace VarianceAPI.Components
                 }
             }
             #endregion
-            Debug.Log("Extra Components end");
 
             Debug.Log("Name Modification Start");
             #region Name Modification
-            Debug.Log(ExtraNames);
-            Debug.Log(ExtraNames.Length);
             foreach(var overrideName in ExtraNames)
             {
                 switch(overrideName.overrideType)
                 {
                     case OverrideNameType.Preffix:
-                        charBody.baseNameToken = overrideName.textToAdd + " " + charBody.GetDisplayName();
+                        charBody.baseNameToken = Language.GetStringFormatted(overrideName.textToAdd) + " " + charBody.GetDisplayName();
                         break;
                     case OverrideNameType.Suffix:
-                        charBody.baseNameToken = charBody.GetDisplayName() + " " + overrideName.textToAdd;
+                        charBody.baseNameToken = charBody.GetDisplayName() + " " + Language.GetStringFormatted(overrideName.textToAdd);
                         break;
                     case OverrideNameType.CompleteOverride:
-                        charBody.baseNameToken = overrideName.textToAdd;
+                        charBody.baseNameToken = Language.GetStringFormatted(overrideName.textToAdd);
                         break;
                 }
             }
             #endregion
-            Debug.Log("Name Modification End");
 
             Debug.Log("DeathState modification start");
             #region New Death State
-            Debug.Log(DeathStates);
-            Debug.Log(DeathStates.Length);
             var deathState = DeathStates.PickRandom();
             if(deathState.typeName != null)
                 charDeathBehavior.deathState = deathState;
             #endregion
-            Debug.Log("Deathstate modification end");
 
             Debug.Log("Scale body start");
             #region Scale Body
@@ -399,18 +351,107 @@ namespace VarianceAPI.Components
                     if (kinematicCharacterMotor) kinematicCharacterMotor.SetCapsuleDimensions(kinematicCharacterMotor.Capsule.radius * this.sizeModifier, kinematicCharacterMotor.CapsuleHeight * sizeModifier, sizeModifier);
             }
             #endregion
-            Debug.Log("scale body end");
 
             charBody.healthComponent.health = charBody.healthComponent.fullHealth;
             charBody.RecalculateStats();
             Debug.Log("Finished!");
         }
 
+        private void TryFuckWithBoneStructure(VariantVisualModifier.VariantMeshReplacement meshReplacement)
+        {
+            storedEquipment = charMaster.inventory.GetEquipmentIndex();
+            charMaster.inventory.SetEquipmentIndex(EquipmentIndex.None);
+            Invoke("RestoreEquipment", 0.2f);
+
+            switch(meshReplacement.meshType)
+            {
+                case MeshType.Default:
+                    break;
+                case MeshType.BeetleGuard:
+                    FuckBoneStructure(MeshType.BeetleGuard);
+                    break;
+            }
+        }
+        private void FuckBoneStructure(MeshType meshType)
+        {
+            if (meshType == MeshType.Beetle)
+            {
+                List<Transform> transforms = new List<Transform>();
+                foreach (var item in charBody.GetComponentsInChildren<Transform>())
+                {
+                    if (!item.name.Contains("Hurtbox") && !item.name.Contains("BeetleBody") && !item.name.Contains("Mesh") && !item.name.Contains("mdl"))
+                    {
+                        transforms.Add(item);
+                    }
+                }
+
+                Transform temp = transforms[14];
+                transforms[14] = transforms[11];
+                transforms[11] = temp;
+                temp = transforms[15];
+                transforms[15] = transforms[12];
+                transforms[12] = temp;
+                temp = transforms[16];
+                transforms[16] = transforms[13];
+                transforms[13] = temp;
+                foreach (var item in charBody.GetComponentsInChildren<SkinnedMeshRenderer>())
+                {
+                    item.bones = transforms.ToArray();
+                }
+            }
+            else if (meshType == MeshType.BeetleGuard)
+            {
+                List<Transform> transforms = new List<Transform>();
+                foreach (var item in charBody.GetComponentsInChildren<Transform>())
+                {
+                    if (!item.name.Contains("Hurtbox") && !item.name.Contains("IK") && !item.name.Contains("_end"))
+                    {
+                        transforms.Add(item);
+                    }
+                }
+                foreach (var item in charBody.GetComponentsInChildren<SkinnedMeshRenderer>())
+                {
+                    item.bones = transforms.ToArray();
+                }
+            }
+            else if (meshType == MeshType.MiniMushrum)
+            {
+                List<Transform> transforms = new List<Transform>();
+                foreach (var item in charBody.GetComponentsInChildren<Transform>())
+                {
+                    if (!item.name.Contains("Hurtbox") && !item.name.Contains("IK") && !item.name.Contains("_end") && !item.name.Contains("miniMush_R_Palps_02"))
+                    {
+                        transforms.Add(item);
+                    }
+                }
+                for (int i = 0; i < 7; i++)
+                {
+                    transforms.RemoveAt(transforms.Count - 1);
+                }
+                foreach (var item in charBody.GetComponentsInChildren<SkinnedMeshRenderer>())
+                {
+                    item.bones = transforms.ToArray();
+                }
+            }
+        }
+        private void RestoreEquipment()
+        {
+            ModelLocator modelLocator = charBody.GetComponent<ModelLocator>();
+            if (modelLocator)
+            {
+
+                if (charModel && storedIDRS != null)
+                {
+                    charModel.itemDisplayRuleSet = storedIDRS;
+                }
+
+                charMaster.inventory.SetEquipmentIndex(storedEquipment);
+            }
+        }
+
         private VariantInfo.VariantSkillReplacement GetRandomSkillReplacement(SkillSlot skillSlot)
         {
             var availableSkills = SkillReplacements.Where(x => x.skillSlot == skillSlot).ToArray();
-            Debug.Log(availableSkills);
-            Debug.Log(availableSkills.Length);
             if(availableSkills.Length == 0)
             {
                 var skillReplacement = new VariantInfo.VariantSkillReplacement();
@@ -423,7 +464,12 @@ namespace VarianceAPI.Components
         }
         private void MergeVariantInfos()
         {
-            Debug.Log("Merging");
+            var healthMultiplier = 1f;
+            var moveSpeedMultiplier = 1f;
+            var attackSpeedMultiplier = 1f;
+            var damageMultiplier = 1f;
+            var armorMultiplier = 1f;
+            var sizeMultiplier = 1f;
             foreach (var variantInfo in VariantInfos)
             {
                 //If ai modifier is not present, add it as a flag.
@@ -431,14 +477,14 @@ namespace VarianceAPI.Components
                     aiModifiers |= variantInfo.aiModifier;
 
                 //Creates the final modifiers based on the given variantInfos.
-                healthModifier += variantInfo.healthMultiplier - 1;
-                moveSpeedModifier += variantInfo.moveSpeedMultiplier - 1;
-                attackSpeedModifier += variantInfo.attackSpeedMultiplier - 1;
-                damageModifier += variantInfo.damageMultiplier - 1;
-                armorModifier += variantInfo.armorMultiplier - 1;
+                healthMultiplier *= variantInfo.healthMultiplier;
+                moveSpeedMultiplier *= variantInfo.moveSpeedMultiplier;
+                attackSpeedMultiplier *= variantInfo.attackSpeedMultiplier;
+                damageMultiplier *= variantInfo.damageMultiplier;
+                armorMultiplier *= variantInfo.armorMultiplier;
                 if(variantInfo.sizeModifier)
                 {
-                    sizeModifier += variantInfo.sizeModifier.newSize - 1;
+                    sizeMultiplier *= variantInfo.sizeModifier.newSize;
                     scaleColliders = variantInfo.sizeModifier.scaleCollider;
                 }
                 armorBonus += variantInfo.armorBonus;
@@ -493,7 +539,12 @@ namespace VarianceAPI.Components
                     HG.ArrayUtils.ArrayAppend(ref DeathStates, variantInfo.customDeathState);
                 }
             }
-            Debug.Log("Finished Merging");
+            healthModifier = healthMultiplier;
+            moveSpeedModifier = moveSpeedMultiplier;
+            attackSpeedModifier = attackSpeedMultiplier;
+            damageModifier = damageMultiplier;
+            armorModifier = armorMultiplier;
+            sizeModifier = sizeMultiplier;
         }
     }
 }

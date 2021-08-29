@@ -1,0 +1,29 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bfe7c50847bd25e48b7610bbc39187fc, type: 3}
+  m_Name: Almost-Great
+  m_EditorClassIdentifier: 
+  MaterialReplacements:
+  - ElementName: Almost-GreatWisp_GreaterWispMat
+    rendererIndex: 0
+    material: {fileID: 0}
+    identifier: TO30_GreaterWispMaterial
+  - ElementName: Almost-GreatWisp_GreaterWispFlameMat
+    rendererIndex: 1
+    material: {fileID: 0}
+    identifier: TO30_GreaterWispFlameMaterial
+  LightReplacements:
+  - ElementName: Almost-GreatWisp_LightReplacement
+    rendererIndex: 0
+    color: {r: 0.5921569, g: 1, b: 0.49019608, a: 1}
+    lightType: 2
+  MeshReplacements: []

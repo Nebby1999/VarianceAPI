@@ -18,6 +18,7 @@ MonoBehaviour:
   - {fileID: 114431642618062350}
   - {fileID: 114139072834639444}
   - {fileID: 114256391772626100}
+  - {fileID: 114625413105916644}
   identity: {fileID: 114211852988908172}
 --- !u!114 &114107831304456238
 MonoBehaviour:
@@ -78,7 +79,7 @@ MonoBehaviour:
   Dependencies:
   - {fileID: 11400000, guid: c5d841afdf87db94ebb124f31f13797b, type: 2}
   - {fileID: 11400000, guid: 6893422731aa6d67012f5f4d8209c304, type: 2}
-  - {fileID: 11400000, guid: 00000000000000000000000000000000, type: 0}
+  - {fileID: 11400000, guid: 879868159ff788f429c080c76b024e0c, type: 2}
 --- !u!114 &114256391772626100
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -118,3 +119,21 @@ MonoBehaviour:
   - assetBundleName: TheOriginal30Assets
     assets:
     - {fileID: 102900000, guid: 82d0af3bc9dc0a646bafc1e4c3970663, type: 3}
+--- !u!114 &114625413105916644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  StagingPaths:
+  - <ManifestPluginStaging>
+  files:
+  - {fileID: 102900000, guid: 3599a4031467fae429714753b51e148f, type: 3}

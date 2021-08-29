@@ -34,7 +34,7 @@ namespace VarianceAPI.ScriptableObjects
         public struct VariantExtraComponent
         {
             [Tooltip("What component to add to the Variant\nThis needs to be the combination of the Namespace, alongside the class name\nExample: YourNameSpace.Component.CustomVariantComponent.")]
-            public string componentToAdd;
+            public SerializableVariantComponentType componentToAdd;
 
             [Tooltip("Wether the component is Aesthetic, such as adding a missile launcher to an enemy")]
             public bool isAesthetic;

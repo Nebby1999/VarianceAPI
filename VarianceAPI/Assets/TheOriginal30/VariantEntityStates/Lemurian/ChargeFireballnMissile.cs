@@ -11,11 +11,11 @@ namespace TheOriginal30.VariantEntityStates.Lemurian
 {
     public class ChargeFireballnMissile : BaseState
     {
-		public static float baseDuration;
+		public static float baseDuration = 0.6f;
 
 		public static GameObject chargeVfxPrefab;
 
-		public static string attackString;
+		public static string attackString = "Play_lemurian_fireball_shoot";
 
 		private float duration;
 
@@ -24,8 +24,6 @@ namespace TheOriginal30.VariantEntityStates.Lemurian
 		public override void OnEnter()
 		{
 			chargeVfxPrefab = ChargeFireball.chargeVfxPrefab;
-			attackString = ChargeFireball.attackString;
-			baseDuration = ChargeFireball.baseDuration;
 			base.OnEnter();
 			duration = baseDuration / attackSpeedStat;
 			GetModelAnimator();

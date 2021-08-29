@@ -27,6 +27,7 @@ namespace VarianceAPI
         private static void RegisterVariants()
         {
             variantsRegistered = true;
+            VariantMaterialGrabber.SwapMaterials();
             VAPILog.LogI("Modifying CharacterBody prefabs...");
             foreach(var kvp in RegisteredVariants)
             {
@@ -41,11 +42,11 @@ namespace VarianceAPI
                         rewardHandler = bodyPrefab.AddComponent<VariantRewardHandler>();
                     }
                     spawnHandler.variantInfos = kvp.Value.ToArray();
-                    VAPILog.LogI($"Added components {spawnHandler}, {variantHandler}, {rewardHandler} to the bodyPrefab {kvp.Key}");
+                    VAPILog.LogI($"Added components {spawnHandler.GetType().Name}, {variantHandler.GetType().Name}, {rewardHandler.GetType().Name} to the bodyPrefab {kvp.Key}");
                     VAPILog.LogD($"Available {kvp.Key} variants:");
                     kvp.Value.ForEach(variant =>
                     {
-                        VAPILog.LogD(variant);
+                        VAPILog.LogD($"{variant}. Unique? {variant.unique}");
                     });
                 }
                 else
@@ -84,10 +85,8 @@ namespace VarianceAPI
 
                 if(!RegisteredVariants.ContainsKey(variantInfo.bodyName))
                 {
-                    VAPILog.LogI($"Ass");
                     RegisteredVariants.Add(variantInfo.bodyName, new List<VariantInfo>());
                 }
-                VAPILog.LogI("Ass2");
                 RegisteredVariants[variantInfo.bodyName].Add(variantInfo);
                 VAPILog.LogD($"Added {variantInfo.identifier} to the list for {variantInfo.bodyName}");
             }

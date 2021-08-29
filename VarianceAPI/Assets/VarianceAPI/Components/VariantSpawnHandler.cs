@@ -72,7 +72,7 @@ namespace VarianceAPI.Components
                 return;
             }
 
-            var spawnRateMult = 10f;
+            var spawnRateMult = 1f;
             //If artifact is enabled, multiply spawn rates.
             if (RunArtifactManager.instance.IsArtifactEnabled(Assets.VAPIAssets.LoadAsset<ArtifactDef>("Variance")))
                 spawnRateMult = ConfigLoader.VarianceMultiplier.Value;
@@ -136,6 +136,8 @@ namespace VarianceAPI.Components
         private void ShuffleUniques()
         {
             shuffledUniques = UniqueVariantInfos;
+            if (shuffledUniques == null)
+                return;
             VariantInfo tempVariantInfo;
             for (int i = 0; i < shuffledUniques.Length - 1; i++)
             {

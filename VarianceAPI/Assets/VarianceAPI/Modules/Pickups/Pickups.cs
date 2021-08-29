@@ -58,7 +58,7 @@ namespace VarianceAPI
             if (!body.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless) && body.master.inventory)
             {
                 var itemManager = body.gameObject.AddComponent<VAPIItemManager>();
-                itemManager.CheckForSS2Items();
+                itemManager.CheckForVAPIItems();
             }
         }
 

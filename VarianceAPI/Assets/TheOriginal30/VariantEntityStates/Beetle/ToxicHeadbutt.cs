@@ -9,7 +9,7 @@ namespace TheOriginal30.VariantEntityStates.Beetle
 {
     public class ToxicHeadbutt : BaseState
     {
-        public static float explosionRadius = 8f;
+        public static float explosionRadius = 2;
         public static float damageCoefficent = 0.8f;
 
         private OverlapAttack attack;

@@ -8,7 +8,7 @@ namespace TheOriginal30.VariantEntityStates.Beetle
 {
     public class HeavyHeadbutt : BaseState
     {
-        public static float pushForce = 8000f;
+        public static float pushForce = 8000;
 
         private OverlapAttack attack;
         private Animator modelAnimator;
