@@ -52,7 +52,7 @@ namespace TheOriginal30.VariantEntityStates.Jellyfish.DeathStates
 			}
 		}
 
-		protected override void CreateDeathEffects()
+		public override void CreateDeathEffects()
 		{
 			base.CreateDeathEffects();
 			if ((bool)enterEffectPrefab)

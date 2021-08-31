@@ -1,7 +1,10 @@
 ManifestFileVersion: 0
-CRC: 98479127
+CRC: 1745561315
 AssetBundleManifest:
   AssetBundleInfos:
     Info_0:
       Name: vapiassets
+      Dependencies: {}
+    Info_1:
+      Name: nebbyswrathassets
       Dependencies: {}

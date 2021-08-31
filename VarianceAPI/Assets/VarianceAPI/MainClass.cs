@@ -2,9 +2,12 @@
 using R2API;
 using R2API.Utils;
 using RoR2;
+using System;
+using System.Linq;
 using System.Security;
 using System.Security.Permissions;
 using VarianceAPI.Modules;
+using VarianceAPI.Utils;
 
 [module: UnverifiableCode]
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -13,12 +16,15 @@ using VarianceAPI.Modules;
 namespace VarianceAPI
 {
 	[BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
+	[BepInDependency("iHarbHD.DebugToolkit", BepInDependency.DependencyFlags.SoftDependency)]
 	[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
 	[BepInPlugin(GUID, NAME, VERSION)]
 	[R2APISubmoduleDependency(new string[]
 		{
 			nameof(LanguageAPI),
 			nameof(ArtifactCodeAPI),
+			nameof(DamageAPI),
+			nameof(CommandHelper)
 		})]
 	internal class MainClass : BaseUnityPlugin
     {
@@ -34,9 +40,14 @@ namespace VarianceAPI
 
         internal void Awake()
         {
+			if(BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("iHarbHD.DebugToolkit"))
+            {
+				R2API.Utils.CommandHelper.AddToConsoleWhenReady();
+			}
 			VAPILog.logger = Logger;
 			Instace = this;
 			PluginInfo = this.Info;
+			
 
 			if(DEBUG)
             {
@@ -46,14 +57,18 @@ namespace VarianceAPI
 			new ContentPacks().Initialize();
 		}
 
-        internal void Initialize()
-        {
+		internal void Initialize()
+		{
 			VariantRegister.Initialize();
 			Assets.Initialize();
 			Interfaces.Initialize();
 			VAPILanguage.Initialize();
 			ConfigLoader.Initialize(Config);
-			Pickups.Initialize();
+			//Pickups.Initialize();
+			Logger.LogInfo("Ass");
+			new Pickups().Initialize();
+			Logger.LogInfo("Ass2");
+			//DamageTypes.DamageTypes.Initialize();
 
             #region artifact moment
 			if(ConfigLoader.EnableArtifactOfVariance.Value)

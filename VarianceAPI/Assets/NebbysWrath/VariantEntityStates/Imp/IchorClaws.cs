@@ -4,6 +4,7 @@ using EntityStates;
 using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
+using R2API;
 
 namespace NebbysWrath.VariantEntityStates.Imp
 {
@@ -62,6 +63,9 @@ namespace NebbysWrath.VariantEntityStates.Imp
             attack.isCrit = Util.CheckRoll(critStat, base.characterBody.master);
             attack.procCoefficient = procCoefficient;
             attack.damageType = DamageType.Generic;
+
+            DamageAPI.AddModdedDamageType(attack, DamageTypes.PulverizeOnHit.pulverizeOnHit);
+
             Util.PlayAttackSpeedSound(enterSoundString, base.gameObject, attackSpeedStat);
             if ((bool)modelAnimator)
             {

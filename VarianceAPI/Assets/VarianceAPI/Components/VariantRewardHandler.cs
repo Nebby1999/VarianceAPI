@@ -6,9 +6,10 @@ using VarianceAPI.ScriptableObjects;
 
 namespace VarianceAPI.Components
 {
-    public class VariantRewardHandler : MonoBehaviour
+    public class VariantRewardHandler : NetworkBehaviour
     {
         public VariantInfo[] VariantInfos;
+
         private VariantTier highestTier;
 
         private DeathRewards deathRewards;

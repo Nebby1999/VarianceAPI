@@ -10,13 +10,13 @@ namespace NebbysWrath.VariantEntityStates.BeetleQueen
 {
     public class CallToArms : BaseState
     {
-        public static float baseDuration = 3.5f;
+        public static float baseDuration = 9.0f;
 
-        public static string attackSoundString;
+        public static string attackSoundString = "Play_beetle_queen_attack1";
 
-        public static float randomRadius = 8f;
+        public static float randomRadius = 10f;
 
-        public static GameObject spitPrefab;
+        public static GameObject spitPrefab = SummonEggs.spitPrefab;
 
         public static int maxGuardCount = 2;
 
@@ -26,7 +26,7 @@ namespace NebbysWrath.VariantEntityStates.BeetleQueen
 
         public static float summonBeetleInterval = 0.30f;
 
-        public static SpawnCard guardSpawnCard;
+        public static SpawnCard guardSpawnCard = SummonEggs.spawnCard;
 
         public static SpawnCard beetleSpawnCard = Resources.Load<SpawnCard>("SpawnCards/CharacterSpawnCards/cscbeetle");
 
@@ -52,9 +52,6 @@ namespace NebbysWrath.VariantEntityStates.BeetleQueen
 
         public override void OnEnter()
         {
-            attackSoundString = SummonEggs.attackSoundString;
-            spitPrefab = SummonEggs.spitPrefab;
-            guardSpawnCard = SummonEggs.spawnCard;
             base.OnEnter();
             animator = GetModelAnimator();
             modelTransform = GetModelTransform();

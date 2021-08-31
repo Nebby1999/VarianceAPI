@@ -1,74 +1,51 @@
 ﻿using RoR2;
-using VarianceAPI.Components;
+using RoR2.ContentManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using UnityEngine;
-using UnityEngine.Networking;
-using Item = VarianceAPI.Items.ItemBase;
+using System.Reflection;
+using System.Text;
+using System.Threading.Tasks;
+using VarianceAPI.Items;
+using VarianceAPI.ModuleBases;
 
 namespace VarianceAPI
 {
-    internal static class Pickups
+    public class Pickups : PickupsModuleBase
     {
-        public static ItemDef[] loadedItemDefs
-        {
-            get
-            {
-                return ContentPacks.serializableContentPack.itemDefs;
-            }
-        }
-        public static EquipmentDef[] loadedEquipDefs
-        {
-            get
-            {
-                return ContentPacks.serializableContentPack.equipmentDefs;
-            }
-        }
+        public override SerializableContentPack ContentPack { get; set; } = ContentPacks.serializableContentPack;
+        public override Assembly Assembly { get; set; } = typeof(Pickups).Assembly;
 
-        public static Dictionary<ItemDef, Item> items = new Dictionary<ItemDef, Item>();
+        public static Pickups instance;
 
-        public static Dictionary<string, UnityEngine.Object> itemPickups = new Dictionary<string, UnityEngine.Object>();
-        public static Dictionary<string, UnityEngine.Object> equipPickups = new Dictionary<string, UnityEngine.Object>();
-        public static void Initialize()
+        public static Dictionary<ItemDef, ItemBase> VAPIItems = new Dictionary<ItemDef, ItemBase>();
+        public override void Initialize()
         {
-            VAPILog.LogI("Initializing Pickups.");
+            VAPILog.LogI("Initializing Pickups...");
+            instance = this;
+            base.Initialize();
             InitializeItems();
-            CharacterBody.onBodyStartGlobal += AddItemManager;
-            On.RoR2.CharacterBody.RecalculateStats += OnRecalculateStats;
         }
-
-        private static void InitializeItems()
+        public override IEnumerable<ItemBase> InitializeItems()
         {
-            typeof(Pickups).Assembly.GetTypes()
-                .Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(Item)))
-                .Select(itemType => (Item)Activator.CreateInstance(itemType))
+            VAPILog.LogI("Initializing Items...");
+            base.InitializeItems()
                 .ToList()
-                .ForEach(item =>
+                .ForEach(itemBase =>
                 {
-                    HG.ArrayUtils.ArrayAppend(ref ContentPacks.serializableContentPack.itemDefs, item.ItemDef);
-                    item.Initialize();
-                    items.Add(item.ItemDef, item);
-                    VAPILog.LogD($"Added item {item.ItemDef.name}");
+                    HG.ArrayUtils.ArrayAppend(ref ContentPack.itemDefs, itemBase.ItemDef);
+
+                    itemBase.Initialize();
+
+                    //This is just to keep track of the vapi items that are active.
+                    VAPIItems.Add(itemBase.ItemDef, itemBase);
+
+                    //We also add them to the pickups module base's dictionary.
+                    ItemsForManager.Add(itemBase.ItemDef, itemBase);
+                    
+                    VAPILog.LogD($"Added Item {itemBase.ItemDef.name} to {ContentPack.name}");
                 });
-        }
-
-        private static void AddItemManager(CharacterBody body)
-        {
-            if (!body.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless) && body.master.inventory)
-            {
-                var itemManager = body.gameObject.AddComponent<VAPIItemManager>();
-                itemManager.CheckForVAPIItems();
-            }
-        }
-
-        //Only time we should do this
-        private static void OnRecalculateStats(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
-        {
-            var manager = self.GetComponent<VAPIItemManager>();
-            manager?.RunStatRecalculationsStart();
-            orig(self);
-            manager?.RunStatRecalculationsEnd();
+            return null;
         }
     }
 }

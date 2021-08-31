@@ -18,27 +18,27 @@ namespace NebbysWrath.VariantEntityStates.ClayDunestrider
 
         public static float duration = 30f;
 
-        public static float maxTetherDistance = 80f;
+        public static float maxTetherDistance = 100f;
 
-        public static float tetherMulchDistance = 5f;
+        public static float tetherMulchDistance = 10f;
 
-        public static float tetherMulchDamageScale = 2f;
+        public static float tetherMulchDamageScale = 10f;
 
         public static float tetherMulchTickIntervalScale = 0.5f;
 
-        public static float damagePerSecond = 2f;
+        public static float damagePerSecond = 0.1f;
 
         public static float damageTickFrequency = 3f;
 
-        public static float entryDuration = 1f;
+        public static float entryDuration = 1.5f;
 
-        public static GameObject mulchEffectPrefab;
+        public static GameObject mulchEffectPrefab = Recover.mulchEffectPrefab;
 
-        public static string enterSoundString;
+        public static string enterSoundString = "Play_clayboss_R_start";
 
-        public static string beginMulchSoundString;
+        public static string beginMulchSoundString = "Play_clayboss_R_mulch_loop";
 
-        public static string stopMulchSoundString;
+        public static string stopMulchSoundString = "Stop_clayboss_R_mulch_loop";
 
         private GameObject mulchEffect;
 
@@ -54,18 +54,6 @@ namespace NebbysWrath.VariantEntityStates.ClayDunestrider
 
         public override void OnEnter()
         {
-            duration = Recover.duration * 2;
-            maxTetherDistance = Recover.maxTetherDistance * 2;
-            tetherMulchDistance = Recover.tetherMulchDistance;
-            tetherMulchDamageScale = Recover.tetherMulchDamageScale;
-            tetherMulchTickIntervalScale = Recover.tetherMulchTickIntervalScale;
-            damagePerSecond = Recover.damagePerSecond;
-            damageTickFrequency = Recover.damageTickFrequency;
-            entryDuration = Recover.entryDuration;
-            mulchEffectPrefab = Recover.mulchEffectPrefab;
-            enterSoundString = Recover.enterSoundString;
-            beginMulchSoundString = Recover.beginMulchSoundString;
-            stopMulchSoundString = Recover.stopMulchSoundString;
             base.OnEnter();
             stopwatch = 0f;
             if ((bool)base.modelLocator)

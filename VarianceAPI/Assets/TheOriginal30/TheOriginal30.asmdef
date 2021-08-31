@@ -9,7 +9,7 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "Assembly-CSharp.dll",
+        "StubbedAssembly-CSharp.dll",
         "BepInEx.dll",
         "MMHOOK_Assembly-CSharp.dll",
         "R2API.dll",

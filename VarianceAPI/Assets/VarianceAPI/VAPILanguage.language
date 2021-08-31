@@ -5,28 +5,47 @@
 
         "VAPI_ITEM_EXTRAPRIMARY_NAME" : "Extra Primary Skill",
         "VAPI_ITEM_EXTRAPRIMARY_PICKUP" : "Gain an additional stack of your primary skill.",
+        "VAPI_ITEM_EXTRAPRIMARY_DESC" : "Gain an additional stack of your primary skill.",
+
         "VAPI_ITEM_EXTRASECONDARY_NAME" : "Extra secondary Skill",
         "VAPI_ITEM_EXTRASECONDARY_PICKUP" : "Gain an additional stack of your secondary skill.",
+        "VAPI_ITEM_EXTRASECONDARY_DESC" : "Gain an additional stack of your secondary skill.",
+
         "VAPI_ITEM_EXTRAUTILITY_NAME" : "Extra utility Skill",
         "VAPI_ITEM_EXTRAUTILITY_PICKUP" : "Gain an additional stack of your utility skill.",
+        "VAPI_ITEM_EXTRAUTILITY_DESC" : "Gain an additional stack of your utility skill.",
+
         "VAPI_ITEM_EXTRASPECIAL_NAME" : "Extra special Skill",
         "VAPI_ITEM_EXTRASPECIAL_PICKUP" : "Gain an additional stack of your special skill.",
+        "VAPI_ITEM_EXTRASPECIAL_DESC" : "Gain an additional stack of your special skill.",
 
         "VAPI_ITEM_GLOBALCDR_NAME" : "Global Cooldown Reduction",
         "VAPI_ITEM_GLOBALCDR_PICKUP" : "Reduces the cooldowns of ALL your skills by 1%.",
+        "VAPI_ITEM_GLOBALCDR_DESC" : "Reduces the cooldowns of ALL your skills by 1%.",
+
         "VAPI_ITEM_PRIMARYCDR_NAME" : "Primary Cooldown Reduction",
         "VAPI_ITEM_PRIMARYCDR_PICKUP" : "Reduces the cooldown of your primary skill by 1%.",
+        "VAPI_ITEM_PRIMARYCDR_DESC" : "Reduces the cooldown of your primary skill by 1%.",
+
         "VAPI_ITEM_SECONDARYCDR_NAME" : "Secondary Cooldown Reduction",
         "VAPI_ITEM_SECONDARYCDR_PICKUP" : "Reduces the cooldown of your secondary skill by 1%.",
+        "VAPI_ITEM_SECONDARYCDR_DESC" : "Reduces the cooldown of your secondary skill by 1%.",
+
         "VAPI_ITEM_UTILITYCDR_NAME" : "Utility Cooldown Reduction",
         "VAPI_ITEM_UTILITYCDR_PICKUP" : "Reduces the cooldown of your utility skill by 1%.",
+        "VAPI_ITEM_UTILITYCDR_DESC" : "Reduces the cooldown of your utility skill by 1%.",
+
         "VAPI_ITEM_SPECIALCDR_NAME" : "Special Cooldown Reduction",
         "VAPI_ITEM_SPECIALCDR_PICKUP" : "Reduces the cooldown of your special skill by 1%.",
+        "VAPI_ITEM_SPECIALCDR_DESC" : "Reduces the cooldown of your special skill by 1%.",
     
         "VAPI_ITEM_PLUS1CRIT_NAME" : "+1 Crit",
         "VAPI_ITEM_PLUS1CRIT_PICKUP" : "Increases your critical strike chance by 1%.",
+        "VAPI_ITEM_PLUS1CRIT_DESC" : "Increases your critical strike chance by 1%.",
+
         "VAPI_ITEM_PURPLEHEALTHBAR_NAME" : "Purple Healthbar",
-        "VAPI_ITEM_PURPLEHEALTHBAR_PICKUP" : "Your Healthbar is purple."
+        "VAPI_ITEM_PURPLEHEALTHBAR_PICKUP" : "Your Healthbar is purple.",
+        "VAPI_ITEM_PURPLEHEALTHBAR_DESC" : "Your Healthbar is purple."
     },
     "es-419" : {
         "VAPI_ARTIFACT_VARIANCE_NAME" : "Artefacto de Varianza",
@@ -34,27 +53,46 @@
 
         "VAPI_ITEM_EXTRAPRIMARY_NAME" : "Habilidad Primaria +1",
         "VAPI_ITEM_EXTRAPRIMARY_PICKUP" : "Añade una carga extra a tu habilidad primaria.",
+        "VAPI_ITEM_EXTRAPRIMARY_DESC" : "Añade una carga extra a tu habilidad primaria.",
+
         "VAPI_ITEM_EXTRASECONDARY_NAME" : "Habilidad Secundaria +1",
         "VAPI_ITEM_EXTRASECONDARY_PICKUP" : "Añade una carga extra a tu habilidad secundaria.",
+        "VAPI_ITEM_EXTRASECONDARY_DESC" : "Añade una carga extra a tu habilidad secundaria.",
+
         "VAPI_ITEM_EXTRAUTILITY_NAME" : "Habilidad de Utilidad +1",
         "VAPI_ITEM_EXTRAUTILITY_PICKUP" : "Añade una carga extra a tu habilidad de utilidad.",
+        "VAPI_ITEM_EXTRAUTILITY_DESC" : "Añade una carga extra a tu habilidad de utilidad.",
+
         "VAPI_ITEM_EXTRASPECIAL_NAME" : "Habilidad Especial +1",
         "VAPI_ITEM_EXTRASPECIAL_PICKUP" : "Añade una carga extra a tu habilidad especial.",
+        "VAPI_ITEM_EXTRASPECIAL_DESC" : "Añade una carga extra a tu habilidad especial.",
 
         "VAPI_ITEM_GLOBALCDR_NAME" : "Reducción Tiempo de Recarga Global",
-        "VAPI_ITEM_GLOBALCDR_PICKUP" : "Reduce el tiempo de recarga de TODAS tus habiliades por 1%.                     ",
+        "VAPI_ITEM_GLOBALCDR_PICKUP" : "Reduce el tiempo de recarga de TODAS tus habiliades por 1%.",
+        "VAPI_ITEM_GLOBALCDR_DESC" : "Reduce el tiempo de recarga de TODAS tus habiliades por 1%.",
+
         "VAPI_ITEM_PRIMARYCDR_NAME" : "Reducción Tiempo de Recarga Primaria",
         "VAPI_ITEM_PRIMARYCDR_PICKUP" : "Reduce el tiempo de recarga de tu habilidad primaria por 1%.",
+        "VAPI_ITEM_PRIMARYCDR_DESC" : "Reduce el tiempo de recarga de tu habilidad primaria por 1%.",
+
         "VAPI_ITEM_SECONDARYCDR_NAME" : "Reducción Tiempo de Recarga Secundaria",
         "VAPI_ITEM_SECONDARYCDR_PICKUP" : "Reduce el tiempo de recarga de tu habilidad secundaria por 1%.",
+        "VAPI_ITEM_SECONDARYCDR_DESC" : "Reduce el tiempo de recarga de tu habilidad secundaria por 1%.",
+
         "VAPI_ITEM_UTILITYCDR_NAME" : "Reducción Tiempo de Recarga de Utilidad",
         "VAPI_ITEM_UTILITYCDR_PICKUP" : "Reduce el tiempo de recarga de tu habilidad de utilidad por 1%.",
+        "VAPI_ITEM_UTILITYCDR_DESC" : "Reduce el tiempo de recarga de tu habilidad de utilidad por 1%.",
+
         "VAPI_ITEM_SPECIALCDR_NAME" : "Reducción Tiempo de Recarga Especial",
         "VAPI_ITEM_SPECIALCDR_PICKUP" : "Reduce el tiempo de recarga de tu habilidad especial por 1%.",
+        "VAPI_ITEM_SPECIALCDR_DESC" : "Reduce el tiempo de recarga de tu habilidad especial por 1%.",
     
         "VAPI_ITEM_PLUS1CRIT_NAME" : "+1 Crit",
         "VAPI_ITEM_PLUS1CRIT_PICKUP" : "Aumenta la probabilidad de golpes criticos en 1%",
+        "VAPI_ITEM_PLUS1CRIT_DESC" : "Aumenta la probabilidad de golpes criticos en 1%",
+
         "VAPI_ITEM_PURPLEHEALTHBAR_NAME" : "Barra de Vida Purpura",
-        "VAPI_ITEM_PURPLEHEALTHBAR_PICKUP" : "Tu Barra de Vida ahora es Purpura."
+        "VAPI_ITEM_PURPLEHEALTHBAR_PICKUP" : "Tu Barra de Vida ahora es Purpura.",
+        "VAPI_ITEM_PURPLEHEALTHBAR_DESC" : "Tu Barra de Vida ahora es Purpura."
     }
 }

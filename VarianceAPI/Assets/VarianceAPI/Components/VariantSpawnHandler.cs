@@ -11,7 +11,7 @@ using RoR2;
 namespace VarianceAPI.Components
 {
     [DisallowMultipleComponent]
-    public class VariantSpawnHandler : MonoBehaviour
+    public class VariantSpawnHandler : NetworkBehaviour
     {
         [SerializeField]
         internal VariantInfo[] variantInfos;
@@ -58,7 +58,7 @@ namespace VarianceAPI.Components
         }
         public VariantInfo[] EnabledVariantInfos = Array.Empty<VariantInfo>();
 
-
+        public float SpawnRateMultiplier;
 
         public void Start()
         {
@@ -72,10 +72,9 @@ namespace VarianceAPI.Components
                 return;
             }
 
-            var spawnRateMult = 1f;
             //If artifact is enabled, multiply spawn rates.
             if (RunArtifactManager.instance.IsArtifactEnabled(Assets.VAPIAssets.LoadAsset<ArtifactDef>("Variance")))
-                spawnRateMult = ConfigLoader.VarianceMultiplier.Value;
+                SpawnRateMultiplier = ConfigLoader.VarianceMultiplier.Value;
 
             List<VariantInfo> enabledVariants = new List<VariantInfo>();
 
@@ -84,7 +83,7 @@ namespace VarianceAPI.Components
                 for(int i = 0; i < shuffledUniques.Length; i++)
                 {
                     var variantInfo = shuffledUniques[i];
-                    if(Util.CheckRoll(variantInfo.spawnRate * spawnRateMult))
+                    if(Util.CheckRoll(variantInfo.spawnRate * SpawnRateMultiplier))
                     {
                         enabledVariants.Add(variantInfo);
                         EnabledVariantInfos = enabledVariants.ToArray();
@@ -99,7 +98,7 @@ namespace VarianceAPI.Components
                 for (int i = 0; i < NotUniqueVariantInfos.Length; i++)
                 {
                     var variantInfo = NotUniqueVariantInfos[i];
-                    if (Util.CheckRoll(variantInfo.spawnRate * spawnRateMult))
+                    if (Util.CheckRoll(variantInfo.spawnRate * SpawnRateMultiplier))
                     {
                         enabledVariants.Add(variantInfo);
                     }

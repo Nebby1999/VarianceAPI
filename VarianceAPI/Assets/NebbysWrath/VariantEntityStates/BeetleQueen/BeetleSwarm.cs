@@ -12,13 +12,13 @@ namespace NebbysWrath.VariantEntityStates.BeetleQueen
 {
     public class BeetleSwarm : BaseState
     {
-        public static float baseDuration = 3.5f;
+        public static float baseDuration = 9f;
 
-        public static string attackSoundString;
+        public static string attackSoundString = "Play_beetle_queen_attack1";
 
-        public static float randomRadius = 8f;
+        public static float randomRadius = 10f;
 
-        public static GameObject spitPrefab;
+        public static GameObject spitPrefab = SummonEggs.spitPrefab;
 
         public static int maxBeetleCount = 10;
 
@@ -45,8 +45,6 @@ namespace NebbysWrath.VariantEntityStates.BeetleQueen
 
         public override void OnEnter()
         {
-            attackSoundString = SummonEggs.attackSoundString;
-            spitPrefab = SummonEggs.spitPrefab;
             base.OnEnter();
             animator = GetModelAnimator();
             modelTransform = GetModelTransform();
@@ -91,7 +89,7 @@ namespace NebbysWrath.VariantEntityStates.BeetleQueen
                     placementMode = DirectorPlacementRule.PlacementMode.Approximate,
                     minDistance = 3f,
                     maxDistance = 20f,
-                    spawnOnTarget = transform
+                    spawnOnTarget = transform,
                 }, RoR2Application.rng);
                 directorSpawnRequest.summonerBodyObject = base.gameObject;
                 directorSpawnRequest.onSpawnedServer = (Action<SpawnCard.SpawnResult>)Delegate.Combine(directorSpawnRequest.onSpawnedServer, (Action<SpawnCard.SpawnResult>)delegate (SpawnCard.SpawnResult spawnResult) {

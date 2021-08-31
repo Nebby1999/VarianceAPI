@@ -4,6 +4,7 @@ using UnityEngine;
 using System.IO;
 using System;
 using RoR2.ContentManagement;
+using VarianceAPI.Utils;
 
 namespace VarianceAPI
 {
@@ -27,11 +28,46 @@ namespace VarianceAPI
             ContentPacks.serializableContentPack = VAPIAssets.LoadAsset<SerializableContentPack>("VAPIContent");
 
             var GameMaterials = Resources.FindObjectsOfTypeAll<Material>();
-            MapMaterials(VAPIAssets.LoadAllAssets<Material>(), GameMaterials);
+            MapMaterials(VAPIAssets, GameMaterials);
         }
 
-        private static void MapMaterials(Material[] materials, Material[] gameMaterials)
+        public static void MapMaterials(AssetBundle assetBundle, Material[] gameMaterials)
         {
+            if (assetBundle.isStreamedSceneAssetBundle)
+                return;
+
+            var cloudMat = Resources.Load<GameObject>("Prefabs/Effects/OrbEffects/LightningStrikeOrbEffect").transform.Find("Ring").GetComponent<ParticleSystemRenderer>().material;
+
+            Material[] assetBundleMaterials = assetBundle.LoadAllAssets<Material>();
+
+            for (int i = 0; i < assetBundleMaterials.Length; i++)
+            {
+                var material = assetBundleMaterials[i];
+                // If it's stubbed, just switch out the shader unless it's fucking cloudremap
+                if (material.shader.name.StartsWith("StubbedShader"))
+                {
+                    material.shader = Resources.Load<Shader>("shaders" + material.shader.name.Substring(13));
+                    if (material.shader.name.Contains("Cloud Remap"))
+                    {
+                        var eatShit = new RuntimeCloudMaterialMapper(material);
+                        material.CopyPropertiesFromMaterial(cloudMat);
+                        eatShit.SetMaterialValues(ref material);
+                    }
+                }
+
+                //If it's this shader it searches for a material with the same name and copies the properties
+                if (material.shader.name.Equals("CopyFromRoR2"))
+                {
+                    foreach (var gameMaterial in gameMaterials)
+                        if (material.name.Equals(gameMaterial.name))
+                        {
+                            material.shader = gameMaterial.shader;
+                            material.CopyPropertiesFromMaterial(gameMaterial);
+                            break;
+                        }
+                }
+                assetBundleMaterials[i] = material;
+            }
         }
     }
 }

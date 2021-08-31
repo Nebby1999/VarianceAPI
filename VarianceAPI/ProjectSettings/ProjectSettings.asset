@@ -535,15 +535,15 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   scriptingDefineSymbols:
-    1: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization
-    7: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization
-    13: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization
-    19: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization
-    21: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization
-    25: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization
-    26: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization
-    27: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization
-    28: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization
+    1: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit
+    7: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit
+    13: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit
+    19: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit
+    21: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit
+    25: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit
+    26: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit
+    27: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit
+    28: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}

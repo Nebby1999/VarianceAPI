@@ -1,17 +1,9 @@
 ﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using BepInEx;
-using VarianceAPI;
-using VarianceAPI.Modules;
 using System.Security;
 using System.Security.Permissions;
-using System.Reflection;
-using System.IO;
 using RoR2.ContentManagement;
-using EntityStates;
-using RoR2;
-using BepInEx.Configuration;
 using Path = System.IO.Path;
 using System.Linq;
 using BepInEx.Logging;
@@ -40,21 +32,22 @@ namespace TheOriginal30
 		{
 			logger = Logger;
 			pluginInfo = Info;
-			LoadAssets();
+			LoadAssets();	
 			RegisterContentPack();
+
 			InitializeEntityStates();
 			MaterialGrabber.CreateCorrectMaterials();
 			VarianceAPI.VariantRegister.AddVariant(theOriginal30Assets, Config);
-			Debug.Log(typeof(VariantEntityStates.Lemurian.FireFireballnMissile).AssemblyQualifiedName);
+
 		}
 		private void LoadAssets()
 		{
 			var path = Path.GetDirectoryName(Info.Location);
 			theOriginal30Assets = AssetBundle.LoadFromFile(path + assetBundleName);
+			ContentPackProvider.serializedContentPack = theOriginal30Assets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
 		}
         public void RegisterContentPack()
         {
-            ContentPackProvider.serializedContentPack = theOriginal30Assets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
 			ContentPackProvider.Initialize();
         }
 		private void InitializeEntityStates()

@@ -10,6 +10,9 @@ using RoR2.ContentManagement;
 using System.Linq;
 using VarianceAPI.Modules.Prefabs;
 using VarianceAPI.Modules.Items.ItemBases;
+using BepInEx.Logging;
+using VarianceAPI.Utils;
+using RoR2;
 
 [module: UnverifiableCode]
 #pragma warning disable CS0618 // Type or member is obsolete
@@ -17,76 +20,111 @@ using VarianceAPI.Modules.Items.ItemBases;
 #pragma warning restore CS0618 // Type or member is obsolete
 namespace NebbysWrath
 {
-	[BepInPlugin("com.Nebby.NebbysWrath", "Nebby's Wrath", "1.0.0")]
+	[BepInPlugin(GUID, NAME, VERSION)]
 	[BepInDependency("com.Nebby.VarianceAPI", BepInDependency.DependencyFlags.HardDependency)]
 	public class MainClass : BaseUnityPlugin
 	{
-		public static MainClass instance;
 		public static AssetBundle nebbysWrathAssets = null;
-		internal static string assetBundleName = "NebbysWrathAssets";
+		internal static string assetBundleName = "/NebbysWrathAssets";
+
+		public const string GUID = "com.Nebby.NebbysWrath";
+		public const string NAME = "VP - Nebby's Wrath";
+		public const string VERSION = "1.1.0";
+
+		public static PluginInfo pluginInfo;
+		public static ManualLogSource logger;
+		public static Material[] ihatehopooshaders;
 
 		public void Awake()
 		{
-			instance = this;
+			pluginInfo = Info;
+			logger = Logger;
+
 			LoadAssets();
-			SwapShaders();
-			//GrabVanillaMaterials();
-			CreateProjectiles();
+
+			var ingameMaterials = Resources.FindObjectsOfTypeAll<Material>();
+			SwapShaders(nebbysWrathAssets, ingameMaterials);
+
+			LoadEffects();
+
+			new DamageTypes.DamageTypes().Initialize();
+
 			RegisterContentPack();
-			FinishItems();
-			//RegisterVariants();
+			InitializeEntityStates();
+			MaterialGrabber.CreateCorrectMaterials();
+			VarianceAPI.VariantRegister.AddVariant(nebbysWrathAssets, Config);
 		}
 
 		public void LoadAssets()
 		{
-			var path = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
-			nebbysWrathAssets = AssetBundle.LoadFromFile(Path.Combine(path, assetBundleName));
+			var path = Path.GetDirectoryName(Info.Location);
+			nebbysWrathAssets = AssetBundle.LoadFromFile(path + assetBundleName);
+			ContentPackProvider.serializedContentPack = nebbysWrathAssets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
 		}
-		private void SwapShaders()
+		public void SwapShaders(AssetBundle assetBundle, Material[] gameMaterials)
 		{
-			var Materials = nebbysWrathAssets.LoadAllAssets<Material>();
-			foreach (Material material in Materials)
+			List<Material> swappedMaterials = new List<Material>();
+
+			if (assetBundle.isStreamedSceneAssetBundle)
+				return;
+
+			var cloudMat = Resources.Load<GameObject>("Prefabs/Effects/OrbEffects/LightningStrikeOrbEffect").transform.Find("Ring").GetComponent<ParticleSystemRenderer>().material;
+
+			Material[] assetBundleMaterials = assetBundle.LoadAllAssets<Material>();
+
+			for (int i = 0; i < assetBundleMaterials.Length; i++)
 			{
+				var material = assetBundleMaterials[i];
+				// If it's stubbed, just switch out the shader unless it's fucking cloudremap
 				if (material.shader.name.StartsWith("StubbedShader"))
 				{
 					material.shader = Resources.Load<Shader>("shaders" + material.shader.name.Substring(13));
+					if (material.shader.name.Contains("Cloud Remap"))
+					{
+						var eatShit = new RuntimeCloudMaterialMapper(material);
+						material.CopyPropertiesFromMaterial(cloudMat);
+						eatShit.SetMaterialValues(ref material);
+					}
 				}
+
+				//If it's this shader it searches for a material with the same name and copies the properties
+				if (material.shader.name.Equals("CopyFromRoR2"))
+				{
+					foreach (var gameMaterial in gameMaterials)
+						if (material.name.Equals(gameMaterial.name))
+						{
+							material.shader = gameMaterial.shader;
+							material.CopyPropertiesFromMaterial(gameMaterial);
+							break;
+						}
+				}
+				swappedMaterials.Add(material);
+				assetBundleMaterials[i] = material;
 			}
+			ihatehopooshaders = swappedMaterials.ToArray();
 		}
-		/*private void GrabVanillaMaterials()
-		{
-			var MG = new MaterialGrabber();
-			MG.StartGrabber(nebbysWrathAssets);
-		}*/
-		private void CreateProjectiles()
+
+		public void LoadEffects()
         {
-			var Prefabs = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(PrefabBase)));
-			foreach (var prefabType in Prefabs)
+			var Effects = nebbysWrathAssets.LoadAllAssets<GameObject>().Where(gameObject => gameObject.GetComponent<EffectComponent>());
+			foreach(GameObject go in Effects)
             {
-				PrefabBase prefab = (PrefabBase)System.Activator.CreateInstance(prefabType);
-				prefab.Init();
+				HG.ArrayUtils.ArrayAppend(ref ContentPackProvider.serializedContentPack.effectDefs, new EffectDef(go));
             }
         }
-        public void RegisterContentPack()
+
+		public void RegisterContentPack()
         {
-			ContentPackProvider.serializedContentPack = nebbysWrathAssets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
 			ContentPackProvider.Initialize();
         }
-		public void FinishItems()
-        {
-			var ItemTypes = Assembly.GetExecutingAssembly().GetTypes().Where(type => !type.IsAbstract && type.IsSubclassOf(typeof(Thunderkit_ItemBase)));
 
-			foreach (var itemType in ItemTypes)
-            {
-				Thunderkit_ItemBase item = (Thunderkit_ItemBase)System.Activator.CreateInstance(itemType);
-				item.Init();
-            }
-        }
-		/*public void RegisterVariants()
+		private void InitializeEntityStates()
         {
-			var VR = new VariantRegister();
-			VR.RegisterConfigs(nebbysWrathAssets, Config);
-        }*/
+			GetType().Assembly.GetTypes()
+				.Where(type => typeof(EntityStates.EntityState).IsAssignableFrom(type))
+				.ToList()
+				.ForEach(state => HG.ArrayUtils.ArrayAppend(ref ContentPackProvider.serializedContentPack.entityStateTypes, new EntityStates.SerializableEntityStateType(state)));
+        }
     }
 	public class ContentPackProvider : IContentPackProvider
 	{

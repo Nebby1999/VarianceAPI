@@ -13,7 +13,8 @@
         "HGCSharpUtils.dll",
         "MMHOOK_Assembly-CSharp.dll",
         "R2API.dll",
-        "StubbedAssembly-CSharp.dll"
+        "StubbedAssembly-CSharp.dll",
+        "Wwise.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": []

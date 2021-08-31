@@ -15,7 +15,7 @@ using Random = UnityEngine.Random;
 
 namespace VarianceAPI.Components
 {
-    public class VariantHandler : MonoBehaviour
+    public class VariantHandler : NetworkBehaviour
     {
         public VariantInfo[] VariantInfos;
 
@@ -64,8 +64,59 @@ namespace VarianceAPI.Components
                 Destroy(this);
 
             MergeVariantInfos();
+            AnnounceArrival();
+            ModifyAI();
+            ModifyStats();
 
-            #region Announce Arrival
+            Debug.Log("Starting item, buff and equipment addition");
+            foreach (VariantInventoryInfo inventoryInfo in InventoryInfos)
+            {
+                AddItems(inventoryInfo.ItemInventory);
+                AddBuffs(inventoryInfo.Buffs);
+            }
+            GiveEquipment();
+            
+            if (highestTier >= VariantTier.Uncommon)
+            {
+                charMaster.inventory.GiveItem(purpleHealthbar);
+            }
+
+            foreach(VariantVisualModifier visualModifier in VisualModifiers)
+            {
+                ReplaceMaterials(visualModifier.MaterialReplacements);
+                ReplaceMesh(visualModifier.MeshReplacements);
+                ReplaceLights(visualModifier.LightReplacements);
+            }
+
+            foreach(VariantInfo.VariantSkillReplacement skillReplacement in SkillReplacements)
+            {
+                ReplaceSkill(skillReplacement);
+            }
+            
+            foreach(VariantInfo.VariantExtraComponent extraComponent in ExtraComponents)
+            {
+                AddComponent(extraComponent);
+            }
+
+            foreach(VariantInfo.VariantOverrideName overrideName in ExtraNames)
+            {
+                AddName(overrideName);
+            }
+            
+            foreach(SerializableEntityStateType state in DeathStates)
+            {
+                ReplaceDeathState(state);
+            }
+
+            ScaleVariant();
+
+            charBody.healthComponent.health = charBody.healthComponent.fullHealth;
+            charBody.RecalculateStats();
+        }
+
+        #region Announce Arrival
+        private void AnnounceArrival()
+        {
             var randomVariantInfo = VariantInfos.Where(x => x.variantTier >= VariantTier.Rare).PickRandom();
             if (randomVariantInfo)
             {
@@ -83,9 +134,12 @@ namespace VarianceAPI.Components
                     }
                 }
             }
-            #endregion
+        }
+        #endregion
 
-            #region AI Modification
+        #region Modify AI
+        private void ModifyAI()
+        {
             Debug.Log("Starting AI modification");
             if (aiModifiers.HasFlag(VariantAIModifier.Unstable))
             {
@@ -111,9 +165,12 @@ namespace VarianceAPI.Components
                     }
                 }
             }
-            #endregion
+        }
+        #endregion
 
-            #region Stat modification
+        #region Modify Stats
+        private void ModifyStats()
+        {
             Debug.Log("Starting Stat modification");
             charBody.baseMaxHealth *= healthModifier;
             charBody.baseMoveSpeed *= moveSpeedModifier;
@@ -122,72 +179,78 @@ namespace VarianceAPI.Components
             charBody.levelDamage = charBody.baseDamage * 0.2f;
             charBody.baseArmor *= armorModifier;
             charBody.baseArmor += armorBonus;
-            #endregion
+        }
+        #endregion
 
-            Debug.Log("Starting item, buff and equipment addition");
-            foreach (VariantInventoryInfo inventoryInfo in InventoryInfos)
+        #region Add Items
+        private void AddItems(VariantInventoryInfo.VariantInventory[] variantInventory)
+        {
+            foreach (var itemInventory in variantInventory)
             {
-                #region Item Addition
-                foreach (var itemInventory in inventoryInfo.ItemInventory)
+                string itemDefName = itemInventory.itemDefName;
+                int amount = itemInventory.amount;
+
+                bool giveItem = true;
+                if (itemDefName == "ExtraLife")
                 {
-                    string itemDefName = itemInventory.itemDefName;
-                    int amount = itemInventory.amount;
-
-                    bool giveItem = true;
-                    if (itemDefName == "ExtraLife")
+                    if (charMaster.GetComponent<PreventRecursion>())
                     {
-                        if (charMaster.GetComponent<PreventRecursion>())
-                        {
-                            giveItem = false;
-                        }
-                        else
-                        {
-                            charMaster.gameObject.AddComponent<PreventRecursion>();
-                        }
-                    }
-                    if (giveItem)
-                    {
-                        ItemDef itemDef = ItemCatalog.GetItemDef(ItemCatalog.FindItemIndex(itemDefName));
-                        if (itemDef != null && amount > 0)
-                        {
-                            charMaster.inventory.GiveItem(itemDef.itemIndex, amount);
-                        }
-                    }
-                }
-                #endregion
-
-                #region Buff Addition
-                foreach (var buffInfo in inventoryInfo.Buffs)
-                {
-                    int amount = buffInfo.amount;
-                    float time = buffInfo.time;
-                    string buffDefName = buffInfo.buffDefName;
-
-                    BuffDef buffDef = BuffCatalog.GetBuffDef(BuffCatalog.FindBuffIndex(buffDefName));
-                    if (buffDef)
-                    {
-                        if (time > 0)
-                        {
-                            charBody.AddTimedBuff(buffDef, time, amount);
-                        }
-                        else
-                        {
-                            charBody.AddBuff(buffDef);
-                        }
+                        giveItem = false;
                     }
                     else
                     {
-                        VAPILog.LogW($"Could not find BuffDef with the name {buffDefName}.");
+                        charMaster.gameObject.AddComponent<PreventRecursion>();
                     }
                 }
-                #endregion
+                if (giveItem)
+                {
+                    ItemDef itemDef = ItemCatalog.GetItemDef(ItemCatalog.FindItemIndex(itemDefName));
+                    if (itemDef != null && amount > 0)
+                    {
+                        charMaster.inventory.GiveItem(itemDef.itemIndex, amount);
+                    }
+                }
             }
-            #region Equipment Addition
-            randomVariantInfo = VariantInfos.Where(x => x.variantInventory != null).PickRandom();
+        }
+        #endregion
+
+        #region Add Buffs
+        private void AddBuffs(VariantInventoryInfo.VariantBuff[] buffs)
+        {
+            foreach (var buffInfo in buffs)
+            {
+                int amount = buffInfo.amount;
+                float time = buffInfo.time;
+                string buffDefName = buffInfo.buffDefName;
+
+                BuffDef buffDef = BuffCatalog.GetBuffDef(BuffCatalog.FindBuffIndex(buffDefName));
+                if (buffDef)
+                {
+                    if (time > 0)
+                    {
+                        charBody.AddTimedBuff(buffDef, time, amount);
+                    }
+                    else
+                    {
+                        charBody.AddBuff(buffDef);
+                    }
+                }
+                else
+                {
+                    VAPILog.LogW($"Could not find BuffDef with the name {buffDefName}.");
+                }
+            }
+        }
+        #endregion
+
+        #region Give Equipment
+        private void GiveEquipment()
+        {
+            var randomVariantInfo = VariantInfos.Where(x => x.variantInventory != null).PickRandom();
             if (randomVariantInfo)
             {
                 var inventory = randomVariantInfo.variantInventory;
-                if(inventory.equipmentDefName != "")
+                if (inventory.equipmentDefName != "")
                 {
                     EquipmentDef equipmentDef = EquipmentCatalog.GetEquipmentDef(EquipmentCatalog.FindEquipmentIndex(inventory.equipmentDefName));
                     if (equipmentDef)
@@ -201,162 +264,146 @@ namespace VarianceAPI.Components
                     }
                 }
             }
-            #endregion
-            //Adds purple healthbar
-            if (highestTier >= VariantTier.Uncommon)
+        }
+        #endregion
+
+        #region Replace Materials
+        private void ReplaceMaterials(VariantVisualModifier.VariantMaterialReplacement[] materialReplacements)
+        {
+            if (materialReplacements != null)
             {
-                charMaster.inventory.GiveItem(purpleHealthbar);
+                for (int i = 0; i < materialReplacements.Length; i++)
+                {
+                    var current = materialReplacements[i];
+                    charModel.baseRendererInfos[current.rendererIndex].defaultMaterial = current.material;
+                }
             }
+        }
+        #endregion
 
-            Debug.Log("Start Visual modifiers");
-            var VisualModifier = VisualModifiers.PickRandom();
-
-            if(VisualModifier != null)
+        #region Replace Mesh
+        private void ReplaceMesh(VariantVisualModifier.VariantMeshReplacement[] meshReplacements)
+        {
+            if (meshReplacements != null)
             {
-                #region Material replacements
-                if (VisualModifier.MaterialReplacements != null)
+                for (int i = 0; i < meshReplacements.Length; i++)
                 {
-                    for (int i = 0; i < VisualModifier.MaterialReplacements.Length; i++)
-                    {
-                        var current = VisualModifier.MaterialReplacements[i];
-                        charModel.baseRendererInfos[current.rendererIndex].defaultMaterial = current.material;
-                    }
+                    var current = meshReplacements[i];
+                    storedIDRS = charModel.itemDisplayRuleSet;
+                    charModel.itemDisplayRuleSet = null;
+                    TryFuckWithBoneStructure(current);
+                    charModel.baseRendererInfos[current.rendererIndex].renderer.GetComponent<SkinnedMeshRenderer>().sharedMesh = current.mesh;
                 }
-                #endregion
-
-                #region Mesh Replacements
-                if(VisualModifier.MeshReplacements != null)
-                {
-                    for(int j = 0; j < VisualModifier.MeshReplacements.Length; j++)
-                    {
-                        var current = VisualModifier.MeshReplacements[j];
-                        storedIDRS = charModel.itemDisplayRuleSet;
-                        charModel.itemDisplayRuleSet = null;
-                        TryFuckWithBoneStructure(current);
-                        charModel.baseRendererInfos[current.rendererIndex].renderer.GetComponent<SkinnedMeshRenderer>().sharedMesh = current.mesh;
-                    }
-                }
-                #endregion
-
-                #region Light Replacements
-                Debug.Log(VisualModifier.LightReplacements.Length);
-                if(VisualModifier.LightReplacements != null)
-                {
-                    for(int k = 0; k < VisualModifier.LightReplacements.Length; k++)
-                    {
-                        var current = VisualModifier.LightReplacements[k];
-                        charModel.baseLightInfos[current.rendererIndex].defaultColor = current.color;
-                        charModel.baseLightInfos[current.rendererIndex].light.type = current.lightType;
-                    }
-                }
-                #endregion
             }
+        }
+        #endregion
 
-            Debug.Log("Skill Replacement Start");
-            #region Skill Replacements
+        #region Replace Lights
+        private void ReplaceLights(VariantVisualModifier.VariantLightReplacement[] lightReplacements)
+        {
+            if (lightReplacements != null)
+            {
+                for (int k = 0; k < lightReplacements.Length; k++)
+                {
+                    var current = lightReplacements[k];
+                    charModel.baseLightInfos[current.rendererIndex].defaultColor = current.color;
+                    charModel.baseLightInfos[current.rendererIndex].light.type = current.lightType;
+                }
+            }
+        }
+        #endregion
 
+        #region Replace Skill
+        private void ReplaceSkill(VariantInfo.VariantSkillReplacement skillReplacement)
+        {
             SkillLocator skillLocator = charBody.skillLocator;
-
             if(skillLocator)
             {
-                var list = new List<VariantInfo.VariantSkillReplacement>();
-                list.Add(GetRandomSkillReplacement(SkillSlot.Primary));
-                list.Add(GetRandomSkillReplacement(SkillSlot.Secondary));
-                list.Add(GetRandomSkillReplacement(SkillSlot.Utility));
-                list.Add(GetRandomSkillReplacement(SkillSlot.Special));
-
-                foreach(var value in list)
+                switch (skillReplacement.skillSlot)
                 {
-                    if(value.skillDef != null)
+                    case SkillSlot.Primary:
+                        skillLocator.primary?.SetSkillOverride(gameObject, skillReplacement.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                        break;
+                    case SkillSlot.Secondary:
+                        skillLocator.secondary?.SetSkillOverride(gameObject, skillReplacement.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                        break;
+                    case SkillSlot.Utility:
+                        skillLocator.utility?.SetSkillOverride(gameObject, skillReplacement.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                        break;
+                    case SkillSlot.Special:
+                        skillLocator.special?.SetSkillOverride(gameObject, skillReplacement.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                        break;
+                    case SkillSlot.None:
+                        break;
+                }
+            }
+        }
+        #endregion
+
+        #region Add Component
+        private void AddComponent(VariantInfo.VariantExtraComponent extraComponent)
+        {
+            if (extraComponent.isAesthetic)
+            {
+                ModelLocator modelLocator = charBody.GetComponent<ModelLocator>();
+                if (modelLocator)
+                {
+                    Transform modelTransform = modelLocator.modelTransform;
+                    if (modelTransform)
                     {
-                        switch (value.skillSlot)
-                        {
-                            case SkillSlot.Primary:
-                                skillLocator.primary?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                                break;
-                            case SkillSlot.Secondary:
-                                skillLocator.secondary?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                                break;
-                            case SkillSlot.Utility:
-                                skillLocator.utility?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                                break;
-                            case SkillSlot.Special:
-                                skillLocator.special?.SetSkillOverride(this.gameObject, value.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
-                                break;
-                            case SkillSlot.None:
-                                break;
-                        }
+                        VAPILog.LogI("Adding " + extraComponent.componentToAdd.componentType.Name + " Component to " + charBody.GetDisplayName());
+                        modelTransform.gameObject.AddComponent(extraComponent.componentToAdd.componentType);
                     }
                 }
             }
-            #endregion
-
-            Debug.Log("Extra Components start");
-            #region Extra Components
-            for(int i = 0; i < ExtraComponents.Length; i++)
+            else
             {
-                VariantInfo.VariantExtraComponent extraComponent = ExtraComponents[i];
-                if (extraComponent.isAesthetic)
-                {
-                    ModelLocator modelLocator = charBody.GetComponent<ModelLocator>();
-                    if (modelLocator)
-                    {
-                        Transform modelTransform = modelLocator.modelTransform;
-                        if (modelTransform)
-                        {
-                            VAPILog.LogI("Adding " + extraComponent.componentToAdd.componentType.Name + " Component to " + charBody.GetDisplayName());
-                            modelTransform.gameObject.AddComponent(extraComponent.componentToAdd.componentType);
-                        }
-                    }
-                }
-                else
-                {
-                    VAPILog.LogI("Variant Components that are not aesthetic have yet to be implemented, we're sorry for this inconvenience.");
-                }
+                VAPILog.LogI("Variant Components that are not aesthetic have yet to be implemented, we're sorry for this inconvenience.");
             }
-            #endregion
+        }
+        #endregion
 
-            Debug.Log("Name Modification Start");
-            #region Name Modification
-            foreach(var overrideName in ExtraNames)
+        #region Add Name
+        private void AddName(VariantInfo.VariantOverrideName overrideName)
+        {
+            switch (overrideName.overrideType)
             {
-                switch(overrideName.overrideType)
-                {
-                    case OverrideNameType.Preffix:
-                        charBody.baseNameToken = Language.GetStringFormatted(overrideName.textToAdd) + " " + charBody.GetDisplayName();
-                        break;
-                    case OverrideNameType.Suffix:
-                        charBody.baseNameToken = charBody.GetDisplayName() + " " + Language.GetStringFormatted(overrideName.textToAdd);
-                        break;
-                    case OverrideNameType.CompleteOverride:
-                        charBody.baseNameToken = Language.GetStringFormatted(overrideName.textToAdd);
-                        break;
-                }
+                case OverrideNameType.Preffix:
+                    charBody.baseNameToken = Language.GetStringFormatted(overrideName.textToAdd) + " " + charBody.GetDisplayName();
+                    break;
+                case OverrideNameType.Suffix:
+                    charBody.baseNameToken = charBody.GetDisplayName() + " " + Language.GetStringFormatted(overrideName.textToAdd);
+                    break;
+                case OverrideNameType.CompleteOverride:
+                    charBody.baseNameToken = Language.GetStringFormatted(overrideName.textToAdd);
+                    break;
             }
-            #endregion
+        }
+        #endregion
 
-            Debug.Log("DeathState modification start");
-            #region New Death State
-            var deathState = DeathStates.PickRandom();
-            if(deathState.typeName != null)
+        #region Replace Death State
+        private void ReplaceDeathState(SerializableEntityStateType deathState)
+        {
+            if (deathState.typeName != null)
                 charDeathBehavior.deathState = deathState;
-            #endregion
+        }
+        #endregion
 
-            Debug.Log("Scale body start");
-            #region Scale Body
+        #region Scale Variant
+        private void ScaleVariant()
+        {
             charBody.modelLocator.modelTransform.localScale *= sizeModifier;
-            if(scaleColliders)
+            if (scaleColliders)
             {
                 foreach (KinematicCharacterMotor kinematicCharacterMotor in charBody.GetComponentsInChildren<KinematicCharacterMotor>())
                     if (kinematicCharacterMotor) kinematicCharacterMotor.SetCapsuleDimensions(kinematicCharacterMotor.Capsule.radius * this.sizeModifier, kinematicCharacterMotor.CapsuleHeight * sizeModifier, sizeModifier);
             }
-            #endregion
-
-            charBody.healthComponent.health = charBody.healthComponent.fullHealth;
-            charBody.RecalculateStats();
-            Debug.Log("Finished!");
         }
+        #endregion
 
+        //Bellow arent necesarily related to variant stuff.
+
+        #region Mesh Replacement Crazyness
         private void TryFuckWithBoneStructure(VariantVisualModifier.VariantMeshReplacement meshReplacement)
         {
             storedEquipment = charMaster.inventory.GetEquipmentIndex();
@@ -448,20 +495,9 @@ namespace VarianceAPI.Components
                 charMaster.inventory.SetEquipmentIndex(storedEquipment);
             }
         }
+        #endregion
 
-        private VariantInfo.VariantSkillReplacement GetRandomSkillReplacement(SkillSlot skillSlot)
-        {
-            var availableSkills = SkillReplacements.Where(x => x.skillSlot == skillSlot).ToArray();
-            if(availableSkills.Length == 0)
-            {
-                var skillReplacement = new VariantInfo.VariantSkillReplacement();
-                skillSlot = SkillSlot.None;
-                return skillReplacement;
-            }
-            var rng = Random.Range(0, availableSkills.Length);
-            Debug.Log(rng);
-            return availableSkills[rng];
-        }
+        #region Merge
         private void MergeVariantInfos()
         {
             var healthMultiplier = 1f;
@@ -546,5 +582,6 @@ namespace VarianceAPI.Components
             armorModifier = armorMultiplier;
             sizeModifier = sizeMultiplier;
         }
+        #endregion
     }
 }

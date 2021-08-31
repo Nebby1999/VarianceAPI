@@ -1,5 +1,6 @@
 ﻿using EntityStates;
 using EntityStates.ImpBossMonster;
+using R2API;
 using RoR2;
 using RoR2.Projectile;
 using UnityEngine;
@@ -82,6 +83,9 @@ namespace NebbysWrath.VariantEntityStates.ImpOverlord
             attack.isCrit = Util.CheckRoll(critStat, base.characterBody.master);
             attack.procCoefficient = procCoefficient;
             attack.damageType = DamageType.Generic;
+
+            DamageAPI.AddModdedDamageType(attack, DamageTypes.PulverizeOnHit.pulverizeOnHit);
+
             Util.PlaySound(enterSoundString, base.gameObject);
             if (base.isAuthority)
             {
