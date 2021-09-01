@@ -10,15 +10,15 @@ namespace NebbysWrath.VariantEntityStates.ImpOverlord
 {
     public class FireIchorSpikes : BaseState
     {
-        public static float baseDuration = 3.5f;
+        public static float baseDuration = 3f;
 
-        public static float damageCoefficient = 0.3f;
+        public static float damageCoefficient = 2f;
 
-        public static float procCoefficient;
+        public static float procCoefficient = 1;
 
-        public static float selfForce;
+        public static float selfForce = 1000;
 
-        public static float forceMagnitude = 16f;
+        public static float forceMagnitude = 2000f;
 
         public static GameObject hitEffectPrefab;
 
@@ -26,21 +26,21 @@ namespace NebbysWrath.VariantEntityStates.ImpOverlord
 
         public static string enterSoundString;
 
-        public static string attackSoundString;
+        public static string attackSoundString = "Play_imp_overlord_attack1_throw";
 
-        public static float walkSpeedPenaltyCoefficient;
+        public static float walkSpeedPenaltyCoefficient = 1;
 
-        public static int projectileCount;
+        public static int projectileCount = 8;
 
-        public static float projectileYawSpread;
+        public static float projectileYawSpread = 10;
 
-        public static float projectileDamageCoefficient;
+        public static float projectileDamageCoefficient = 0.3f;
 
-        public static float projectileSpeed;
+        public static float projectileSpeed = 150;
 
-        public static float projectileSpeedPerProjectile;
+        public static float projectileSpeedPerProjectile = -10;
 
-        public static GameObject projectilePrefab;
+        public static GameObject projectilePrefab = Projectiles.IchorSpike.ichorSpike;
 
         private OverlapAttack attack;
 
@@ -56,19 +56,8 @@ namespace NebbysWrath.VariantEntityStates.ImpOverlord
 
         public override void OnEnter()
         {
-            procCoefficient = FireVoidspikes.procCoefficient;
-            selfForce = FireVoidspikes.selfForce;
             hitEffectPrefab = FireVoidspikes.hitEffectPrefab;
             swipeEffectPrefab = FireVoidspikes.swipeEffectPrefab;
-            enterSoundString = FireVoidspikes.enterSoundString;
-            attackSoundString = FireVoidspikes.attackSoundString;
-            walkSpeedPenaltyCoefficient = FireVoidspikes.walkSpeedPenaltyCoefficient;
-            projectileCount = FireVoidspikes.projectileCount;
-            projectileYawSpread = FireVoidspikes.projectileYawSpread;
-            projectileDamageCoefficient = FireVoidspikes.projectileDamageCoefficient;
-            projectileSpeed = FireVoidspikes.projectileSpeed;
-            projectileSpeedPerProjectile = FireVoidspikes.projectileSpeedPerProjectile;
-            projectilePrefab = NebbysWrath.Prefabs.ImpOverlord.IchorSpike.prefab;
             base.OnEnter();
             duration = baseDuration / attackSpeedStat;
             modelAnimator = GetModelAnimator();

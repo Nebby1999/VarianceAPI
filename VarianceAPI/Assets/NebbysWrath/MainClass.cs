@@ -48,6 +48,7 @@ namespace NebbysWrath
 			LoadEffects();
 
 			new DamageTypes.DamageTypes().Initialize();
+			new Projectiles.Projectiles().Initialize();
 
 			RegisterContentPack();
 			InitializeEntityStates();

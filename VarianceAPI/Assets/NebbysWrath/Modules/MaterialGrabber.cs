@@ -49,6 +49,9 @@ namespace NebbysWrath
             //OnFire Mat
             VanillaMaterials.Add(("NW_OnFireMaterial", Resources.Load<Material>("Materials/matOnFire")));
 
+            //GolemElectric
+            VanillaMaterials.Add(("NW_GolemElectric", Resources.Load<GameObject>("Prefabs/GolemClapCharge").GetComponentInChildren<ParticleSystemRenderer>().material));
+
             VariantMaterialGrabber.StoreMaterials(VanillaMaterials);
         }
     }

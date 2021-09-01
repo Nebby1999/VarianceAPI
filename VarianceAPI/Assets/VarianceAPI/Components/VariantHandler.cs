@@ -68,7 +68,6 @@ namespace VarianceAPI.Components
             ModifyAI();
             ModifyStats();
 
-            Debug.Log("Starting item, buff and equipment addition");
             foreach (VariantInventoryInfo inventoryInfo in InventoryInfos)
             {
                 AddItems(inventoryInfo.ItemInventory);
@@ -343,22 +342,20 @@ namespace VarianceAPI.Components
         #region Add Component
         private void AddComponent(VariantInfo.VariantExtraComponent extraComponent)
         {
-            if (extraComponent.isAesthetic)
+            switch(extraComponent.componentType)
             {
-                ModelLocator modelLocator = charBody.GetComponent<ModelLocator>();
-                if (modelLocator)
-                {
-                    Transform modelTransform = modelLocator.modelTransform;
-                    if (modelTransform)
-                    {
-                        VAPILog.LogI("Adding " + extraComponent.componentToAdd.componentType.Name + " Component to " + charBody.GetDisplayName());
-                        modelTransform.gameObject.AddComponent(extraComponent.componentToAdd.componentType);
-                    }
-                }
-            }
-            else
-            {
-                VAPILog.LogI("Variant Components that are not aesthetic have yet to be implemented, we're sorry for this inconvenience.");
+                case ComponentType.Body:
+                    VAPILog.LogI($"Adding {extraComponent.componentToAdd.componentType.Name} Component to {charBody.gameObject}");
+                    charBody.gameObject.AddComponent(extraComponent.componentToAdd.componentType);
+                    break;
+                case ComponentType.Master:
+                    VAPILog.LogI($"Adding {extraComponent.componentToAdd.componentType.Name} Component to {charMaster.gameObject}");
+                    charMaster.gameObject.AddComponent(extraComponent.componentToAdd.componentType);
+                    break;
+                case ComponentType.Model:
+                    VAPILog.LogI($"Adding {extraComponent.componentToAdd.componentType.Name} Component to {charModel.gameObject}");
+                    charModel.gameObject.AddComponent(extraComponent.componentToAdd.componentType);
+                    break;
             }
         }
         #endregion

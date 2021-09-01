@@ -73,4 +73,11 @@ namespace VarianceAPI
         MagmaWorm, //https://github.com/ToastedOven/WetDanger/blob/457c254cca45f961c20665a085e096da23edac0a/MoistureUpset/MoistureUpset/EnemyReplacements.cs#L2051
         OverloadingWorm //https://github.com/ToastedOven/WetDanger/blob/457c254cca45f961c20665a085e096da23edac0a/MoistureUpset/MoistureUpset/EnemyReplacements.cs#L2232
     }
+
+    public enum ComponentType
+    {
+        Model,
+        Body,
+        Master
+    }
 }

@@ -33,6 +33,8 @@ namespace NebbysWrath.VariantEntityStates.BrassContraption
 
         public static float selfForce;
 
+        private static bool madeClone = false;
+
         private float prepDuration;
 
         private float timeBetweenPreps;
@@ -51,6 +53,12 @@ namespace NebbysWrath.VariantEntityStates.BrassContraption
 
         public override void OnEnter()
         {
+            if(!madeClone)
+            {
+                madeClone = true;
+                preppedBombPrefab = PrefabAPI.InstantiateClone(ChargeTrioBomb.preppedBombPrefab, "preppedBomb");
+                preppedBombPrefab.GetComponentInChildren<MeshRenderer>().material = MainClass.nebbysWrathAssets.LoadAsset<Material>("matSteelContraption");
+            }
             basePrepDuration = ChargeTrioBomb.basePrepDuration;
             baseTimeBetweenPreps = ChargeTrioBomb.baseTimeBetweenPreps;
             baseBarrageDuration = ChargeTrioBomb.baseBarrageDuration;
@@ -60,8 +68,7 @@ namespace NebbysWrath.VariantEntityStates.BrassContraption
             force = ChargeTrioBomb.force * 2;
             selfForce = ChargeTrioBomb.selfForce * 2;
             currentBombIndex = 1;
-            bombProjectilePrefab = Prefabs.BrassContraption.MegaBall.prefab;
-            preppedBombPrefab = ChargeTrioBomb.preppedBombPrefab;
+            bombProjectilePrefab = Projectiles.SteelBall.projectile;
             base.OnEnter();
             prepDuration = basePrepDuration / attackSpeedStat;
             timeBetweenPreps = baseTimeBetweenPreps / attackSpeedStat;
@@ -98,7 +105,7 @@ namespace NebbysWrath.VariantEntityStates.BrassContraption
                     Transform transform = FindTargetChildTransformFromBombIndex();
                     if ((bool)transform)
                     {
-                        preppedBombPrefabInstance = Object.Instantiate(preppedBombPrefab.InstantiateClone("Clone", true), transform);
+                        preppedBombPrefabInstance = Object.Instantiate(preppedBombPrefab, transform);
                         preppedBombPrefabInstance.transform.localScale *= 4;
                     }
                 }

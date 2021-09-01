@@ -19,7 +19,8 @@ MonoBehaviour:
   icon: {fileID: 0}
   activationStateMachineName: Weapon
   activationState:
-    _typeName: 
+    _typeName: NebbysWrath.VariantEntityStates.SCU.DeploySwarm, NebbysWrath, Version=0.0.0.0,
+      Culture=neutral, PublicKeyToken=null
   interruptPriority: 0
   baseRechargeInterval: 10
   baseMaxStock: 1

@@ -1,4 +1,4 @@
-﻿/*using EntityStates;
+﻿using EntityStates;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -11,24 +11,27 @@ using UnityEngine.Events;
 using UnityEngine.Networking;
 using VarianceAPI.Components;
 using EntityStates.RoboBallBoss.Weapon;
+using VarianceAPI;
 
 namespace NebbysWrath.VariantEntityStates.SCU
 {
 	public class DeploySwarm : BaseState
 	{
-		public static float baseDuration = 3.5f;
+		public static float baseDuration = 6f;
 
-		public static string attackSoundString;
+		public static string attackSoundString = "Play_roboBall_attack2_createMini";
 
-		public static string summonSoundString;
+		public static string summonSoundString = "Play_roboBall_attack2_mini_spawn";
 
 		public static int maxSummonCount = 5;
 
-		public static float summonDuration = 3.26f;
+		public static float summonDuration = 2;
 
-		public static string summonMuzzleString;
+		public static string summonMuzzleString = "SummonMuzzle";
 
-		public static string spawnCard;
+		public static GameObject roboBallMiniMaster = Resources.Load<GameObject>("prefabs/charactermasters/roboballminimaster");
+
+		public static string swarmerIdentifier = "NW_SwarmerProbe";
 
 		private Animator animator;
 
@@ -48,13 +51,6 @@ namespace NebbysWrath.VariantEntityStates.SCU
 
 		public override void OnEnter()
 		{
-			baseDuration = DeployMinions.baseDuration;
-			attackSoundString = DeployMinions.attackSoundString;
-			summonSoundString = DeployMinions.summonSoundString;
-			maxSummonCount = DeployMinions.maxSummonCount;
-			summonDuration = DeployMinions.summonDuration;
-			summonMuzzleString = DeployMinions.summonMuzzleString;
-			spawnCard = "scsRoboBallMini";
 			base.OnEnter();
 			animator = GetModelAnimator();
 			modelTransform = GetModelTransform();
@@ -84,45 +80,42 @@ namespace NebbysWrath.VariantEntityStates.SCU
 
 		private void SummonMinion()
 		{
-			if (!base.characterBody || !base.characterBody.master || base.characterBody.master.GetDeployableCount(DeployableSlot.RoboBallMini) >= base.characterBody.master.GetDeployableSameSlotLimit(DeployableSlot.RoboBallMini))
+			var summon = new MasterSummon();
+			summon.position = childLocator.FindChild(summonMuzzleString).position;
+			summon.masterPrefab = roboBallMiniMaster;
+			summon.summonerBodyObject = characterBody.gameObject;
+			var roboBallMaster = summon.Perform();
+			if (roboBallMaster)
 			{
-				return;
-			}
-			Util.PlaySound(summonSoundString, base.gameObject);
-			if (NetworkServer.active)
-			{
-				Vector3 position = FindModelChild(summonMuzzleString).position;
-				DirectorSpawnRequest directorSpawnRequest = new DirectorSpawnRequest((SpawnCard)Resources.Load($"SpawnCards/CharacterSpawnCards/" + spawnCard), new DirectorPlacementRule
-				{
-					placementMode = DirectorPlacementRule.PlacementMode.Direct,
-					minDistance = 0f,
-					maxDistance = 0f,
-					position = position
-				}, RoR2Application.rng);
-				directorSpawnRequest.summonerBodyObject = base.gameObject;
-				GameObject gameObject = DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
-				if ((bool)gameObject)
-				{
-					CharacterMaster component = gameObject.GetComponent<CharacterMaster>();
-					gameObject.GetComponent<Inventory>().SetEquipmentIndex(base.characterBody.inventory.currentEquipmentIndex);
+				var roboBody = roboBallMaster.GetBody();
 
-					VariantHandler[] VHs = gameObject.GetComponents<VariantHandler>().Where(VH => VH.identifierName == "NW_SwarmerProbe").ToArray();
-					Debug.Log(VHs.Length);
-					Debug.Log(VHs[1].identifierName);
-					foreach(VariantHandler variantHandler in VHs)
-                    {
-						if(variantHandler.isVariant)
-                        {
-							return;
-                        }
-						else
-                        {
-							Debug.Log("Penis");
-							variantHandler.Modify();
-                        }
-                    }
+				Destroy(roboBody.gameObject.GetComponent<VariantSpawnHandler>());
+				var rewardHandler = roboBody.gameObject.GetComponent<VariantRewardHandler>();
+				if (rewardHandler)
+				{
+					Destroy(rewardHandler);
 				}
-			}
+
+				var handler = roboBody.GetComponent<VariantHandler>();
+				if(handler)
+                {
+					var roboBallVariants = VariantRegister.RegisteredVariants["RoboBallMiniBody"];
+
+					var swarmer = roboBallVariants.SingleOrDefault(x => x.identifier == swarmerIdentifier);
+					HG.ArrayUtils.ArrayAppend(ref handler.VariantInfos, swarmer);
+					roboBallVariants.Where(x => x.identifier != swarmerIdentifier)
+						.ToList()
+						.ForEach(variant =>
+						{
+							if(Util.CheckRoll(variant.spawnRate))
+							{
+								HG.ArrayUtils.ArrayAppend(ref handler.VariantInfos, variant);
+							}
+						});
+
+					handler.Modify();
+                }
+            }
 		}
 
 		public override void FixedUpdate()
@@ -152,4 +145,3 @@ namespace NebbysWrath.VariantEntityStates.SCU
 		}
 	}
 }
-*/

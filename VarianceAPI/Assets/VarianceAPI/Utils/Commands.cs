@@ -114,7 +114,7 @@ namespace VarianceAPI.Utils
                     List<VariantInfo> variantInfos = VariantRegister.RegisteredVariants[body.name];
                     foreach(string identifier in identifiers)
                     {
-                        var variantInfo = variantInfos.Find(x => x.identifier.ToLower() == identifier.ToLower());
+                        var variantInfo = variantInfos.Find(x => x.identifier.ToLower().Contains(identifier.ToLower()));
                         if(variantInfo)
                         {
                             HG.ArrayUtils.ArrayAppend(ref VariantHandler.VariantInfos, variantInfo);
@@ -188,7 +188,7 @@ namespace VarianceAPI.Utils
                     List<VariantInfo> variantInfos = VariantRegister.RegisteredVariants[newBody.name];
                     foreach (string identifier in identifiers)
                     {
-                        var variantInfo = variantInfos.Find(x => x.identifier.ToLower() == identifier.ToLower());
+                        var variantInfo = variantInfos.Find(x => x.identifier.ToLower().Contains(identifier.ToLower()));
                         if (variantInfo)
                         {
                             HG.ArrayUtils.ArrayAppend(ref VariantHandler.VariantInfos, variantInfo);

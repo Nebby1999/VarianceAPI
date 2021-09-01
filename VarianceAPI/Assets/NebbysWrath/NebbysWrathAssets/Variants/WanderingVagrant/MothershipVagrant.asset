@@ -37,4 +37,5 @@ MonoBehaviour:
   arrivalMessage: 
   extraComponents: []
   customDeathState:
-    _typeName: 
+    _typeName: NebbysWrath.VariantEntityStates.WanderingVagrant.DeathStates.JellyDeploy,
+      NebbysWrath, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null

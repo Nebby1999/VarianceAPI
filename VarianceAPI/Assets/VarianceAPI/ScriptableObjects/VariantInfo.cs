@@ -36,8 +36,8 @@ namespace VarianceAPI.ScriptableObjects
             [Tooltip("What component to add to the Variant\nThis needs to be the combination of the Namespace, alongside the class name\nExample: YourNameSpace.Component.CustomVariantComponent.")]
             public SerializableVariantComponentType componentToAdd;
 
-            [Tooltip("Wether the component is Aesthetic, such as adding a missile launcher to an enemy")]
-            public bool isAesthetic;
+            [Tooltip("Where the component will be added.\nModel = Attatches to the mdl game object.\nBody = Attatches to the Body game object\nMaster = Atatches to the Master game object.")]
+            public ComponentType componentType;
         }
 
         [Header("Important Settings")]

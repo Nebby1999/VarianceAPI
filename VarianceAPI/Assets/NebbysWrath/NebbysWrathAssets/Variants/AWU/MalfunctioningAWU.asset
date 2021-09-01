@@ -15,7 +15,7 @@ MonoBehaviour:
   identifier: NW_MalfunctioningAWU
   bodyName: SuperRoboBallBossBody
   overrideNames:
-  - textToAdd: TO30_MALFUNCTIONING_PREFIX
+  - textToAdd: NW_MALFUNCTIONING_PREFIX
     overrideType: 0
   unique: 0
   aiModifier: 1

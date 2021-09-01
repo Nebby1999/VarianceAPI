@@ -94,6 +94,7 @@ namespace NebbysWrath.VariantEntityStates.WanderingVagrant
                     if (jelly)
                     {
                         EffectManager.SimpleMuzzleFlash(SpawnEffectPrefab, jelly.gameObject, "TrackingBombMuzzle", transmit: false);
+                        jelly.GetComponent<CharacterBody>().inventory.SetEquipmentIndex(characterBody.equipmentSlot.equipmentIndex);
                     }
                 }
             }

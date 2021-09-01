@@ -280,7 +280,6 @@ public class VariantInfoCreator : MonoBehaviour
         for(int i = 0; i < extraComponents.Length; i++)
         {
             var toAdd = new VariantInfo.VariantExtraComponent();
-            toAdd.isAesthetic = extraComponents[i].isAesthetic;
 
             toReturn.Add(toAdd);
         }
