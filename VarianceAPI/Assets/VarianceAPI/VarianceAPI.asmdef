@@ -1,0 +1,22 @@
+{
+    "name": "VarianceAPI",
+    "references": [],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "BepInEx.dll",
+        "R2API.dll",
+        "HGCSharpUtils.dll",
+        "MMHOOK_Assembly-CSharp.dll",
+        "StubbedAssembly-CSharp.dll",
+        "MonoMod.Utils.dll",
+        "Mono.Cecil.dll",
+        "BepInEx.Preloader.dll",
+        "DebugToolkit.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
+}

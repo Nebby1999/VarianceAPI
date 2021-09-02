@@ -1,0 +1,140 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e563561e08b6a3642a487177f5cfbb37, type: 3}
+  m_Name: VAPIManifest
+  m_EditorClassIdentifier: 
+  Data:
+  - {fileID: 114841402022115770}
+  - {fileID: 114529392590033360}
+  - {fileID: 114581854462913448}
+  - {fileID: 114805239024042954}
+  - {fileID: 114906774016037248}
+  - {fileID: 114602032430191262}
+  identity: {fileID: 114841402022115770}
+--- !u!114 &114529392590033360
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7e13dda513544419a89926bd12ad8a, type: 3}
+  m_Name: AssemblyDefinitions
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  StagingPaths:
+  - <ManifestPluginStaging>
+  definitions:
+  - {fileID: 5897886265953266890, guid: f037536a388cdd14b82e3a391bd48ec1, type: 3}
+  - {fileID: 5897886265953266890, guid: 2523db9521788b543a66225eb65a18f8, type: 3}
+--- !u!114 &114581854462913448
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17d1008b78cb6e846889b7778282fbef, type: 3}
+  m_Name: AssetBundleDefinitions
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  StagingPaths:
+  - <ManifestPluginStaging>
+  assetBundles:
+  - assetBundleName: VAPIAssets
+    assets:
+    - {fileID: 102900000, guid: fbcc3f60847fcb04d9b402bb7f267bbd, type: 3}
+--- !u!114 &114602032430191262
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  StagingPaths:
+  - <ManifestPluginStaging>
+  files:
+  - {fileID: 102900000, guid: 28e51e8fc5bddd3419837a183f4d4f6a, type: 3}
+--- !u!114 &114805239024042954
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a82fec78ebc734d9ad1346cd40b5f9, type: 3}
+  m_Name: ThunderstoreData
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  StagingPaths:
+  - <ManifestStagingRoot>
+  url: https://github.com/Nebby1999/VarianceAPI
+--- !u!114 &114841402022115770
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f22bb7fd1d3b56a48bc52f8e407901d6, type: 3}
+  m_Name: ManifestIdentity
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  StagingPaths:
+  - <ManifestPluginStaging>
+  Author: Nebby
+  Name: VarianceAPI
+  Icon: {fileID: 2800000, guid: 17e7291e3ba22bf44987a915ddf8eed0, type: 3}
+  Description: VarianceAPI 1.0.0, Major Rewrite, Easier to use, More customizable.
+  Version: 1.0.0
+  Dependencies:
+  - {fileID: 11400000, guid: 6893422731aa6d67012f5f4d8209c304, type: 2}
+  - {fileID: 11400000, guid: cbb5f83c7c6c0f5c9aa4cc80aa694344, type: 2}
+  - {fileID: 11400000, guid: 879868159ff788f429c080c76b024e0c, type: 2}
+--- !u!114 &114906774016037248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  Errored: 0
+  ErrorMessage: 
+  StagingPaths:
+  - <ManifestStagingRoot>
+  files:
+  - {fileID: 4900000, guid: 501c5eb442da75842af61bf54eee9452, type: 3}
+  - {fileID: 2800000, guid: 17e7291e3ba22bf44987a915ddf8eed0, type: 3}

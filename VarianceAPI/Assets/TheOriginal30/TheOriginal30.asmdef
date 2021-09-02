@@ -1,0 +1,20 @@
+{
+    "name": "TheOriginal30",
+    "references": [
+        "VarianceAPI"
+    ],
+    "optionalUnityReferences": [],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "StubbedAssembly-CSharp.dll",
+        "BepInEx.dll",
+        "MMHOOK_Assembly-CSharp.dll",
+        "R2API.dll",
+        "HGCSharpUtils.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": []
+}
