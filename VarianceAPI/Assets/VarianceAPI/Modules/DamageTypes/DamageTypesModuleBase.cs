@@ -29,7 +29,6 @@ namespace VarianceAPI.ModuleBases
         {
             if(!delegates)
             {
-                VAPILog.LogI("This should only appear once");
                 delegates = true;
             }
         }

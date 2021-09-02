@@ -21,7 +21,6 @@ MonoBehaviour:
   aiModifier: 0
   variantTier: 1
   spawnRate: 4
-  givesRewards: 1
   variantInventory: {fileID: 11400000, guid: 4257bd9d9a13b3a438df9506ac75d91f, type: 2}
   skillReplacements: []
   healthMultiplier: 1

@@ -20,7 +20,6 @@ namespace NebbysWrath.Projectiles
 
         public override void Initialize()
         {
-            MainClass.logger.LogInfo($"Initializing Projectiles...");
             base.Initialize();
             InitializeProjectiles();
         }
@@ -37,8 +36,6 @@ namespace NebbysWrath.Projectiles
                     loadedProjectiles.Add(projectileBase.ProjectilePrefab, projectileBase);
 
                     NWProjectiles.Add(projectileBase.ProjectilePrefab, projectileBase);
-
-                    MainClass.logger.LogDebug($"Added Projectile {projectileBase.ProjectilePrefab.name} to {ContentPack.name}");
                 });
 
             return null;

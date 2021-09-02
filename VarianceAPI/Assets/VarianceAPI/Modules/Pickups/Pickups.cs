@@ -28,7 +28,7 @@ namespace VarianceAPI
         }
         public override IEnumerable<ItemBase> InitializeItems()
         {
-            VAPILog.LogI("Initializing Items...");
+            VAPILog.LogD("Initializing Items...");
             base.InitializeItems()
                 .ToList()
                 .ForEach(itemBase =>

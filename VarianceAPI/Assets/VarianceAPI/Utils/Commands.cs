@@ -40,7 +40,7 @@ namespace VarianceAPI.Utils
             string character = StringFinder.Instance.GetBodyName(args[0]);
             if(character == null)
             {
-                Debug.Log("No body could be found with that name.");
+                Debug.Log("No body could be found with that name. to get a list of bodies that have variants, use list_modified_bodies.");
                 return;
             }
 
@@ -57,7 +57,7 @@ namespace VarianceAPI.Utils
             }
             else
             {
-                Debug.Log("Body inputted has no variants.");
+                Debug.Log("Body inputted has no variants. to get a list of bodies that have variants, use list_modified_bodies.");
                 return;
             }
         }
@@ -202,7 +202,7 @@ namespace VarianceAPI.Utils
             }
             else
             {
-                VAPILog.LogW($"The given CharacterBody ({newBody.name}) has no variants.");
+                Debug.Log($"The given CharacterBody ({newBody.name}) has no variants.");
             }
         }
     }

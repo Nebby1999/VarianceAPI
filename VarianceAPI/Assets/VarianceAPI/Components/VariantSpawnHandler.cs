@@ -59,7 +59,7 @@ namespace VarianceAPI.Components
 
         public List<VariantInfo> EnabledVariants = new List<VariantInfo>();
 
-        public float SpawnRateMultiplier;
+        public float SpawnRateMultiplier = 1;
 
         public SyncListInt EnabledVariantIndices = new SyncListInt();
 
@@ -82,7 +82,7 @@ namespace VarianceAPI.Components
 
         private void OnAddedVariant(SyncList<int>.Operation op, int itemIndex)
         {
-            if(variantInfos[itemIndex])
+            if(NotUniqueVariantInfos[itemIndex])
             {
                 EnabledVariants.Add(NotUniqueVariantInfos[itemIndex]);
             }
@@ -105,7 +105,7 @@ namespace VarianceAPI.Components
 
             //If artifact is enabled, multiply spawn rates.
             if (RunArtifactManager.instance.IsArtifactEnabled(Assets.VAPIAssets.LoadAsset<ArtifactDef>("Variance")))
-                SpawnRateMultiplier = ConfigLoader.VarianceMultiplier.Value * 5;
+                SpawnRateMultiplier = ConfigLoader.VarianceMultiplier.Value;
 
             if (UniqueVariantInfos != null)
             {
@@ -120,9 +120,10 @@ namespace VarianceAPI.Components
                 rng.AddChoice(-1, notUniqueChance);
 
                 var index = rng.Evaluate(Run.instance.runRNG.nextNormalizedFloat);
-                if(index != -1)
+                if (index != -1)
                 {
                     EnabledUniqueVariantIndex = index;
+                    //OnUniqueAssigned(index);
                     return;
                 }
             }
@@ -135,9 +136,11 @@ namespace VarianceAPI.Components
                     if (Util.CheckRoll(variantInfo.spawnRate * SpawnRateMultiplier))
                     {
                         EnabledVariantIndices.Add(i);
+                        //EnabledVariants.Add(NotUniqueVariantInfos[i]);
                     }
                 }
                 finishedCheckRolls = true;
+                //OnFinishedCheckRolls(true);
             }
         }
         private void ModifyComponents()

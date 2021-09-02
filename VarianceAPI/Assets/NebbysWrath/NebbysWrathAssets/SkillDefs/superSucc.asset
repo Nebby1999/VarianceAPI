@@ -22,9 +22,9 @@ MonoBehaviour:
     _typeName: NebbysWrath.VariantEntityStates.ClayDunestrider.SuperSucc, NebbysWrath,
       Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
   interruptPriority: 0
-  baseRechargeInterval: 90
+  baseRechargeInterval: 1e+9
   baseMaxStock: 1
-  rechargeStock: 1
+  rechargeStock: 0
   requiredStock: 1
   stockToConsume: 1
   resetCooldownTimerOnUse: 0

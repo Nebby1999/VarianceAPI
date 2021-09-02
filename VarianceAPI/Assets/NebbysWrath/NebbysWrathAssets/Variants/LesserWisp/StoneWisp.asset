@@ -15,13 +15,12 @@ MonoBehaviour:
   identifier: NW_StoneWisp
   bodyName: WispBody
   overrideNames:
-  - textToAdd: Stone
+  - textToAdd: NW_STONE_PREFIX
     overrideType: 0
   unique: 0
   aiModifier: 0
   variantTier: 1
   spawnRate: 2
-  givesRewards: 1
   variantInventory: {fileID: 0}
   skillReplacements:
   - skillSlot: 0

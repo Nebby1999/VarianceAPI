@@ -63,10 +63,6 @@ namespace VarianceAPI.ScriptableObjects
         [Range(0, 100)]
         public float spawnRate;
 
-        [Header("Reward Settings")]
-        [Tooltip("Wether this variant gives rewards when it dies")]
-        public bool givesRewards;
-
         [Header("Custom Inventory & Skills")]
 
         [Tooltip("The Variant's Inventory, includes:\nItem Inventory.\nBuffs\nEquipment usage.\nCan be left empty")]

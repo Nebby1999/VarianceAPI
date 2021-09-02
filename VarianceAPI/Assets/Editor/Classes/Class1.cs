@@ -25,7 +25,6 @@ public class VariantInfoCreator : MonoBehaviour
         newInfo.spawnRate = v.variantConfig.spawnRate;
         newInfo.aiModifier = v.aiModifier;
         newInfo.variantTier = v.variantTier;
-        newInfo.givesRewards = v.givesRewards;
         newInfo.variantInventory = CreateNewVariantInventory(v.variantInventory, v.buff, v.customEquipment);
         newInfo.skillReplacements = CreateSkillReplacements(v.skillReplacement);
         newInfo.healthMultiplier = v.healthMultiplier;
@@ -216,7 +215,6 @@ public class VariantInfoCreator : MonoBehaviour
         for (int i = 0; i < materialReplacements.Length; i++)
         {
             var toAdd = new VariantVisualModifier.VariantMaterialReplacement();
-            toAdd.ElementName = materialReplacements[i].name;
             toAdd.identifier = materialReplacements[i].identifier;
             toAdd.material = materialReplacements[i].material;
             toAdd.rendererIndex = materialReplacements[i].rendererIndex;
@@ -232,7 +230,6 @@ public class VariantInfoCreator : MonoBehaviour
         for (int i = 0; i < lightReplacements.Length; i++)
         {
             var toAdd = new VariantVisualModifier.VariantLightReplacement();
-            toAdd.ElementName = lightReplacements[i].name;
             toAdd.color = lightReplacements[i].color;
             toAdd.lightType = LightType.Spot;
             toAdd.rendererIndex = lightReplacements[i].rendererIndex;
@@ -248,7 +245,6 @@ public class VariantInfoCreator : MonoBehaviour
         for (int i = 0; i < meshReplacements.Length; i++)
         {
             var toAdd = new VariantVisualModifier.VariantMeshReplacement();
-            toAdd.ElementName = meshReplacements[i].name;
             toAdd.mesh = meshReplacements[i].mesh;
             toAdd.meshType = meshReplacements[i].meshType;
             toAdd.rendererIndex = meshReplacements[i].rendererIndex;

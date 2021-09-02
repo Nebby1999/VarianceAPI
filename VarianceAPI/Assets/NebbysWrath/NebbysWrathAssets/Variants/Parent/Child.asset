@@ -21,7 +21,6 @@ MonoBehaviour:
   aiModifier: 0
   variantTier: 1
   spawnRate: 6
-  givesRewards: 1
   variantInventory: {fileID: 11400000, guid: 0afcd18c054b2e4478a185715358bfd1, type: 2}
   skillReplacements:
   - skillSlot: 0
@@ -35,8 +34,9 @@ MonoBehaviour:
   armorMultiplier: 1
   armorBonus: 0
   visualModifier: {fileID: 11400000, guid: a8afbc23cca99ea4e9857bc6278cb8c2, type: 2}
-  sizeModifier: {fileID: 11400000, guid: fd05060e39dee144b9087706b604c117, type: 2}
+  sizeModifier: {fileID: 11400000, guid: cf6cf728d10701341939659c2ffa39d4, type: 2}
   arrivalMessage: 
   extraComponents: []
   customDeathState:
-    _typeName: 
+    _typeName: NebbysWrath.VariantEntityStates.Parent.DeathStates.ChildDeath, NebbysWrath,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null

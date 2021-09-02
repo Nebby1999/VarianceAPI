@@ -1,78 +1,95 @@
-# Variance API
 
-* A Complete Re-Write, altho heavily based off Rob's original MonsterVariants code.
+# VarianceAPI
 
-* VarianceAPI aims to combine the features from MonsterVariants and MonsterVariantsPlus into a single mod.
+* A complete Rewrite of Rob's original MonsterVariants concept.
 
-* The API by itself doesnt do much, it only works as a base for others to create their own Variants
+* VarianceAPI aims to combine the Variants Features from MonsterVariants and MonsterVariantsPlus into a single mod.
+
+* The API by itself doesnt do much, it only works as a base for others to create their own variants.
+
+* After being in development for a few months, VarianceAPI has now released its 1.0 version, including greatly different Workflow with less editor clutter and more smooth experience. For both variant creators and players alike.
 
 ## Features
 
-### Thunderkit support
+### Thunderkit Ease of Development.
 
 ---
 
-* VarianceAPI was made with Thunderkit, and it's systems are made to be used with Thunderkit. it is Extremely recommended to use Thunderkit when Developing VariantPacks
+* VarianceAPI was made with Thunderkit in mind, and a lot of its code has been written to be used inside it. (Scriptable objects, editor only code, SO in Assetbundles, etc.) As such, it is extremely recommended to use Thunderkit when developing VariantPacks
 
-* Despite this, Variants can still be added via code. Only examples currently lay on the Deprecated ExampleVariantPack. The mod comes with a [Helpers.cs](https://github.com/Nebby1999/VarianceAPI/blob/main/VarianceAPI/Assets/Scripts/Modules/Helpers.cs) class that has methods on creating the ScriptableObjects that VarianceAPI requires
+* ~~Despite this, Variants can still be added via code.~~ Sadly there is no longer a class for making Scriptable objects and helpers in code, this is mainly due to difficulties testing said methods due to myself prefering to work in Thunderkit. However, *Anyone* is free to create their own methods to make these, and if you'd like, you can even send the class my way and I'll gladly add it to the official DLL.
 
-![](https://cdn.discordapp.com/attachments/850538397647110145/850538428600549406/3f27f0ee908f6a7fbbe5cb37bf008e52.png)
+![](https://cdn.discordapp.com/attachments/850538397647110145/882995193631096902/c19625fdbe2ab1289e55a35742a4696c.png)
 
-* Easily create Variants using the plethora of ScriptableObjects VarianceAPI has!
+* Easily create Variants using a *Single* scriptable object! No longer do you need 4 to make a simple Variant. Thanks to FixPluginsTypeSerialization mod, VariantInfo now uses structs! allowing for a more smooth experience.
 
-![](https://cdn.discordapp.com/attachments/850538397647110145/850539440274145290/db4b9fe789a08d6816dd03ca70bb0cd2.png)
+![](https://cdn.discordapp.com/attachments/850538397647110145/882995736097210449/ad7618b09f2c1a07dcd63a79d55cc75d.png)
 
-* Plus, VarianceAPI contains base classes for easing the creation of variants.
+* Register your Variants easily now by accesing the VariantRegister static class! no longer do you need to do some black magic bullshit to register your variants, simply access the class and give it your AssetBundle or a List with VariantInfos. Give it your mod's ConfigFile and it'll automatically create Config for each variant's spawn rate and wether theyre Unique or not.
 
-	- Automatic ConfigCreation using the VariantConfig scriptable object.
+        VarianceAPI.VariantRegister.AddVariant(nebbysWrathAssets, Config);
 
-	- Semi-Automatic fetching for Ingame materials, no more AssetBundle bloating!
+* The same applies now to the VariantMaterialGrabber, you can no longer inherit from it but now its static, and all you need to do is give it a List with a tuple for the identifier, and the material itself! an example can be found [here](https://github.com/Nebby1999/VarianceAPI/blob/VarianceAPI2.0/VarianceAPI/Assets/NebbysWrath/Modules/MaterialGrabber.cs)
 
-###Documentation
+* Oh, did i forget to mention that _The Variant Register now Registers Variants when the Game Loads, And that the IsUnique mechanic now properly works?_ No more shall a playable monster suddenly turn into a variant or isUnique not work anymore!
 
----
+* Also, VarianceAPI now comes with the VAPIEditor assembly. an Editor only assembly that, when loaded into thunderkit, will modify your editor for ease of use on creating variants. including:
 
-* VarianceAPI is in the process of being documented extensively with how it works, its scriptable objects and its modular classes.
+- A custom Drawer for entity states made by KevinFromHPCustomerService
 
-* Currently the GithubWiki contains documentation on the ScriptableObjects VarianceAPI has.
+- A custom Drawer for VariantComponents.
 
-![](https://media.discordapp.net/attachments/786037647263924227/864195958719381504/3c362376a68695fb531f4e602e13e0bc.png)
+- A migrator tool that'll easily let you migrate from the old scriptable object system to the new one.
 
-The Wiki can be found [here](https://github.com/Nebby1999/VarianceAPI/wiki)
-
-### Better VariantOverlapping methods
+### Documentation
 
 ---
 
-* The confusing and sometimes obscure VariantOverlap system has been expanded and now can be either Avoided, or encouraged.
+* A lot of internal changes have been done to VarianceAPI on the 1.0.0 update, as such, most of the documentation found in the Github's wiki page no longer holds true.
 
-	- Each Variant has a Unique boolean, Which determine wether the Variant can participate in VariantOverlapping shenanigans
+* Nebby is hard at work writing the new documentation of the scriptable objects.
 
-	- The IsUnique boolean is part of the ConfigFile, so if you do not want a variant type to overlap with others, it's as simple as setting it to true.
-
-	![](https://cdn.discordapp.com/attachments/850538397647110145/850541041084792862/6fb62ee5e6874be18105adf94d46a0a1.png)
-
-	- Each Variant can either add Suffixes or Preffixes to an Enemy, this allows you to easily identify Variants on the spot with a simple ping, and getting an idea in your head on what they can do.
-
-	![](https://cdn.discordapp.com/attachments/850538397647110145/850540614377799750/b0e937810c9b97f6093f88bb99957bc4.png)
-
-### New Improved VariantHandler component/Variant Features
+### Better Variant Overlapping methods
 
 ---
+
+* The confusing and sometimes obscure VariantOverlap system has been expanded and now can be either Avoided, or Encouraged.
+
+    - Each Variant has a Unique boolean, which determines wether the variant can participate in VariantOverlapping shenanigans.
+
+    - The IsUnique boolean is part of the ConfigFile, just set it to true if you dont want this feature with a specific variant.
+
+    ![](https://cdn.discordapp.com/attachments/850538397647110145/850541041084792862/6fb62ee5e6874be18105adf94d46a0a1.png)
+
+    - Each Variant can either add Suffixes, Prefixes or Completely override an enemy's name. this allows you to easily identify a Variant on the spot by pinging, and getting an idea in your head on what they can do.
+
+    ![](https://cdn.discordapp.com/attachments/850538397647110145/850540614377799750/b0e937810c9b97f6093f88bb99957bc4.png)
+
+    - Since version 1.0, Variant name overrides expects a Language token.
+
+### New VariantSpawnHandler component.
+
+---
+
+All the logic behind how Variants spawns have been re-written into the VariantSpawnHandler component. thanks to this separate component calculating the variants spawned, now the IsUnique system properly works. by first rolling for weighted unique variant infos, and then rolling for the not unique ones.
+
+After the variants have been chosen, the Spawn handler gives the enabled infos to the variant handler component and the variant reward handler component, and runs Modify(). officially turning the body into a variant.
+
+### New Improved VariantHandler component
+
+---
+
+Now a single VariantHandler component exists per variant. the component calculates the new stats, skills, materials, size all in the spot depending on what VariantInfos are fed thru.
 
 * Variants made in VarianceAPI have:
 
-	- All the original features of the VariantHandler component, alongside...
+    - All the original features of the VariantHandler component, alongside...
 
-	- Custom name prefixes and affixes
-
-	- Wether the variant gives rewards
-
-	- Configurable Rewards
+	- Custom name prefixes and suffixes
 
 	- New Tiers
 
-	- Ability to add Completely custom Components
+	- Ability to add Completely custom Components to the model, body, or master.
 
 	- DeathState replacements
 
@@ -84,13 +101,13 @@ The Wiki can be found [here](https://github.com/Nebby1999/VarianceAPI/wiki)
 
 	- Complex MeshSwaps
 
-### New VariantRewardHandler component.
+### VariantRewardHandler component.
 
 ---
 
-* All of MonsterVariantsPlus' Rewards systems are now handled by this nifty little component that's added to each Variant that has the "GivesReward" boolean set to true.
+* All of MonsterVariantsPlus's Rewards systems are now handled by this component that's added to each body on load time.
 
-* Only one VariantRewardHandler component is given to each Variant. the mod does it by checking how many VariantHandler components are active at the time.
+* Only one VariantRewardHandler component is given to each variant. The mod automatically calculates the new rewards by the VariantInfos given by the VariantSpawnHandler component.
 
 * Just like in MonsterVariantsPlus, Variants by default now:
 
@@ -118,37 +135,62 @@ The Wiki can be found [here](https://github.com/Nebby1999/VarianceAPI/wiki)
 
 * Just like in the Original MonsterVariantsPlus, the Artifact of Variance can be enabled or disabled in the Config file.
 
+* It also comes with an Artifact Code for use with ArtifactCodeAPI. the code can be found [here](https://cdn.discordapp.com/attachments/753709254803980296/883012753839771678/unknown.png)
+
 ### Intrinsic Items for Variants
 
 ---
 
-* VarianceAPI comes bundled with KomradeSpectre's ItemModCreationBoilerplate.
+* VarianceAPI comes bundled with Intrinsic items that've been created for exclusive use for Variants.
 
-* Due to this, VarianceAPI comes bundled with Intrinsic items that've been created for exclusive use for Variants.
-
-* These items are AI Blacklisted, meaning that Enemies in the void fields will never get this item, and they should never appear in a normal run (if otherwise please contact me!)
+* These items are AI Blacklisted, meaning that Enemies in the void fields will never get these items, and they should never appear in a normal run (if otherwise please contact me!)
 
 * These items are...
 
-		VAPI_GlobalCDR: Reduces all cooldowns by 1% linearly per stack
+		GlobalCDR: Reduces all cooldowns by 1% linearly per stack
 
-		VAPI_PrimaryCDR: Reduces the Primary's cooldown by 1% linearly per stack
-		VAPI_SecondaryCDR: Reduces the Secondary's cooldown by 1% linearly per stack
-		VAPI_UtilityCDR: Reduces the Utility's cooldown by 1% linearly per stack
-		VAPI_SpecialCDR: Reduces the Special's cooldown by 1% linearly per stack
+		PrimaryCDR: Reduces the Primary's cooldown by 1% linearly per stack
+		SecondaryCDR: Reduces the Secondary's cooldown by 1% linearly per stack
+		UtilityCDR: Reduces the Utility's cooldown by 1% linearly per stack
+		SpecialCDR: Reduces the Special's cooldown by 1% linearly per stack
 
-		VAPI_ExtraPrimary: Adds an extra primary use per stack
-		VAPI_ExtraSecondary: Adds an extra secondary use per stack
-		VAPI_ExtraUtility: Adds an extra utility use per stack
-		VAPI_ExtraSpecial: Adds an extra utility use per stack
+		ExtraPrimary: Adds an extra primary use per stack
+		ExtraSecondary: Adds an extra secondary use per stack
+		ExtraUtility: Adds an extra utility use per stack
+		ExtraSpecial: Adds an extra utility use per stack
 
-		VAPI_PurpleHealthbar: Makes the healthbar purple, automatically given to any variant who's tier is Uncommon or higher.
+		PurpleHealthbar: Makes the healthbar purple, automatically given to any variant who's tier is Uncommon or higher.
 
-		VAPI_Plus1Crit: Increases critical strike chance by 1% per stack linearly.
+		Plus1Crit: Increases critical strike chance by 1% per stack linearly.
 
-## Official Variant Packs (Variant Packs made by Nebby)
+* These items now come with icons to easily identify them on the spot, the icon textures where made by Wonda, publisher of [Refightilization](https://thunderstore.io/package/Wonda/Refightilization/)
+
+![](https://i.gyazo.com/fb550e23f46fdd99142271796feb8465.png)
+
+### Console Commands
 
 ---
+
+If you have [DebugToolKit](https://thunderstore.io/package/IHarbHD/DebugToolkit/) Installed, you'll have access to developer commands for testing out variants. these commands are:
+
+*list_modified_bodies*. Lists all the bodies that have variants.
+
+*list_variants_from_body*. Lists all the variantInfos that are inside a body, gives out the VariantInfo's name alongside the identifier.
+
+        Argument 1: The internal name of the body prefab
+
+*spawn_variant*. Spawns an enemy with the desired variantInfos attached. to get the possible variantInfos, use the command *list_variants_from_body.
+
+        Argument 1: The internal name of the characterBody's master prefab.
+        Argument 2 - Infinity: The VariantInfos to use. must be the VariantInfo's identifier.
+
+*spawn_as_variants*. Spawns the person who wrote the command as a desired variant. to get the possible variantInfos, use the command *list_variants_from_body*
+
+        Argument 1: The internal name of the body prefab.
+        Argument 2 - Infinity: The VariantInfos to use. must be the Variantinfo's identifier.
+        
+
+## Official Variant Packs (Variant Packs made by Nebby)
 
 ### The Original 30
 
@@ -186,285 +228,82 @@ The Wiki can be found [here](https://github.com/Nebby1999/VarianceAPI/wiki)
 
 ---
 
-### Official VarianceAPI discord server.
+### Official Nebby's Mods discord server.
 
-* VarianceAPI related discord server, you can join in here to meet other variant pack creators or learn how to create your own.
-
-* Currently barebones, will start getting some love soon
+* If you wish to contact me about my risk of rain mods, you can do so here in this Discord server.
 
 https://discord.gg/kWn8T4fM5W
 
-
-## Todo's
-
-	- Continue development of the API
-
-
-## Changelog
-'0.9.0'
-
-* Changes to VariantInfo & Variant Handler:
-
-	- VariantInfos with no VariantConfig assigned now properly register instead of crashing the mod
-
-	- Enabled VariantMeshReplacements. Currently undocumented, guide will appear eventually since theyre difficult to implement.
-
-	- Enabled VariantBuffs.
-
-		- Variants can be given a buff when they spawn.
-
-		- Buff can be permanent, or expiring on a timer.
-
-	- SpawnRate and IsUnique are now hidden from the inspector when using unity, since theyre set on the VariantConfig.
-
-	- Arrival Messages now apply for both Rare and Legendary variants.
-
-		- If no custom arrival message is given, it uses a generic spawn string.
-
-	- The VariantHandler component now catches when certain mistakes happens and lets you know on the console screen
-
-	- Moved basically all the code from start to its separate method, so it can be called from other places.
-
-* Changes to CustomVariantReward & VariantRewardHandler
-
-	- Cleaned up code
-
-	- Added ItemList for VariantRewardHandler
-
-		- Custom variant reward now can specify what items can be droped from a variant.
-
-* Changes to VariantBuff:
-
-	- VariantBuff now actually works
-
-	- Variants can now be given a buff that lasts permanently, or lasts a certain amount of time
-
-* Changes to VariantHandler component:
-
-	- The component now catches when certain mistakes happens and lets you know on the Console screen.
-
-* Legendary Variant's XP Multiplier is now configurable.
-
-* Fixed bugs that would cause VariantHandler components to be in certain character mods. such as Playable Templar or Tymmey's Lemurian/Imp/Exploder
-
-* Added MeshType Enum, used on Mesh Replacements
-
-* Added Documentation on ScriptableObjects in the Github's Wiki.
-
-'0.8.0'
-
-* Added Functionality to Legendary Variants (They'll announce their arrival in Chat.)
-
-* Fixed bug that caused Variants with no VariantInventory to not recieve their purple healthbar if the tier was greater than common.
-
-* Added Support for Modded Variants.
-
-	- VariantConfig now has modGUID string.
-
-	- This string MUST match the mod's internal GUID.
-
-* VariantInfoHandler now has a failsafe when you attempt to add a Variant without the mod installed.
-
-* Removed completely ItemInfos
-
-'0.7.1'
-
-* Changed how inventories work.
-
-	* Inventories are no longer an Array of ItemInfos, instead, inventories are stored in the VariantInventory scriptable object.
-
-		- a VariantInventory scriptable object consists of a itemStrings array, and an itemCount array.
-
-		- The itemString's index must match the itemCount's index.
-
-		- The lengths of both arrays MUST be the same.
-
-	* Removed helpers that created ItemInfo Arrays, new helpers comming soon.
-
-	* Due to this switch, ItemInfo[] is deprecated, but it will remain in VariantInfo so that people can switch to the VariantInventory scriptable Object.
-
-	* ItemInfo will be removed on the next major update (0.8.0)
-
-'0.7.0'
-
-*  Added PrefabBase, a very simple prefab creation system used for creating Projectiles based off existing ones.
-
-* Added missing R2API Submodule dependencies.
-
-* Changes to the VariantInfo scriptable Object:
-
-	- usesEquipment no longer exists.
-
-* Internal changes to how VariantHandler is structured.
-
-* Added a new Component, VariantEquipmentHandler.
-
-	- Component is added automatically to the Variant when it detects that EquipmentInfo has an Equipment and is not null.
-
-	- Component is used for Variants so they can use Equipment.
-
-	- How the variant uses the Equipment is based off an Animation Curve
-
-	- Special Thanks to TheMysticSword, since he helped me in using the AnimationCurve and most of the code is based off his code from AspectAbilities
-
-* Changes to the EquipmentInfo scriptable object:
-
-	- Now requires an AnimationCurve which tells when to use the Equipment.
-
-'0.6.0'
-
-* Added missing methods for Helpers.cs
-
-	- Added method for creating VariantOverrideNames
-
-	- Added methods for creating CustomVariantRewards
-
-* Added the first iteration of the MyVariantPack boilerplate
-
-	- Boilerplate is installed thru a unity package that you can install when youre developping in Thunderkit
-
-	- Boilerplate code fully documented.
-
-	- Boilerplate includes the following examples:
-
-		- Creation of a Variant in code
-
-		- Creating a Variant in Thunderkit
-
-		- Communicating with VarianceAPI
-
-		- Using the VariantInfoHandler to register variants
-
-		- Using the VariantMaterialGrabber to grab vanilla materials.
-
-* All logger messages now use the Bepinex Logger instead of the Unity Logger.
-
-* Added KomradeSpectre's ItemModCreationBoilerplate to VarianceAPI.
-
-	* Added a version for creating items in thunderkit, alongside the default one that uses R2API.
-
-	* As listed above, VarianceAPI comes now with Intrinsic variant items that are used in VariantCreation
-
-* Fixed the VariantRewardHandler not being as close as possible as the original rewards system
-
-* Added the Ability to replace Light colors in BaseLightRenderer infos of a CharacterModel.
-
-* Changed config creation process, only the section version.
-
-	- Now each config section follows the following format:
-
-		*variantInfo.bodyName + " variants"
-
-* Uncommon Variants now use a Purple healthbar instead of a Red healthbar thanks to the new intrinsic items.
-
-'0.5.0'
-
-* Added back the Artifact of Variance
-
-* Fixed issue in VariantHandler causing certain stat multipliers not applying
-
-* Added a PreventRecursion system. Variants may not recieve extra Dio's Best Friends when resurrecting.
-
-* Added Custom Death States
-
-	- Custom Death State can be specified in the VariantInfo Scriptable Object.
-
-	- Leave it null unless you know how to get the required string to make it work.
-
-* Removed no longer needed classes
-
-* Added an identifier to VariantMaterialReplacement scriptable object.
-
-	- It's main goal is to help with creating VariantMaterials in Thunderkit.
-
-* Added the base class VariantMaterialGrabber.
-
-	- Works by loading all the "incomplete" VariantMaterialReplacements in your AssetBundle.
-
-		- An incomplete VariantMaterialReplacement has it's material set to null, and has it's identifier filled.
-
-	- Proceeds to then compare the incomplete versions with complete ones made in code. if it matches one, it'll replace the material with the correct one.
-
-	- TL;DR: This class helps reduce bloated AssetBundle sizes by allowing the player to fetch ingame materials instead of copying them and placing them in their AssetBundle.
-
-'0.4.0'
-
-* Changes to the OverrideName system
-
-	- Added a new enum which enables the OverrideName to completely override the variant's baseName.
-
-	- System now works with a switch
-
-	- Renamed overrideOrder to overrideType
-
-* Added a new Array in VariantInfo for VariantExtraComponents
-
-* Added a new ScriptableObject called VariantExtraComponents.
-
-	- VariantExtraComponents can be used to add a custom component to a specific variant when it spawns
-
-	- This component *must* inherit from the new VariantComponent component found in the api (VariantComponent inherits from MonoBehaviour)
-
-	Has the following settings:
-
-		- string componentToAdd: The component to add to the Variant. this must be the combination of the Namespace of the component, alongside the class name. For example: TheOriginal30.VariantComponents.AddMissileLauncherToLemurian
-
-		- bool isAesthetic: Wether the component to add just adds a mesh to the original body.
-
-		- Non aesthetic components support haven't been added yet.
-
-	- Used in TheOriginal30's Badass lemurian to attach the Missile Launcher.
-
-* Added discord server to the ReadMe
-
-* Hopefully fixed broken icon.
-
-'0.3.0'
-
-* All of VarianceAPI's ScriptableObjects have Headers and Tooltips, making it easier to create the objects in the UnityEditor
-
-* Complete Rewrite of the Variant Overridename feature. now supporting VariantOverlaps.
-
-* Did a Facelift of the Thunderstore page.
-
-'0.2.0'
-
-* VariantInfo now contains VariantConfig scriptable object, VariantConfig is used to create the config entries for your Variants.
-
-	- VariantConfig allows you to:
-		
-		- Set the spawn chance of a Variant.
-
-		- Wether the variant is unique or not.
-
-* Removed VariantRegisterBase
-
-* Added VariantInfoHandler, use this now to register your variants, as it streamlines the process.
-
-* Added Helpers for creating VariantConfig Scriptable Objects in code, one for Vanilla entities and another one for Modded entities.
-
-'0.1.1'
-
-* Forgot to call the method that makes the config, whoops.
-
-'0.1.0'
-
-* Added the VariantRewardHandler Component, officially porting a good chunk of MonsterVariantPlus' Features.
-
-* Added VariantRegisterBase, a helper for easily register variants made in Thunderkit.
-
-* Added Config file with a lot of config entries for the VariantRewardHandler and global settings.
-
-* Started working on a helper for creating Variant's Spawn Chances via config
-
-* Determination++ After learning rob likes what i'm doing.
-
-'0.0.2'
-
-* Added Github Link.
-
-* Made changes to the scriptable objects, now they can be made in Thunderkit instead of on RunTime.
-
-'0.0.1'
-
-* Initial Release
+---
+
+### Special thanks.
+
+* Kevin for the EntityStateDrawer, which was used as a base for the component drawer. (And making me not use thunderkit like an ape)
+
+* IDeathHD and Harb, for making DebugToolkit and it's spawn_ai and spawn_as commands (used for the spawn_variant and spawn_as_variant)
+
+* IDeathHD for helping me point towards a general direction with networking.
+
+* Aaron & Gaforb for helping me with networking issues
+
+* Aaron for creating a weighted selection for the Unique variants.
+
+* Dotflare for making the Variance artifact token and other tidbits from the official variant packs.
+
+* Twiner for Thunderkit and helping me a lot with certain editor scripts.
+
+* Rob for creating MonsterVariants.
+
+# Changelog
+
+(Pre 1.0.0 changelog can be found [here]())
+
+'1.0.0'
+
+* Complete rewrite of the variants system.
+
+* Deprecated the following scriptable objects.
+
+     - Custom Variant Reward
+	- Equipment Info
+	- BuffInfo
+	- VariantConfig
+	- Variant Extra Component
+	- Variant Info (Old)
+	- Variant Inventory
+	- Variant Light Replacement
+	- Variant Material Replacement
+	- Variant Mesh Replacement
+	- Variant Override Name
+	- Variant Skill Replacement
+
+- Added new Scriptable objects to replace the old ones
+
+	- VariantInfo:
+		- Variant Override Names are now stored directly here, as an Array Struct.
+		- Variant Override names now expect a language token.
+		-  _
+		- Variant Skill Replacements are now stored directly here, as an Array Structs.
+		- _
+		- Variant Extra Components are now stored directly here, as an Array Struct.
+		- Component is now a Serializable Variant Component Type (The component's fully qualified name)
+		- Components can now be added to the Master, Body or Model game objects.
+		- the Spawn rate and the IsUnique configs are made directly with the information inside the Variant Info.
+		- Arrival messages now expect a languafge token
+		- Death state replacements now are Serializable Entity State Type.
+	- VariantInventoryInfo:
+		- Merge of BuffInfo, EquipmentInfo and VariantInventory scriptable objects.
+		- Variant item inventories are now a struct of string (itemDef name) and int (amount)
+		- VariantBuffs are now a struct of string (buff def name), float (time, setting this to 0 makes it permanent) and int (amount)
+		- EquipmentInfo is unchanged, still made with just an Equipment string and Animation curve.
+	* VariantVisualModifier
+		* Merge of VariantLightReplacement, MaterialReplacement and MeshReplacement
+		* Each of these are held as an array of struct.
+		* Light replacements can now change the type of light.
+
+* Deprecated the original VariantHandler component, split the spawning logic into VariantSpawnHandler.
+* Deprecated VariantInfoHandler, replaced by VariantRegister.
+* Deprecated VariantMaterialGrabber, replaced by a new version with the same name
+* Added icons for the Items
+* Added Console Commands
+* Prolly a lot of things I Forgot

@@ -9,426 +9,514 @@
 
 ## Currently Implemented Variants
 
-The Variants are listed in an Alphabetical Order, first the normal enemies and then the bosses.
+The Variants are listed in an Alphabetical Order
 
-### Regular Monster Variants
+    * Ancient Wisp Variants
 
----
+        * Enraged Wisp (4% Chance)
+        - Tier: Common
+        - Prefix: Enraged
+        - -50 Armor
+        - Can use Enrage at any point in time
 
+    * Archaic Wisp Variants
 
-    Bighorn Bison Variants
-        Alpha Bison (5% Spawn Chance)
-        Prefix: Alpha
+        * Aeonic Wisp (4% Chance)
+        - Tier: Uncommon
+        - Prefix: Aeonic
+        - 125% Size
+        - 150% Health
+        - 75% Movement Speed
+        - 90% Attack Speed
+        - +20 Armor
+        - Single Brilliant Behemoth
+
+        * Archaic Stone Wisp (2% Chance)
+        - Tier: Rare
+        - Prefix: Stone
+        - 150% Size
+        - 200% Health
+        - 50% Movement Speed
+        - +10 Aror
+        - Fires 2 Stone Titan Lasers
+
+        * Somewhat Archaic Wisp (7% Chance)
+        - Tier: Uncommon
+        - Prefix: Somewhat-Archaic
+        - 50% Size
+        - 50% Health
+        - 500% Movement Speed
+        - 250% Attack Speed
+        - 25% Reduced Cooldowns
+
+    * Aurelionite Variants
+
+        * Ancient Aurelionite (4% Chance)
+        - Tier: Common
+        - Prefix: Ancient
+        - -50 Armor
+        - Can use Mega Laser and Stone Construct at any point in time.
+
+        * Colossal Aurelionite (2% Chance)
+		- Tier: Uncommon
+		- Suffix: Colosus
+		- 300% Size
+		- 300% Health
+		- 50% Movement Speed
+		- 200% Damage
+		- +50 Armor
+		- 50% Cooldown Reduction
+
+		* Pygmy Aurelionite (2% Chance)
+		- Tier: Uncommon
+		- Prefix: Pygmy
+		- 30% Size
+		- 500% Movement Speed
+
+    * Alloy Worship Unit Variants
+
+        * Malfunctioning Alloy Worship Unit (4% Chance)
+        - Tier: Common
+        - Prefix: Malfunctioning
+        - Can use Solus Supercharged Detonation at any point in time.
+
+        * Swarming Worship Unit (2% Chance)
+        - Tier: Uncommon
+        - Prefix: Swarming
+        - 50% Size
+        - 50% Health
+        - 500% Movement Speed
+        - 500% Attack Speed
+        - 50% Damage
+        - 50% Reduced Primary Cooldown
+        - 2 Extra Primaries
+        - Utility Spawns a massive amount of Swarming Solus Probes
+    
+    * Beetle Queen Variants
+
+        * Beetle Empress (2% Chance)
+        - Tier: Uncommon
+        - Prefix: Imperatrix
+        - 125% Size
+        - 120% Health
+        - -25 Armor
+        - Has 2 Royal Guards (Queen's Gland.)
+        - Summons only Beetles.
+
+        * Beetle Matriarch (4% Chance)
+        - Tier: Common
+        - Prefix: Matriarchal
+        - 200% Movement Speed
+        - -50 Armor
+        - Spawns a mixture of Beetles and Beetle Guards
+
+    * Bighorn Bison Variants
+
+        * Alpha Bison (5% Chance)
+        - Tier: Uncommon
+        - Prefix: Alpha
+        - 125% Size
         - 130% Health
         - 200% Attack Speed
         - +10 Armor
-        - 125% Size
         - 2 Brilliant Behemoths
-        - Increased movement Speed (10 Goat Hoofs)
+        - 10 Goat Hoof
 
-    Brass Contraption Variants
-        Aluminum Contraption (7% Spawn Chance)
-        Prefix: Aluminum-Plated
+    * Brass Contraption Variants
+
+        * Aluminum Contraption (7% Chance)
+        - Tier: Uncommon
+        - Prefix: Aluminum-Plated
+        - 50% Size
         - 50% Health
         - 200% Movement Speed
-        - 200% Attack Speed
+        - 200% Atack Speed
         - 90% Damage
-        - 50% Size
-        - Cooldowns Reduced by 50%
+        - 50% Reduced Cooldowns
 
-        Steel Contraption (7% Spawn Chance)
-        Prefix: Steel Plated
+        * Steel Contraption (7% Chance)
+        - Tier: Common
+        - Prefix: Steel Plated
         - 150% Health
         - 50% Movement Speed
         - 75% Attack Speed
         - 150% Damage
         - +30 Armor
-        - It's main attack is replaced by a giant brass ball instead of a trio of brass balls.
+        - Fires a massive steel ball
 
-    Clay Templar Variants
-        Vampiric Templar (5% Spawn Chance)
-        Prefix: Vampiric
-        - 150% Health
-        - 125% Attack Speed
-        - 50% Damage
+    * Clay Dunestrider Variants
+
+        * Devourer Dunestrider (2% Chance)
+        - Tier: Uncommon
+        - Prefix: Devourer
         - 125% Size
-        - 100% Critical strike chance
-        - 20 Harvester Scythes
-        - 3 Aegis
-        - 3 Rejuvination Rack
-        - Uses a Supermassive leech when low on health
-
-    Elder Lemurian Variants
-        Incinerating Elder Lemurian (2% Spawn Chance)
-        Prefix: Incinerating
-        - 300% Attack Speed
-        - 125% Size
-        - Increased Movement Speed (10 Hoofs)
-        - 2 Brilliant Behemoths
-        - Fireball shotgun replaced by a burst of 5 lemurian fireballs
-        - Flamebreath's entry duration is double the normal amount
-        - Flamebreath's duration is double
-        - Flamebreath has an increased chance to ignite
-
-        Ghost of Kjaro (0.5% Spawn Chance)
-        Legendary Tier
-        Unique
-        Always Spawns as a Blazing elite
-        - 200% Health
-        - 75% Movement Speed
-        - 150% Damage
-        - +100 Armor
-        - 150% Size
-        - 3 Kjaro's Bands
-        - 5 Old War Stealth Kits
-        - Flamebreath now spawns Lemurians.
-            - Lemurians Expire in 20 seconds
-            - Lemurians have half the health
-            - Lemurians have a Ghostly material (Unless theyre a variant, in which case the variant's material will take priority)
-        - On death, spawns 3 Blazing Lemurians.
-
-        Ghost of Runald (0.5% Spawn Chance)
-        Legendary Tier
-        Unique
-        Always Spawns as a Glacial elite
-        - 200% Health
-        - 75% Movement Speed
-        - 150% Damage
-        - +100 Armor
-        - 150% Size
-        - 3 Runald's Bands
-        - 5 Old War Stealth Kits
-        - Flamebreath now spawns Lemurians.
-            - Lemurians Expire in 20 seconds
-            - Lemurians have half the health
-            - Lemurians have a Ghostly material (Unless theyre a variant, in which case the variant's material will take priority)
-        - On death, spawns 3 Glacial Lemurians
-
-    Greater Wisp Variants
-        Amalgamated Greater Wisp (8% Spawn Chance)
-        Prefix: Amalgamated
-        - 75% Size
-        - Fires Lesser Wisp embers from both Hands
-        - Spawns 5 Lesser Wisps on Death.
-
-        Greater Stone Wisp (2% Spawn Chance)
-        Prefix: Stone
-        - 250% Health
-        - 50% Movement Speed
-        - +10 Armor
-        - 150% Size
-        - Fires a Stone Golem laser from both Hands
-
-        Somewhat-Great Wisp
-        Prefix: Somewhat-Great
-        - 50% Health
-        - 500% Movement Speed
-        - 250% Attack Speed
-        - 50% Size
-        - Cooldowns Reduced by 30%
-
-    Hermit Crab Variants
-        Mortar Crab (5% Spawn Chance)
-        Prefix: Mortar
-        - 150% Health
-        - 80% Movement Speed
-        - 80% Attack Speed
-        - 150% Size
-        - Has a Brilliant Behemoth
-
-    Imp Variants
-        Bruiser Imp (10% Spawn Chance)
-        Prefix: Bruiser
-        - 200% Attack Speed
-        - 125% Size
-        - Cooldowns Reduced by 75%
-        - 3 Crowbars
-        - Increased Movement Speed (20 Goat Hoofs)
-        - Cannot Teleport
-
-        Ichor Imp (5% Spawn Chance)
-        Prefix: Ichor
-        - +10 Armor
-        - Inflicts pulverized on Hit
-        - Swipes have a 50% chance to apply bleed.
-
-    Lesser Wisp Variants
-        Almost Archaic Wisp (4% Spawn Chance)
-        Prefix: Almost-Archaic
-        - 500% Health
-        - 125% Size
-        - Fires Archaic Wisp Fireballs
-
-        Leastest Wisp (7% Spawn Chance)
-        Prefix: Leastest
-        - 50% Health
-        - 500% Movement Speed
-        - 500% Attack Speed
-        - 110% Damage
-        - 50% Size
-        - Cooldowns Reduced by 75%
-
-        Lesser Stone Wisp (2% Spawn Chance)
-        Prefix: Stone
-        - 800% Health
-        - 75% Movement Speed
-        - +10 Armor
-        - 150% Size
-        - Main Attack replaced by a Stone Golem Laser.
-
-    MiniMushrum Variants
-        AD-Shroom (5% Spawn Chance)
-        Prefix: AoD
-        - 125% HP
-        - 1000% Attack Speed
-        - 0% Damage
-        - 75% Size
-        - Has 4 Extra stocks on its spore bomb
-        - Spore bomb cooldown reduced by 100%
-        - Spore Field Pulverizes its Target on Hit.
-
-        Healer Shroom (10% Spawn Chance)
-        Prefix: Healer
-        - 200% Movement Speed
-        - 25% Attack Speed
-        - 50% Size
-        - Has 5 Bustling Fungus
-
-        Mamma Shroom (2% Spawn Chance)
-        Prefix: Mamma
-        - 200% HP
-        - 0% Movement Speed
-        - -50 Armor
-        - 200% Size
-        - Has 1 Aegis
-        - Has 10 Bustling Fungus
-
-    Parent Variants
-        Adolescent (8% Spawn Chance)
-        Prefix: Adolescere
-        - 75% Health
-        - 120% Attack Speed
-        - 150% Damage
-        - 75% Size
-        - 1 Planula
-        - 1 Medkit
-        - 2 Extra uses of Blink
-        - Cooldowns Reduced by 50%
-
-        Child (6% Spawn Chance)
-        Prefix: Childish
-        - 50% Health
-        - 600% Attack Speed
-        - 50% Size
-        - Cooldowns Reduced by 25%
-        - Increased Movement Speed (20 Goat Hoofs)
-        - Cannot Teleport
-
-    Solus Probe Variants
-        Gaussian Probe (12.5% Spawn Chance)
-        Prefix: Gaussian
-        - 200% Health
-        - 75% Movement Speed
-        - +25 Armor
-        - 125% Size
-        - It's Laser has been replaced by Engi's Gaussiant turret fire.
-
-        Solus Probe MK2 (5% Spawn Chance)
-        Suffix: MK2
-        - 300% Health
-        - +25 Armor
-        - 150% Size
-        - It's Laser has been replaced by a slightly weaker SCU primary fire.
-
-        Swarmer Probe (7% Spawn Chance)
-        Prefix: Swarming
-        - 50% Health
-        - 400% Movement Speed
-        - 400% Attack Speed
-        - 30% Damage
-        - Cooldowns Reduced by 25%
-
-    Golem Variants
-        Ye Olde Golem (3% Spawn Chance)
-        Prefix: Ye Olde
-        - 200% Health
-        - 50% Movement Speed
-        - 150% Attack Speed
-        - +100 Armor
-        - 300% Size
-        - It's laser has been replaced by a stone titan laser
-        - Has an Ocular Hud, which's chance to trigger increases the less health it has.
-
-### Boss Variants
-
----
-
-    Alloy Worship Unit Variants
-        Malfunctioning Alloy Worship Unit (4% Spawn Chance)
-        Prefix: Malfunctioning
-        - -50 Armor
-        - Can use Solus Supercharged Detonation at any point in time
-
-    Aurelionite Variants
-        Ancient Aurelionite (4% Spawn Chance)
-        Prefix: Ancient
-        - -50 Armor
-        - Can use Stone Construct % It's MegaLaser at any point in time
-
-        Colossal Aurelionite (2% Spawn Chance)
-        Suffix: Colossus
-        - 300% Health
-        - 50% Movement Speed
-        - 200% Damage
-        - +50 Armor
-        - Cooldowns Reduced by 50%
-
-        Pygmy Aurelionite (2% Spawn Chance)
-        Prefix: Pygmy
-        - 500% Movement Speed
-
-    Beetle Queen Variants 
-        Beetle Matriarch (4% Spawn Chance)
-        Prefix: Matriarchal
-        - -50 Armor
-        - Summons Beetles as well as Beetle Guards
-
-        Beetle Empress (2% Spawn Chance)
-        Suffix: Imperatrix
-        - 120% Health
-        - 200% Movement Speed
-        - -25 Armor
-        - 125% Size
-        - Has 2 Queen's Gland
-        - Primary's Cooldown reduced by 25%
-        - Secondary's Cooldown Reduced by 25%
-        - Only Summons Beetles
-
-    Clay Dunestrider Variants
-        Devourer Dunestrider (2% Spawn Chance)
-        Prefix: Devouring
         - 125% Movement Speed
         - 125% Attack Speed
         - -25 Armor
-        - 125% Size
-        - 3 Rejuvination Racks
-        - 3 Aegis
-        - 10 Focus Crystals
-        - Recover ability now has twice the cooldown
-        - Tethers twice as long
+        - 2 Rejuv Racks
+        - 2 Aegis
+        - 10 Focus Crystal
+        - Can only recover once.
 
-        Starving Dunestrider (4% Spawn Chance)
-        Prefix: Starving
+        * Starving Dunestrider (4% Chance)
+        - Tier: Common
+        - Prefix: Starving
         - -50 Armor
-        - Has 2 Extra uses of Recovery
-        - Recovery's Cooldown Reduced by 25%
+        - Single extra use of recovery
+        - 25% Cooldown Reduction for recovery
+        - Can use Recovery at any point in time.
 
-    Grandparent Variants
-        Sun Worshipper (4% Spawn Chance)
-        Prefix: Sun Worshipping
-        -50 Armor
-        - Can use Solar Flare at any point in time
+    * Clay Man
 
-    Imp Overlord Variants
-        Berserker Overlord (2% Spawn Chance)
-        Prefix: Berserker
-        - 200% Attack Speed
-        - -50 Armor
-        - 125% Size
-        - Cooldowns Reduced by 30%
-        - 2 Extra Decimates
-        - Increased Movement Speed (10 Hoofs)
-        - Cannot Blink
-
-        Ichor Overlord (4% Spawn Chance)
-        Prefix: Ichor
-        - -50 Armor
-        - Inflicts Pulverized on Hit (-60 Armor)
-        - Attacks have around a 50% Chance to inflict bleed.
-
-    Solus Control Unit Variants
-        Malfunctioning Solus Control Uinit (4% Spawn Chance)
-        Prefix: Malfunctioning
-        - -50 Armor
-        - Can use Solus Charged Detonation at any point in time
-
-    Stone Titan Variants
-        Ancient Stone Titan (4% Spawn Chance)
-        Prefix: Ancient
-        - -50 Armor
-        - Can use Stone Construct & MegaLaser at any point in time
-
-
-### Modded Variants
-
----
-
-The Following Variants require mods to be installed...
-
-### Modded Enemies
-
-    Archaic Wisp Variants (Requires Nebby's Archaic Wisps Mod)
-        Aeonic Wisp (4% Spawn Chance)
-        Prefix: Aeonic
-        - 150% Health
-        - 75% Movement Speed
-        - 90% Attack Speed
-        - +20 Armor
-        - 125% Size
-        - Has 1 Behemoth
-
-        Archaic Stone Wisp (2% Spawn Chance)
-        Prefix: Stone
-        - 200% Health
-        - 50% Movement Speed
-        - +10 Armor
-        - 150% Size
-        - Fires a duo of Stone Titan MegaLasers
-
-        Somewhat-Archaic Wisp (7% Spawn Chance)
-        Prefix: Somewhat-Archaic
-        - 50% Health
-        - 500% Movement Speed
-        - 250% Attack Speed
-        - 50% Size
-        - Cooldowns Reduced by 25%
-
-    ClayMen Variants (Requires Moffein's ClayMen Mod)
-        Clay Assasin (7% Spawn Chance)
-        Prefix: Assasin
+        * Clay Assasin (7% Chance)
+        - Tier: Uncommon
+        - Suffix: Assasin
+        - 75% Size
         - 150% Movement Speed
         - 50% Damage
         - -10 Armor
-        - 75% Size
         - 100% Critical Strike Chance
-        - Inflicts Hemorraghe on hit
+        - Slash inflicts hemorraghe
 
-        Clay Soldier (14% Spawn Chance)
-        Suffix: Soldier
+        * Clay Soldier (15% Chance)
+        - Tier: Common
+        - Suffix: Soldier
+        - 120% Size
         - 125% Health
         - 90% Movement Speed
         - 150% Attack Speed
         - 75% Damage
         - +20 Armor
-        - 112.5% Size
+        - 25% Reduced Cooldowns
 
-### Modded Bosses
+    * Clay Templar Variants
 
-    Ancient Wisp Variants (Requires Moffein's Ancient Wisp Mod)
-        Enraged Wisp (2% Spawn Chance)
-        Prefix: Enraged
+        * Vampiric Templar (5% Chance)
+        - Tier: Uncommon
+        - Prefix: Vampiric
+        - 125% Size
+        - 150% Health
+        - 125% Attack Speed
+        - 50% Damage
+        - 3 Aegis
+        - 20 Harvester Scythe
+        - 100% Crit Chance
+        - 3 Rejuv Racks
+        - Supermassiv Leech
+
+    * Elder Lemurian Variants
+
+        * Ghost of Kjaro (1% Chance)
+        - Tier: Legendary
+        - Name: Ghost of Kjaro
+        - 125% Size
+        - 200% Health
+        - 75% Movement Speed
+        - 150% Damage
+        - +50 Armor
+        - 3 Kjaro's Bands
+        - 5 Old War Stealth Kits
+        - Flamebreath now spawns Lemurians.
+            - Lemurians Expire in 20 seconds
+            - Lemurians have half the health
+            - Lemurians have a Ghostly material (Unless theyre a variant, in which case the variant's material will take priority
+        - On death, spawns 3 Blazing Lemurians.
+
+        * Ghost of Runald (1% Chance)
+        - Tier: Legendary
+        - Name: Ghost of Runald
+        - 125% Size
+        - 200% Health
+        - 75% Movement Speed
+        - 150% Damage
+        - +50 Armor
+        - 3 Runald's Bands
+        - 5 Old War Stealth Kits
+        - Flamebreath now spawns Lemurians.
+            - Lemurians Expire in 20 seconds
+            - Lemurians have half the health
+            - Lemurians have a Ghostly material (Unless theyre a variant, in which case the variant's material will take priority
+        - On death, spawns 3 Glacial Lemurians.
+
+        * Incinerating Elder Lemurian (3% Chance)
+        - Tier: Rare
+        - Prefix: Incinerating
+        - 125% Size
+        - 3000% Attack Speed
+        - 2 Brilliant Behemoths
+        - 10 Goat Hoof
+        - Fireball shotgun replaced by a burst of 5 lemurian fireballs
+        - Flamebreath's entry duration is double the normal amount
+        - Flamebreath's duration is double
+        - Flamebreath has an increased chance to ignite
+
+    * Grandparent Variants
+
+        * Great Grandparent (2% Chance)
+        - Tier: Uncommon
+        - Prefix: Great
+        - 125% Size
+        - 200% Health
+        - 125% Movement Speed
+        - 125% Attack Speed
+        - 110% Damage
         - -50 Armor
-        Can use Enraged at any point in time.
+        - 50% Reduced Cooldowns
+        - On Death, Prepares a massive supernova explosion, damaging *Any* entity caught inside and having LOS to the Grandparent
 
+        * Sun Worshipper (4% Chance)
+        - Tier: Common
+        - Prefix: Sun Worshipping
+        - -50 Armor
+        - Can use HeatWave at any point in time.
+
+    * Greater Wisp Variants
+
+        * Amalgamated Greater Wisp (8% Chance)
+        - Tier: Uncommon
+        - Prefix: Amalgamated
+        - 150% Damage
+        - Fires Lesser Wisp Embers from both hands
+        - On Death, Explodes into 5 Lesser Wisps
+
+        * Greater Stone Wisp (2% Chance)
+        - Tier: Rare
+        - Prefix: Stone
+        - 150% Size
+        - 250% Health
+        - 50% Movement Speed
+        - +10 Armor
+        - Fires Two Stone Golem Lasers, one from each hand.
+
+        * Somewhat Great Wisp (6% Chance)
+        - Tier: Uncommon
+        - Prefix: Somewhat-Great
+        - 50% Size
+        - 50% Health
+        - 500% Movement Speed
+        - 250% Attack Speed
+        - 25% Reduced Cooldowns
+
+    * Hermit Crab Variants
+
+        * Mortar Crab (5% Chance)
+        - Tier: Uncommon
+        - Prefix: Mortar
+        - 150% Size
+        - 150% Health
+        - 80% Movement Speed
+        - 80% Attack Speed
+        - Has a single brilliant behemoth
+
+    * Imp Variants
+
+        * Bruiser Imp (10% Spawn Rate)
+        - Tier: Uncommon
+        - Prefix: Bruiser
+        - 125% Size
+        - 200% Attack Speed
+        - 75% Reduced Cooldowns
+        - 3 Crowbar
+        - 20 Goat Hoofs
+        - Cannot Teleport
+
+        * Ichor Imp (5% Chance)
+        - Tier: Uncommon
+        - Prefix: Ichor
+        - +25 Armor
+        - 50% Chance to Bleed
+        - Inflicts Pulverized on Victim (-60 armor)
+
+    * Imp Overlord Variants 
+
+        * Berserker Overlord (2% Chance)
+        - Tier: Uncommon
+        - Prefix: Berserker
+        - 125% Size
+        - 200% Attack Speed
+        - -50 Armor
+        - Cannot Teleport
+        - 30% Reduced Cooldowns
+        - 2 Extra uses of Decimate
+        - 10 Goat Hoofs
+
+        * Ichor Overlord (4% Chance)
+        - Tier: Common
+        - Prefix: Ichor
+        - -50 Armor
+        - Attacks have a 50% Chance of inflicting Bleed
+        - Fires a Volley of Ichor Spikes that inflict Pulverized
+
+    * Lesser Wisp Variants
+
+        * Almost Archaic (4% Chance)
+        - Tier: Uncommon
+        - Prefix: Almost ARchaic
+        - 125% Size
+        - 500% Health
+        - Fires an Archaic Wisp Fireball
+
+        * Leastest Wisp (5% Chance)
+        - Tier: Uncommon
+        - Prefix: Leastest
+        - Always Sprints
+        - 50% Size
+        - 50% Health
+        - 500% Movement Speed
+        - 500% Attack Speed
+        - 110% Damage
+        - 75% Reduced Cooldowns
+
+        * Lesser Stone Wisp (2% Chance)
+        - Tier Uncommon
+        - Prefix: Stone
+        - 150% Size
+        - 800% Health
+        - 75% Movement Speed
+        - +10 Armor
+        - Fires a Stone Golem Laser
+
+    * Mini Mushrum Variants
+
+        * Area of Denial Shroom (5% Chance)
+        - Tier: Uncommon
+        - Prefix: AoD
+        - 75% Size
+        - 125% Health Multiplier
+        - 1000% Attack Speed
+        - Cannot Deal Damage
+        - 4 Extra Primaries
+        - 100% Primary Cooldown Reduction
+        - Spore Grenade now inflicts Pulverized
+
+        * Healer Shroom (5% Chance)
+        - Tier: Uncommon
+        - Prefix: Healer
+        - 50% Size
+        - 200% Movement Speed
+        - 50% Attack Speed
+        - 5 Bustling Fungus
+        - Spore Grenade now leaves a Healing ward for it's allies.
+
+        * Mamma Shroom (2% Chance)
+        - Tier: Rare
+        - Prefix: Mamma
+        - 200% Size
+        - 200% Health
+        - Cannot Move
+        - 200% Damage
+        - -50 Armor
+        - 1 Aegis
+        - 10 Bustling Fungus
+
+    * Parent Variants
+        
+        * Adolescent (8% Chance)
+        - Tier: Common
+        - Prefix: Adolescere
+        - 75% Size
+        - 75% Health
+        - 120% Attack Speed Multiplier
+        - 150% Damage
+        - 1 Planula
+        - 1 Medkit
+        - 2 Extra Uses of Blink
+        - 50% Cooldown Reduction
+
+        * Child (6% Chance)
+        - Tier: Uncommon
+        - Prefix: Childish
+        - 30% Size
+        - 50% Health
+        - 600% Attack Speed
+        - 20 Goat Hoof
+        - 25% Cooldown Reduction
+        - Cannot Teleport
+        - On death, a pair of frenzied parents spawn.
+
+    * Solus Control Unit Variants
+
+        * Malfunctioning Solus Control Unit (4% Chance)
+        - Tier: Common
+        - Prefix: Malfunctioning
+        - Can use Solus Detonation at any point in time.
+
+        * Swarming Solus Unit (2% Chance)
+        - Tier: Uncommon
+        - Prefix: Swarming
+        - 50% Size
+        - 50% Health
+        - 500% Movement Speed
+        - 500% Attack Speed
+        - 50% Damage
+        - 50% Reduced Primary Cooldown
+        - 2 Extra Primaries
+        - Utility Spawns a massive amount of Swarming Solus Probes
+
+    * Solus Probe Variants
+
+        * Gaussian Probe (12.5% Chance)
+        - Tier: Common
+        - Prefix: Gaussian
+        - 200% Health
+        - 75% Movement Speed
+        - 25+ Armor
+        - Fires Gaussian Bulltes, akin to Engineer's Default Turrets.
+
+        * Solus Probe MK2 (5% Chance)
+        - Tier: Uncommon
+        - Suffix: MK2
+        - 150% Size
+        - 300% Health
+        - +25 Armor
+        - Primary Relaced by a burst of Solus Control Unit Shots
+
+        * Swarmer Probe (7% Chance)
+        - Tier: Uncommon
+        - Prefix: Swarming
+        - 50% Size
+        - 50% Health
+        - 400% Movement Speed
+        - 400% Attack Speed
+        - 30% Damage
+        - 50% Reduced Cooldowns
+
+    * Stone Golem Variants
+
+        * Ye Olde Golem (3% Chance)
+        - Tier: Rare
+        - Prefix: Ye Olde
+        - 300% Size
+        - 200% Health
+        - 50% Movement Speed
+        - 150% Attack Speed
+        - 200% Damage
+        - +100 Armor
+        - Has an Ocular HUD
+        - Fires a Stone Titan Laser.
+
+    * Wandering Vagrant Variants
+
+        * Mothership Vagrant (2% Chance)
+        - Tier: Uncommon
+        - Prefix: Mothership
+        - 150% Size
+        - 150% Health
+        - 200% Movement Speed
+        - +30 Armor
+        - Jelly Barrage replaced with the ability to spawn jellyfishes.
+        - On Death, Spawn 10 Jellyfishes
+            - If The Original 30 is installed, Spawn 3 MOAJ instead.
 
 Unlike the original MonsterVariantsPlus, all the variants from this Variant Pack can be made Unique, this means that the Variant will never participate in the VariantOverlapping shenanigans (No more Leastest Almost-Great Infernal Wisp)
 
-## Known Issues
-
-
-Aeonic Wisps dont get registered
-
 ## Changelog
+'1.1.0'
+
+- Updated to use VarianceAPI 1.0.0
+- Probably forgot a bunch of things
+- Also, certain variant reworks and tweaks. lol.
+
 '1.0.3'
 
 - Fixed the Malfunctioning Alloy Worship Unit having a spawn chance of 0 by default

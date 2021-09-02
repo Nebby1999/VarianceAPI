@@ -127,7 +127,6 @@ namespace NebbysWrath
 				.ForEach(state =>
 				{
 					HG.ArrayUtils.ArrayAppend(ref ContentPackProvider.serializedContentPack.entityStateTypes, new EntityStates.SerializableEntityStateType(state));
-					Debug.Log("Added " + state.Name);
 				});
 		}
 	}

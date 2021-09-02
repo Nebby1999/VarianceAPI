@@ -21,14 +21,13 @@ MonoBehaviour:
   aiModifier: 0
   variantTier: 0
   spawnRate: 4
-  givesRewards: 0
   variantInventory: {fileID: 0}
   skillReplacements:
   - skillSlot: 3
     skillDef: {fileID: 11400000, guid: 8f04de40589bc4f4b9ddc563ef22e3d2, type: 2}
   healthMultiplier: 1
   moveSpeedMultiplier: 2
-  attackSpeedMultiplier: 1.1
+  attackSpeedMultiplier: 1
   damageMultiplier: 1
   armorMultiplier: 1
   armorBonus: -50

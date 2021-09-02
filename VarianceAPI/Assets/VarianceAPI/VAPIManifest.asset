@@ -92,7 +92,7 @@ MonoBehaviour:
   Errored: 0
   ErrorMessage: 
   StagingPaths:
-  - <MAnifestStagingRoot>
+  - <ManifestStagingRoot>
   url: https://github.com/Nebby1999/VarianceAPI
 --- !u!114 &114841402022115770
 MonoBehaviour:

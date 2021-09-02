@@ -16,12 +16,11 @@ MonoBehaviour:
   bodyName: JellyfishBody
   overrideNames:
   - textToAdd: TO30_MOAJ_PREFIX
-    overrideType: 1
+    overrideType: 0
   unique: 0
   aiModifier: 0
   variantTier: 2
   spawnRate: 2
-  givesRewards: 1
   variantInventory: {fileID: 0}
   skillReplacements:
   - skillSlot: 1

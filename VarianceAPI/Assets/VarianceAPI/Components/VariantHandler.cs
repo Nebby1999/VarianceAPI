@@ -121,7 +121,6 @@ namespace VarianceAPI.Components
             {
                 if (highestTier >= VariantTier.Rare)
                 {
-                    Debug.Log("Announcing Arrival");
                     if (!string.IsNullOrEmpty(randomVariantInfo.arrivalMessage))
                     {
                         Chat.AddMessage(Language.GetStringFormatted(randomVariantInfo.arrivalMessage));
@@ -139,7 +138,6 @@ namespace VarianceAPI.Components
         #region Modify AI
         private void ModifyAI()
         {
-            Debug.Log("Starting AI modification");
             if (aiModifiers.HasFlag(VariantAIModifier.Unstable))
             {
                 foreach (AISkillDriver i in charMaster.GetComponents<AISkillDriver>())
@@ -170,7 +168,6 @@ namespace VarianceAPI.Components
         #region Modify Stats
         private void ModifyStats()
         {
-            Debug.Log("Starting Stat modification");
             charBody.baseMaxHealth *= healthModifier;
             charBody.baseMoveSpeed *= moveSpeedModifier;
             charBody.baseAttackSpeed *= attackSpeedModifier;

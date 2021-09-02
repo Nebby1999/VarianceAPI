@@ -32,30 +32,16 @@ namespace VarianceAPI.Components
 
         public void GetStuff()
         {
-            Debug.Log("a");
             deathRewards = base.GetComponent<DeathRewards>();
-            Debug.Log("a");
             characterBody = base.GetComponent<CharacterBody>();
-            Debug.Log("a");
             redItems = Run.instance.availableTier3DropList;
-            Debug.Log("a");
             greenItems = Run.instance.availableTier2DropList;
-            Debug.Log("a");
             whiteItems = Run.instance.availableTier1DropList;
-            Debug.Log("a");
-            if(Run.instance)
-            {
-                Debug.Log("instance");
-                nextWhiteItem = Run.instance.treasureRng.RangeInt(0, whiteItems.Count);
-                Debug.Log("a");
-                nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
-                Debug.Log("a");
-                nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
-            }
-            Debug.Log("a");
+            nextWhiteItem = Run.instance.treasureRng.RangeInt(0, whiteItems.Count);
+            nextGreenItem = Run.instance.treasureRng.RangeInt(0, greenItems.Count);
+            nextRedItem = Run.instance.treasureRng.RangeInt(0, redItems.Count);
             if (ConfigLoader.EnableItemRewards.Value)
             {
-                Debug.Log("a");
                 GlobalEventManager.onCharacterDeathGlobal += SpawnDroplet;
             }
         }

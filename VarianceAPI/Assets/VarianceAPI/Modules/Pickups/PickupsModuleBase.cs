@@ -41,7 +41,6 @@ namespace VarianceAPI.ModuleBases
             //No need to suscribe twice;
             if(!delegates)
             {
-                VAPILog.LogI("This should only appear once");
                 delegates = true;
                 CharacterBody.onBodyStartGlobal += AddItemManager;
                 On.RoR2.CharacterBody.RecalculateStats += OnRecalculateStats;

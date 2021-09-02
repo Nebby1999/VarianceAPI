@@ -24,15 +24,16 @@ namespace VarianceAPI
 			nameof(LanguageAPI),
 			nameof(ArtifactCodeAPI),
 			nameof(DamageAPI),
-			nameof(CommandHelper)
+			nameof(CommandHelper),
+			nameof(PrefabAPI)
 		})]
 	internal class MainClass : BaseUnityPlugin
     {
 		public const string GUID = "com.Nebby.VarianceAPI";
 		public const string NAME = "VarianceAPI";
-		public const string VERSION = "2.0.0";
+		public const string VERSION = "1.0.0";
 
-		private readonly static bool DEBUG = true;
+		private readonly static bool DEBUG = false;
 
         public static MainClass Instace;
 		public static PluginInfo PluginInfo;
@@ -46,7 +47,7 @@ namespace VarianceAPI
 			}
 			VAPILog.logger = Logger;
 			Instace = this;
-			PluginInfo = this.Info;
+			PluginInfo = Info;
 			
 
 			if(DEBUG)
@@ -64,11 +65,8 @@ namespace VarianceAPI
 			Interfaces.Initialize();
 			VAPILanguage.Initialize();
 			ConfigLoader.Initialize(Config);
-			//Pickups.Initialize();
-			Logger.LogInfo("Ass");
+
 			new Pickups().Initialize();
-			Logger.LogInfo("Ass2");
-			//DamageTypes.DamageTypes.Initialize();
 
             #region artifact moment
 			if(ConfigLoader.EnableArtifactOfVariance.Value)

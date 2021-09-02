@@ -20,8 +20,7 @@ MonoBehaviour:
   unique: 0
   aiModifier: 1
   variantTier: 0
-  spawnRate: 2
-  givesRewards: 1
+  spawnRate: 4
   variantInventory: {fileID: 0}
   skillReplacements: []
   healthMultiplier: 1

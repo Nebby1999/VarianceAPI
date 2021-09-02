@@ -14,31 +14,19 @@ namespace VarianceAPI.ScriptableObjects
         [Serializable]
         public struct VariantMaterialReplacement
         {
-            [Tooltip("The name of this specific Replacement, not used in anything, just used for organization in the editor.")]
-            public string ElementName;
-
-            [Space]
-
-
             [Tooltip("Which RendererIndex You're Targetting")]
             [Min(0)]
             public int rendererIndex;
 
-            [Tooltip("The Replacement Material\nIf you want to use a vanilla material, leave this null and load the VariantMaterialReplacement in your class that inherits from VariantMaterialGrabber")]
+            [Tooltip("The Replacement Material\nIf you want to use a vanilla material, leave this null and the VariantMaterialGrabber from VarianceAPI will attempt to replace it with a vanilla material.")]
             public Material material;
 
-            [Tooltip("Unique identifier of this material replacement.\nUsed on a class that inherits from VariantMaterialGrabber")]
+            [Tooltip("Unique identifier of this material replacement.\nUsed on the VariantMaterialGrabber class from VarianceAPI")]
             public string identifier;
         }
         [Serializable]
         public struct VariantLightReplacement
         {
-            [Tooltip("The name of this specific Replacement, not used in anything, just used for organization in the editor.")]
-            public string ElementName;
-
-            [Space]
-
-
             [Tooltip("Which RendererIndex You're Targetting")]
             [Min(0)]
             public int rendererIndex;
@@ -53,12 +41,6 @@ namespace VarianceAPI.ScriptableObjects
         [Serializable]
         public struct VariantMeshReplacement
         {
-            [Tooltip("The name of this specific Replacement, not used in anything, just used for organization in the editor.")]
-            public string ElementName;
-
-            [Space]
-
-
             [Tooltip("Which RendererIndex You're Targetting")]
             [Min(0)]
             public int rendererIndex;

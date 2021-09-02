@@ -1,15 +1,29 @@
 ManifestFileVersion: 0
-CRC: 1829663920
+CRC: 2181817878
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 9d1c3495ff5433422009528d58c96765
+    Hash: 62c4664581971554b92f1b5fed22becc
   TypeTreeHash:
     serializedVersion: 2
-    Hash: fdcb9b04421d1ad4bccbcaee0eb0c092
+    Hash: 693dede3570020f2a2366fba1e0e3152
 HashAppended: 0
 ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
 - Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
   Script: {instanceID: 0}
 - Class: 114
   Script: {fileID: 1032072274, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
@@ -28,27 +42,36 @@ Assets:
 - Assets/VarianceAPI/Assets/ItemDefs/SpecialCDR.asset
 - Assets/VarianceAPI/Assets/VAPIContent.asset
 - Assets/VarianceAPI/Assets/Artifact/Variance.asset
+- Assets/VarianceAPI/Assets/Artifact/VariancePickup.prefab
 - Assets/Icons/icoExtraUtility.png
+- Assets/Textures/Stolen/texTrimSheetArtifactDiffuse 1.asset
 - Assets/Icons/icoExtraSpecial.png
 - Assets/VarianceAPI/Assets/ItemDefs/UtilityCDR.asset
+- Assets/Materials/stolen/matArtifact.mat
 - Assets/Icons/icoExtraPrimary.png
 - Assets/VarianceAPI/Assets/ItemDefs/ExtraSecondary.asset
 - Assets/Icons/icoPlus1Crit.png
+- Assets/Textures/Stolen/texRampTeleporter.asset
 - Assets/VarianceAPI/Assets/ItemDefs/Plus1Crit.asset
 - Assets/VarianceAPI/Assets/ItemDefs/ExtraPrimary.asset
+- Assets/Materials/matArtifactGem.mat
+- Assets/Textures/Stolen/texRampNullifierOffset.asset
 - Assets/VarianceAPI/Assets/ItemDefs/ExtraSpecial.asset
 - Assets/Icons/icoVarianceDisabled.png
+- Assets/NebbysWrath/NebbysWrathAssets/Shaders/deferred/hgstandard.shader
 - Assets/VarianceAPI/Assets/ItemDefs/PrimaryCDR.asset
 - Assets/VarianceAPI/Assets/Artifact/VarianceCode.asset
 - Assets/VarianceAPI/Assets/ItemDefs/GlobalCDR.asset
 - Assets/Icons/icoPurpleHealthbar.png
 - Assets/Icons/icoUtilityCDR.png
 - Assets/Icons/icoSpecialCDR.png
+- Assets/Meshes/meshVariance.mesh
 - Assets/Icons/icoExtraSecondary.png
 - Assets/Icons/icoPrimaryCDR.png
 - Assets/VarianceAPI/Assets/ItemDefs/ExtraUtility.asset
 - Assets/Icons/icoSecondaryCDR.png
 - Assets/VarianceAPI/Assets/ItemDefs/SecondaryCDR.asset
 - Assets/Icons/icoVarianceEnabled.png
+- Assets/Textures/Stolen/texTrimSheetConcreteNormal.asset
 - Assets/Icons/icoGlobalCDR.png
 Dependencies: []

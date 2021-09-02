@@ -20,7 +20,6 @@ namespace NebbysWrath.DamageTypes
 
         public override void Initialize()
         {
-            MainClass.logger.LogInfo("initializing DamageTypes...");
             base.Initialize();
             InitializeDamageTypes();
         }
@@ -34,7 +33,6 @@ namespace NebbysWrath.DamageTypes
                     var moddedDamageType = dType.GetDamageType();
                     damageTypes.Add(moddedDamageType, dType);
                     NWDamageTypes.Add(moddedDamageType, dType);
-                    MainClass.logger.LogDebug($"Added DamageType {dType.GetType().Name}");
                 });
             return null;
         }

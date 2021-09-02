@@ -15,8 +15,6 @@ MonoBehaviour:
   ItemInventory:
   - itemDefName: PrimaryCDR
     amount: 50
-  - itemDefName: UtilityCDR
-    amount: 75
   - itemDefName: ExtraPrimary
     amount: 2
   Buffs: []

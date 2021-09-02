@@ -66,6 +66,7 @@
         "NW_MK2_SUFFIX" : "MK2",
         
         "NW_YEOLDE_PREFIX" : "Ye Olde",
+        "NW_YEOLDE_ARRIVAL" : "A massive golem rises from the ground...", 
 
         "NW_MOTHERSHIP_PREFIX" : "Mothership"
     },
@@ -136,6 +137,7 @@
         "NW_MK2_SUFFIX" : "MK2",
         
         "NW_YEOLDE_PREFIX" : "(El Antiguo)",
+        "NW_YEOLDE_ARRIVAL" : "Un Golem masivo aparece...",
 
         "NW_MOTHERSHIP_PREFIX" : "(Nave nodriza)"
     }
