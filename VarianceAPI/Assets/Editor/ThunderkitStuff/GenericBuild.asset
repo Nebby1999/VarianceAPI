@@ -145,7 +145,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   Errored: 0
   ErrorMessage: 
-  Active: 1
+  Active: 0
   PerManifest: 0
   ExcludedManifests: []
   Recursive: 1

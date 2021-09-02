@@ -1,0 +1,146 @@
+ManifestFileVersion: 0
+CRC: 3948292290
+Hashes:
+  AssetFileHash:
+    serializedVersion: 2
+    Hash: 401f3ae6c7fb48dd5fbe0c65f673e204
+  TypeTreeHash:
+    serializedVersion: 2
+    Hash: d806e64dfeefe0429d8c5cadeb336c4e
+HashAppended: 0
+ClassTypes:
+- Class: 1
+  Script: {instanceID: 0}
+- Class: 4
+  Script: {instanceID: 0}
+- Class: 21
+  Script: {instanceID: 0}
+- Class: 23
+  Script: {instanceID: 0}
+- Class: 28
+  Script: {instanceID: 0}
+- Class: 33
+  Script: {instanceID: 0}
+- Class: 43
+  Script: {instanceID: 0}
+- Class: 48
+  Script: {instanceID: 0}
+- Class: 114
+  Script: {fileID: 89795172, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
+- Class: 114
+  Script: {fileID: -281164913, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
+- Class: 114
+  Script: {fileID: 1391837873, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: b8a27ed5f14bc4b40913359e7345f6ef, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 0966c2b7a5c15584a8a10eceb4d7ff7d, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: 4d7715e79c1e93248917cab95dc82cbe, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: bfe7c50847bd25e48b7610bbc39187fc, type: 3}
+- Class: 114
+  Script: {fileID: 11500000, guid: faa25c081ff26eb4ab6c3293d59e44b9, type: 3}
+- Class: 115
+  Script: {instanceID: 0}
+Assets:
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Golem/OverchargedGolem.asset
+- Assets/TheOriginal30/TheOriginal30Assets/EntityStateConfig/configToxicHeadbutt.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/NoCooldown.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Albino.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/ElderLemurian/MoltenElderLemurian.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/GreaterWisp/GreatestWisp.asset
+- Assets/Common/SizeModifiers/G_3.asset
+- Assets/TheOriginal30/TheOriginal30Assets/SkillDefs/luckySit.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/Cursed.asset
+- Assets/Common/SizeModifiers/F_1.2.asset
+- Assets/Common/SizeModifiers/G_2.5.asset
+- Assets/Common/Inventories/50CDR.asset
+- Assets/TheOriginal30/TheOriginal30Assets/EntityStateConfig/configFireFireballlnMissile.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/HellInventory.asset
+- Assets/TheOriginal30/TheOriginal30Assets/EntityStateConfig/configRushBlink.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Toxic.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Sharpshooter.asset
+- Assets/TheOriginal30/TheOriginal30Assets/GunStuff/VulturePistol.prefab
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Jellyfish/SpectralJellyfish.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Vulture/ArtilleryVulture.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/ClayTemplar/FuckingTemplar.asset
+- Assets/Common/SizeModifiers/F_2.asset
+- Assets/Common/SizeModifiers/G_1.5.asset
+- Assets/TheOriginal30/TheOriginal30Assets/EntityStateConfig/configSpawnJellies.asset
+- Assets/Meshes/meshBeetleGuardSharpshooter.mesh
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/WanderingVagrant/UnstableVagrant.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/Clotted.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Scav/DreamScavenger.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Infernal.asset
+- Assets/Common/SizeModifiers/F_1.1.asset
+- Assets/Materials/matVulturePistol.mat
+- Assets/Textures/texVultureGun.png
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/BeetleGuard/BeetleGuardBrute.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Cursed.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/RapidFireInventory.asset
+- Assets/TheOriginal30/TheOriginal30Assets/EntityStateConfig/configHeavyHeadbutt.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Lemurian/BadassLemurian.asset
+- Assets/TheOriginal30/TheOriginal30Assets/SkillDefs/doubleTapEagle.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Beetle/BattleBeetle.asset
+- Assets/TheOriginal30/TheOriginal30Assets/SkillDefs/nuclearNova.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Nuclear.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/ShieldOnly.asset
+- Assets/TheOriginal30/TheOriginal30Assets/EntityStateConfig/configChargeFireballnMissile.asset
+- Assets/TheOriginal30/TheOriginal30Assets/SkillDefs/rushBlink.asset
+- Assets/TheOriginal30/TheOriginal30Assets/SkillDefs/fireballMissle.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Bison/SpeedyBison.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/MOAJ.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Imp/ClottedImp.asset
+- Assets/TheOriginal30/TheOriginal30Assets/SkillDefs/chargeGreaterCannon.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/Infernal.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/Speed.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/StoneTitan/ColossalStoneTitan.asset
+- Assets/Common/SizeModifiers/G_0.3.asset
+- Assets/TheOriginal30/TheOriginal30Assets/SkillDefs/toxicHeadbutt.asset
+- Assets/Meshes/meshFlamethrowerLemurian.mesh
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/FullAuto.asset
+- Assets/Common/SizeModifiers/F_4.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Jellyfish/CursedJellyfish.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Beetle/ToxicBeetle.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/75CDR.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/LesserWisp/InfernalWisp.asset
+- Assets/Common/SizeModifiers/G_1.1.asset
+- Assets/Common/SizeModifiers/G_1.2.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Golem/FullAutoGolem.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/Artillery.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Flamethrower.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Jellyfish/MOAJ.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/LesserWisp/Almost-GreatWisp.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Molten.asset
+- Assets/Common/SizeModifiers/F_1.25.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Beetle/ArmoredBeetle.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/StoneTitan/PygmyStoneTitan.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Clotted.asset
+- Assets/Common/SizeModifiers/G_0.8.asset
+- Assets/TheOriginal30/TheOriginal30Assets/SkillDefs/spawnNova.asset
+- Assets/TheOriginal30/TheOriginal30Assets/EntityStateConfig/configNuclearNova.asset
+- Assets/Meshes/meshHenryGun.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Spectral.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Greatest.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Golem/RushGolem.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Rush.asset
+- Assets/Meshes/meshCursedJellyfish.mesh
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/HighMoveAttackSpeed.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/Spectral.asset
+- Assets/Common/SizeModifiers/G_0.6.asset
+- Assets/TheOriginal30/TheOriginal30Assets/TheOriginal30Content.asset
+- Assets/Common/SizeModifiers/F_0.8.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Lemurian/FlameThrowerLemurian.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Jellyfish/NuclearJellyfish.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Almost-Great.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Vulture/AlloyDeagle.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Beetle/SpeedyBeetle.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Inventories/RapidFire.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/VisualModifiers/Artillery.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/BeetleGuard/BeetleGuardSharpshooter.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Golem/TitanishGolem.asset
+- Assets/TheOriginal30/TheOriginal30Assets/SkillDefs/heavyHeadbutt.asset
+- Assets/TheOriginal30/TheOriginal30Assets/Variants/Bison/AlbinoBison.asset
+- Assets/TheOriginal30/TheOriginal30Assets/EntityStateConfig/configSpawnNova.asset
+Dependencies: []

@@ -1,0 +1,10 @@
+ManifestFileVersion: 0
+CRC: 531330066
+AssetBundleManifest:
+  AssetBundleInfos:
+    Info_0:
+      Name: vapiassets
+      Dependencies: {}
+    Info_1:
+      Name: theoriginal30assets
+      Dependencies: {}

@@ -256,7 +256,7 @@ https://discord.gg/kWn8T4fM5W
 
 # Changelog
 
-(Pre 1.0.0 changelog can be found [here]())
+(Pre 1.0.0 changelog can be found [here](https://github.com/Nebby1999/VarianceAPI/blob/main/VarianceAPI/Assets/VarianceAPI/ChangelogOld.md))
 
 '1.0.0'
 
