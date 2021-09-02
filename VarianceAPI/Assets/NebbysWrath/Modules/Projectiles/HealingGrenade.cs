@@ -27,6 +27,7 @@ namespace NebbysWrath.Projectiles
             healingWard.radius = 15;
             healingWard.interval = 0.5f;
             healingWard.rangeIndicator = ProjectilePrefab.transform;
+            healingWard.floorWard = true;
             impactExplosion.childrenProjectilePrefab = healingChild;
 
             HG.ArrayUtils.ArrayAppend(ref ContentPackProvider.serializedContentPack.projectilePrefabs, healingChild);

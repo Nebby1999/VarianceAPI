@@ -15,7 +15,7 @@ MonoBehaviour:
   identifier: NW_MortarCrab
   bodyName: HermitCrabBody
   overrideNames:
-  - textToAdd: Mortar
+  - textToAdd: NW_MORTAR_PREFIX
     overrideType: 0
   unique: 0
   aiModifier: 0

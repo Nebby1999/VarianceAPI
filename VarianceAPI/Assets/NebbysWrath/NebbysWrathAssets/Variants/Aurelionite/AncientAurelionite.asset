@@ -15,7 +15,7 @@ MonoBehaviour:
   identifier: NW_AncientAurelionite
   bodyName: TitanGoldBody
   overrideNames:
-  - textToAdd: TO30_ANCIENT_PREFIX
+  - textToAdd: NW_ANCIENT_PREFIX
     overrideType: 0
   unique: 0
   aiModifier: 1

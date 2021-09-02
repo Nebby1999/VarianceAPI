@@ -1,8 +1,142 @@
 {
     "strings" : {
+        "NW_ENRAGED_PREFIX" : "Enraged",
 
+        "NW_AEONIC_PREFIX" : "Aeonic",
+        "NW_STONE_PREFIX" : "Stone",
+        "NW_ARCHAICSTONEWISP_ARRIVAL" : "The most archaic energies from the earth accumulate...",
+        "NW_SOMEWHATARCHAIC_PREFIX" : "Somewhat-Archaic",
+
+        "NW_ANCIENT_PREFIX" : "Ancient",
+        "NW_COLOSSAL_SUFFIX" : "Colosus",
+        "NW_PYGMY_PREFIX" : "Pygmy",
+
+        "NW_MALFUNCTIONING_PREFIX" : "Malfunctioning",
+        "NW_SWARMING_PREFIX" : "Swarming",
+
+        "NW_IMPERATRIX_SUFFIX" : "Imperatrix",
+        "NW_MATRIARCHAL_PREFIX" : "Matriarchal",
+
+        "NW_ALPHA_PREFIX" : "Alpha",
+
+        "NW_ALUMINUM_PREFIX" : "Aluminum-Plated",
+        "NW_STEEL_PREFIX" : "Steel-Plated",
+
+        "NW_DEVOURER_PREFIX" : "Devourer",
+        "NW_STARVING_PREFIX" : "Starving",
+
+        "NW_ASSASIN_SUFFIX" : "Assasin",
+        "NW_SOLDIER_SUFFIX" : "Soldier",
+
+        "NW_VAMPIRIC_PREFIX" : "Vampiric",
+
+        "NW_KJARO_OVERRIDE" : "Ghost of Kjaro",
+        "NW_KJARO_ARRIVAL" : "The Firey Lovestruck Lemurian Appears once Again!",
+        "NW_RUNALD_OVERRIDE" : "Ghost of Runald",
+        "NW_RUNALD_ARRIVAL" : "The Icey Lovestruck Lemurian Appears once Again",
+        "NW_INCINERATING_PREFIX" : "Incinerating",
+        "NW_INCINERATING_ARRIVAL" : "The Ground Heats up from the arrival of an Elder Lemurian...",
+
+        "NW_GREAT_PREFIX" : "Great",
+        "NW_SUNWORSHIPPING_PREFIX" : "Sun-Worshipping",
+
+        "NW_AMALGAMATED_PREFIX" : "Amalgamated",
+        "NW_GREATERSTONEWISP_ARRIVAL" : "The Great energies from the earth accumulate",
+        "NW_SOMEWHATGREAT_PREFIX" : "Somewhat-Great",
+
+        "NW_MORTAR_PREFIX" : "Mortar",
+
+        "NW_BRUISER_PREFIX" : "Bruiser",
+        "NW_ICHOR_PREFIX" : "Ichor",
+
+        "NW_BERSERKER_PREFIX" : "Berserker",
+
+        "NW_ALMOSTARCHAIC_PREFIX" : "Almost-Archaic",
+        "NW_LEASTEST_PREFIX" : "Leastest",
+
+        "NW_AD_PREFIX" : "AoD",
+        "NW_HEALER_PREFIX" : "Healer",
+        "NW_MAMMA_PREFIX" : "Mamma",
+        "NW_MAMMA_ARRIVAL" : "The Mother of Mushrooms come to the aid of its children.",
+
+        "NW_ADOLESCERE_PREFIX" : "Adolescere",
+        "NW_CHILDISH_PREFIX" : "Childish",
+
+        "NW_GAUSSIAN_PREFIX" : "Gaussian",
+        "NW_MK2_SUFFIX" : "MK2",
+        
+        "NW_YEOLDE_PREFIX" : "Ye Olde",
+
+        "NW_MOTHERSHIP_PREFIX" : "Mothership"
     },
     "es-419" : {
+        "NW_ENRAGED_PREFIX" : "(Furioso)",
 
+        "NW_AEONIC_PREFIX" : "(Aeonico)",
+        "NW_STONE_PREFIX" : "(Piedra)",
+        "NW_ARCHAICSTONEWISP_ARRIVAL" : "Las energias mas archaicas de la tierra se acumulan...",
+        "NW_SOMEWHATARCHAIC_PREFIX" : "(Algo-Archaico)",
+
+        "NW_ANCIENT_PREFIX" : "(Ancestral)",
+        "NW_COLOSSAL_SUFFIX" : "Colosal",
+        "NW_PYGMY_PREFIX" : "(Pigmeo)",
+
+        "NW_MALFUNCTIONING_PREFIX" : "(Mal Funcionamiento)",
+        "NW_SWARMING_PREFIX" : "(Enjambre)",
+
+        "NW_IMPERATRIX_SUFFIX" : "Emperatris",
+        "NW_MATRIARCHAL_PREFIX" : "(Matraircal)",
+
+        "NW_ALPHA_PREFIX" : "(Alfa)",
+
+        "NW_ALUMINUM_PREFIX" : "(Reforzado con Aluminio)",
+        "NW_STEEL_PREFIX" : "(Reforzado con Acero)",
+
+        "NW_DEVOURER_PREFIX" : "(Devorador)",
+        "NW_STARVING_PREFIX" : "(Hambriento)",
+
+        "NW_ASSASIN_SUFFIX" : "Asesino",
+        "NW_SOLDIER_SUFFIX" : "Soldado",
+
+        "NW_VAMPIRIC_PREFIX" : "(Vampirico)",
+
+        "NW_KJARO_OVERRIDE" : "El Fantasma de Kjaro",
+        "NW_KJARO_ARRIVAL" : "El Enamorado de fuego aparece una ves mas!",
+        "NW_RUNALD_OVERRIDE" : "El Fantasma de Runald",
+        "NW_RUNALD_ARRIVAL" : "El Enamorado de hielo aparece una ves mas!",
+        "NW_INCINERATING_PREFIX" : "(Incinerador)",
+        "NW_INCINERATING_ARRIVAL" : "El Suelo se calienta a grandes niveles...",
+
+        "NW_GREAT_PREFIX" : "Gran",
+        "NW_SUNWORSHIPPING_PREFIX" : "(Alabador del Sol)",
+
+        "NW_AMALGAMATED_PREFIX" : "(Amalgama)",
+        "NW_GREATERSTONEWISP_ARRIVAL" : "Las energias mas grandes de la tierra se acumulan...",
+        "NW_SOMEWHATGREAT_PREFIX" : "(Algo-Archaico)",
+
+        "NW_MORTAR_PREFIX" : "(Mortero)",
+
+        "NW_BRUISER_PREFIX" : "(Matón)",
+        "NW_ICHOR_PREFIX" : "(Ichor)",
+
+        "NW_BERSERKER_PREFIX" : "(Frenético)",
+
+        "NW_ALMOSTARCHAIC_PREFIX" : "(Casi Arcaico)",
+        "NW_LEASTEST_PREFIX" : "(Mas Menor)",
+
+        "NW_AD_PREFIX" : "(AoN)",
+        "NW_HEALER_PREFIX" : "(Sanador)",
+        "NW_MAMMA_PREFIX" : "(Maternal)",
+        "NW_MAMMA_ARRIVAL" : "La Madre de los hongos llega a socorrar a sus crias...",
+
+        "NW_ADOLESCERE_PREFIX" : "(Adolescere)",
+        "NW_CHILDISH_PREFIX" : "(Infantil)",
+
+        "NW_GAUSSIAN_PREFIX" : "(Gausseo)",
+        "NW_MK2_SUFFIX" : "MK2",
+        
+        "NW_YEOLDE_PREFIX" : "(El Antiguo)",
+
+        "NW_MOTHERSHIP_PREFIX" : "(Nave nodriza)"
     }
 }

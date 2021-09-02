@@ -15,7 +15,7 @@ MonoBehaviour:
   identifier: TO30_MOAJ
   bodyName: JellyfishBody
   overrideNames:
-  - textToAdd: TO30_MOAJ_SUFFIX
+  - textToAdd: TO30_MOAJ_PREFIX
     overrideType: 1
   unique: 0
   aiModifier: 0

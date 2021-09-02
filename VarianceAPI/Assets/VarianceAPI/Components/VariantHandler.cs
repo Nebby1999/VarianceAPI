@@ -15,7 +15,7 @@ using Random = UnityEngine.Random;
 
 namespace VarianceAPI.Components
 {
-    public class VariantHandler : NetworkBehaviour
+    public class VariantHandler : MonoBehaviour
     {
         public VariantInfo[] VariantInfos;
 

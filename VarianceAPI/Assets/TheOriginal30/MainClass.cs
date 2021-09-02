@@ -33,12 +33,11 @@ namespace TheOriginal30
 			logger = Logger;
 			pluginInfo = Info;
 			LoadAssets();	
-			RegisterContentPack();
 
 			InitializeEntityStates();
 			MaterialGrabber.CreateCorrectMaterials();
 			VarianceAPI.VariantRegister.AddVariant(theOriginal30Assets, Config);
-
+			ContentPackProvider.Initialize();
 		}
 		private void LoadAssets()
 		{
@@ -46,16 +45,16 @@ namespace TheOriginal30
 			theOriginal30Assets = AssetBundle.LoadFromFile(path + assetBundleName);
 			ContentPackProvider.serializedContentPack = theOriginal30Assets.LoadAsset<SerializableContentPack>(ContentPackProvider.contentPackName);
 		}
-        public void RegisterContentPack()
-        {
-			ContentPackProvider.Initialize();
-        }
 		private void InitializeEntityStates()
 		{
 			GetType().Assembly.GetTypes()
 				.Where(type => typeof(EntityStates.EntityState).IsAssignableFrom(type))
 				.ToList()
-				.ForEach(state => HG.ArrayUtils.ArrayAppend(ref ContentPackProvider.serializedContentPack.entityStateTypes, new EntityStates.SerializableEntityStateType(state)));
+				.ForEach(state =>
+				{
+					HG.ArrayUtils.ArrayAppend(ref ContentPackProvider.serializedContentPack.entityStateTypes, new EntityStates.SerializableEntityStateType(state));
+					Debug.Log("Added " + state.Name);
+				});
 		}
 	}
 	public class ContentPackProvider : IContentPackProvider

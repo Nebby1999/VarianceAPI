@@ -46,14 +46,14 @@ namespace NebbysWrath
 			SwapShaders(nebbysWrathAssets, ingameMaterials);
 
 			LoadEffects();
+			InitializeEntityStates();
 
 			new DamageTypes.DamageTypes().Initialize();
 			new Projectiles.Projectiles().Initialize();
 
-			RegisterContentPack();
-			InitializeEntityStates();
 			MaterialGrabber.CreateCorrectMaterials();
 			VarianceAPI.VariantRegister.AddVariant(nebbysWrathAssets, Config);
+			ContentPackProvider.Initialize();
 		}
 
 		public void LoadAssets()
@@ -120,13 +120,17 @@ namespace NebbysWrath
         }
 
 		private void InitializeEntityStates()
-        {
+		{
 			GetType().Assembly.GetTypes()
 				.Where(type => typeof(EntityStates.EntityState).IsAssignableFrom(type))
 				.ToList()
-				.ForEach(state => HG.ArrayUtils.ArrayAppend(ref ContentPackProvider.serializedContentPack.entityStateTypes, new EntityStates.SerializableEntityStateType(state)));
-        }
-    }
+				.ForEach(state =>
+				{
+					HG.ArrayUtils.ArrayAppend(ref ContentPackProvider.serializedContentPack.entityStateTypes, new EntityStates.SerializableEntityStateType(state));
+					Debug.Log("Added " + state.Name);
+				});
+		}
+	}
 	public class ContentPackProvider : IContentPackProvider
 	{
 		public static SerializableContentPack serializedContentPack;

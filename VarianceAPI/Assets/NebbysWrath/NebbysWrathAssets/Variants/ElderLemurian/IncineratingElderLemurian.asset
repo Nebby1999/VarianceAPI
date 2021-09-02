@@ -36,7 +36,7 @@ MonoBehaviour:
   armorBonus: 0
   visualModifier: {fileID: 11400000, guid: e97a36141578c9a458185637efa7dd7a, type: 2}
   sizeModifier: {fileID: 11400000, guid: ea425827fb3d3f147aafce9acbd16fb2, type: 2}
-  arrivalMessage: 
+  arrivalMessage: NW_INCINERATING_ARRIVAL
   extraComponents:
   - componentToAdd:
       _typeName: NebbysWrath.VariantComponents.AddFlames, NebbysWrath, Version=0.0.0.0,

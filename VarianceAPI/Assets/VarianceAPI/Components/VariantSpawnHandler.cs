@@ -42,7 +42,6 @@ namespace VarianceAPI.Components
                     return toReturn;
             }
         }
-        public VariantInfo[] shuffledUniques;
         public VariantInfo[] NotUniqueVariantInfos
         {
             get
@@ -56,40 +55,75 @@ namespace VarianceAPI.Components
                     return toReturn;
             }
         }
-        public VariantInfo[] EnabledVariantInfos = Array.Empty<VariantInfo>();
+        public VariantInfo[] shuffledUniques;
+
+        public List<VariantInfo> EnabledVariants = new List<VariantInfo>();
 
         public float SpawnRateMultiplier;
 
+        public SyncListInt EnabledVariantIndices = new SyncListInt();
+
+        [SyncVar(hook = nameof(OnUniqueAssigned))]
+        public int EnabledUniqueVariantIndex;
+
+        [SyncVar(hook = nameof(OnFinishedCheckRolls))]
+        public bool finishedCheckRolls = false;
+
+        #region Networking
+        public void Awake()
+        {
+            EnabledVariantIndices.Callback = OnAddedVariant;
+        }
+        private void OnUniqueAssigned(int index)
+        {
+            EnabledVariants.Add(UniqueVariantInfos[index]);
+            ModifyComponents();
+        }
+
+        private void OnAddedVariant(SyncList<int>.Operation op, int itemIndex)
+        {
+            if(variantInfos[itemIndex])
+            {
+                EnabledVariants.Add(NotUniqueVariantInfos[itemIndex]);
+            }
+        }
+        private void OnFinishedCheckRolls(bool boolean)
+        {
+            ModifyComponents();
+        }
+        #endregion Networking
+
         public void Start()
         {
-            ShuffleUniques();
+            if (!NetworkServer.active)
+                return;
 
-            if (shuffledUniques == null && NotUniqueVariantInfos == null)
+            if (UniqueVariantInfos == null && NotUniqueVariantInfos == null)
             {
-                Destroy(VariantHandler);
-                Destroy(VariantRewardHandler);
-                Destroy(this);
                 return;
             }
 
             //If artifact is enabled, multiply spawn rates.
             if (RunArtifactManager.instance.IsArtifactEnabled(Assets.VAPIAssets.LoadAsset<ArtifactDef>("Variance")))
-                SpawnRateMultiplier = ConfigLoader.VarianceMultiplier.Value;
+                SpawnRateMultiplier = ConfigLoader.VarianceMultiplier.Value * 5;
 
-            List<VariantInfo> enabledVariants = new List<VariantInfo>();
-
-            if (shuffledUniques != null)
+            if (UniqueVariantInfos != null)
             {
-                for(int i = 0; i < shuffledUniques.Length; i++)
+                var rng = new WeightedSelection<int>();
+                float notUniqueChance = 0f;
+                for(int i = 0; i < UniqueVariantInfos.Length; i++)
                 {
-                    var variantInfo = shuffledUniques[i];
-                    if(Util.CheckRoll(variantInfo.spawnRate * SpawnRateMultiplier))
-                    {
-                        enabledVariants.Add(variantInfo);
-                        EnabledVariantInfos = enabledVariants.ToArray();
-                        ModifyComponents();
-                        return;
-                    }
+                    var chance = UniqueVariantInfos[i].spawnRate * SpawnRateMultiplier;
+                    rng.AddChoice(i, Mathf.Min(100, chance));
+                    notUniqueChance += Mathf.Max(0, 100 - chance);
+                }
+                rng.AddChoice(-1, notUniqueChance);
+
+                var index = rng.Evaluate(Run.instance.runRNG.nextNormalizedFloat);
+                if(index != -1)
+                {
+                    EnabledUniqueVariantIndex = index;
+                    return;
                 }
             }
 
@@ -100,49 +134,22 @@ namespace VarianceAPI.Components
                     var variantInfo = NotUniqueVariantInfos[i];
                     if (Util.CheckRoll(variantInfo.spawnRate * SpawnRateMultiplier))
                     {
-                        enabledVariants.Add(variantInfo);
+                        EnabledVariantIndices.Add(i);
                     }
                 }
+                finishedCheckRolls = true;
             }
-
-            if(enabledVariants.Count == 0)
-            {
-                DestroyComponents();
-                return;
-            }
-
-            EnabledVariantInfos = enabledVariants.ToArray();
-            ModifyComponents();
         }
         private void ModifyComponents()
         {
 
-            VariantHandler.VariantInfos = EnabledVariantInfos;
+            VariantHandler.VariantInfos = EnabledVariants.ToArray();
             VariantHandler.Modify();
 
             if (ConfigLoader.VariantsGiveRewards.Value)
             {
-                VariantRewardHandler.VariantInfos = EnabledVariantInfos;
+                VariantRewardHandler.VariantInfos = EnabledVariants.ToArray();
                 VariantRewardHandler.Modify();
-            }
-        }
-        private void DestroyComponents()
-        {
-            Destroy(VariantHandler);
-            Destroy(VariantRewardHandler);
-            Destroy(this);
-        }
-        private void ShuffleUniques()
-        {
-            shuffledUniques = UniqueVariantInfos;
-            if (shuffledUniques == null)
-                return;
-            VariantInfo tempVariantInfo;
-            for (int i = 0; i < shuffledUniques.Length - 1; i++)
-            {
-                int rng = UnityEngine.Random.Range(i, shuffledUniques.Length);
-                tempVariantInfo = shuffledUniques[rng];
-                shuffledUniques[i] = tempVariantInfo;
             }
         }
     }

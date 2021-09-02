@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b8a27ed5f14bc4b40913359e7345f6ef, type: 3}
   m_Name: SwarmingAWU
   m_EditorClassIdentifier: 
-  identifier: NW_SWARMINGAWU
+  identifier: NW_SwarmingAWU
   bodyName: RoboBallBossBody
   overrideNames:
   - textToAdd: NW_SWARMING_PREFIX
