@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8a27ed5f14bc4b40913359e7345f6ef, type: 3}
+  m_Name: MammaShroom
+  m_EditorClassIdentifier: 
+  identifier: NW_MammaShroom
+  bodyName: MiniMushroomBody
+  overrideNames:
+  - textToAdd: NW_MAMMA_PREFIX
+    overrideType: 0
+  unique: 0
+  aiModifier: 0
+  variantTier: 2
+  spawnRate: 2
+  givesRewards: 1
+  variantInventory: {fileID: 11400000, guid: 77aff86939ed84648958ba1043646632, type: 2}
+  skillReplacements: []
+  healthMultiplier: 2
+  moveSpeedMultiplier: 0
+  attackSpeedMultiplier: 1
+  damageMultiplier: 2
+  armorMultiplier: 1
+  armorBonus: -50
+  visualModifier: {fileID: 0}
+  sizeModifier: {fileID: 11400000, guid: 59776a4a74efd5940a10688bcc4855d8, type: 2}
+  arrivalMessage: NW_MAMA_ARRIVAL
+  extraComponents: []
+  customDeathState:
+    _typeName: 

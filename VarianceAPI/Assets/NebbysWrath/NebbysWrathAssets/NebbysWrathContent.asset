@@ -1,0 +1,53 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -281164913, guid: 06dd3d5416bf43ea368cc39ff96e6d5a, type: 3}
+  m_Name: NebbysWrathContent
+  m_EditorClassIdentifier: 
+  bodyPrefabs: []
+  masterPrefabs: []
+  projectilePrefabs: []
+  gameModePrefabs: []
+  networkedObjectPrefabs: []
+  skillDefs:
+  - {fileID: 11400000, guid: 4319cee860489884f872740db0a94ed8, type: 2}
+  - {fileID: 11400000, guid: 8f04de40589bc4f4b9ddc563ef22e3d2, type: 2}
+  - {fileID: 11400000, guid: 7eb4644200ee5b1479da41b6df192aa0, type: 2}
+  - {fileID: 11400000, guid: 7d34abcf52cf04d48921d6062f5b54f4, type: 2}
+  - {fileID: 11400000, guid: 359978c8da933b24987e1ed6983dafbf, type: 2}
+  - {fileID: 11400000, guid: 718adea4d4e2c8c418a750e1028e994b, type: 2}
+  - {fileID: 11400000, guid: a531f420c6d011b44958f52394c668c3, type: 2}
+  - {fileID: 11400000, guid: 784721c8390463c45be0837485e614c4, type: 2}
+  - {fileID: 11400000, guid: 0a024e0c0022f4d4ba3a6c062a1fca43, type: 2}
+  - {fileID: 11400000, guid: 55d08f6bbae030b44804cf5efeb28c8d, type: 2}
+  - {fileID: 11400000, guid: a11edfd00f2eaf74982d929331088cdf, type: 2}
+  - {fileID: 11400000, guid: 32a2911aed0cbcc489061b5be38b805f, type: 2}
+  - {fileID: 11400000, guid: db7e20c77ccd4a84abf4f50f656a212c, type: 2}
+  - {fileID: 11400000, guid: f840c57f1d787f84a9416eafcbab39d6, type: 2}
+  - {fileID: 11400000, guid: dd884770c757eb441b39515c9391a731, type: 2}
+  - {fileID: 11400000, guid: 07ab7ba93bc8b774dbc299f58c17ef16, type: 2}
+  - {fileID: 11400000, guid: fdad0da5e012f9d48a339461339ff9d5, type: 2}
+  - {fileID: 11400000, guid: 4a1a9529d8c25314e95532d4f77430e4, type: 2}
+  skillFamilies: []
+  sceneDefs: []
+  itemDefs: []
+  equipmentDefs: []
+  buffDefs: []
+  eliteDefs: []
+  unlockableDefs: []
+  survivorDefs: []
+  artifactDefs: []
+  surfaceDefs: []
+  networkSoundEventDefs: []
+  musicTrackDefs: []
+  gameEndingDefs: []
+  entityStateConfigurations: []
+  entityStateTypes: []

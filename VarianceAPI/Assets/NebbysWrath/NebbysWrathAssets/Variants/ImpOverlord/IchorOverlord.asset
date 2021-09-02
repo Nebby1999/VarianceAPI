@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8a27ed5f14bc4b40913359e7345f6ef, type: 3}
+  m_Name: IchorOverlord
+  m_EditorClassIdentifier: 
+  identifier: NW_IchorOverlord
+  bodyName: ImpBossBody
+  overrideNames:
+  - textToAdd: NW_ICHOR_PREFIX
+    overrideType: 0
+  unique: 0
+  aiModifier: 0
+  variantTier: 0
+  spawnRate: 4
+  givesRewards: 1
+  variantInventory: {fileID: 11400000, guid: 295143f27bc08bf4bb90097890617f00, type: 2}
+  skillReplacements:
+  - skillSlot: 0
+    skillDef: {fileID: 11400000, guid: 0a024e0c0022f4d4ba3a6c062a1fca43, type: 2}
+  healthMultiplier: 1
+  moveSpeedMultiplier: 1
+  attackSpeedMultiplier: 1
+  damageMultiplier: 1
+  armorMultiplier: 1
+  armorBonus: -50
+  visualModifier: {fileID: 11400000, guid: 7e4e05d2a1e46f54b9e4d4e2062bfb05, type: 2}
+  sizeModifier: {fileID: 0}
+  arrivalMessage: 
+  extraComponents: []
+  customDeathState:
+    _typeName: 

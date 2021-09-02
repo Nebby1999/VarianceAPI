@@ -1,0 +1,40 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b8a27ed5f14bc4b40913359e7345f6ef, type: 3}
+  m_Name: MothershipVagrant
+  m_EditorClassIdentifier: 
+  identifier: NW_MothershipVagrant
+  bodyName: VagrantBody
+  overrideNames:
+  - textToAdd: NW_MOTHERSHIP_PREFIX
+    overrideType: 0
+  unique: 0
+  aiModifier: 0
+  variantTier: 1
+  spawnRate: 2
+  variantInventory: {fileID: 0}
+  skillReplacements:
+  - skillSlot: 1
+    skillDef: {fileID: 11400000, guid: 04e1269587bd82d448a2c505d6c3cf46, type: 2}
+  healthMultiplier: 1.5
+  moveSpeedMultiplier: 2
+  attackSpeedMultiplier: 1
+  damageMultiplier: 1
+  armorMultiplier: 1
+  armorBonus: 30
+  visualModifier: {fileID: 11400000, guid: 0e8d674c91b5c494691c4367efff8e65, type: 2}
+  sizeModifier: {fileID: 11400000, guid: a8cda2d11d2e8db4da15c901d75087a4, type: 2}
+  arrivalMessage: 
+  extraComponents: []
+  customDeathState:
+    _typeName: NebbysWrath.VariantEntityStates.WanderingVagrant.DeathStates.JellyDeploy,
+      NebbysWrath, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
