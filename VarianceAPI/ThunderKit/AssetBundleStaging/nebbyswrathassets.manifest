@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 147487530
+CRC: 2181081781
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 3ff3bd8a7e39978dedd5657cf0d8e4bb
+    Hash: 1765d741b374c168946f127c09da738c
   TypeTreeHash:
     serializedVersion: 2
     Hash: efd1bd3d247c141be51d5db79f08db2f
@@ -280,6 +280,7 @@ Assets:
 - Assets/NebbysWrath/NebbysWrathAssets/Shaders/ui/hguicustomblend.shader
 - Assets/NebbysWrath/NebbysWrathAssets/Variants/Bison/AlphaBison.asset
 - Assets/Meshes/meshChild.mesh
+- Assets/NebbysWrath/NebbysWrathAssets/Variants/VisualModifiers/AlmostArchaic.asset
 - Assets/NebbysWrath/NebbysWrathAssets/Shaders/ui/hguianimatealpha.shader
 - Assets/NebbysWrath/NebbysWrathAssets/Variants/VisualModifiers/GreatGrandparent.asset
 - Assets/NebbysWrath/NebbysWrathAssets/Materials/matSteelContraption.mat

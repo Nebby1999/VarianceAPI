@@ -21,7 +21,6 @@ MonoBehaviour:
   aiModifier: 0
   variantTier: 2
   spawnRate: 2
-  givesRewards: 1
   variantInventory: {fileID: 11400000, guid: 77aff86939ed84648958ba1043646632, type: 2}
   skillReplacements: []
   healthMultiplier: 2
@@ -32,7 +31,7 @@ MonoBehaviour:
   armorBonus: -50
   visualModifier: {fileID: 0}
   sizeModifier: {fileID: 11400000, guid: 59776a4a74efd5940a10688bcc4855d8, type: 2}
-  arrivalMessage: NW_MAMA_ARRIVAL
+  arrivalMessage: NW_MAMMA_ARRIVAL
   extraComponents: []
   customDeathState:
     _typeName: 

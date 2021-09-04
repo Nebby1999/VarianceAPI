@@ -21,7 +21,6 @@ MonoBehaviour:
   aiModifier: 0
   variantTier: 1
   spawnRate: 4
-  givesRewards: 1
   variantInventory: {fileID: 0}
   skillReplacements:
   - skillSlot: 0
@@ -32,7 +31,7 @@ MonoBehaviour:
   damageMultiplier: 1
   armorMultiplier: 1
   armorBonus: 0
-  visualModifier: {fileID: 11400000, guid: b1ada21ebb2f9fa48adbdc9e37bf6725, type: 2}
+  visualModifier: {fileID: 11400000, guid: e67917aeaad664844ae9ec5af463c825, type: 2}
   sizeModifier: {fileID: 11400000, guid: 3b423b9baada35d429cb4ddb55defb8f, type: 2}
   arrivalMessage: 
   extraComponents: []

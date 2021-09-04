@@ -12,6 +12,7 @@ namespace VarianceAPI
     {
         // Global Settings
         internal static ConfigEntry<bool> VariantsGiveRewards;
+        internal static ConfigEntry<bool> EnableVariantArrivalAnnouncements;
 
         //VariantRewardHandler settings
         internal static ConfigEntry<bool> ItemRewardsSpawnsOnPlayer;
@@ -51,6 +52,7 @@ namespace VarianceAPI
         {
             //Global Settings
             VariantsGiveRewards = config.Bind<bool>("1 - Global Settings", "All Variants Give Rewards", true, "When this is set to True, all variants who have the \"givesRewards\" bool have extra rewards.\nVariants who dont have the givesRewards bool active never drop rewards");
+            EnableVariantArrivalAnnouncements = config.Bind<bool>("1 - Global Settings", "Enable Arrival Announcements", true, "By default, any variant which is rare or higher will announce its arrival with a chat message. setting this to false disables this feature.");
 
             //VariantRewardHandlerSettings
             EnableGoldRewards = config.Bind<bool>("2 - VariantRewardHandler Settings", "Enable Gold Rewards", true, "If this is set to True, then Variants will drop extra gold based off a Multiplier");

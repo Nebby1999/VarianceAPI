@@ -65,6 +65,7 @@ namespace VarianceAPI
                 //Create config only if configFile is not null.
                 if(configFile != null)
                 {
+                    VAPILog.LogI($"Creating spawn rate and is unique configs for {variantInfo.identifier}");
                     var spawnRate = configFile.Bind<float>(
                         $"{variantInfo.bodyName} Variants",
                         $"{variantInfo.identifier} Spawn Rate",
@@ -76,11 +77,13 @@ namespace VarianceAPI
                         $"{variantInfo.identifier} is Unique",
                         variantInfo.unique,
                         $"Wether or not {variantInfo.identifier} is Unique");
+                    VAPILog.LogD($"Original spawn rate: {variantInfo.spawnRate}. Original unique: {variantInfo.unique}");
 
                     variantInfo.spawnRate = spawnRate.Value;
                     variantInfo.unique = isUnique.Value;
 
-                    VAPILog.LogI($"Created spawn rate and is unique configs for {variantInfo.identifier}");
+                    VAPILog.LogD($"New spawn rate: {variantInfo.spawnRate}. New unique: {variantInfo.unique}");
+
                 }
 
                 if(!RegisteredVariants.ContainsKey(variantInfo.bodyName))

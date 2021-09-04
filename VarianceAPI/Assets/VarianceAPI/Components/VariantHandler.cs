@@ -64,7 +64,10 @@ namespace VarianceAPI.Components
                 Destroy(this);
 
             MergeVariantInfos();
-            AnnounceArrival();
+
+            if(ConfigLoader.EnableVariantArrivalAnnouncements.Value)
+                AnnounceArrival();
+            
             ModifyAI();
             ModifyStats();
 
@@ -116,18 +119,18 @@ namespace VarianceAPI.Components
         #region Announce Arrival
         private void AnnounceArrival()
         {
-            var randomVariantInfo = VariantInfos.Where(x => x.variantTier >= VariantTier.Rare).PickRandom();
-            if (randomVariantInfo)
+            var variantInfo = VariantInfos.Where(x => x.variantTier >= VariantTier.Rare).FirstOrDefault();
+            if (variantInfo)
             {
                 if (highestTier >= VariantTier.Rare)
                 {
-                    if (!string.IsNullOrEmpty(randomVariantInfo.arrivalMessage))
+                    if (!string.IsNullOrEmpty(variantInfo.arrivalMessage))
                     {
-                        Chat.AddMessage(Language.GetStringFormatted(randomVariantInfo.arrivalMessage));
+                        Chat.AddMessage(Language.GetStringFormatted(variantInfo.arrivalMessage));
                     }
                     else
                     {
-                        VAPILog.LogD($"{randomVariantInfo.identifier} Variant is Rare or Legendary, but doesnt have an arrival message set! using generic message.");
+                        VAPILog.LogD($"{variantInfo.identifier} Variant is Rare or Legendary, but doesnt have an arrival message set! using generic message.");
                         Chat.AddMessage($"A {charBody.GetDisplayName()} with unique qualities has appeared!");
                     }
                 }

@@ -82,9 +82,11 @@ namespace VarianceAPI.Components
 
         private void OnAddedVariant(SyncList<int>.Operation op, int itemIndex)
         {
-            if(NotUniqueVariantInfos[itemIndex])
+            var trueIndex = EnabledVariantIndices[itemIndex];
+            if(NotUniqueVariantInfos[trueIndex])
             {
-                EnabledVariants.Add(NotUniqueVariantInfos[itemIndex]);
+                Debug.Log($"Adding variant {NotUniqueVariantInfos[trueIndex]}");
+                EnabledVariants.Add(NotUniqueVariantInfos[trueIndex]);
             }
         }
         private void OnFinishedCheckRolls(bool boolean)
@@ -133,9 +135,21 @@ namespace VarianceAPI.Components
                 for (int i = 0; i < NotUniqueVariantInfos.Length; i++)
                 {
                     var variantInfo = NotUniqueVariantInfos[i];
-                    if (Util.CheckRoll(variantInfo.spawnRate * SpawnRateMultiplier))
+
+                    var spawnRate = variantInfo.spawnRate * SpawnRateMultiplier;
+                    if (spawnRate > 100)
+                        spawnRate = 100;
+                    if (spawnRate < 0)
+                        spawnRate = 0;
+
+                    Debug.Log($"{variantInfo}'s spawnrate with multiplier: {spawnRate}");
+
+                    if (Util.CheckRoll(spawnRate))
                     {
+                        Debug.Log($"Adding {variantInfo} to the enabled variant indices ({i}).");
+
                         EnabledVariantIndices.Add(i);
+
                         //EnabledVariants.Add(NotUniqueVariantInfos[i]);
                     }
                 }
