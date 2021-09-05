@@ -50,7 +50,12 @@ namespace VarianceAPI
                         {
                             rewardHandler = bodyPrefab.AddComponent<VariantRewardHandler>();
                         }
-                        spawnHandler.variantInfos = kvp.Value.ToArray();
+                        var uniques = kvp.Value.Where(x => x.unique).ToArray();
+                        var notUniques = kvp.Value.Where(x => !x.unique).ToArray();
+
+                        spawnHandler.UniqueVariantInfos = uniques;
+                        spawnHandler.NotUniqueVariantInfos = notUniques;
+
                         VAPILog.LogI($"Added components {spawnHandler.GetType().Name}, {variantHandler.GetType().Name}, {rewardHandler.GetType().Name} to the bodyPrefab {kvp.Key}");
                         VAPILog.LogD($"Available {kvp.Key} variants:");
                         kvp.Value.ForEach(variant =>

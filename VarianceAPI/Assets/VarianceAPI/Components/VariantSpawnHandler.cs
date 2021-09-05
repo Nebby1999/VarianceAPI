@@ -14,105 +14,39 @@ namespace VarianceAPI.Components
     public class VariantSpawnHandler : NetworkBehaviour
     {
         [SerializeField]
-        internal VariantInfo[] variantInfos;
-        public VariantHandler VariantHandler
-        {
-            get
-            {
-                return gameObject.GetComponent<VariantHandler>();
-            }
-        }
-        public VariantRewardHandler VariantRewardHandler
-        {
-            get
-            {
-                return gameObject.GetComponent<VariantRewardHandler>();
-            }
-        }
-        public VariantInfo[] UniqueVariantInfos
-        {
-            get
-            {
-                var toReturn = variantInfos.Where(variantInfo => variantInfo.unique == true).ToArray();
-                if (toReturn.Length == 0)
-                {
-                    return null;
-                }
-                else
-                    return toReturn;
-            }
-        }
-        public VariantInfo[] NotUniqueVariantInfos
-        {
-            get
-            {
-                var toReturn = variantInfos.Where(variantInfo => variantInfo.unique == false).ToArray();
-                if (toReturn.Length == 0)
-                {
-                    return null;
-                }
-                else
-                    return toReturn;
-            }
-        }
-        public VariantInfo[] shuffledUniques;
+        public VariantInfo[] NotUniqueVariantInfos { get; internal set; }
 
-        public List<VariantInfo> EnabledVariants = new List<VariantInfo>();
+        [SerializeField]
+        public VariantInfo[] UniqueVariantInfos { get; internal set; }
+
+        public VariantHandler VariantHandler { get => gameObject.GetComponent<VariantHandler>(); }
+
+        public VariantRewardHandler VariantRewardHandler { get => gameObject.GetComponent<VariantRewardHandler>(); }
+
+        public List<VariantInfo> EnabledVariantInfos;
 
         public float SpawnRateMultiplier = 1;
 
-        public SyncListInt EnabledVariantIndices = new SyncListInt();
-
-        [SyncVar(hook = nameof(OnUniqueAssigned))]
-        public int EnabledUniqueVariantIndex;
-
-        [SyncVar(hook = nameof(OnFinishedCheckRolls))]
-        public bool finishedCheckRolls = false;
-
-        #region Networking
-        public void Awake()
-        {
-            EnabledVariantIndices.Callback = OnAddedVariant;
-        }
-        private void OnUniqueAssigned(int index)
-        {
-            EnabledVariants.Add(UniqueVariantInfos[index]);
-            ModifyComponents();
-        }
-
-        private void OnAddedVariant(SyncList<int>.Operation op, int itemIndex)
-        {
-            var trueIndex = EnabledVariantIndices[itemIndex];
-            if(NotUniqueVariantInfos[trueIndex])
-            {
-                EnabledVariants.Add(NotUniqueVariantInfos[trueIndex]);
-            }
-        }
-        private void OnFinishedCheckRolls(bool boolean)
-        {
-            ModifyComponents();
-        }
-        #endregion Networking
-
+        [Server]
         public void Start()
         {
+            //Spawning logic only ran by host.
             if (!NetworkServer.active)
                 return;
 
-            if (UniqueVariantInfos == null && NotUniqueVariantInfos == null)
-            {
-                return;
-            }
-
-            //If artifact is enabled, multiply spawn rates.
+            //Artifact enabled? set multiplier.
             if (RunArtifactManager.instance.IsArtifactEnabled(Assets.VAPIAssets.LoadAsset<ArtifactDef>("Variance")))
                 SpawnRateMultiplier = ConfigLoader.VarianceMultiplier.Value;
 
-            if (UniqueVariantInfos != null)
+            List<int> enabledIndexes = new List<int>();
+
+            //roll for uniques only if the length is not 0.
+            if(UniqueVariantInfos.Length != 0)
             {
+                //Dont reinvent the wheel neb, lol.
                 var rng = new WeightedSelection<int>();
                 float notUniqueChance = 0f;
-                for(int i = 0; i < UniqueVariantInfos.Length; i++)
+                for (int i = 0; i < UniqueVariantInfos.Length; i++)
                 {
                     var chance = UniqueVariantInfos[i].spawnRate * SpawnRateMultiplier;
                     rng.AddChoice(i, Mathf.Min(100, chance));
@@ -123,43 +57,72 @@ namespace VarianceAPI.Components
                 var index = rng.Evaluate(Run.instance.runRNG.nextNormalizedFloat);
                 if (index != -1)
                 {
-                    EnabledUniqueVariantIndex = index;
-                    //OnUniqueAssigned(index);
+                    enabledIndexes.Add(index);
+                    EnabledVariantInfos.Add(UniqueVariantInfos[index]);
+
+                    //Modifies the client's components.
+                    RpcModifyComponents(enabledIndexes.ToArray(), true);
+
+                    //Modifies the host's components.
+                    ModifyHostComponents();
+
                     return;
                 }
             }
-
-            if (NotUniqueVariantInfos != null)
-            {
-                for (int i = 0; i < NotUniqueVariantInfos.Length; i++)
+            if(NotUniqueVariantInfos.Length != 0)
+            { 
+                for(int i = 0; i < NotUniqueVariantInfos.Length; i++)
                 {
-                    var variantInfo = NotUniqueVariantInfos[i];
+                    var currentInfo = NotUniqueVariantInfos[i];
 
-                    var spawnRate = variantInfo.spawnRate * SpawnRateMultiplier;
-                    if (spawnRate > 100)
-                        spawnRate = 100;
-                    if (spawnRate < 0)
-                        spawnRate = 0;
-
-                    if (Util.CheckRoll(spawnRate))
+                    var spawnRate = Mathf.Min(100, currentInfo.spawnRate * SpawnRateMultiplier);
+                    if(Util.CheckRoll(spawnRate))
                     {
-                        EnabledVariantIndices.Add(i);
-                        //EnabledVariants.Add(NotUniqueVariantInfos[i]);
+                        enabledIndexes.Add(i);
+                        EnabledVariantInfos.Add(NotUniqueVariantInfos[i]);
                     }
                 }
-                finishedCheckRolls = true;
-                //OnFinishedCheckRolls(true);
+            }
+            if(enabledIndexes.Count != 0)
+            {
+                RpcModifyComponents(enabledIndexes.ToArray(), false);
+                ModifyHostComponents();
             }
         }
-        private void ModifyComponents()
-        {
 
-            VariantHandler.VariantInfos = EnabledVariants.ToArray();
+        //If my gut feeling is correct, calling this on the server will call the method on the clients
+        [ClientRpc]
+        public void RpcModifyComponents(int[] indexes, bool unique)
+        {
+            List<VariantInfo> enabled = new List<VariantInfo>();
+            if (unique)
+                for (int i = 0; i < indexes.Length; i++)
+                    enabled.Add(UniqueVariantInfos[indexes[i]]);
+            else
+                for (int i = 0; i < indexes.Length; i++)
+                    enabled.Add(NotUniqueVariantInfos[indexes[i]]);
+
+            EnabledVariantInfos = enabled;
+
+            VariantHandler.VariantInfos = enabled.ToArray(); ;
             VariantHandler.Modify();
 
-            if (ConfigLoader.VariantsGiveRewards.Value)
+            if(ConfigLoader.VariantsGiveRewards.Value)
             {
-                VariantRewardHandler.VariantInfos = EnabledVariants.ToArray();
+                VariantRewardHandler.VariantInfos = enabled.ToArray();
+                VariantRewardHandler.Modify();
+            }
+        }
+
+        [Server]
+        public void ModifyHostComponents()
+        {
+            VariantHandler.VariantInfos = EnabledVariantInfos.ToArray();
+            VariantHandler.Modify(); 
+
+            if(ConfigLoader.VariantsGiveRewards.Value)
+            {
+                VariantRewardHandler.VariantInfos = EnabledVariantInfos.ToArray();
                 VariantRewardHandler.Modify();
             }
         }
