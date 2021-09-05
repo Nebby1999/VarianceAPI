@@ -19,7 +19,7 @@
         "TO30_FULLAUTO_ARRIVAL" : "A highpitched laser breaks the silence...",
         "TO30_OVERCHARGED_PREFIX" : "Overcharged",
         "TO30_RUSH_PREFIX" : "Rush",
-        "TO30_RUSH_ARRIVAL" : "Gold nuggets join together...",
+        "TO30_RUSHGOLEM_ARRIVAL" : "Gold nuggets join together...",
         "TO30_TITANISH_PREFIX" : "Titan-ish",
 
         "TO30_GREATEST_PREFIX" : "Greatest",
@@ -74,7 +74,7 @@
         "TO30_FULLAUTO_ARRIVAL" : "Un laser agudo rompe el silencio...",
         "TO30_OVERCHARGED_PREFIX" : "(Sobrecargado)",
         "TO30_RUSH_PREFIX" : "(Prisa)",
-        "TO30_RUSH_ARRIVAL" : "Trozos de oro se ensamblan cerca...",
+        "TO30_RUSHGOLEM_ARRIVAL" : "Trozos de oro se ensamblan cerca...",
         "TO30_TITANISH_PREFIX" : "(Algo Titanico)",
 
         "TO30_GREATEST_PREFIX" : "(Grandioso)",

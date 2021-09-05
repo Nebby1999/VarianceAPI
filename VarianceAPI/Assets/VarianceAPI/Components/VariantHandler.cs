@@ -65,51 +65,46 @@ namespace VarianceAPI.Components
 
             MergeVariantInfos();
 
-            if(ConfigLoader.EnableVariantArrivalAnnouncements.Value)
+            if (ConfigLoader.EnableVariantArrivalAnnouncements.Value)
                 AnnounceArrival();
-            
             ModifyAI();
             ModifyStats();
 
-            foreach (VariantInventoryInfo inventoryInfo in InventoryInfos)
+            if(NetworkServer.active)
             {
-                AddItems(inventoryInfo.ItemInventory);
-                AddBuffs(inventoryInfo.Buffs);
+                foreach (VariantInventoryInfo inventoryInfo in InventoryInfos)
+                {
+                    AddItems(inventoryInfo.ItemInventory);
+                    AddBuffs(inventoryInfo.Buffs);
+                }
+                GiveEquipment();
+                if (highestTier >= VariantTier.Uncommon)
+                {
+                    charMaster.inventory.GiveItem(purpleHealthbar);
+                }
             }
-            GiveEquipment();
-            
-            if (highestTier >= VariantTier.Uncommon)
-            {
-                charMaster.inventory.GiveItem(purpleHealthbar);
-            }
-
             foreach(VariantVisualModifier visualModifier in VisualModifiers)
             {
                 ReplaceMaterials(visualModifier.MaterialReplacements);
                 ReplaceMesh(visualModifier.MeshReplacements);
                 ReplaceLights(visualModifier.LightReplacements);
             }
-
             foreach(VariantInfo.VariantSkillReplacement skillReplacement in SkillReplacements)
             {
                 ReplaceSkill(skillReplacement);
             }
-            
             foreach(VariantInfo.VariantExtraComponent extraComponent in ExtraComponents)
             {
                 AddComponent(extraComponent);
             }
-
             foreach(VariantInfo.VariantOverrideName overrideName in ExtraNames)
             {
                 AddName(overrideName);
             }
-            
             foreach(SerializableEntityStateType state in DeathStates)
             {
                 ReplaceDeathState(state);
             }
-
             ScaleVariant();
 
             charBody.healthComponent.health = charBody.healthComponent.fullHealth;

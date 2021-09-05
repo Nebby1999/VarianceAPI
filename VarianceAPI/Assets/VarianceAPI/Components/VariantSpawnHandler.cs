@@ -85,7 +85,6 @@ namespace VarianceAPI.Components
             var trueIndex = EnabledVariantIndices[itemIndex];
             if(NotUniqueVariantInfos[trueIndex])
             {
-                Debug.Log($"Adding variant {NotUniqueVariantInfos[trueIndex]}");
                 EnabledVariants.Add(NotUniqueVariantInfos[trueIndex]);
             }
         }
@@ -142,14 +141,9 @@ namespace VarianceAPI.Components
                     if (spawnRate < 0)
                         spawnRate = 0;
 
-                    Debug.Log($"{variantInfo}'s spawnrate with multiplier: {spawnRate}");
-
                     if (Util.CheckRoll(spawnRate))
                     {
-                        Debug.Log($"Adding {variantInfo} to the enabled variant indices ({i}).");
-
                         EnabledVariantIndices.Add(i);
-
                         //EnabledVariants.Add(NotUniqueVariantInfos[i]);
                     }
                 }

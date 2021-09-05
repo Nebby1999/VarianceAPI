@@ -27,34 +27,49 @@ namespace VarianceAPI
         private static void RegisterVariants()
         {
             variantsRegistered = true;
-            VariantMaterialGrabber.SwapMaterials();
-            VAPILog.LogI("Modifying CharacterBody prefabs...");
-            foreach(var kvp in RegisteredVariants)
+            if(VariantMaterialGrabber.vanillaMaterials.Count != 0)
             {
-                var bodyPrefab = BodyCatalog.FindBodyPrefab(kvp.Key);
-                if((bool)bodyPrefab)
+                VariantMaterialGrabber.SwapMaterials();
+            }
+            else
+            {
+                VAPILog.LogI("Variant Material Grabber's vanilla materials dictionary is empty, skipping swapping materials.");
+            }
+            if(RegisteredVariants.Count != 0)
+            {
+                VAPILog.LogI("Modifying CharacterBody prefabs...");
+                foreach (var kvp in RegisteredVariants)
                 {
-                    var spawnHandler = bodyPrefab.AddComponent<VariantSpawnHandler>();
-                    var variantHandler = bodyPrefab.AddComponent<VariantHandler>();
-                    VariantRewardHandler rewardHandler = null;
-                    if(ConfigLoader.VariantsGiveRewards.Value)
+                    var bodyPrefab = BodyCatalog.FindBodyPrefab(kvp.Key);
+                    if ((bool)bodyPrefab)
                     {
-                        rewardHandler = bodyPrefab.AddComponent<VariantRewardHandler>();
+                        var spawnHandler = bodyPrefab.AddComponent<VariantSpawnHandler>();
+                        var variantHandler = bodyPrefab.AddComponent<VariantHandler>();
+                        VariantRewardHandler rewardHandler = null;
+                        if (ConfigLoader.VariantsGiveRewards.Value)
+                        {
+                            rewardHandler = bodyPrefab.AddComponent<VariantRewardHandler>();
+                        }
+                        spawnHandler.variantInfos = kvp.Value.ToArray();
+                        VAPILog.LogI($"Added components {spawnHandler.GetType().Name}, {variantHandler.GetType().Name}, {rewardHandler.GetType().Name} to the bodyPrefab {kvp.Key}");
+                        VAPILog.LogD($"Available {kvp.Key} variants:");
+                        kvp.Value.ForEach(variant =>
+                        {
+                            VAPILog.LogD($"{variant}. Unique? {variant.unique}");
+                        });
                     }
-                    spawnHandler.variantInfos = kvp.Value.ToArray();
-                    VAPILog.LogI($"Added components {spawnHandler.GetType().Name}, {variantHandler.GetType().Name}, {rewardHandler.GetType().Name} to the bodyPrefab {kvp.Key}");
-                    VAPILog.LogD($"Available {kvp.Key} variants:");
-                    kvp.Value.ForEach(variant =>
+                    else
                     {
-                        VAPILog.LogD($"{variant}. Unique? {variant.unique}");
-                    });
-                }
-                else
-                {
-                    VAPILog.LogW($"Could not find a CharacterBody game object of name {kvp.Key}.");
-                    continue;
+                        VAPILog.LogW($"Could not find a CharacterBody game object of name {kvp.Key}.");
+                        continue;
+                    }
                 }
             }
+            else
+            {
+                VAPILog.LogI("No variants where registered, skipping modifying any bodies inside the body catalog.");
+            }
+            
         }
         #region AddVariant Methods
         //Adds a variantInfo to the registered variants dictionary.
@@ -77,13 +92,9 @@ namespace VarianceAPI
                         $"{variantInfo.identifier} is Unique",
                         variantInfo.unique,
                         $"Wether or not {variantInfo.identifier} is Unique");
-                    VAPILog.LogD($"Original spawn rate: {variantInfo.spawnRate}. Original unique: {variantInfo.unique}");
 
                     variantInfo.spawnRate = spawnRate.Value;
                     variantInfo.unique = isUnique.Value;
-
-                    VAPILog.LogD($"New spawn rate: {variantInfo.spawnRate}. New unique: {variantInfo.unique}");
-
                 }
 
                 if(!RegisteredVariants.ContainsKey(variantInfo.bodyName))
