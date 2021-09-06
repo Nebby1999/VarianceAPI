@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: SwarmingAWU
   m_EditorClassIdentifier: 
   identifier: NW_SwarmingAWU
-  bodyName: RoboBallBossBody
+  bodyName: SuperRoboBallBossBody
   overrideNames:
   - textToAdd: NW_SWARMING_PREFIX
     overrideType: 0
@@ -21,7 +21,6 @@ MonoBehaviour:
   aiModifier: 0
   variantTier: 1
   spawnRate: 2
-  givesRewards: 1
   variantInventory: {fileID: 11400000, guid: b090486d3369bb64c94e64006a50cc59, type: 2}
   skillReplacements:
   - skillSlot: 2

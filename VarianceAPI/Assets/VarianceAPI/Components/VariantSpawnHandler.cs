@@ -14,24 +14,51 @@ namespace VarianceAPI.Components
     public class VariantSpawnHandler : NetworkBehaviour
     {
         [SerializeField]
-        public VariantInfo[] NotUniqueVariantInfos { get; internal set; }
-
-        [SerializeField]
-        public VariantInfo[] UniqueVariantInfos { get; internal set; }
-
+        internal VariantInfo[] variantInfos;
         public VariantHandler VariantHandler { get => gameObject.GetComponent<VariantHandler>(); }
 
         public VariantRewardHandler VariantRewardHandler { get => gameObject.GetComponent<VariantRewardHandler>(); }
+
+        public VariantInfo[] UniqueVariantInfos
+        {
+            get
+            {
+                var toReturn = variantInfos.Where(variantInfo => variantInfo.unique == true).ToArray();
+                if (toReturn.Length == 0)
+                {
+                    return null;
+                }
+                else
+                    return toReturn;
+            }
+        }
+        public VariantInfo[] NotUniqueVariantInfos
+        {
+            get
+            {
+                var toReturn = variantInfos.Where(variantInfo => variantInfo.unique == false).ToArray();
+                if (toReturn.Length == 0)
+                {
+                    return null;
+                }
+                else
+                    return toReturn;
+            }
+        }
+
 
         public List<VariantInfo> EnabledVariantInfos;
 
         public float SpawnRateMultiplier = 1;
 
-        [Server]
+        [ServerCallback]
         public void Start()
         {
             //Spawning logic only ran by host.
             if (!NetworkServer.active)
+                return;
+
+            if (UniqueVariantInfos == null && NotUniqueVariantInfos == null)
                 return;
 
             //Artifact enabled? set multiplier.
@@ -41,7 +68,7 @@ namespace VarianceAPI.Components
             List<int> enabledIndexes = new List<int>();
 
             //roll for uniques only if the length is not 0.
-            if(UniqueVariantInfos.Length != 0)
+            if(UniqueVariantInfos != null)
             {
                 //Dont reinvent the wheel neb, lol.
                 var rng = new WeightedSelection<int>();
@@ -58,18 +85,18 @@ namespace VarianceAPI.Components
                 if (index != -1)
                 {
                     enabledIndexes.Add(index);
-                    EnabledVariantInfos.Add(UniqueVariantInfos[index]);
 
                     //Modifies the client's components.
                     RpcModifyComponents(enabledIndexes.ToArray(), true);
 
                     //Modifies the host's components.
-                    ModifyHostComponents();
+                    if (!NetworkClient.active)
+                        ModifyHostComponents();
 
                     return;
                 }
             }
-            if(NotUniqueVariantInfos.Length != 0)
+            if(NotUniqueVariantInfos != null)
             { 
                 for(int i = 0; i < NotUniqueVariantInfos.Length; i++)
                 {
@@ -79,14 +106,16 @@ namespace VarianceAPI.Components
                     if(Util.CheckRoll(spawnRate))
                     {
                         enabledIndexes.Add(i);
-                        EnabledVariantInfos.Add(NotUniqueVariantInfos[i]);
                     }
                 }
             }
             if(enabledIndexes.Count != 0)
             {
                 RpcModifyComponents(enabledIndexes.ToArray(), false);
-                ModifyHostComponents();
+
+                //Modifies the host's components.
+                if (!NetworkClient.active)
+                    ModifyHostComponents();
             }
         }
 
@@ -97,10 +126,14 @@ namespace VarianceAPI.Components
             List<VariantInfo> enabled = new List<VariantInfo>();
             if (unique)
                 for (int i = 0; i < indexes.Length; i++)
+                {
                     enabled.Add(UniqueVariantInfos[indexes[i]]);
+                }
             else
                 for (int i = 0; i < indexes.Length; i++)
+                {
                     enabled.Add(NotUniqueVariantInfos[indexes[i]]);
+                }
 
             EnabledVariantInfos = enabled;
 

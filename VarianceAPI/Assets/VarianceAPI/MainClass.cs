@@ -6,6 +6,7 @@ using System;
 using System.Linq;
 using System.Security;
 using System.Security.Permissions;
+using VarianceAPI.Components;
 using VarianceAPI.Modules;
 using VarianceAPI.Utils;
 
