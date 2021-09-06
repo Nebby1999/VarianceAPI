@@ -51,7 +51,7 @@ namespace VarianceAPI
                             rewardHandler = bodyPrefab.AddComponent<VariantRewardHandler>();
                         }
 
-                        spawnHandler.variantInfos = kvp.Value.ToArray();
+                        spawnHandler.VariantInfos = kvp.Value.ToArray();
 
                         VAPILog.LogI($"Added components {spawnHandler.GetType().Name}, {variantHandler.GetType().Name}, {rewardHandler.GetType().Name} to the bodyPrefab {kvp.Key}");
                         VAPILog.LogD($"Available {kvp.Key} variants:");

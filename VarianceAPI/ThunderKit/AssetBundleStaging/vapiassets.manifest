@@ -1,9 +1,9 @@
 ManifestFileVersion: 0
-CRC: 2181817878
+CRC: 3255338449
 Hashes:
   AssetFileHash:
     serializedVersion: 2
-    Hash: 03a1e09e56672700e1a358e8cdd3d89a
+    Hash: 68b61baed7fcbc3d758405459d10577e
   TypeTreeHash:
     serializedVersion: 2
     Hash: 693dede3570020f2a2366fba1e0e3152
@@ -58,7 +58,6 @@ Assets:
 - Assets/Textures/Stolen/texRampNullifierOffset.asset
 - Assets/VarianceAPI/Assets/ItemDefs/ExtraSpecial.asset
 - Assets/Icons/icoVarianceDisabled.png
-- Assets/NebbysWrath/NebbysWrathAssets/Shaders/deferred/hgstandard.shader
 - Assets/VarianceAPI/Assets/ItemDefs/PrimaryCDR.asset
 - Assets/VarianceAPI/Assets/Artifact/VarianceCode.asset
 - Assets/VarianceAPI/Assets/ItemDefs/GlobalCDR.asset
@@ -74,4 +73,5 @@ Assets:
 - Assets/Icons/icoVarianceEnabled.png
 - Assets/Textures/Stolen/texTrimSheetConcreteNormal.asset
 - Assets/Icons/icoGlobalCDR.png
-Dependencies: []
+Dependencies:
+- D:/RoR2 Modding/VarianceAPI/VarianceAPI/ThunderKit/AssetBundleStaging/nebbyswrathassets

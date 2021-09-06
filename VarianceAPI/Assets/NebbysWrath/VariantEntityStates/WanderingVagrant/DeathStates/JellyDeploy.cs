@@ -6,6 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.Networking;
 using VarianceAPI;
 using VarianceAPI.Components;
 
@@ -25,15 +26,18 @@ namespace NebbysWrath.VariantEntityStates.WanderingVagrant.DeathStates
 			index = characterBody.equipmentSlot.equipmentIndex;
 
 			base.OnEnter();
-			
-			if(BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.Nebby.TheOriginal30"))
-            {
-				SpawnMOAJ();
-            }
-			else
-            {
-				SpawnJellies();
-            }
+
+			if (NetworkServer.active)
+			{
+				if (BepInEx.Bootstrap.Chainloader.PluginInfos.ContainsKey("com.Nebby.TheOriginal30"))
+				{
+					SpawnMOAJ();
+				}
+				else
+				{
+					SpawnJellies();
+				}
+			}
 		}
 
 		private void SpawnMOAJ()
@@ -51,22 +55,14 @@ namespace NebbysWrath.VariantEntityStates.WanderingVagrant.DeathStates
 					jelly.AddTimedBuff(RoR2Content.Buffs.Immune, 1);
 					jelly.inventory.SetEquipmentIndex(index);
 
-					Destroy(jelly.gameObject.GetComponent<VariantSpawnHandler>());
-					var rewardHandler = jelly.gameObject.GetComponent<VariantRewardHandler>();
-					if (rewardHandler)
-					{
-						Destroy(rewardHandler);
-					}
+					var spawnHandler = jelly.gameObject.GetComponent<VariantSpawnHandler>();
+					if(spawnHandler)
+                    {
+						spawnHandler.customSpawning = true;
 
-					var handler = jelly.GetComponent<VariantHandler>();
-					if (handler)
-					{
-						var roboBallVariants = VariantRegister.RegisteredVariants["JellyfishBody"];
-
-						var moaj = roboBallVariants.SingleOrDefault(x => x.identifier == "TO30_MOAJ");
-						HG.ArrayUtils.ArrayAppend(ref handler.VariantInfos, moaj);
-						handler.Modify();
-					}
+						int[] index = new int[] { spawnHandler.VariantInfos.ToList().FindIndex(x => x.identifier == "TO30_MOAJ") };
+						spawnHandler.RpcModifyComponents(index, VariantSpawnHandler.RPCVariantInfo.All);
+                    }
 				}
 			}
 		}

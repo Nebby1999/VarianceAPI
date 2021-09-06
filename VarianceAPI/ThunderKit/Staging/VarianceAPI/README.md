@@ -244,7 +244,7 @@ https://discord.gg/kWn8T4fM5W
 
 * IDeathHD for helping me point towards a general direction with networking.
 
-* Aaron & Gaforb for helping me with networking issues
+* Aaron, Gaforb, "come on and SLAM", & especially TheTimeSweeper ~~Love you habibi~~ for helping me with networking issues.
 
 * Aaron for creating a weighted selection for the Unique variants.
 
@@ -256,7 +256,30 @@ https://discord.gg/kWn8T4fM5W
 
 # Changelog
 
-(Pre 1.0.0 changelog can be found [here](https://github.com/Nebby1999/VarianceAPI/blob/main/VarianceAPI/Assets/VarianceAPI/ChangelogOld.md))
+'1.1.0' - Bugfixing Galore
+
+* Updated Website
+
+* VariantSpawnHandler:
+	
+	- Rewritten from the ground up with networking in mind
+	- Fixed an issue where the handler would assign wrong variant infos, potentially causing certain variants to "ignore" their spawn rates or certain variants being incredibly common.
+	- VariantInfos array is now get, internal set.
+	- Added a bool called "customSpawning". setting this to true will return the moment Start() runs.
+	- This can be used to later set specific variantInfos for specific spawning of variants on entity states.
+
+* VariantHandler
+	
+	- NetworkServer.Active checks to avoid clogging the client's log with messages regarding client trying to run server only code.
+	- This check includes a check on setting the variant back to max health. clients running this line of code caused the variants on their side to have its hurtboxes destroyed.
+	- (Basically, Variants should no longer be immune to clients and only take damage from host's attacks / projectiles)
+	- Added a config option to enable/disable variant arrival announcements.
+	- No longer merges all the variantInfos. this is done to avoid any kind of issue regarding merging.
+
+
+* VariantRegister
+
+	- Variant register now sends a message to the log when its material dictionary or registered variants dictionary is empty. saying that no changes will be made
 
 '1.0.0'
 
@@ -307,3 +330,5 @@ https://discord.gg/kWn8T4fM5W
 * Added icons for the Items
 * Added Console Commands
 * Prolly a lot of things I Forgot
+
+(Pre 1.0.0 changelog can be found [here](https://github.com/Nebby1999/VarianceAPI/blob/main/VarianceAPI/Assets/VarianceAPI/ChangelogOld.md))

@@ -301,6 +301,12 @@ Unlike the original MonsterVariants, all the Variants from this Variant pack can
 
 
 ## Changelog
+'1.2.1'
+
+- Fixed a bad language token on the arrival of the Rush Golem
+- Updated to use VarianceAPI 1.1.0
+- Updated website
+
 '1.2.0'
 
 - Ported to VarianceAPI 1.0.0

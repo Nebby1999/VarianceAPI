@@ -23,7 +23,7 @@ namespace TheOriginal30
 
 		public const string GUID = "com.Nebby.TheOriginal30";
 		public const string NAME = "VP - The Original 30";
-		public const string VERSION = "1.2.0";
+		public const string VERSION = "1.2.1";
 
 		public static PluginInfo pluginInfo;
 		public static ManualLogSource logger;

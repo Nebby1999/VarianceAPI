@@ -104,27 +104,27 @@ namespace VarianceAPI.Utils
                 var SpawnHandlerComponent = charBody.GetComponent<VariantSpawnHandler>();
                 if(SpawnHandlerComponent)
                 {
-                    UnityEngine.GameObject.Destroy(SpawnHandlerComponent);
-                }
-                var VariantHandler = charBody.GetComponent<VariantHandler>();
-                if(VariantHandler)
-                {
+                    SpawnHandlerComponent.customSpawning = true;
+
+                    List<int> variantInfosForSpawning = new List<int>();
                     List<string> toLog = new List<string>();
-                    toLog.Add($"Spawned a {charBody.name} with the following variantHandlers");
-                    List<VariantInfo> variantInfos = VariantRegister.RegisteredVariants[body.name];
-                    foreach(string identifier in identifiers)
+
+                    toLog.Add($"Spawned a {charBody.name} with the following variantInfos");
+
+                    List<VariantInfo> variantInfos = SpawnHandlerComponent.VariantInfos.ToList();
+                    for(int i = 0; i < identifiers.Length; i++)
                     {
-                        var variantInfo = variantInfos.Find(x => x.identifier.ToLower().Contains(identifier.ToLower()));
-                        if(variantInfo)
+                        var current = identifiers[i];
+                        var index = variantInfos.FindIndex(X => X.identifier.ToLower().Contains(current.ToLower()));
+                        if(index != -1)
                         {
-                            HG.ArrayUtils.ArrayAppend(ref VariantHandler.VariantInfos, variantInfo);
-                            toLog.Add($"{variantInfo.name} ({variantInfo.identifier})");
+                            toLog.Add($"{variantInfos[index]} ({variantInfos[index].identifier}");
+                            variantInfosForSpawning.Add(index);
                         }
                     }
                     Debug.Log(string.Join("\n", toLog));
-                    VariantHandler.Modify();
+                    SpawnHandlerComponent.RpcModifyComponents(variantInfosForSpawning.ToArray(), VariantSpawnHandler.RPCVariantInfo.All);
                 }
-
             }
             else
             {
@@ -180,23 +180,23 @@ namespace VarianceAPI.Utils
                 var SpawnHandlerComponent = charBody.GetComponent<VariantSpawnHandler>();
                 if (SpawnHandlerComponent)
                 {
-                    UnityEngine.GameObject.Destroy(SpawnHandlerComponent);
-                }
-                var VariantHandler = charBody.GetComponent<VariantHandler>();
-                if (VariantHandler)
-                {
-                    List<VariantInfo> variantInfos = VariantRegister.RegisteredVariants[newBody.name];
-                    foreach (string identifier in identifiers)
+                    SpawnHandlerComponent.customSpawning = true;
+
+                    List<int> variantInfosForSpawning = new List<int>();
+
+                    List<VariantInfo> variantInfos = SpawnHandlerComponent.VariantInfos.ToList();
+                    for (int i = 0; i < identifiers.Length; i++)
                     {
-                        var variantInfo = variantInfos.Find(x => x.identifier.ToLower().Contains(identifier.ToLower()));
-                        if (variantInfo)
+                        var current = identifiers[i];
+                        var index = variantInfos.FindIndex(X => X.identifier.ToLower().Contains(current.ToLower()));
+                        if (index != -1)
                         {
-                            HG.ArrayUtils.ArrayAppend(ref VariantHandler.VariantInfos, variantInfo);
-                            toLog.Add($"{variantInfo.name} ({variantInfo.identifier})");
+                            toLog.Add($"{variantInfos[index]} ({variantInfos[index].identifier}");
+                            variantInfosForSpawning.Add(index);
                         }
                     }
                     Debug.Log(string.Join("\n", toLog));
-                    VariantHandler.Modify();
+                    SpawnHandlerComponent.RpcModifyComponents(variantInfosForSpawning.ToArray(), VariantSpawnHandler.RPCVariantInfo.All);
                 }
                 stage1pod.SetBool(oldVal);
             }
