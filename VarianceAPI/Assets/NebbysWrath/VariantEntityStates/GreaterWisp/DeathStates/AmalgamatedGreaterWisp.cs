@@ -71,6 +71,10 @@ namespace NebbysWrath.VariantEntityStates.GreaterWisp.DeathStates
 					directorSpawnRequest.summonerBodyObject = base.gameObject;
 
 					GameObject jelly = DirectorCore.instance.TrySpawnObject(directorSpawnRequest);
+					if(jelly)
+                    {
+						jelly.GetComponent<CharacterBody>().AddTimedBuff(RoR2Content.Buffs.Immune, 1);
+					}
 				}
 				DestroyBodyAsapServer();
 			}

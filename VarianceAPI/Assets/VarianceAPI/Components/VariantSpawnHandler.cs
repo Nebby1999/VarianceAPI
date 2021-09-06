@@ -14,7 +14,7 @@ namespace VarianceAPI.Components
     public class VariantSpawnHandler : NetworkBehaviour
     {
         [SerializeField]
-        internal VariantInfo[] variantInfos;
+        public VariantInfo[] variantInfos;
         public VariantHandler VariantHandler { get => gameObject.GetComponent<VariantHandler>(); }
 
         public VariantRewardHandler VariantRewardHandler { get => gameObject.GetComponent<VariantRewardHandler>(); }
@@ -24,6 +24,7 @@ namespace VarianceAPI.Components
             get
             {
                 var toReturn = variantInfos.Where(variantInfo => variantInfo.unique == true).ToArray();
+                Debug.Log(toReturn);
                 if (toReturn.Length == 0)
                 {
                     return null;
@@ -46,6 +47,7 @@ namespace VarianceAPI.Components
             }
         }
 
+        public bool customSpawning = false;
 
         public List<VariantInfo> EnabledVariantInfos;
 
@@ -54,8 +56,8 @@ namespace VarianceAPI.Components
         [ServerCallback]
         public void Start()
         {
-            //Spawning logic only ran by host.
-            if (!NetworkServer.active)
+            //Spawning logic only ran by host. or if custom spawning is used.
+            if (!NetworkServer.active || customSpawning)
                 return;
 
             if (UniqueVariantInfos == null && NotUniqueVariantInfos == null)
@@ -87,7 +89,7 @@ namespace VarianceAPI.Components
                     enabledIndexes.Add(index);
 
                     //Modifies the client's components.
-                    RpcModifyComponents(enabledIndexes.ToArray(), true);
+                    RpcModifyComponents(enabledIndexes.ToArray(), RPCVariantInfo.Uniques);
 
                     //Modifies the host's components.
                     if (!NetworkClient.active)
@@ -111,7 +113,7 @@ namespace VarianceAPI.Components
             }
             if(enabledIndexes.Count != 0)
             {
-                RpcModifyComponents(enabledIndexes.ToArray(), false);
+                RpcModifyComponents(enabledIndexes.ToArray(), RPCVariantInfo.NotUniques);
 
                 //Modifies the host's components.
                 if (!NetworkClient.active)
@@ -121,19 +123,25 @@ namespace VarianceAPI.Components
 
         //If my gut feeling is correct, calling this on the server will call the method on the clients
         [ClientRpc]
-        public void RpcModifyComponents(int[] indexes, bool unique)
+        public void RpcModifyComponents(int[] indexes, RPCVariantInfo variantInfoSearchType)
         {
             List<VariantInfo> enabled = new List<VariantInfo>();
-            if (unique)
-                for (int i = 0; i < indexes.Length; i++)
-                {
-                    enabled.Add(UniqueVariantInfos[indexes[i]]);
-                }
-            else
-                for (int i = 0; i < indexes.Length; i++)
-                {
-                    enabled.Add(NotUniqueVariantInfos[indexes[i]]);
-                }
+
+            switch(variantInfoSearchType)
+            {
+                case RPCVariantInfo.Uniques:
+                    for (int i = 0; i < indexes.Length; i++)
+                        enabled.Add(UniqueVariantInfos[indexes[i]]);
+                    break;
+                case RPCVariantInfo.NotUniques:
+                    for (int i = 0; i < indexes.Length; i++)
+                        enabled.Add(NotUniqueVariantInfos[indexes[i]]);
+                    break;
+                case RPCVariantInfo.All:
+                    for (int i = 0; i < indexes.Length; i++)
+                        enabled.Add(variantInfos[indexes[i]]);
+                    break;
+            }
 
             EnabledVariantInfos = enabled;
 
@@ -158,6 +166,13 @@ namespace VarianceAPI.Components
                 VariantRewardHandler.VariantInfos = EnabledVariantInfos.ToArray();
                 VariantRewardHandler.Modify();
             }
+        }
+
+        public enum RPCVariantInfo : int
+        {
+            Uniques,
+            NotUniques,
+            All
         }
     }
 }

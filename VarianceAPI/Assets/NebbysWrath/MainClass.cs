@@ -29,7 +29,7 @@ namespace NebbysWrath
 
 		public const string GUID = "com.Nebby.NebbysWrath";
 		public const string NAME = "VP - Nebby's Wrath";
-		public const string VERSION = "1.1.0";
+		public const string VERSION = "1.1.1";
 
 		public static PluginInfo pluginInfo;
 		public static ManualLogSource logger;

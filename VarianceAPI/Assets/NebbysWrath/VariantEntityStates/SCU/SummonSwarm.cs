@@ -89,6 +89,22 @@ namespace NebbysWrath.VariantEntityStates.SCU
 			{
 				var roboBody = roboBallMaster.GetBody();
 
+				var spawnHandler = roboBody.gameObject.GetComponent<VariantSpawnHandler>();
+				if(spawnHandler)
+                {
+					spawnHandler.customSpawning = true;
+					List<int> indexes = new List<int>() { spawnHandler.variantInfos.ToList().FindIndex(x => x.identifier == swarmerIdentifier) };
+
+					for(int i = 0; i < spawnHandler.variantInfos.Length; i++)
+                    {
+						var currentInfo = spawnHandler.variantInfos[i];
+						if(currentInfo.identifier != swarmerIdentifier)
+							if(Util.CheckRoll(currentInfo.spawnRate))
+								indexes.Add(i);
+                    }
+
+					spawnHandler.RpcModifyComponents(indexes.ToArray(), VariantSpawnHandler.RPCVariantInfo.All);
+                }
 				Destroy(roboBody.gameObject.GetComponent<VariantSpawnHandler>());
 				var rewardHandler = roboBody.gameObject.GetComponent<VariantRewardHandler>();
 				if (rewardHandler)

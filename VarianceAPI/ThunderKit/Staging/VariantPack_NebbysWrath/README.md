@@ -510,7 +510,24 @@ The Variants are listed in an Alphabetical Order
 
 Unlike the original MonsterVariantsPlus, all the variants from this Variant Pack can be made Unique, this means that the Variant will never participate in the VariantOverlapping shenanigans (No more Leastest Almost-Great Infernal Wisp)
 
+## Pictures
+
+![](https://cdn.discordapp.com/attachments/850538397647110145/882679033417048134/unknown.png)
+![](https://cdn.discordapp.com/attachments/850538397647110145/882682671787028551/unknown.png)
+![](https://cdn.discordapp.com/attachments/850538397647110145/882684186819973170/unknown.png)
+![](https://cdn.discordapp.com/attachments/850538397647110145/882685493257596988/unknown.png)
+![](https://cdn.discordapp.com/attachments/567852222419828736/863244588059197470/b84a0d71a6b66196fe7bf2cdec0e8149.png)
+
+
 ## Changelog
+'1.1.1'
+
+- Fixed almost archaic wisps not having their visual modifiers
+- Fixed the Mamma shroom having a bad language token for its arrival
+- Fixed Solus Control Unit having a duplicate Swarming variant info
+- Fixed Alloy Worship Unit not having a swarming variant info
+- Updated Website
+
 '1.1.0'
 
 - Updated to use VarianceAPI 1.0.0

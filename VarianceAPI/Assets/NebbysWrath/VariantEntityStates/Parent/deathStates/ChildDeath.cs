@@ -3,6 +3,7 @@ using RoR2;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace NebbysWrath.VariantEntityStates.Parent.DeathStates
 {
@@ -60,19 +61,22 @@ namespace NebbysWrath.VariantEntityStates.Parent.DeathStates
 
 		private void SpawnParents()
         {
-			for (int i = 0; i < 2; i++)
-			{
-				var summon = new MasterSummon();
-				summon.position = SpawnPosition;
-				summon.masterPrefab = MasterPrefab;
-				summon.summonerBodyObject = this.gameObject;
-				var parentMaster = summon.Perform();
-				if (parentMaster)
+			if(NetworkServer.active)
+            {
+				for (int i = 0; i < 2; i++)
 				{
-					var parentBody = parentMaster.GetBody();
-					parentBody.AddBuff(RoR2Content.Buffs.WarCryBuff);
+					var summon = new MasterSummon();
+					summon.position = SpawnPosition;
+					summon.masterPrefab = MasterPrefab;
+					summon.summonerBodyObject = this.gameObject;
+					var parentMaster = summon.Perform();
+					if (parentMaster)
+					{
+						var parentBody = parentMaster.GetBody();
+						parentBody.AddBuff(RoR2Content.Buffs.WarCryBuff);
+					}
 				}
-			}
+            }
 		}
 		public override void FixedUpdate()
 		{
