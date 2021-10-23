@@ -14,7 +14,6 @@ namespace VarianceAPI.Modules
         internal static void Initialize()
         {
             IL.RoR2.GlobalEventManager.OnCharacterDeath += IL_ServerKilledOtherPatch;
-            IL.RoR2.HealthComponent.TakeDamage += IL_OnIncomingDamageOther;
         }
 
         private static void IL_ServerKilledOtherPatch(ILContext il)
@@ -39,42 +38,6 @@ namespace VarianceAPI.Modules
             // if (attacker)
             // to be
             // if (false == true && attacker)
-        }
-
-
-        ///<summary>Adds the IOnIncomingDamageOtherServerReciever interface.</summary>
-        private static void IL_OnIncomingDamageOther(ILContext il)
-        {
-            var c = new ILCursor(il);
-
-
-            //This takes us to line 492 in dnspy, the first mention of IOnIncomingDamageServerReciever
-            bool flag = c.TryGotoNext(
-                x => x.MatchLdarg(0),
-                x => x.MatchLdfld<HealthComponent>("onIncomingDamageReceivers"));
-
-            if (flag)
-            {
-                ILLabel label = c.DefineLabel();
-                c.Emit(OpCodes.Ldarg_0);
-                c.Emit(OpCodes.Ldarg_1);
-                c.EmitDelegate<Action<HealthComponent, DamageInfo>>(RunOnIncomingDamageOther);
-            }
-            else
-                VAPILog.LogE("Errors: IL Instruction Not found. Skipping.");
-        }
-
-        private static void RunOnIncomingDamageOther(HealthComponent healthComponent, DamageInfo damageInfo)
-        {
-            if (!damageInfo.attacker)
-            {
-                return;
-            }
-            IOnIncomingDamageOtherServerReciever[] interfaces = damageInfo.attacker.GetComponents<IOnIncomingDamageOtherServerReciever>();
-            for (int i = 0; i < interfaces.Length; i++)
-            {
-                interfaces[i].OnIncomingDamageOther(damageInfo);
-            }
         }
     }
 }

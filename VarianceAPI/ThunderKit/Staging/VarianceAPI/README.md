@@ -212,16 +212,6 @@ If you have [DebugToolKit](https://thunderstore.io/package/IHarbHD/DebugToolkit/
 
 [![NW Icon](https://cdn.discordapp.com/attachments/850538397647110145/854535054658895892/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_NebbysWrath/)
 
-### Nebby's New Friends
-
-* Nebby's New Friends is a complete port of all the "OtherVariants" of MonsterVariantsPlus
-
-* Currently the pack is nonexistent, but it will eventually come out.
-
-* Get it here! (just click  the icon!)
-
-[[REDACTED]](https://findtheinvisiblecow.com)
-
 * Bellow is a list of community made VariantPacks
 
 	- [HIFUVariants](https://thunderstore.io/package/HIFU/HIFUVariants/)
@@ -255,6 +245,14 @@ https://discord.gg/kWn8T4fM5W
 * Rob for creating MonsterVariants.
 
 # Changelog
+
+## '1.1.2' - Not dead yet
+
+* Fixed a bug where the "EnableVariantArrivalAnnouncements" configuration wouldnt actually disable variant announcements when set to false.
+* Fixed a bug where disabling the rewards system would cause the game to hang at startup.
+* Removed a dumb stupid debug.Log() that would run each time a variant spawned.
+* Removed an unused interface (IOnIncomingDamageOtherReciever) that was causing issues with MSU due to using an ILHook that pointed to the same stack.
+* Changed some of the debug log messages in Variantregister's methods. your console should be cleaner now.
 
 ## '1.1.1' - Too tired
 

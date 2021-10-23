@@ -25,6 +25,7 @@ namespace VarianceAPI.Utils
             {
                 toLog.Add(kvp.Key);
             }
+            
             Debug.Log(string.Join("\n", toLog));
         }
 

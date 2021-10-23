@@ -24,7 +24,6 @@ namespace VarianceAPI.Components
             get
             {
                 var toReturn = variantInfos.Where(variantInfo => variantInfo.unique == true).ToArray();
-                Debug.Log(toReturn);
                 if (toReturn.Length == 0)
                 {
                     return null;

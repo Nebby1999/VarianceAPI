@@ -32,7 +32,7 @@ namespace VarianceAPI
     {
 		public const string GUID = "com.Nebby.VarianceAPI";
 		public const string NAME = "VarianceAPI";
-		public const string VERSION = "1.1.1";
+		public const string VERSION = "1.1.2";
 
 		private readonly static bool DEBUG = false;
 

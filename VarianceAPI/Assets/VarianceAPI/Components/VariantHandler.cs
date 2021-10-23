@@ -47,10 +47,13 @@ namespace VarianceAPI.Components
             for (int i = 0; i < VariantInfos.Length; i++)
             {
                 var current = VariantInfos[i];
-                if (current.variantTier >= VariantTier.Rare && !announcedArrival)
+                if(ConfigLoader.EnableVariantArrivalAnnouncements.Value)
                 {
-                    announcedArrival = true;
-                        AnnounceArrival(current);
+                    if (current.variantTier >= VariantTier.Rare && !announcedArrival)
+                    {
+                        announcedArrival = true;
+                            AnnounceArrival(current);
+                    }
                 }
 
                 ModifyStats(current);

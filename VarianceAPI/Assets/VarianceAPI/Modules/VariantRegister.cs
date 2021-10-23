@@ -9,6 +9,7 @@ using VarianceAPI.ScriptableObjects;
 using BepInEx.Configuration;
 using R2API;
 using UnityEditor;
+using System.Reflection;
 
 namespace VarianceAPI
 {
@@ -40,6 +41,7 @@ namespace VarianceAPI
                 VAPILog.LogI("Modifying CharacterBody prefabs...");
                 foreach (var kvp in RegisteredVariants)
                 {
+                    List<string> builder = new List<string>();
                     var bodyPrefab = BodyCatalog.FindBodyPrefab(kvp.Key);
                     if ((bool)bodyPrefab)
                     {
@@ -51,14 +53,16 @@ namespace VarianceAPI
                             rewardHandler = bodyPrefab.AddComponent<VariantRewardHandler>();
                         }
 
-                        spawnHandler.VariantInfos = kvp.Value.ToArray();
+                        spawnHandler.variantInfos = kvp.Value.ToArray();
 
-                        VAPILog.LogI($"Added components {spawnHandler.GetType().Name}, {variantHandler.GetType().Name}, {rewardHandler.GetType().Name} to the bodyPrefab {kvp.Key}");
-                        VAPILog.LogD($"Available {kvp.Key} variants:");
+                        builder.Add($"Added Variant related components to the bodyPrefab {kvp.Key}");
+
+                        builder.Add($"Available {kvp.Key} variants:");
                         kvp.Value.ForEach(variant =>
                         {
-                            VAPILog.LogD($"{variant}. Unique? {variant.unique}");
+                            builder.Add($"{variant}. || SpawnRate = {variant.spawnRate} || Unique = {variant.unique}");
                         });
+                        VAPILog.LogD(string.Join("\n", builder));
                     }
                     else
                     {
@@ -74,60 +78,101 @@ namespace VarianceAPI
             
         }
         #region AddVariant Methods
-        //Adds a variantInfo to the registered variants dictionary.
-        public static void AddVariant(VariantInfo variantInfo, ConfigFile configFile = null)
+        private static void AddVariant(VariantInfo variantInfo, ConfigFile configFile = null)
         {
-            if(!variantsRegistered)
+            if (configFile != null)
             {
-                //Create config only if configFile is not null.
-                if(configFile != null)
-                {
-                    VAPILog.LogI($"Creating spawn rate and is unique configs for {variantInfo.identifier}");
-                    var spawnRate = configFile.Bind<float>(
-                        $"{variantInfo.bodyName} Variants",
-                        $"{variantInfo.identifier} Spawn Rate",
-                        variantInfo.spawnRate,
-                        $"Chance for the {variantInfo.identifier} variant to spawn\n(Percentage, 0-100)");
+                var spawnRate = configFile.Bind<float>(
+                    $"{variantInfo.bodyName} Variants",
+                    $"{variantInfo.identifier} Spawn Rate",
+                    variantInfo.spawnRate,
+                    $"Chance for the {variantInfo.identifier} variant to spawn\n(Percentage, 0-100)");
 
-                    var isUnique = configFile.Bind<bool>(
-                        $"{variantInfo.bodyName} Variants",
-                        $"{variantInfo.identifier} is Unique",
-                        variantInfo.unique,
-                        $"Wether or not {variantInfo.identifier} is Unique");
+                var isUnique = configFile.Bind<bool>(
+                    $"{variantInfo.bodyName} Variants",
+                    $"{variantInfo.identifier} is Unique",
+                    variantInfo.unique,
+                    $"Wether or not {variantInfo.identifier} is Unique");
 
-                    variantInfo.spawnRate = spawnRate.Value;
-                    variantInfo.unique = isUnique.Value;
-                }
+                variantInfo.spawnRate = spawnRate.Value;
+                variantInfo.unique = isUnique.Value;
+            }
 
-                if(!RegisteredVariants.ContainsKey(variantInfo.bodyName))
-                {
-                    RegisteredVariants.Add(variantInfo.bodyName, new List<VariantInfo>());
-                }
+            if (!RegisteredVariants.ContainsKey(variantInfo.bodyName))
+            {
+                RegisteredVariants.Add(variantInfo.bodyName, new List<VariantInfo>());
+            }
+
+            if(!RegisteredVariants[variantInfo.bodyName].Contains(variantInfo))
+            {
                 RegisteredVariants[variantInfo.bodyName].Add(variantInfo);
-                VAPILog.LogD($"Added {variantInfo.identifier} to the list for {variantInfo.bodyName}");
+                VAPILog.LogD($"Variant {variantInfo} succesfully added.");
             }
             else
             {
-                VAPILog.LogI($"Tried to add {variantInfo.identifier} as a variant after the variants have been registered. this is not allowed.\nVariants must be registered before RoR2Application.onLoad runs");
+                VAPILog.LogW($"Tried to add a duplicate variantInfo: {variantInfo}");
+            }
+        }
+
+        //Adds a single variantInfo to the registered variants dictionary.
+        public static void AddSingleVariant(VariantInfo variantInfo, ConfigFile configFile = null)
+        {
+            if(!variantsRegistered)
+            {
+                if (configFile != null)
+                    VAPILog.LogI($"Attempting to register {variantInfo} from {Assembly.GetCallingAssembly().GetName().Name} alongside IsUnique & SpawnRate Configurations...");
+                else
+                    VAPILog.LogI($"Attempting to register {variantInfo} from {Assembly.GetCallingAssembly().GetName().Name}");
+
+                AddVariant(variantInfo, configFile);
+            }
+            else
+            {
+                VAPILog.LogW($"Tried to add VariantInfos from {Assembly.GetCallingAssembly().GetName().Name} after the variants have been registered. this is not allowed.\nVariants must be registered before RoR2Application.onLoad runs");
             }
         }
 
         //Adds all the variantInfos found in the AssetBundle.
         public static void AddVariant(AssetBundle assetBundle, ConfigFile configFile = null)
         {
-            VariantInfo[] variantInfos = assetBundle.LoadAllAssets<VariantInfo>();
-            for(int i = 0; i < variantInfos.Length; i++)
+            if(!variantsRegistered)
             {
-                AddVariant(variantInfos[i], configFile);
+                VariantInfo[] variantInfos = assetBundle.LoadAllAssets<VariantInfo>();
+
+                if (configFile != null)
+                    VAPILog.LogI($"Attempting to register {variantInfos.Length} variants from {Assembly.GetCallingAssembly().GetName().Name} alongside IsUnique & SpawnRate Configurations...");
+                else
+                    VAPILog.LogI($"Attempting to register {variantInfos.Length} variants from {Assembly.GetCallingAssembly().GetName().Name}");
+
+                for(int i = 0; i < variantInfos.Length; i++)
+                {
+                    AddVariant(variantInfos[i], configFile);
+                }
+            }
+            else
+            {
+                VAPILog.LogW($"Tried to add VariantInfos from {Assembly.GetCallingAssembly().GetName().Name} after the variants have been registered. this is not allowed.\nVariants must be registered before RoR2Application.onLoad runs");
             }
         }
 
         //Adds all the variantInfos inside a list of VariantInfos.
         public static void AddVariant(IEnumerable<VariantInfo> variantInfos, ConfigFile configFile = null)
         {
-            foreach(VariantInfo info in variantInfos)
+            if(!variantsRegistered)
             {
-                AddVariant(info, configFile);
+                if (configFile != null)
+                    VAPILog.LogI($"Attempting to register {variantInfos.Count()} variants from {Assembly.GetCallingAssembly().GetName().Name} alongside IsUnique & SpawnRate Configurations...");
+                else
+                    VAPILog.LogI($"Attempting to register {variantInfos.Count()} variants from {Assembly.GetCallingAssembly().GetName().Name}");
+            
+                foreach(VariantInfo info in variantInfos)
+                {
+                    AddVariant(info, configFile);
+                }
+            }
+            else
+            {
+                VAPILog.LogW($"Tried to add VariantInfos from {Assembly.GetCallingAssembly().GetName().Name} after the variants have been registered. this is not allowed.\nVariants must be registered before RoR2Application.onLoad runs");
             }
         }
         #endregion
