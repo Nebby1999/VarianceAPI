@@ -77,9 +77,9 @@ MonoBehaviour:
   Description: All of Rob's Variants, ported to VarianceAPI
   Version: 1.2.1
   Dependencies:
-  - {fileID: 11400000, guid: c5d841afdf87db94ebb124f31f13797b, type: 2}
-  - {fileID: 11400000, guid: 6893422731aa6d67012f5f4d8209c304, type: 2}
-  - {fileID: 11400000, guid: 879868159ff788f429c080c76b024e0c, type: 2}
+  - {fileID: 11400000, guid: 15e482c30e38a064bc248575b9c9b396, type: 2}
+  - {fileID: 11400000, guid: 2d4d09ec817c24698d35dc9bf0704fdc, type: 2}
+  - {fileID: 11400000, guid: 7fb5b3d290bed6011ed7e8daf230df89, type: 2}
 --- !u!114 &114256391772626100
 MonoBehaviour:
   m_ObjectHideFlags: 0
