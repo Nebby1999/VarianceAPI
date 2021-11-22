@@ -319,19 +319,21 @@ namespace VarianceAPI.Components
         {
             foreach (var extraComponent in variantInfo.extraComponents)
             {
+                Type typeToAdd = (Type)extraComponent.componentToAdd;
+
                 switch (extraComponent.componentType)
                 {
                     case ComponentType.Body:
-                        VAPILog.LogI($"Adding {extraComponent.componentToAdd.componentType.Name} Component to {charBody.gameObject}");
-                        charBody.gameObject.AddComponent(extraComponent.componentToAdd.componentType);
+                        VAPILog.LogI($"Adding {typeToAdd.Name} Component to {charBody.gameObject}");
+                        charBody.gameObject.AddComponent(typeToAdd);
                         break;
                     case ComponentType.Master:
-                        VAPILog.LogI($"Adding {extraComponent.componentToAdd.componentType.Name} Component to {charMaster.gameObject}");
-                        charMaster.gameObject.AddComponent(extraComponent.componentToAdd.componentType);
+                        VAPILog.LogI($"Adding {typeToAdd} Component to {charMaster.gameObject}");
+                        charMaster.gameObject.AddComponent(typeToAdd);
                         break;
                     case ComponentType.Model:
-                        VAPILog.LogI($"Adding {extraComponent.componentToAdd.componentType.Name} Component to {charModel.gameObject}");
-                        charModel.gameObject.AddComponent(extraComponent.componentToAdd.componentType);
+                        VAPILog.LogI($"Adding {typeToAdd} Component to {charModel.gameObject}");
+                        charModel.gameObject.AddComponent(typeToAdd);
                         break;
                 }
             }

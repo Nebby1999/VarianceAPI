@@ -535,15 +535,15 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   scriptingDefineSymbols:
-    1: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit
-    7: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit
-    13: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit
-    19: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit
-    21: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit
-    25: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit
-    26: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit
-    27: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit
-    28: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit
+    1: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit;riskofthunder-microsoft_csharp;teammoonstorm-moonstormsharedutils;teammoonstorm-moonstormsharededitorutils
+    7: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit;riskofthunder-microsoft_csharp;teammoonstorm-moonstormsharedutils;teammoonstorm-moonstormsharededitorutils
+    13: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit;riskofthunder-microsoft_csharp;teammoonstorm-moonstormsharedutils;teammoonstorm-moonstormsharededitorutils
+    19: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit;riskofthunder-microsoft_csharp;teammoonstorm-moonstormsharedutils;teammoonstorm-moonstormsharededitorutils
+    21: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit;riskofthunder-microsoft_csharp;teammoonstorm-moonstormsharedutils;teammoonstorm-moonstormsharededitorutils
+    25: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit;riskofthunder-microsoft_csharp;teammoonstorm-moonstormsharedutils;teammoonstorm-moonstormsharededitorutils
+    26: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit;riskofthunder-microsoft_csharp;teammoonstorm-moonstormsharedutils;teammoonstorm-moonstormsharededitorutils
+    27: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit;riskofthunder-microsoft_csharp;teammoonstorm-moonstormsharedutils;teammoonstorm-moonstormsharededitorutils
+    28: thunderkit;bbepis-bepinexpack;riskofthunder-hookgenpatcher;tristanmcpherson-r2api;nebby-varianceapi;riskofthunder-fixplugintypesserialization;iharbhd-debugtoolkit;ror2editorkitteam-ror2editorkit;riskofthunder-microsoft_csharp;teammoonstorm-moonstormsharedutils;teammoonstorm-moonstormsharededitorutils
   platformArchitecture: {}
   scriptingBackend: {}
   il2cppCompilerConfiguration: {}

@@ -5,6 +5,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using EntityStates;
+using HG;
+using VarianceAPI.Components;
 
 namespace VarianceAPI.ScriptableObjects
 {
@@ -33,8 +35,9 @@ namespace VarianceAPI.ScriptableObjects
         [Serializable]
         public struct VariantExtraComponent
         {
-            [Tooltip("What component to add to the Variant\nThis needs to be the combination of the Namespace, alongside the class name\nExample: YourNameSpace.Component.CustomVariantComponent.")]
-            public SerializableVariantComponentType componentToAdd;
+            [Tooltip("What component to add to the Variant\nYou should probably use RoR2EditorKit for filling this field.")]
+            [SerializableSystemType.RequiredBaseType(typeof(VariantComponent))]
+            public SerializableSystemType componentToAdd;
 
             [Tooltip("Where the component will be added.\nModel = Attatches to the mdl game object.\nBody = Attatches to the Body game object\nMaster = Atatches to the Master game object.")]
             public ComponentType componentType;

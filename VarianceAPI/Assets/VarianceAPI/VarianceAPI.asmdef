@@ -15,7 +15,8 @@
         "MonoMod.Utils.dll",
         "Mono.Cecil.dll",
         "BepInEx.Preloader.dll",
-        "DebugToolkit.dll"
+        "DebugToolkit.dll",
+        "HGUnityUtils.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": []
