@@ -16,7 +16,8 @@
         "Mono.Cecil.dll",
         "BepInEx.Preloader.dll",
         "DebugToolkit.dll",
-        "HGUnityUtils.dll"
+        "HGUnityUtils.dll",
+        "MoonstormSharedUtils.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": []

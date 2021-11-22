@@ -21,7 +21,6 @@ MonoBehaviour:
   aiModifier: 0
   variantTier: 0
   spawnRate: 2
-  givesRewards: 1
   variantInventory: {fileID: 0}
   skillReplacements:
   - skillSlot: 0
@@ -37,8 +36,8 @@ MonoBehaviour:
   arrivalMessage: 
   extraComponents:
   - componentToAdd:
-      _typeName: TheOriginal30.VariantComponents.AddMissileLauncherToLemurian, TheOriginal30,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
-    isAesthetic: 1
+      assemblyQualifiedName: TheOriginal30.VariantComponents.AddMissileLauncherToLemurian,
+        TheOriginal30, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+    componentType: 0
   customDeathState:
     _typeName: 

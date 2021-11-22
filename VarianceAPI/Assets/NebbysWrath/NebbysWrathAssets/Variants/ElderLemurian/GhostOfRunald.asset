@@ -21,14 +21,13 @@ MonoBehaviour:
   aiModifier: 0
   variantTier: 3
   spawnRate: 1
-  givesRewards: 1
   variantInventory: {fileID: 11400000, guid: e8dd517898c3ae44dabba2a18658ef61, type: 2}
   skillReplacements:
   - skillSlot: 1
     skillDef: {fileID: 11400000, guid: fdad0da5e012f9d48a339461339ff9d5, type: 2}
   healthMultiplier: 2
-  moveSpeedMultiplier: 0.75
-  attackSpeedMultiplier: 1
+  moveSpeedMultiplier: 1
+  attackSpeedMultiplier: 1.25
   damageMultiplier: 1.5
   armorMultiplier: 1
   armorBonus: 50
@@ -37,8 +36,8 @@ MonoBehaviour:
   arrivalMessage: NW_RUNALD_ARRIVAL
   extraComponents:
   - componentToAdd:
-      _typeName: NebbysWrath.VariantComponents.FireBreathLargerDistance, NebbysWrath,
-        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+      assemblyQualifiedName: NebbysWrath.VariantComponents.FireBreathLargerDistance,
+        NebbysWrath, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     componentType: 2
   customDeathState:
     _typeName: NebbysWrath.VariantEntityStates.ElderLemurian.DeathStates.BrotherDeath,

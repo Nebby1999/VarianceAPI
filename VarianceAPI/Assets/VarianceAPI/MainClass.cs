@@ -17,6 +17,7 @@ using VarianceAPI.Utils;
 namespace VarianceAPI
 {
 	[BepInDependency("com.bepis.r2api", BepInDependency.DependencyFlags.HardDependency)]
+	[BepInDependency("com.TeamMoonstorm.MoonstormSharedUtils", BepInDependency.DependencyFlags.HardDependency)]
 	[BepInDependency("iHarbHD.DebugToolkit", BepInDependency.DependencyFlags.SoftDependency)]
 	[NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
 	[BepInPlugin(GUID, NAME, VERSION)]
@@ -34,8 +35,6 @@ namespace VarianceAPI
 		public const string NAME = "VarianceAPI";
 		public const string VERSION = "1.1.2";
 
-		private readonly static bool DEBUG = false;
-
         public static MainClass Instace;
 		public static PluginInfo PluginInfo;
 
@@ -49,12 +48,7 @@ namespace VarianceAPI
 			VAPILog.logger = Logger;
 			Instace = this;
 			PluginInfo = Info;
-			
 
-			if(DEBUG)
-            {
-				gameObject.AddComponent<VAPIDebug>();
-            }
 			Initialize();
 			new ContentPacks().Initialize();
 		}

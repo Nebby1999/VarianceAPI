@@ -17,6 +17,8 @@ MonoBehaviour:
     amount: 3
   - itemDefName: Phasing
     amount: 5
+  - itemDefName: PrimaryCDR
+    amount: 50
   Buffs: []
   equipmentDefName: AffixRed
   fireCurve:

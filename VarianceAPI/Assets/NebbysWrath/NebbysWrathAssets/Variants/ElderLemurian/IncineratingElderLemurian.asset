@@ -21,7 +21,6 @@ MonoBehaviour:
   aiModifier: 0
   variantTier: 2
   spawnRate: 3
-  givesRewards: 1
   variantInventory: {fileID: 11400000, guid: ee576fee6e6b8bc418cf3def182e4d83, type: 2}
   skillReplacements:
   - skillSlot: 0
@@ -39,8 +38,8 @@ MonoBehaviour:
   arrivalMessage: NW_INCINERATING_ARRIVAL
   extraComponents:
   - componentToAdd:
-      _typeName: NebbysWrath.VariantComponents.AddFlames, NebbysWrath, Version=0.0.0.0,
-        Culture=neutral, PublicKeyToken=null
+      assemblyQualifiedName: NebbysWrath.VariantComponents.AddFlames, NebbysWrath,
+        Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
     componentType: 0
   customDeathState:
     _typeName: 
