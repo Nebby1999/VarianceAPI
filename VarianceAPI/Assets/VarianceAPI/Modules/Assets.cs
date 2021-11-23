@@ -1,10 +1,7 @@
-﻿using Path = System.IO.Path;
-using RoR2;
+﻿using RoR2.ContentManagement;
 using UnityEngine;
-using System.IO;
-using System;
-using RoR2.ContentManagement;
 using VarianceAPI.Utils;
+using Path = System.IO.Path;
 
 namespace VarianceAPI
 {

@@ -1,11 +1,11 @@
-﻿using System;
+﻿using EntityStates;
+using EntityStates.ScavMonster;
+using RoR2;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using RoR2;
 using UnityEngine;
 using UnityEngine.Networking;
-using EntityStates;
-using EntityStates.ScavMonster;
 
 namespace TheOriginal30.VariantEntityStates.Scavenger
 {

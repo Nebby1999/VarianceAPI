@@ -14,7 +14,8 @@
         "MMHOOK_Assembly-CSharp.dll",
         "R2API.dll",
         "StubbedAssembly-CSharp.dll",
-        "Wwise.dll"
+        "Wwise.dll",
+        "MoonstormSharedUtils.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": []

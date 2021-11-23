@@ -1,12 +1,7 @@
 ﻿using EntityStates;
-using EntityStates.Wisp1Monster;
 using EntityStates.GreaterWispMonster;
+using EntityStates.Wisp1Monster;
 using RoR2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using Object = UnityEngine.Object;
 
@@ -101,7 +96,7 @@ namespace NebbysWrath.VariantEntityStates.GreaterWisp
         {
             PlayAnimation("Gesture", "Empty");
             base.OnExit();
-            if ((bool)chargeEffectInstanceLeft )
+            if ((bool)chargeEffectInstanceLeft)
             {
                 EntityState.Destroy(chargeEffectInstanceLeft);
             }

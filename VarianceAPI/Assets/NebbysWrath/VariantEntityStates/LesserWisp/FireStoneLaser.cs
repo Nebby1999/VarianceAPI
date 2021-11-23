@@ -1,6 +1,5 @@
-﻿using EntityStates.GolemMonster;
-using EntityStates.Wisp1Monster;
-using EntityStates;
+﻿using EntityStates;
+using EntityStates.GolemMonster;
 using RoR2;
 using UnityEngine;
 

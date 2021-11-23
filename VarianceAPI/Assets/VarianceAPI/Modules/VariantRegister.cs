@@ -1,15 +1,11 @@
-﻿using RoR2;
-using RoR2.ContentManagement;
-using System.Collections;
+﻿using BepInEx.Configuration;
+using RoR2;
 using System.Collections.Generic;
-using UnityEngine;
 using System.Linq;
+using System.Reflection;
+using UnityEngine;
 using VarianceAPI.Components;
 using VarianceAPI.ScriptableObjects;
-using BepInEx.Configuration;
-using R2API;
-using UnityEditor;
-using System.Reflection;
 
 namespace VarianceAPI
 {
@@ -28,7 +24,7 @@ namespace VarianceAPI
         private static void RegisterVariants()
         {
             variantsRegistered = true;
-            if(VariantMaterialGrabber.vanillaMaterials.Count != 0)
+            if (VariantMaterialGrabber.vanillaMaterials.Count != 0)
             {
                 VariantMaterialGrabber.SwapMaterials();
             }
@@ -36,7 +32,7 @@ namespace VarianceAPI
             {
                 VAPILog.LogI("Variant Material Grabber's vanilla materials dictionary is empty, skipping swapping materials.");
             }
-            if(RegisteredVariants.Count != 0)
+            if (RegisteredVariants.Count != 0)
             {
                 VAPILog.LogI("Modifying CharacterBody prefabs...");
                 foreach (var kvp in RegisteredVariants)
@@ -75,7 +71,7 @@ namespace VarianceAPI
             {
                 VAPILog.LogI("No variants where registered, skipping modifying any bodies inside the body catalog.");
             }
-            
+
         }
         #region AddVariant Methods
         private static void AddVariant(VariantInfo variantInfo, ConfigFile configFile = null)
@@ -103,7 +99,7 @@ namespace VarianceAPI
                 RegisteredVariants.Add(variantInfo.bodyName, new List<VariantInfo>());
             }
 
-            if(!RegisteredVariants[variantInfo.bodyName].Contains(variantInfo))
+            if (!RegisteredVariants[variantInfo.bodyName].Contains(variantInfo))
             {
                 RegisteredVariants[variantInfo.bodyName].Add(variantInfo);
                 VAPILog.LogD($"Variant {variantInfo} succesfully added.");
@@ -117,7 +113,7 @@ namespace VarianceAPI
         //Adds a single variantInfo to the registered variants dictionary.
         public static void AddSingleVariant(VariantInfo variantInfo, ConfigFile configFile = null)
         {
-            if(!variantsRegistered)
+            if (!variantsRegistered)
             {
                 if (configFile != null)
                     VAPILog.LogI($"Attempting to register {variantInfo} from {Assembly.GetCallingAssembly().GetName().Name} alongside IsUnique & SpawnRate Configurations...");
@@ -135,7 +131,7 @@ namespace VarianceAPI
         //Adds all the variantInfos found in the AssetBundle.
         public static void AddVariant(AssetBundle assetBundle, ConfigFile configFile = null)
         {
-            if(!variantsRegistered)
+            if (!variantsRegistered)
             {
                 VariantInfo[] variantInfos = assetBundle.LoadAllAssets<VariantInfo>();
 
@@ -144,7 +140,7 @@ namespace VarianceAPI
                 else
                     VAPILog.LogI($"Attempting to register {variantInfos.Length} variants from {Assembly.GetCallingAssembly().GetName().Name}");
 
-                for(int i = 0; i < variantInfos.Length; i++)
+                for (int i = 0; i < variantInfos.Length; i++)
                 {
                     AddVariant(variantInfos[i], configFile);
                 }
@@ -158,14 +154,14 @@ namespace VarianceAPI
         //Adds all the variantInfos inside a list of VariantInfos.
         public static void AddVariant(IEnumerable<VariantInfo> variantInfos, ConfigFile configFile = null)
         {
-            if(!variantsRegistered)
+            if (!variantsRegistered)
             {
                 if (configFile != null)
                     VAPILog.LogI($"Attempting to register {variantInfos.Count()} variants from {Assembly.GetCallingAssembly().GetName().Name} alongside IsUnique & SpawnRate Configurations...");
                 else
                     VAPILog.LogI($"Attempting to register {variantInfos.Count()} variants from {Assembly.GetCallingAssembly().GetName().Name}");
-            
-                foreach(VariantInfo info in variantInfos)
+
+                foreach (VariantInfo info in variantInfos)
                 {
                     AddVariant(info, configFile);
                 }

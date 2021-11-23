@@ -1,10 +1,4 @@
 ﻿using BepInEx.Configuration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace VarianceAPI
 {
@@ -94,11 +88,11 @@ namespace VarianceAPI
 
         private static ConfigEntry<float> DeathRewardConfig(string rewardType, ConfigFile config, float defaultValue, string variantTier)
         {
-            if(rewardType == "Gold")
+            if (rewardType == "Gold")
             {
                 return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant " + rewardType + " Multiplier"), defaultValue, new ConfigDescription("Multiplier that's applied to the Gold reward for killing a " + variantTier + " Variant.\n(Set this value to 1.0 to disable)"));
             }
-            else if(rewardType == "XP")
+            else if (rewardType == "XP")
             {
                 return config.Bind<float>(new ConfigDefinition("2 - VariantRewardHandler Settings", variantTier + " Variant " + rewardType + " Multiplier"), defaultValue, new ConfigDescription("Multiplier that's applied to the XP reward for killing a " + variantTier + " Variant.\n(Set this value to 1.0 to disable)"));
             }

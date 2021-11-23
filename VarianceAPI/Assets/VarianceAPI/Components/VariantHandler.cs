@@ -4,14 +4,9 @@ using RoR2;
 using RoR2.CharacterAI;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using VarianceAPI.ScriptableObjects;
-using VarianceAPI.Utils;
-using Random = UnityEngine.Random;
 
 namespace VarianceAPI.Components
 {
@@ -47,12 +42,12 @@ namespace VarianceAPI.Components
             for (int i = 0; i < VariantInfos.Length; i++)
             {
                 var current = VariantInfos[i];
-                if(ConfigLoader.EnableVariantArrivalAnnouncements.Value)
+                if (ConfigLoader.EnableVariantArrivalAnnouncements.Value)
                 {
                     if (current.variantTier >= VariantTier.Rare && !announcedArrival)
                     {
                         announcedArrival = true;
-                            AnnounceArrival(current);
+                        AnnounceArrival(current);
                     }
                 }
 
@@ -62,9 +57,9 @@ namespace VarianceAPI.Components
                 {
                     if (current.variantInventory != null)
                     {
-                            AddItems(current.variantInventory);
-                            AddBuffs(current.variantInventory);
-                            GiveEquipment(current.variantInventory);
+                        AddItems(current.variantInventory);
+                        AddBuffs(current.variantInventory);
+                        GiveEquipment(current.variantInventory);
                     }
                     if (current.variantTier >= VariantTier.Uncommon)
                     {
@@ -74,9 +69,9 @@ namespace VarianceAPI.Components
 
                 if (current.visualModifier != null)
                 {
-                        ReplaceMaterials(current.visualModifier);
-                        ReplaceLights(current.visualModifier);
-                        ReplaceMesh(current.visualModifier);
+                    ReplaceMaterials(current.visualModifier);
+                    ReplaceLights(current.visualModifier);
+                    ReplaceMesh(current.visualModifier);
                 }
 
                 ReplaceSkill(current);
@@ -89,7 +84,7 @@ namespace VarianceAPI.Components
 
                 ScaleVariant(current);
 
-                if(NetworkServer.active)
+                if (NetworkServer.active)
                     charBody.healthComponent.health = charBody.healthComponent.fullHealth;
 
                 charBody.RecalculateStats();
@@ -375,7 +370,7 @@ namespace VarianceAPI.Components
         private void ScaleVariant(VariantInfo variantInfo)
         {
             var sizeMod = variantInfo.sizeModifier;
-            if(sizeMod != null)
+            if (sizeMod != null)
             {
                 charBody.modelLocator.modelTransform.localScale *= sizeMod.newSize;
                 if (sizeMod.scaleCollider)
@@ -478,7 +473,7 @@ namespace VarianceAPI.Components
                     charModel.itemDisplayRuleSet = storedIDRS;
                 }
 
-                if(NetworkServer.active)
+                if (NetworkServer.active)
                     charMaster.inventory.SetEquipmentIndex(storedEquipment);
             }
         }

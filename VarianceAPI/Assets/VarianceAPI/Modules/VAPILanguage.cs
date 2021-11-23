@@ -1,8 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using R2API;
-using System.Reflection;
+﻿using R2API;
 using System.IO;
 
 namespace VarianceAPI

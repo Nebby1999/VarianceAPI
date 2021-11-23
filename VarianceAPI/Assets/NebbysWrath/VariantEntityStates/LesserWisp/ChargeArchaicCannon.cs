@@ -1,9 +1,7 @@
-﻿using System;
-using EntityStates;
+﻿using EntityStates;
 using EntityStates.ArchWispMonster;
 using EntityStates.Wisp1Monster;
 using RoR2;
-using RoR2.Projectile;
 using UnityEngine;
 
 namespace NebbysWrath.VariantEntityStates.LesserWisp

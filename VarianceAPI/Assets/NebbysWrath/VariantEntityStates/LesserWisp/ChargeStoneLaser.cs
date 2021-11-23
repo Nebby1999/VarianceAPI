@@ -1,7 +1,7 @@
-﻿using System;
-using EntityStates;
+﻿using EntityStates;
 using EntityStates.GolemMonster;
 using RoR2;
+using System;
 using UnityEngine;
 
 namespace NebbysWrath.VariantEntityStates.LesserWisp

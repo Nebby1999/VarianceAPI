@@ -13,7 +13,8 @@
         "BepInEx.dll",
         "MMHOOK_Assembly-CSharp.dll",
         "R2API.dll",
-        "HGCSharpUtils.dll"
+        "HGCSharpUtils.dll",
+        "MoonstormSharedUtils.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": []

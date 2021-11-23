@@ -3,11 +3,6 @@ using EntityStates.LemurianBruiserMonster;
 using EntityStates.LemurianMonster;
 using RoR2;
 using RoR2.Projectile;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace NebbysWrath.VariantEntityStates.ElderLemurian

@@ -1,12 +1,9 @@
-﻿using System;
+﻿using RoR2;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using VarianceAPI.ScriptableObjects;
-using RoR2;
 
 namespace VarianceAPI.Components
 {
@@ -69,7 +66,7 @@ namespace VarianceAPI.Components
             List<int> enabledIndexes = new List<int>();
 
             //roll for uniques only if the length is not 0.
-            if(UniqueVariantInfos != null)
+            if (UniqueVariantInfos != null)
             {
                 //Dont reinvent the wheel neb, lol.
                 var rng = new WeightedSelection<int>();
@@ -97,20 +94,20 @@ namespace VarianceAPI.Components
                     return;
                 }
             }
-            if(NotUniqueVariantInfos != null)
-            { 
-                for(int i = 0; i < NotUniqueVariantInfos.Length; i++)
+            if (NotUniqueVariantInfos != null)
+            {
+                for (int i = 0; i < NotUniqueVariantInfos.Length; i++)
                 {
                     var currentInfo = NotUniqueVariantInfos[i];
 
                     var spawnRate = Mathf.Min(100, currentInfo.spawnRate * SpawnRateMultiplier);
-                    if(Util.CheckRoll(spawnRate))
+                    if (Util.CheckRoll(spawnRate))
                     {
                         enabledIndexes.Add(i);
                     }
                 }
             }
-            if(enabledIndexes.Count != 0)
+            if (enabledIndexes.Count != 0)
             {
                 RpcModifyComponents(enabledIndexes.ToArray(), RPCVariantInfo.NotUniques);
 
@@ -126,7 +123,7 @@ namespace VarianceAPI.Components
         {
             List<VariantInfo> enabled = new List<VariantInfo>();
 
-            switch(variantInfoSearchType)
+            switch (variantInfoSearchType)
             {
                 case RPCVariantInfo.Uniques:
                     for (int i = 0; i < indexes.Length; i++)
@@ -147,7 +144,7 @@ namespace VarianceAPI.Components
             VariantHandler.VariantInfos = enabled.ToArray(); ;
             VariantHandler.Modify();
 
-            if(ConfigLoader.VariantsGiveRewards.Value)
+            if (ConfigLoader.VariantsGiveRewards.Value)
             {
                 VariantRewardHandler.VariantInfos = enabled.ToArray();
                 VariantRewardHandler.Modify();
@@ -158,9 +155,9 @@ namespace VarianceAPI.Components
         public void ModifyHostComponents()
         {
             VariantHandler.VariantInfos = EnabledVariantInfos.ToArray();
-            VariantHandler.Modify(); 
+            VariantHandler.Modify();
 
-            if(ConfigLoader.VariantsGiveRewards.Value)
+            if (ConfigLoader.VariantsGiveRewards.Value)
             {
                 VariantRewardHandler.VariantInfos = EnabledVariantInfos.ToArray();
                 VariantRewardHandler.Modify();

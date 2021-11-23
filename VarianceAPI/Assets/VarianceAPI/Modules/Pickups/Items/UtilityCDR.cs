@@ -1,10 +1,5 @@
-﻿using RoR2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VarianceAPI.Modules;
+﻿using Moonstorm;
+using RoR2;
 
 namespace VarianceAPI.Items
 {
@@ -19,7 +14,7 @@ namespace VarianceAPI.Items
 
         public class UtilityCDRBehavior : CharacterBody.ItemBehavior, IStatItemBehavior
         {
-            public void RecalcStatsEnd()
+            public void RecalculateStatsEnd()
             {
                 var skillLocator = body.skillLocator;
                 if (skillLocator)
@@ -31,7 +26,7 @@ namespace VarianceAPI.Items
                 }
             }
 
-            public void RecalcStatsStart()
+            public void RecalculateStatsStart()
             {
             }
         }

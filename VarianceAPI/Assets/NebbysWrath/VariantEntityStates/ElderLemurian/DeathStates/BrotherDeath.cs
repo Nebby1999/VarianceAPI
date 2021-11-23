@@ -1,10 +1,5 @@
 ﻿using EntityStates;
 using RoR2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -15,9 +10,9 @@ namespace NebbysWrath.VariantEntityStates.ElderLemurian.DeathStates
         public override void OnEnter()
         {
             base.OnEnter();
-            if(NetworkServer.active)
+            if (NetworkServer.active)
             {
-                for(int i = 0; i < 3; i++)
+                for (int i = 0; i < 3; i++)
                 {
                     Vector3 position = base.characterBody.corePosition + (5 * UnityEngine.Random.insideUnitSphere);
 

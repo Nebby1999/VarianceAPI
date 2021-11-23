@@ -1,5 +1,4 @@
-﻿using System;
-using EntityStates;
+﻿using EntityStates;
 using EntityStates.ArchWispMonster;
 using RoR2;
 using RoR2.Projectile;

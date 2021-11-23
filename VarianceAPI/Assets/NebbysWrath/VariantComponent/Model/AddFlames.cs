@@ -1,6 +1,4 @@
 ﻿using RoR2;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using VarianceAPI.Components;
 
@@ -25,7 +23,7 @@ namespace NebbysWrath.VariantComponents
 
         private void AttatchFlames()
         {
-            if(this.model)
+            if (this.model)
             {
                 GameObject flamePrefab = UnityEngine.Object.Instantiate<GameObject>(MainClass.nebbysWrathAssets.LoadAsset<GameObject>("IncineratingFlames"), childLocator.FindChild("Head"));
                 particleSystem = flamePrefab.GetComponent<ParticleSystem>();

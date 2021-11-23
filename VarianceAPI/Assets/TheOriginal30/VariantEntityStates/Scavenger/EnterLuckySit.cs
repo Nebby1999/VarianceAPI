@@ -1,6 +1,5 @@
-﻿using System;
+﻿using EntityStates.ScavMonster;
 using RoR2;
-using EntityStates.ScavMonster;
 
 namespace TheOriginal30.VariantEntityStates.Scavenger
 {

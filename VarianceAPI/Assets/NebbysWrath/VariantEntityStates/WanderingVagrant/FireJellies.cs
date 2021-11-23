@@ -66,7 +66,7 @@ namespace NebbysWrath.VariantEntityStates.WanderingVagrant
             {
                 searchOrigin = hitinfo.point;
             }
-            if(enemySearch == null)
+            if (enemySearch == null)
             {
                 return;
             }
@@ -86,7 +86,8 @@ namespace NebbysWrath.VariantEntityStates.WanderingVagrant
                         spawnOnTarget = base.transform
                     }, RoR2Application.rng);
                     directorSpawnRequest.summonerBodyObject = base.gameObject;
-                    directorSpawnRequest.onSpawnedServer = (Action<SpawnCard.SpawnResult>)Delegate.Combine(directorSpawnRequest.onSpawnedServer, (Action<SpawnCard.SpawnResult>)delegate (SpawnCard.SpawnResult spawnResult) {
+                    directorSpawnRequest.onSpawnedServer = (Action<SpawnCard.SpawnResult>)Delegate.Combine(directorSpawnRequest.onSpawnedServer, (Action<SpawnCard.SpawnResult>)delegate (SpawnCard.SpawnResult spawnResult)
+                    {
                         spawnResult.spawnedInstance.GetComponent<Inventory>().CopyEquipmentFrom(base.characterBody.inventory);
                     });
 

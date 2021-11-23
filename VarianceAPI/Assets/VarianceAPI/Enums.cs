@@ -1,13 +1,4 @@
-﻿using RoR2;
-using RoR2.Skills;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-
-namespace VarianceAPI
+﻿namespace VarianceAPI
 {
     /// <summary>
     /// The Variant tier is the system that the mod uses for easily identifying variants and handling certain processes, such as the rewards.
@@ -25,7 +16,7 @@ namespace VarianceAPI
         /// Uncommon Variants have their health bars tinted Red
         /// </summary>
         Uncommon,
-        
+
         /// <summary>
         /// Rare variants have a spawn sound
         /// </summary>

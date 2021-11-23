@@ -1,11 +1,9 @@
-﻿using RoR2;
+﻿using EntityStates;
+using HG;
+using RoR2;
 using RoR2.Skills;
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using EntityStates;
-using HG;
 using VarianceAPI.Components;
 
 namespace VarianceAPI.ScriptableObjects
@@ -99,7 +97,7 @@ namespace VarianceAPI.ScriptableObjects
         public float armorBonus = 0;
 
         [Header("Visual changes")]
-        
+
         [Tooltip("Visual changes applied to the variant.")]
         public VariantVisualModifier visualModifier;
 

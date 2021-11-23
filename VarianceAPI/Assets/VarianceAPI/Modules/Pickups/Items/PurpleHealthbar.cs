@@ -1,9 +1,5 @@
-﻿using RoR2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Moonstorm;
+using RoR2;
 using UnityEngine;
 
 namespace VarianceAPI.Items

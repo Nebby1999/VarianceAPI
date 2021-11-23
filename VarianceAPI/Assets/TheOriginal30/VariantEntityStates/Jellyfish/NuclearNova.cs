@@ -1,7 +1,6 @@
-﻿using System;
+﻿using EntityStates;
 using RoR2;
 using UnityEngine;
-using EntityStates;
 
 namespace TheOriginal30.VariantEntityStates.Jellyfish
 {

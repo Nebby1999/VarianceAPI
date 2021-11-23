@@ -1,10 +1,5 @@
-﻿using RoR2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using VarianceAPI.Modules;
-using System.Threading.Tasks;
+﻿using Moonstorm;
+using RoR2;
 
 namespace VarianceAPI.Items
 {
@@ -19,19 +14,19 @@ namespace VarianceAPI.Items
 
         public class ExtraSecondaryBehavior : CharacterBody.ItemBehavior, IStatItemBehavior
         {
-            public void RecalcStatsEnd()
+            public void RecalculateStatsEnd()
             {
                 var skillLocator = body.skillLocator;
-                if(skillLocator)
+                if (skillLocator)
                 {
-                    if((bool)skillLocator.secondary)
+                    if ((bool)skillLocator.secondary)
                     {
                         skillLocator.secondary.SetBonusStockFromBody(stack);
                     }
                 }
             }
 
-            public void RecalcStatsStart()
+            public void RecalculateStatsStart()
             {
             }
         }

@@ -1,13 +1,10 @@
-﻿using EntityStates.Bell.BellWeapon;
-using System.Collections.Generic;
-using System.Globalization;
-using EntityStates;
+﻿using EntityStates;
+using EntityStates.Bell.BellWeapon;
+using R2API;
 using RoR2;
 using RoR2.Projectile;
+using System.Globalization;
 using UnityEngine;
-using UnityEditor;
-using NebbysWrath.Prefabs.BrassContraption;
-using R2API;
 
 namespace NebbysWrath.VariantEntityStates.BrassContraption
 {
@@ -53,7 +50,7 @@ namespace NebbysWrath.VariantEntityStates.BrassContraption
 
         public override void OnEnter()
         {
-            if(!madeClone)
+            if (!madeClone)
             {
                 madeClone = true;
                 preppedBombPrefab = PrefabAPI.InstantiateClone(ChargeTrioBomb.preppedBombPrefab, "preppedBomb");

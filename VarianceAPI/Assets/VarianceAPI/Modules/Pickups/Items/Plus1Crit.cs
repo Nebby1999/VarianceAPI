@@ -1,10 +1,6 @@
-﻿using RoR2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using VarianceAPI.Modules;
+﻿using Moonstorm;
+using R2API;
+using RoR2;
 
 namespace VarianceAPI.Items
 {
@@ -17,15 +13,11 @@ namespace VarianceAPI.Items
             body.AddItemBehavior<Plus1CritBehavior>(stack);
         }
 
-        public class Plus1CritBehavior : CharacterBody.ItemBehavior, IStatItemBehavior
+        public class Plus1CritBehavior : CharacterBody.ItemBehavior, IBodyStatArgModifier
         {
-            public void RecalcStatsEnd()
+            public void ModifyStatArguments(RecalculateStatsAPI.StatHookEventArgs args)
             {
-                body.crit += stack;
-            }
-
-            public void RecalcStatsStart()
-            {
+                args.critAdd += stack;
             }
         }
     }

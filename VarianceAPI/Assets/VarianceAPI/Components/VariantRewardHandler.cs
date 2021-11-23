@@ -52,7 +52,7 @@ namespace VarianceAPI.Components
                 return;
 
             GetStuff();
-            if(VariantInfos.Length == 0)
+            if (VariantInfos.Length == 0)
             {
                 Destroy(this);
                 return;
@@ -120,7 +120,7 @@ namespace VarianceAPI.Components
 
         private void SpawnDroplet(DamageReport damageReport)
         {
-            if(damageReport.victimBody.Equals(characterBody))
+            if (damageReport.victimBody.Equals(characterBody))
             {
                 if (Run.instance.isRunStopwatchPaused && ConfigLoader.HiddenRealmItemdropBehaviorConfig.Value != "Unchanged")
                 {
@@ -142,7 +142,7 @@ namespace VarianceAPI.Components
 
         private void TrySpawnDroplet(DamageReport damageReport)
         {
-            if(damageReport.victimBody == characterBody)
+            if (damageReport.victimBody == characterBody)
             {
                 if (damageReport.victimTeamIndex != TeamIndex.Player)
                 {
@@ -165,7 +165,7 @@ namespace VarianceAPI.Components
         {
             if (ConfigLoader.ItemRewardsSpawnsOnPlayer.Value)
             {
-                PickupDropletController.CreatePickupDroplet(itemList[nextItem], damageReport.attackerBody.transform.position, (Vector3.up * 20) + (Vector3.right * Random.Range(1,5) + (Vector3.forward * Random.Range(1,5))));
+                PickupDropletController.CreatePickupDroplet(itemList[nextItem], damageReport.attackerBody.transform.position, (Vector3.up * 20) + (Vector3.right * Random.Range(1, 5) + (Vector3.forward * Random.Range(1, 5))));
             }
             else
             {

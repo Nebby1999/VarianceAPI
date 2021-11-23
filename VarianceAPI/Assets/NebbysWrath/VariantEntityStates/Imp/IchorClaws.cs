@@ -1,10 +1,10 @@
-﻿using EntityStates.ImpMonster;//.DoubleSlash
-using System;
-using EntityStates;
+﻿using EntityStates;
+using EntityStates.ImpMonster;//.DoubleSlash
+using R2API;
 using RoR2;
+using System;
 using UnityEngine;
 using UnityEngine.Networking;
-using R2API;
 
 namespace NebbysWrath.VariantEntityStates.Imp
 {

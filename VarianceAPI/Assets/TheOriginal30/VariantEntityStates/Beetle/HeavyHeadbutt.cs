@@ -1,7 +1,7 @@
-﻿using System;
-using EntityStates;
+﻿using EntityStates;
 using EntityStates.BeetleMonster;
 using RoR2;
+using System;
 using UnityEngine;
 
 namespace TheOriginal30.VariantEntityStates.Beetle

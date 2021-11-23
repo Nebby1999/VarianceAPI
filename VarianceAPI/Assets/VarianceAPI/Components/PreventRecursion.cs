@@ -1,6 +1,4 @@
-﻿using UnityEngine;
-
-namespace VarianceAPI.Components
+﻿namespace VarianceAPI.Components
 {
     /// <summary>
     /// idk why youre here, this component just exists to avoid variants resurrecting multiple times, lol

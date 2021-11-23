@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 
 namespace VarianceAPI
@@ -10,7 +9,7 @@ namespace VarianceAPI
         public static void SwapMaterials()
         {
             VAPILog.LogI("Swapping Materials...");
-            foreach(var kvp in VariantRegister.RegisteredVariants)
+            foreach (var kvp in VariantRegister.RegisteredVariants)
             {
                 var currentList = VariantRegister.RegisteredVariants[kvp.Key];
                 foreach (var vi in currentList)
@@ -22,7 +21,7 @@ namespace VarianceAPI
                             for (int i = 0; i < vi.visualModifier.MaterialReplacements.Length; i++)
                             {
                                 var currentMaterial = vi.visualModifier.MaterialReplacements[i];
-                                if(currentMaterial.identifier == string.Empty)
+                                if (currentMaterial.identifier == string.Empty)
                                 {
                                     continue;
                                 }
@@ -47,18 +46,18 @@ namespace VarianceAPI
         }
         public static void StoreMaterial(string identifier, Material material)
         {
-            if(vanillaMaterials.ContainsKey(identifier))
+            if (vanillaMaterials.ContainsKey(identifier))
             {
                 VAPILog.LogW($"A key with the identifier of {identifier} has already been added. aboirting adding to the material replacement dictionary.");
                 return;
             }
             vanillaMaterials.Add(identifier, material);
         }
-        public static void StoreMaterials(IEnumerable<(string, Material)>MaterialsAndIdentifiers)
+        public static void StoreMaterials(IEnumerable<(string, Material)> MaterialsAndIdentifiers)
         {
-            foreach((string identifier, Material material) in MaterialsAndIdentifiers)
+            foreach ((string identifier, Material material) in MaterialsAndIdentifiers)
             {
-                if(vanillaMaterials.ContainsKey(identifier))
+                if (vanillaMaterials.ContainsKey(identifier))
                 {
                     VAPILog.LogW($"A key with the identifier of {identifier} has already been added. aboirting adding to the material replacement dictionary.");
                     continue;

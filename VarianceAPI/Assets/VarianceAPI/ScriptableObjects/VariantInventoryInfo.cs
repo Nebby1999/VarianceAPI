@@ -1,9 +1,4 @@
-﻿using RoR2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
 using UnityEngine;
 
 namespace VarianceAPI.ScriptableObjects
@@ -20,7 +15,7 @@ namespace VarianceAPI.ScriptableObjects
             [Tooltip("The amount of items to give.")]
             public int amount;
         }
-        
+
         [Serializable]
         public struct VariantBuff
         {

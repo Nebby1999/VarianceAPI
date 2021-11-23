@@ -99,7 +99,8 @@ namespace NebbysWrath.VariantEntityStates.BeetleQueen
                     spawnOnTarget = transform
                 }, RoR2Application.rng);
                 directorSpawnRequest.summonerBodyObject = base.gameObject;
-                directorSpawnRequest.onSpawnedServer = (Action<SpawnCard.SpawnResult>)Delegate.Combine(directorSpawnRequest.onSpawnedServer, (Action<SpawnCard.SpawnResult>)delegate (SpawnCard.SpawnResult spawnResult) {
+                directorSpawnRequest.onSpawnedServer = (Action<SpawnCard.SpawnResult>)Delegate.Combine(directorSpawnRequest.onSpawnedServer, (Action<SpawnCard.SpawnResult>)delegate (SpawnCard.SpawnResult spawnResult)
+                {
                     spawnResult.spawnedInstance.GetComponent<Inventory>().CopyEquipmentFrom(base.characterBody.inventory);
 
                 });
@@ -131,7 +132,8 @@ namespace NebbysWrath.VariantEntityStates.BeetleQueen
                     spawnOnTarget = transform
                 }, RoR2Application.rng);
                 directorSpawnRequest.summonerBodyObject = base.gameObject;
-                directorSpawnRequest.onSpawnedServer = (Action<SpawnCard.SpawnResult>)Delegate.Combine(directorSpawnRequest.onSpawnedServer, (Action<SpawnCard.SpawnResult>)delegate (SpawnCard.SpawnResult spawnResult) {
+                directorSpawnRequest.onSpawnedServer = (Action<SpawnCard.SpawnResult>)Delegate.Combine(directorSpawnRequest.onSpawnedServer, (Action<SpawnCard.SpawnResult>)delegate (SpawnCard.SpawnResult spawnResult)
+                {
                     spawnResult.spawnedInstance.GetComponent<Inventory>().CopyEquipmentFrom(base.characterBody.inventory);
                 });
                 DirectorCore.instance?.TrySpawnObject(directorSpawnRequest);
