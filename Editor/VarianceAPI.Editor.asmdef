@@ -1,0 +1,18 @@
+{
+    "name": "VarianceAPI.Editor",
+    "references": [
+        "GUID:3b7558f028476234ca45bc3509fe75f1",
+        "GUID:48abf88f565f4bb4fb35fbe2385f0894",
+        "GUID:280569ac301428d4d950fdf647900922",
+        "GUID:fb6ca6d7e9e2b7b44bc5ad0e375b6669"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
