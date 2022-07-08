@@ -3,11 +3,12 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using UnityEngine;
 
-namespace VAPI
+namespace VAPI.Components
 {
-    public enum VariantIndex
+    public abstract class VariantComponent : MonoBehaviour
     {
-        None = -1
+
     }
 }

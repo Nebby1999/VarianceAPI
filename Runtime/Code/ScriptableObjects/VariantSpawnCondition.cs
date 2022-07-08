@@ -8,18 +8,22 @@ using System.Linq;
 
 namespace VAPI
 {
-    [CreateAssetMenu(fileName = "new VariantSpawnCondition", menuName = "VarianceAPI/VariantSpawnCondition")]
+    [CreateAssetMenu(fileName = "New VariantSpawnCondition", menuName = "VarianceAPI/VariantSpawnCondition")]
     public class VariantSpawnCondition : ScriptableObject
     {
         public int minimumStageCompletions;
         public DirectorAPI.Stage stages;
-        public List<string> customStages;
+        public List<string> customStages = new List<string>();
 
         [Space]
         public AddressableUnlockableDef requiredUnlockableDef;
         public AddressableUnlockableDef forbiddenUnlockableDef;
-        public List<AddressableExpansionDef> requiredExpansions;
+        public List<AddressableExpansionDef> requiredExpansions = new List<AddressableExpansionDef>();
 
+        private void OnValidate()
+        {
+            customStages = customStages.Select(stage => stage.ToLowerInvariant()).ToList();
+        }
         public virtual bool IsAvailable(DirectorAPI.StageInfo stageInfo, ExpansionDef[] runExpansions)
         {
             if (!Run.instance)
