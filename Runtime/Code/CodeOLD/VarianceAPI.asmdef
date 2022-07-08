@@ -1,0 +1,28 @@
+{
+    "name": "VarianceAPI",
+    "references": [
+        "MoonstormSharedUtils",
+        "com.unity.multiplayer-hlapi.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": true,
+    "precompiledReferences": [
+        "BepInEx.dll",
+        "R2API.dll",
+        "HGCSharpUtils.dll",
+        "MonoMod.Utils.dll",
+        "Mono.Cecil.dll",
+        "BepInEx.Preloader.dll",
+        "DebugToolkit.dll",
+        "HGUnityUtils.dll",
+        "RoR2.dll",
+        "MMHOOK_RoR2.dll",
+        "KinematicCharacterController.dll"
+    ],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
