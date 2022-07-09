@@ -10,7 +10,7 @@ namespace VAPI
     public static class VariantCatalog
     {
         public static int variantCount => registeredVariants.Length;
-        public static bool Initialized { get; private set; }
+        public static bool Initialized { get; private set; } = false;
 
         private static VariantDef[] unregisteredVariants;
         private static VariantDef[] registeredVariants;
@@ -25,6 +25,7 @@ namespace VAPI
 
         public static VariantIndex FindVariantIndex(string variantName)
         {
+            ThrowIfNotInitialized();
             if(nameToIndex.TryGetValue(variantName, out VariantIndex index))
             {
                 return index;
@@ -48,7 +49,7 @@ namespace VAPI
         #endregion
 
         #region internal methods
-        [SystemInitializer(typeof(BodyCatalog))]
+        [SystemInitializer(typeof(BodyCatalog), typeof(VariantTierCatalog))]
         private static void SystemInitializer()
         {
             nameToIndex.Clear();
@@ -57,20 +58,22 @@ namespace VAPI
 
             registeredVariants = RegisterVariants(unregisteredVariants).ToArray();
             unregisteredVariants = null;
+            Initialized = true;
         }
 
         private static List<VariantDef> RegisterVariants(VariantDef[] variants)
         {
             List<VariantDef> validVariants = new List<VariantDef>();
-            for(int i = 0; i < variants.Length; i++)
+            foreach(VariantDef v in variants)
             {
                 try
                 {
-                    VariantDef variant = variants[i];
+                    //validate
+                    validVariants.Add(v);
                 }
                 catch(Exception e)
                 {
-                    VAPILog.Error($"{e}\n(VariantDef: {variants[i]})");
+                    VAPILog.Error($"{e}\n(VariantDef: {v})");
                 }
             }
 

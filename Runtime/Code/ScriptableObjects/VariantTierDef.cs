@@ -23,6 +23,6 @@ namespace VAPI
         public float greenItemDropChance;
         public float redItemDropChance;
         
-        public VariantTierIndex Tier { get => _tier; private set => _tier = value; }
+        public VariantTierIndex Tier { get => _tier; internal set => _tier = value; }
     }
 }

@@ -10,76 +10,72 @@ namespace VAPI
     public static class VariantTierCatalog
     {
         public static int variantTierCount => registeredTiers.Length;
-        public static bool Initialized { get; private set; }
+        public static bool Initialized { get; private set; } = false;
 
         private static VariantTierDef[] unregisteredTiers;
         private static VariantTierDef[] registeredTiers;
-        private static readonly Dictionary<string, VariantTierIndex> nameToIndex = new Dictionary<string, VariantTierIndex>();
+        private static readonly Dictionary<VariantTierIndex, VariantTierDef> tierToDef = new Dictionary<VariantTierIndex, VariantTierDef>();
 
-        #region Get Methods
-        public static VariantTierDef GetVariantDef(VariantTierIndex tierIndex)
+        #region Add Methods
+        public static void AddTiers(VariantTierDef[] tierDef)
+        {
+            ThrowIfInitialized();
+            tierDef.ToList().ForEach(vtd => AddTier(vtd));
+        }
+
+        public static void AddTier(VariantTierDef tierDef)
+        {
+            ThrowIfInitialized();
+            HG.ArrayUtils.ArrayAppend(ref unregisteredTiers, tierDef); 
+        }
+        #endregion
+
+        #region Find Methods
+        public static VariantTierDef GetVariantTierDef(VariantTierIndex variantTier)
         {
             ThrowIfNotInitialized();
-            return HG.ArrayUtils.GetSafe(registeredTiers, (int)tierIndex);
+            if (tierToDef.TryGetValue(variantTier, out var def))
+                return def;
+            return null;
         }
 
-        public static VariantTierIndex FindVariantIndex(string variantName)
+        public static VariantTierDef FindVariantTierDef(string tierName)
         {
-            if(nameToIndex.TryGetValue(variantName, out VariantTierIndex index))
+            ThrowIfNotInitialized();
+            foreach(VariantTierDef tierDef in registeredTiers)
             {
-                return index;
+                if(tierDef.name == tierName)
+                {
+                    return tierDef;
+                }
             }
-            return VariantTierIndex.None;
+            return null;
         }
         #endregion
 
-        #region Add methods
-        public static void AddVariantTiers(VariantTierDef[] tierDefs)
+        #region Internal Methods
+        [SystemInitializer]
+        private static void SystemInit()
         {
-            ThrowIfInitialized();
-            tierDefs.ToList().ForEach(vd => AddVariant(vd));
-        }
+            tierToDef.Clear();
 
-        public static void AddVariant(VariantTierDef tierDef)
-        {
-            ThrowIfInitialized();
-            HG.ArrayUtils.ArrayAppend(ref tierDef, tierDef);
-        }
-        #endregion
+            unregisteredTiers = unregisteredTiers.OrderBy(vtd => vtd.name).ToArray();
 
-        #region internal methods
-        [SystemInitializer(typeof(BodyCatalog))]
-        private static void SystemInitializer()
-        {
-            nameToIndex.Clear();
-
-            unregisteredTiers = unregisteredTiers.OrderBy(vd => vd.name).ToArray();
-
-            registeredTiers = RegisterVariants(unregisteredTiers).ToArray();
+            registeredTiers = RegisterTiers(unregisteredTiers);
             unregisteredTiers = null;
+            Initialized = true;
         }
 
-        private static List<VariantTierDef> RegisterVariants(VariantTierDef[] tiers)
+        private static VariantTierDef[] RegisterTiers(VariantTierDef[] tiersToRegister)
         {
-            List<VariantTierDef> validVariants = new List<VariantTierDef>();
-            for(int i = 0; i < tiers.Length; i++)
-            {
-                try
-                {
-                    VariantTierDef variant = tiers[i];
-                }
-                catch(Exception e)
-                {
-                    VAPILog.Error($"{e}\n(VariantDef: {tiers[i]})");
-                }
-            }
+            List<VariantTierDef> validTiers = new List<VariantTierDef>();
 
-            int variantAmount = validVariants.ToArray().Length;
-            for(VariantIndex variantIndex = (VariantIndex)0; (int)variantIndex < variantAmount; variantIndex++)
+            foreach(VariantTierDef tierDef in tiersToRegister)
             {
                 try
                 {
-                    RegisterVariant(validVariants[(int)variantIndex], variantIndex);
+                    //Validate
+                    validTiers.Add(tierDef);
                 }
                 catch(Exception e)
                 {
@@ -87,13 +83,23 @@ namespace VAPI
                 }
             }
 
-            return validVariants;
-        }
-
-        private static void RegisterVariant(VariantDef variant, VariantIndex index)
-        {
-            variant.VariantIndex = index;
-            nameToIndex.Add(variant.name, index);
+            int num = 0;
+            foreach(VariantTierDef tierDef in validTiers)
+            {
+                if(tierDef.Tier == VariantTierIndex.AssignedAtRuntime)
+                {
+                    tierDef.Tier = (VariantTierIndex)(++num + 10);
+                }
+                if(tierToDef.ContainsKey(tierDef.Tier))
+                {
+                    VAPILog.Error($"Duplicate TierDef for tier {tierDef.Tier}");
+                }
+                else
+                {
+                    tierToDef.Add(tierDef.Tier, tierDef);
+                }
+            }
+            return validTiers.ToArray();
         }
 
         private static void ThrowIfNotInitialized()

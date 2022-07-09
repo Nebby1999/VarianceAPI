@@ -27,4 +27,28 @@ namespace VAPI
         Master,
         Model
     }
+
+    public enum OverrideNameType
+    {
+        Prefix,
+        Suffix,
+        Complete
+    }
+
+    public enum BasicAIModifier
+    {
+        Default,
+        Unstable,
+        ForceSprint
+    };
+
+    public enum MeshType
+    {
+        Default,
+        Beetle, //https://github.com/ToastedOven/WetDanger/blob/457c254cca45f961c20665a085e096da23edac0a/MoistureUpset/MoistureUpset/EnemyReplacements.cs#L1318
+        BeetleGuard, //https://github.com/ToastedOven/WetDanger/blob/457c254cca45f961c20665a085e096da23edac0a/MoistureUpset/MoistureUpset/EnemyReplacements.cs#L1111
+        MiniMushrum, //https://github.com/ToastedOven/WetDanger/blob/457c254cca45f961c20665a085e096da23edac0a/MoistureUpset/MoistureUpset/EnemyReplacements.cs#L1209
+        MagmaWorm, //https://github.com/ToastedOven/WetDanger/blob/457c254cca45f961c20665a085e096da23edac0a/MoistureUpset/MoistureUpset/EnemyReplacements.cs#L2051
+        OverloadingWorm //https://github.com/ToastedOven/WetDanger/blob/457c254cca45f961c20665a085e096da23edac0a/MoistureUpset/MoistureUpset/EnemyReplacements.cs#L2232
+    }
 }

@@ -20,6 +20,8 @@ namespace VAPI.EditorUtils.PropertyDrawers
             var slotProp = property.FindPropertyRelative("attachmentType");
             var enumRect = new Rect(fieldRect.xMax, fieldRect.y, position.width * 0.25f, position.height);
             slotProp.intValue = (int)(ComponentAttachmentType)EditorGUI.EnumPopup(enumRect, (ComponentAttachmentType)slotProp.intValue);
+
+            EditorGUI.EndProperty();
         }
     }
 }

@@ -9,30 +9,22 @@ using RoR2.ExpansionManagement;
 using System;
 using RoR2.Skills;
 using HG;
+using EntityStates;
 
 namespace VAPI
 {
     [CreateAssetMenu(fileName = "New VariantDef", menuName = "VarianceAPI/VariantDef")]
     public class VariantDef : ScriptableObject
     {
-        [Serializable]
-        public class VariantSkillReplacement
-        {
-            public SkillDef skillDef;
-            public SkillSlot skillSlot;
-        }
-        [Serializable]
-        public class VariantComponentProvider
-        {
-            [SerializableSystemType.RequiredBaseType(typeof(VariantComponent))]
-            public SerializableSystemType componentToAdd;
-            public ComponentAttachmentType attachmentType;
-        }
         public VariantIndex VariantIndex { get; internal set; }
 
         public string bodyName;
 
+        public VariantOverrideName[] nameOverrides = Array.Empty<VariantOverrideName>();
+
         public bool isUnique = false;
+
+        public BasicAIModifier aiModifier;
 
         public VariantTierIndex variantTier;
         public VariantTierDef variantTierDef;
@@ -40,10 +32,12 @@ namespace VAPI
         [Range(0, 100)]
         public float spawnRate;
 
-        public VariantSkillReplacement[] skillReplacements = Array.Empty<VariantSkillReplacement>();
-
         [Tooltip("The conditions specified here need to be met for this variant to spawn, leave this blank if you want the variant to not have spawning restrictions")]
         public VariantSpawnCondition variantSpawnCondition;
+
+        public VariantSkillReplacement[] skillReplacements = Array.Empty<VariantSkillReplacement>();
+
+        public VariantInventory variantInventory;
 
         [Tooltip("Multiplier applied to the variant's Health\nWhere 1.0 = 100% Base health")]
         [Min(0)]
@@ -82,7 +76,15 @@ namespace VAPI
         [Tooltip("Extra armor of the Variant\nRefer to the wiki's page on armor for how to use")]
         public float armorBonus = 0;
 
+        public VariantVisuals visualModifier;
+
+        public float sizeModifier;
+
+        public string arrivalToken;
+
         public VariantComponentProvider[] componentProviders = Array.Empty<VariantComponentProvider>();
+
+        public SerializableEntityStateType deathStateOverride;
 
         private void OnValidate()
         {
@@ -119,6 +121,27 @@ namespace VAPI
         public bool IsAvailable(DirectorAPI.StageInfo stageInfo, ExpansionDef[] runExpansions)
         {
             return variantSpawnCondition ? variantSpawnCondition.IsAvailable(stageInfo, runExpansions) : false;
+        }
+
+        [Serializable]
+        public class VariantOverrideName
+        {
+            public string token;
+            public OverrideNameType overrideType;
+        }
+
+        [Serializable]
+        public class VariantSkillReplacement
+        {
+            public SkillDef skillDef;
+            public SkillSlot skillSlot;
+        }
+        [Serializable]
+        public class VariantComponentProvider
+        {
+            [SerializableSystemType.RequiredBaseType(typeof(VariantComponent))]
+            public SerializableSystemType componentToAdd;
+            public ComponentAttachmentType attachmentType;
         }
     }
 }
