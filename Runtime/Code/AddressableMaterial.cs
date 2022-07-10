@@ -8,6 +8,7 @@ using UnityEngine;
 
 namespace VAPI
 {
+    [Serializable]
     public class AddressableMaterial : AddressableAsset<Material>
     {
 
