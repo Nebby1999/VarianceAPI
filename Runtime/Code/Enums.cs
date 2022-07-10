@@ -35,6 +35,7 @@ namespace VAPI
         Complete
     }
 
+    [Flags]
     public enum BasicAIModifier
     {
         Default,

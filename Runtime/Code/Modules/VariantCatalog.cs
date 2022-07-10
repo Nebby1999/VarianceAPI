@@ -7,6 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using UnityEngine;
+using VAPI.Components;
 
 namespace VAPI
 {
@@ -19,6 +20,7 @@ namespace VAPI
         private static VariantDef[] registeredVariants = Array.Empty<VariantDef>();
         private static readonly Dictionary<string, VariantIndex> nameToIndex = new Dictionary<string, VariantIndex>();
 
+        private static readonly Dictionary<BodyIndex, BodyVariantDefProvider> bodyIndexToDefProvider = new Dictionary<BodyIndex, BodyVariantDefProvider>();
         #region Get Methods
         public static VariantDef GetVariantDef(VariantIndex variantIndex)
         {
@@ -34,6 +36,15 @@ namespace VAPI
                 return index;
             }
             return VariantIndex.None;
+        }
+
+        public static BodyVariantDefProvider GetBodyVariantDefProvider(BodyIndex index)
+        {
+            if(bodyIndexToDefProvider.TryGetValue(index, out var provider))
+            {
+                return provider;
+            }
+            return null;
         }
         #endregion
 
@@ -86,6 +97,8 @@ namespace VAPI
 
             registeredVariants = RegisterVariants(unregisteredVariants).ToArray();
             unregisteredVariants = null;
+            PopulateBodyIndexToVariants();
+
             Initialized = true;
         }
 
@@ -173,14 +186,34 @@ namespace VAPI
                 VAPILog.Error($"Could not register variant {variant}: {e}");
             }
         }
+        
+        private static void PopulateBodyIndexToVariants()
+        {
+            foreach(CharacterBody body in BodyCatalog.allBodyPrefabBodyBodyComponents)
+            {
+                VariantDef[] variantsForBody = registeredVariants
+                    .Where(vd => vd.bodyName.Equals(body.name, StringComparison.OrdinalIgnoreCase))
+                    .ToArray();
 
-        private static void ThrowIfNotInitialized()
+                if(variantsForBody.Length > 0)
+                {
+                    body.gameObject.AddComponent<BodyVariantManager>();
+                    
+                    if (VAPIConfig.enableRewards.Value)
+                        body.gameObject.AddComponent<BodyVariantReward>();
+
+                    bodyIndexToDefProvider.Add(body.bodyIndex, new BodyVariantDefProvider(variantsForBody, body.bodyIndex));
+                }
+            }
+        }
+
+        internal static void ThrowIfNotInitialized()
         {
             if(!Initialized)
                 throw new InvalidOperationException($"VariantCatalog not initialized");
         }
 
-        private static void ThrowIfInitialized()
+        internal static void ThrowIfInitialized()
         {
             if(Initialized)
                 throw new InvalidOperationException("VariantCatalog already initialized.");

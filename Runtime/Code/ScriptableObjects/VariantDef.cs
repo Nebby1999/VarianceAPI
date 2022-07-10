@@ -20,14 +20,10 @@ namespace VAPI
 
         public string bodyName;
 
-        public VariantOverrideName[] nameOverrides = Array.Empty<VariantOverrideName>();
+        [SerializeField] internal VariantTierIndex variantTier;
+        [SerializeField] internal VariantTierDef variantTierDef;
 
         public bool isUnique = false;
-
-        public BasicAIModifier aiModifier;
-
-        public VariantTierIndex variantTier;
-        public VariantTierDef variantTierDef;
 
         [Range(0, 100)]
         public float spawnRate;
@@ -35,56 +31,82 @@ namespace VAPI
         [Tooltip("The conditions specified here need to be met for this variant to spawn, leave this blank if you want the variant to not have spawning restrictions")]
         public VariantSpawnCondition variantSpawnCondition;
 
-        public VariantSkillReplacement[] skillReplacements = Array.Empty<VariantSkillReplacement>();
+        public string arrivalToken;
 
         public VariantInventory variantInventory;
 
-        [Tooltip("Multiplier applied to the variant's Health\nWhere 1.0 = 100% Base health")]
+        public SerializableEntityStateType deathStateOverride;
+
+        public VariantSkillReplacement[] skillReplacements = Array.Empty<VariantSkillReplacement>();
+
         [Min(0)]
         public float healthMultiplier = 1;
 
-        [Tooltip("Extra regen of the Variant")]
         public float regenBonus = 0;
 
-        [Tooltip("Multiplier applied to the variant's Regen\nApplied after regenBonus\nWhere 1.0 = 100% Base Regen")]
         [Min(0)]
         public float regenMultiplier = 0;
 
-        [Tooltip("Extra Shield of the Variant")]
         public float shieldBonus = 0;
 
-        [Tooltip("Multiplier applied to the variant's Shield\nApplied after shieldBonus\nWhere 1.0 = 100% Base Shield")]
         [Min(0)]
         public float shieldMultiplier = 1;
 
-        [Tooltip("Multiplier applied to the variant's Movement Speed\nWhere 1.0 = 100% Base Movement Speed")]
         [Min(0)]
         public float moveSpeedMultiplier = 1;
 
-        [Tooltip("Multiplier applied to the variant's Attack Speed\nWhere 1.0 = 100% Base Movement Speed")]
         [Min(0)]
         public float attackSpeedMultiplier = 1;
 
-        [Tooltip("Multiplier applied to the variant's Damage\nWhere 1.0 = 100% Base Damage")]
         [Min(0)]
         public float damageMultiplier = 1;
 
-        [Tooltip("Multiplier applied to the variant's Armor, where 1.0 = 100% Base Armor")]
+        public float armorBonus = 0;
+
         [Min(0)]
         public float armorMultiplier = 1;
 
-        [Tooltip("Extra armor of the Variant\nRefer to the wiki's page on armor for how to use")]
-        public float armorBonus = 0;
-
         public VariantVisuals visualModifier;
 
-        public float sizeModifier;
+        public VariantSizeModifier sizeModifier;
 
-        public string arrivalToken;
+        public BasicAIModifier aiModifier;
+
+        public VariantOverrideName[] nameOverrides = Array.Empty<VariantOverrideName>();
 
         public VariantComponentProvider[] componentProviders = Array.Empty<VariantComponentProvider>();
 
-        public SerializableEntityStateType deathStateOverride;
+        public VariantTierIndex VariantTierIndex
+        {
+            get
+            {
+                if(variantTierDef)
+                {
+                    return variantTierDef.Tier;
+                }
+                return variantTier;
+            }
+
+            set
+            {
+                variantTierDef = VariantTierCatalog.GetVariantTierDef(value);
+            }
+        }
+
+        public VariantTierDef VariantTierDef
+        {
+            get
+            {
+                if (variantTierDef)
+                    return variantTierDef;
+                return VariantTierCatalog.GetVariantTierDef(VariantTierIndex);
+            }
+            set
+            {
+                variantTierDef = value;
+                variantTier = VariantTierIndex.AssignedAtRuntime;
+            }
+        }
 
         private void OnValidate()
         {
@@ -115,12 +137,12 @@ namespace VAPI
             ExpansionDef[] runExpansions = ExpansionCatalog.expansionDefs.Where(exp => run.IsExpansionEnabled(exp)).ToArray();
             DirectorAPI.StageInfo stageInfo = DirectorAPI.StageInfo.ParseInternalStageName(sceneInfo.sceneDef.baseSceneName);
 
-            return variantSpawnCondition ? IsAvailable(stageInfo, runExpansions) : false;
+            return variantSpawnCondition ? IsAvailable(stageInfo, runExpansions) : true;
         }
 
         public bool IsAvailable(DirectorAPI.StageInfo stageInfo, ExpansionDef[] runExpansions)
         {
-            return variantSpawnCondition ? variantSpawnCondition.IsAvailable(stageInfo, runExpansions) : false;
+            return variantSpawnCondition ? variantSpawnCondition.IsAvailable(stageInfo, runExpansions) : true;
         }
 
         [Serializable]

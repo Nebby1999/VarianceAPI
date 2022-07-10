@@ -1,0 +1,40 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="Container" class="genericHolder">
+        <Style src="/Packages/riskofthunder-ror2editorkit/Assets/USS/Inspectors/ScriptableObjectInspector.uss" />
+        <ui:Label text="Label" name="scriptType" class="genericHolderHeader scriptType" />
+        <ui:VisualElement name="InspectorData" class="genericHolder">
+            <ui:Label text="Important Data&#x9;" name="importantData" class="separatorLabel genericHolderHeader" />
+            <uie:PropertyField name="bodyName" binding-path="bodyName" />
+            <uie:PropertyField name="variantTier" binding-path="variantTier" />
+            <uie:PropertyField name="variantTierDef" binding-path="variantTierDef" />
+            <ui:Label text="Spawn Data" name="spawnData" class="genericHolderHeader separatorLabel" />
+            <uie:PropertyField name="isUnique" binding-path="isUnique" />
+            <uie:PropertyField name="spawnRate" binding-path="spawnRate" />
+            <uie:PropertyField name="variantSpawnCondition" binding-path="variantSpawnCondition" />
+            <uie:PropertyField name="arrivalToken" binding-path="arrivalToken" />
+            <ui:Label text="Inventory and States" name="inventoryAndStates" class="genericHolderHeader separatorLabel" />
+            <uie:PropertyField name="variantInventory" binding-path="variantInventory" />
+            <uie:PropertyField name="deathStateOverride" binding-path="deathStateOverride" />
+            <uie:PropertyField name="skillReplacements" binding-path="skillReplacements" />
+            <ui:Foldout text="Stat Modifiers" name="StatModifiersContainer" class="genericHolderFoldout">
+                <uie:PropertyField name="healthMultiplier" binding-path="healthMultiplier" />
+                <uie:PropertyField name="regenBonus" binding-path="regenBonus" />
+                <uie:PropertyField name="regenMultiplier" binding-path="regenMultiplier" />
+                <uie:PropertyField name="shieldBonus" binding-path="shieldBonus" />
+                <uie:PropertyField name="shieldMultiplier" binding-path="shieldMultiplier" />
+                <uie:PropertyField name="moveSpeedMultiplier" binding-path="moveSpeedMultiplier" />
+                <uie:PropertyField name="attackSpeedMultiplier" binding-path="attackSpeedMultiplier" />
+                <uie:PropertyField name="damageMultiplier" binding-path="damageMultiplier" />
+                <uie:PropertyField name="armorBonus" binding-path="armorBonus" />
+                <uie:PropertyField name="armorMultiplier" />
+            </ui:Foldout>
+            <ui:Label text="Visual Data" name="visualData" class="genericHolderHeader separatorLabel" />
+            <uie:PropertyField name="visualModifier" binding-path="visualModifier" />
+            <uie:PropertyField name="sizeModifier" binding-path="sizeModifier" />
+            <ui:Label text="Other" name="other" class="separatorLabel genericHolderHeader" />
+            <uie:PropertyField name="aiModifier" binding-path="aiModifier" />
+            <uie:PropertyField name="nameOverrides" binding-path="nameOverrides" />
+            <uie:PropertyField name="componentProviders" binding-path="componentProviders" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>
