@@ -4,10 +4,10 @@ using UnityEngine;
 
 namespace VAPI.Items
 {
-    public class PurpleHealthbar : ItemBase
+    public class GreenHealthBar : ItemBase
     {
-        public override ItemDef ItemDef { get; } = VAPIAssets.LoadAsset<ItemDef>("PurpleHealthbar");
-        public Color32 color = new Color32(231, 0, 231, byte.MaxValue);
+        public override ItemDef ItemDef { get; } = VAPIAssets.LoadAsset<ItemDef>("GreenHealthBar");
+        public Color32 color = new Color32(0, 255, 144, byte.MaxValue);
         public override void Initialize()
         {
             On.RoR2.UI.HealthBar.UpdateBarInfos += HealthBar_UpdateBarInfos;

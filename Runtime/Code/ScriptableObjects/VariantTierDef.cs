@@ -18,6 +18,7 @@ namespace VAPI
         public bool announcesArrival;
         public NetworkSoundEventDef soundEvent;
         public List<AddressableItemDef> tierItems = new List<AddressableItemDef>();
+        public AddressableBuffDef tierBuff;
 
         [Space]
         public float experienceMultiplier;
