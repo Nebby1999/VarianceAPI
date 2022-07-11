@@ -110,6 +110,7 @@ namespace VAPI.Components
                             tier.AddTierItems(CharacterMaster.inventory);
                         }
                         inventory.AddBuffs(CharacterBody);
+                        tier.AddTierBuff(CharacterBody);
                     }
 
                     if (CharacterDeathBehavior && current.deathStateOverride.stateType != null)

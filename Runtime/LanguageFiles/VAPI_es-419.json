@@ -1,5 +1,5 @@
 {
-    "es-419" : {
+    "strings" : {
         "VAPI_EXPANSION_NAME": "VarianceAPI",
         "VAPI_EXPANSION_DESC": "Permite que los variantes aparezcan en la partida.",
 

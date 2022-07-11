@@ -11,14 +11,13 @@ namespace VAPI
 {
     public class VAPIAssets : AssetsLoader<VAPIAssets>
     {
+        public string AssemblyDir => Path.GetDirectoryName(VAPIMain.Instance.Info.Location);
         public override AssetBundle MainAssetBundle => _assetBundle;
         private AssetBundle _assetBundle;
 
         internal void Init()
         {
-            var assemblyPath = VAPIMain.Instance.Info.Location;
-            var directory = Directory.GetDirectoryRoot(assemblyPath);
-            var bundlePath = Path.Combine(directory, "vapiassets");
+            var bundlePath = Path.Combine(AssemblyDir, "assetbundles", "vapiassets");
             _assetBundle = AssetBundle.LoadFromFile(bundlePath);
         }
 

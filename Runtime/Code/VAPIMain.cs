@@ -23,8 +23,10 @@ namespace VAPI
         {
             Instance = this;
 
+            new VAPILog(Logger);
             new VAPIAssets().Init();
             new VAPIConfig().Init();
+            new VAPILang().Init();
             new VAPIContent().Init();
 
             ConfigurableFieldManager.AddMod(this);

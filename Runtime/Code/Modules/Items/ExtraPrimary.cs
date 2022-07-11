@@ -16,6 +16,7 @@ namespace VAPI.Items
 
         private void AddPrimary(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
+            orig(self);
             var skillLoc = self.skillLocator;
             if(skillLoc.primary)
             {

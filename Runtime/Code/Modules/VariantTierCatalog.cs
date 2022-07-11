@@ -71,7 +71,7 @@ namespace VAPI
             if (configFile == null)
                 throw new NullReferenceException("configFile");
 
-            if(unregisteredTiers.ContainsKey(configFile))
+            if(!unregisteredTiers.ContainsKey(configFile))
             {
                 unregisteredTiers.Add(configFile, new List<VariantTierDef>());
             }
@@ -83,14 +83,7 @@ namespace VAPI
         [SystemInitializer]
         private static void SystemInit()
         {
-            AddTiers(VAPIAssets.LoadAllAssetsOfType<VariantTierDef>(), VAPIConfig.rewardsConfig);
-
             tierToDef.Clear();
-
-            foreach(KeyValuePair<ConfigFile, List<VariantTierDef>> configAndVariants in unregisteredTiers)
-            {
-                unregisteredTiers[configAndVariants.Key] = configAndVariants.Value.OrderBy(vd => vd.name).ToList();
-            }
 
             registeredTiers = RegisterTiers(unregisteredTiers).ToArray();
             unregisteredTiers = null;

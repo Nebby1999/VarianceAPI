@@ -58,8 +58,15 @@ namespace VAPI
             base.Init();
             LoadDispatchers = new Action[]
             {
-                () => new ItemModule().Initialize(),
-                () => VAPIAssets.Instance.SwapShaders(),
+                () =>
+                {
+                    new ItemModule().Initialize();
+                },
+                () =>
+                {
+                    VAPILog.Info($"Adding default Variant Tiers");
+                    VariantTierCatalog.AddTiers(VAPIAssets.LoadAllAssetsOfType<VariantTierDef>(), VAPIConfig.rewardsConfig);
+                },
             };
             PopulateFieldsDispatchers = new Action[]
             {

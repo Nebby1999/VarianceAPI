@@ -28,6 +28,7 @@ namespace VAPI
             {
                 VAPILog.Error($"A Stage ({obj}) has started, but there is no Run And/Or SceneInfo instances! Variants will not be filtered." +
                     $"\n(Run: {run}, SceneInfo: {info}");
+                return;
             }
 
             DirectorAPI.StageInfo stageInfo = DirectorAPI.StageInfo.ParseInternalStageName(info.sceneDef.baseSceneName);

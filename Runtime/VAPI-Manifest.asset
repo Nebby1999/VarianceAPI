@@ -32,7 +32,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StagingPaths:
   - <BuildPathPlugins>
-  rootFolderName: MyLang
+  rootFolderName: VAPILang
   languageFolders:
   - languageName: en
     languageFiles:

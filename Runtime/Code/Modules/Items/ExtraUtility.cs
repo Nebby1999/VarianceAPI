@@ -14,6 +14,7 @@ namespace VAPI.Items
 
         private void AddSpecial(On.RoR2.CharacterBody.orig_RecalculateStats orig, CharacterBody self)
         {
+            orig(self);
             var skillLoc = self.skillLocator;
             if (skillLoc.utility)
             {

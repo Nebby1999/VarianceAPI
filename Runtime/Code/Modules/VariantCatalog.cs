@@ -88,28 +88,32 @@ namespace VAPI
         [SystemInitializer(typeof(BodyCatalog), typeof(VariantTierCatalog))]
         private static void SystemInitializer()
         {
-            nameToIndex.Clear();
-
-            foreach(KeyValuePair<ConfigFile, List<VariantDef>> configAndVariants in unregisteredVariants)
+            if(unregisteredVariants.Count <= 0)
             {
-                unregisteredVariants[configAndVariants.Key] = configAndVariants.Value.OrderBy(vd => vd.name).ToList();
+                VAPILog.Info($"No Variants where Added prior to VariantCatalog initialization, returning.");
+                return;
             }
+
+            nameToIndex.Clear();
 
             registeredVariants = RegisterVariants(unregisteredVariants).ToArray();
             unregisteredVariants = null;
             PopulateBodyIndexToVariants();
 
+            VAPILog.Info("Variant Catalog Initialized");
             Initialized = true;
         }
 
         private static List<VariantDef> RegisterVariants(Dictionary<ConfigFile, List<VariantDef>> unregisteredVariants)
         {
+            VAPILog.Info($"Trying to register a total of {unregisteredVariants.Values.SelectMany(k => k).Count()} Variants");
             List<VariantDef> variantsToRegister = new List<VariantDef>();
 
             foreach(KeyValuePair<ConfigFile, List<VariantDef>> configVariantsPair in unregisteredVariants)
             {
                 ConfigFile config = configVariantsPair.Key;
                 List<VariantDef> variants = configVariantsPair.Value;
+                VAPILog.Debug($"Validating the following variants: {string.Join("\n", variants.Select(vd => vd.name))}");
 
                 variants = variants.Where(ValidateVariant).ToList();
                 ConfigureVariantsThatPassedFilter(config, variants);
@@ -122,6 +126,7 @@ namespace VAPI
             {
                 RegisterVariant(variantsToRegister[(int)variantIndex], variantIndex);
             }
+            VAPILog.Info($"Final Variants Registered: {variantsToRegister.Count}");
             return variantsToRegister;
         }
 
@@ -129,6 +134,12 @@ namespace VAPI
         {
             try
             {
+                if(string.IsNullOrEmpty(variant.name) || string.IsNullOrWhiteSpace(variant.name))
+                {
+                    VAPILog.Error($"Variant {variant} has no object name!");
+                    return false;
+                }
+
                 if (!BodyCatalog.bodyNames.Contains(variant.name))
                 {
                     VAPILog.Warning($"Variant {variant} tries to modify a body with the name {variant.name}, but no such body exists in the catalog.");
@@ -178,6 +189,7 @@ namespace VAPI
         {
             try
             {
+                VAPILog.Debug($"Registering {variant} (Index: {index})");
                 variant.VariantIndex = index;
                 nameToIndex.Add(variant.name, index);
             }
@@ -189,6 +201,7 @@ namespace VAPI
         
         private static void PopulateBodyIndexToVariants()
         {
+            VAPILog.Info("Creating BodyVariantDefProviders for registered variants");
             foreach(CharacterBody body in BodyCatalog.allBodyPrefabBodyBodyComponents)
             {
                 VariantDef[] variantsForBody = registeredVariants
@@ -203,6 +216,8 @@ namespace VAPI
                         body.gameObject.AddComponent<BodyVariantReward>();
 
                     bodyIndexToDefProvider.Add(body.bodyIndex, new BodyVariantDefProvider(variantsForBody, body.bodyIndex));
+
+                    VAPILog.Debug($"Created a BodyVariantDefProvider for body {body.name}. (Variants: {string.Join("\n", variantsForBody.ToString())}");
                 }
             }
         }

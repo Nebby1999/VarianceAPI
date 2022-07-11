@@ -41,6 +41,14 @@ namespace VAPI
             }
         }
 
+        public virtual void AddTierBuff(CharacterBody targetBody)
+        {
+            if (!NetworkServer.active)
+                return;
+
+            targetBody.AddBuff(tierBuff.Asset);
+        }
+
         public virtual VariantRewardInfo CreateVariantRewardInfo(Run runInstance)
         {
             var vri = new VariantRewardInfo(goldMultiplier, experienceMultiplier, whiteItemDropChance, greenItemDropChance, redItemDropChance);
