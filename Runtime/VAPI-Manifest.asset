@@ -14,7 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StagingPaths:
   - <BuildPath>
-  files: []
+  files:
+  - {fileID: 4900000, guid: 501c5eb442da75842af61bf54eee9452, type: 3}
+  - {fileID: 4900000, guid: 5c42ca39fb7e4ad4f841826df2399fb2, type: 3}
+  - {fileID: 2800000, guid: 17e7291e3ba22bf44987a915ddf8eed0, type: 3}
 --- !u!114 &-3892906877110538616
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -32,7 +35,11 @@ MonoBehaviour:
   rootFolderName: MyLang
   languageFolders:
   - languageName: en
-    languageFiles: []
+    languageFiles:
+    - {fileID: 4900000, guid: 84da845bba7a7604586ae516e761d4fb, type: 3}
+  - languageName: es-419
+    languageFiles:
+    - {fileID: 4900000, guid: b684d5e09172f0644aa0ad5a48a510d6, type: 3}
 --- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -43,7 +50,7 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: e563561e08b6a3642a487177f5cfbb37, type: 3}
-  m_Name: Manifest
+  m_Name: VAPI-Manifest
   m_EditorClassIdentifier: 
   Data:
   - {fileID: 114211852988908172}
@@ -54,7 +61,7 @@ MonoBehaviour:
   - {fileID: 8324102109481770816}
   - {fileID: -4467616490986340797}
   identity: {fileID: 114211852988908172}
-  QuickAccess: 0
+  QuickAccess: 1
 --- !u!114 &114107831304456238
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -87,7 +94,8 @@ MonoBehaviour:
   - <ManifestPluginStaging>
   Author: Nebby
   Name: VarianceAPI
-  Description: 
+  Description: VarianceAPI allows you to create Variants for CharacterBodies, Variants
+    can have different textures, lights, skills, and more.
   Version: 2.0.0
   Dependencies:
   - {fileID: 11400000, guid: 5ceb1d8ed3af40d4d806e9756b403649, type: 2}
@@ -138,4 +146,4 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StagingPaths:
   - <BuildPath>
-  url: 
+  url: https://github.com/Nebby1999/VarianceAPI

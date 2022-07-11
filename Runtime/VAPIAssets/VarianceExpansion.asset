@@ -14,8 +14,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   expansionIndex: 0
   requiredEntitlement: {fileID: 0}
-  nameToken: 
-  descriptionToken: 
-  iconSprite: {fileID: 0}
-  disabledIconSprite: {fileID: 0}
+  nameToken: VAPI_EXPANSION_NAME
+  descriptionToken: VAPI_EXPANSION_DESC
+  iconSprite: {fileID: 21300000, guid: 8375a67fafa218b419c8ab3eb7778293, type: 3}
+  disabledIconSprite: {fileID: 21300000, guid: 104b61f78b1553d4487de5b61c3414b8, type: 3}
   runBehaviorPrefab: {fileID: 0}

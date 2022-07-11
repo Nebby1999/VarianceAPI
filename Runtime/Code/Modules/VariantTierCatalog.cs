@@ -83,6 +83,8 @@ namespace VAPI
         [SystemInitializer]
         private static void SystemInit()
         {
+            AddTiers(VAPIAssets.LoadAllAssetsOfType<VariantTierDef>(), VAPIConfig.rewardsConfig);
+
             tierToDef.Clear();
 
             foreach(KeyValuePair<ConfigFile, List<VariantTierDef>> configAndVariants in unregisteredTiers)

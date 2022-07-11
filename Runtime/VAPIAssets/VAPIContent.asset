@@ -16,20 +16,32 @@ MonoBehaviour:
   masterPrefabs: []
   projectilePrefabs: []
   gameModePrefabs: []
+  effectPrefabs: []
   networkedObjectPrefabs: []
   skillDefs: []
   skillFamilies: []
   sceneDefs: []
   itemDefs: []
+  itemTierDefs: []
+  itemRelationshipProviders: []
+  itemRelationshipTypes: []
   equipmentDefs: []
-  buffDefs: []
+  buffDefs:
+  - {fileID: 11400000, guid: 90986a7ed35921c498b9ef9b25264d9a, type: 2}
   eliteDefs: []
   unlockableDefs: []
   survivorDefs: []
-  artifactDefs: []
+  artifactDefs:
+  - {fileID: 11400000, guid: 2a46fba08bb7850458be28968471244b, type: 2}
   surfaceDefs: []
-  networkSoundEventDefs: []
+  networkSoundEventDefs:
+  - {fileID: 11400000, guid: a53b3a896fb5d8f478c374fb26f2ce7e, type: 2}
+  - {fileID: 11400000, guid: b4f17db8daab63a4fb5bca0fa830a04f, type: 2}
   musicTrackDefs: []
   gameEndingDefs: []
+  miscPickupDefs: []
   entityStateConfigurations: []
   entityStateTypes: []
+  expansionDefs:
+  - {fileID: 11400000, guid: c6bb5aefe30f0ff449f147c467e0db10, type: 2}
+  entitlementDefs: []

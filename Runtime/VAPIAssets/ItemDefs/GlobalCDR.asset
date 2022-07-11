@@ -12,7 +12,8 @@ MonoBehaviour:
   m_Script: {fileID: -1284244208, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
   m_Name: GlobalCDR
   m_EditorClassIdentifier: 
-  tier: 5
+  deprecatedTier: 5
+  _itemTierDef: {fileID: 0}
   nameToken: VAPI_ITEM_GLOBALCDR_NAME
   pickupToken: VAPI_ITEM_GLOBALCDR_PICKUP
   descriptionToken: VAPI_ITEM_GLOBALCDR_DESC
@@ -23,3 +24,4 @@ MonoBehaviour:
   hidden: 0
   canRemove: 1
   tags: 04000000
+  requiredExpansion: {fileID: 11400000, guid: c6bb5aefe30f0ff449f147c467e0db10, type: 2}

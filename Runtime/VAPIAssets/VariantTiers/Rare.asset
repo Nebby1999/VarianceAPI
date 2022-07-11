@@ -14,14 +14,17 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tier: 2
   announcesArrival: 0
-  soundEvent: {fileID: 0}
-  tierItems: []
+  soundEvent: {fileID: 11400000, guid: a53b3a896fb5d8f478c374fb26f2ce7e, type: 2}
+  tierItems:
+  - address: 
+    useDirectReference: 1
+    asset: {fileID: 11400000, guid: a2a82a10e9342d646b28637fa5fd4f2f, type: 2}
   tierBuff:
     address: 
     useDirectReference: 1
-    asset: {fileID: 0}
-  experienceMultiplier: 0
-  goldMultiplier: 0
-  whiteItemDropChance: 0
-  greenItemDropChance: 0
-  redItemDropChance: 0
+    asset: {fileID: 11400000, guid: 90986a7ed35921c498b9ef9b25264d9a, type: 2}
+  experienceMultiplier: 2
+  goldMultiplier: 2
+  whiteItemDropChance: 10
+  greenItemDropChance: 5
+  redItemDropChance: 1

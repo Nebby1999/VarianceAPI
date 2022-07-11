@@ -174,7 +174,7 @@ namespace VAPI.Components
                 else
                 {
                     VAPILog.Debug($"{variantDef}'s tier announces its arrival, but it doesnt have a token set, using generic message.");
-                    Chat.AddMessage(Language.GetStringFormatted("GENERIC_ARRIVAL", CharacterBody.GetDisplayName()));
+                    Chat.AddMessage(Language.GetStringFormatted("VAPI_GENERIC_ARRIVAL", CharacterBody.GetDisplayName()));
                 }
                 announced = true;
             }

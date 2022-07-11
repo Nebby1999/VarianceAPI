@@ -9,15 +9,20 @@ using R2API;
 using UnityEngine.Networking;
 using RoR2.ExpansionManagement;
 using System.Collections.ObjectModel;
+using Moonstorm;
 
 namespace VAPI.Components
 {
     public class VariantSpawnManager : MonoBehaviour
     {
+        [ConfigurableField(VAPIConfig.general, ConfigDesc = "Multiplier thats applied to the spawn chance of variants when the Artifact of Variance is enabled")]
+        [TokenModifier("VAPI_ARTIFACT_VARIANCE_DESC", StatTypes.Default, 0)]
+        public static float artifactSpawnRateMultiplier = 2f;
         public static VariantSpawnManager Instance { get; private set; }
 
         public Xoroshiro128Plus variantRNG;
-        public float spawnRateMultiplier;
+        public float defaultSpawnRateMultiplier = 1;
+        public ArtifactDef varianceArtifact;
         public static event Action<VariantSpawnManager> OnAwake;
         public static event Action<ReadOnlyCollection<VariantDef>, GameObject> OnVariantSpawnedServer;
         public static event Action<ReadOnlyCollection<VariantDef>, DamageReport> OnVariantKilledServer;
@@ -86,7 +91,7 @@ namespace VAPI.Components
             float notUniqueChance = 0f;
             for (int i = 0; i < pool.Length; i++)
             {
-                var chance = pool[i].spawnRate * spawnRateMultiplier;
+                var chance = pool[i].spawnRate * (RunArtifactManager.instance.IsArtifactEnabled(varianceArtifact) ? artifactSpawnRateMultiplier : defaultSpawnRateMultiplier);
                 uniqueRng.AddChoice(i, Mathf.Min(100, chance));
                 notUniqueChance += Mathf.Max(0, 100 - chance);
             }
@@ -105,7 +110,7 @@ namespace VAPI.Components
             for(int i = 0; i < pool.Length; i++)
             {
                 var currentDef = pool[i];
-                var spawnRate = Mathf.Min(100, currentDef.spawnRate * spawnRateMultiplier);
+                var spawnRate = Mathf.Min(100, currentDef.spawnRate * (RunArtifactManager.instance.IsArtifactEnabled(varianceArtifact) ? artifactSpawnRateMultiplier : defaultSpawnRateMultiplier));
                 if (Util.CheckRoll(spawnRate))
                     defs.Add(currentDef);
             }

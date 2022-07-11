@@ -15,6 +15,7 @@ MonoBehaviour:
   nameToken: VAPI_ARTIFACT_VARIANCE_NAME
   descriptionToken: VAPI_ARTIFACT_VARIANCE_DESC
   unlockableDef: {fileID: 0}
+  requiredExpansion: {fileID: 11400000, guid: c6bb5aefe30f0ff449f147c467e0db10, type: 2}
   smallIconSelectedSprite: {fileID: 21300000, guid: 8375a67fafa218b419c8ab3eb7778293,
     type: 3}
   smallIconDeselectedSprite: {fileID: 21300000, guid: 104b61f78b1553d4487de5b61c3414b8,

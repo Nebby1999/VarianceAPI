@@ -18,6 +18,7 @@ namespace VAPI
 
         public static ConfigFile generalConfig;
         internal static ConfigEntry<bool> enableDebugFeatures;
+        internal static ConfigEntry<bool> enableArtifactOfVariance;
         internal static ConfigEntry<bool> activateMeshReplacementSystem;
 
         public static ConfigFile rewardsConfig;
@@ -45,6 +46,11 @@ namespace VAPI
                 "Activate Mesh Replacement Systems",
                 false,
                 "Activates the Mesh Replacement System, allowing for Variants to have different meshes.\nExtremely jank, may not work at all, and tanks performance.");
+
+            enableArtifactOfVariance = generalConfig.Bind<bool>("Artifact Of Variance",
+                "Enable",
+                true,
+                "Wether the Artifact of Variance is enabled");
 
             enableRewards = rewardsConfig.Bind<bool>("VarianceAPI :: Rewards",
                 "Activate Rewards Systems",

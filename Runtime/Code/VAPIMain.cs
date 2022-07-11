@@ -4,6 +4,7 @@ using UnityEngine;
 using BepInEx;
 using RoR2;
 using R2API.Utils;
+using Moonstorm;
 
 namespace VAPI
 {
@@ -21,6 +22,13 @@ namespace VAPI
         private void Awake()
         {
             Instance = this;
+
+            new VAPIAssets().Init();
+            new VAPIConfig().Init();
+            new VAPIContent().Init();
+
+            ConfigurableFieldManager.AddMod(this);
+            TokenModifierManager.AddToManager();
         }
     }
 }
