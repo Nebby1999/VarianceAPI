@@ -18,7 +18,7 @@ namespace VAPI.Components
         private VariantRewardInfo reward;
         private DeathRewards deathRewards;
         private CharacterBody characterBody;
-
+        
         public void Awake()
         {
             if (!Run.instance)
@@ -58,6 +58,11 @@ namespace VAPI.Components
                 }
             }
             reward.TrySpawnDroplet(damageReport);
+
+            if(VariantSpawnManager.Instance)
+            {
+                VariantSpawnManager.Instance.OnVariantKilled(variantsInBody, damageReport);
+            }
         }
     }
 }

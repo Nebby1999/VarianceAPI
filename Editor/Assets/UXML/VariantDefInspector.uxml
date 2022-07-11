@@ -1,40 +1,40 @@
 <ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
     <ui:VisualElement name="Container" class="genericHolder">
         <Style src="/Packages/riskofthunder-ror2editorkit/Assets/USS/Inspectors/ScriptableObjectInspector.uss" />
-        <ui:Label text="Label" name="scriptType" class="genericHolderHeader scriptType" />
+        <ui:Label text="Label" name="scriptType" tooltip="A VariantDef is the basic Definition of a Variant. All Variants are created via the VariantDef" class="genericHolderHeader scriptType" />
         <ui:VisualElement name="InspectorData" class="genericHolder">
             <ui:Label text="Important Data&#x9;" name="importantData" class="separatorLabel genericHolderHeader" />
-            <uie:PropertyField name="bodyName" binding-path="bodyName" />
-            <uie:PropertyField name="variantTier" binding-path="variantTier" />
-            <uie:PropertyField name="variantTierDef" binding-path="variantTierDef" />
+            <uie:PropertyField name="bodyName" binding-path="bodyName" tooltip="The name of the body that this VariantDef will modify." />
+            <uie:PropertyField name="variantTier" binding-path="variantTier" tooltip="The vanilla tiers of Variants, Set this to &quot;Assigned at Runtime&quot; to select a custom VariantTierDef" />
+            <uie:PropertyField name="variantTierDef" binding-path="variantTierDef" tooltip="The custom VariantTierDef for this VariantDef." />
             <ui:Label text="Spawn Data" name="spawnData" class="genericHolderHeader separatorLabel" />
-            <uie:PropertyField name="isUnique" binding-path="isUnique" />
-            <uie:PropertyField name="spawnRate" binding-path="spawnRate" />
-            <uie:PropertyField name="variantSpawnCondition" binding-path="variantSpawnCondition" />
-            <uie:PropertyField name="arrivalToken" binding-path="arrivalToken" />
+            <uie:PropertyField name="isUnique" binding-path="isUnique" tooltip="Wether this variant can participate in Variant Overlapping" />
+            <uie:PropertyField name="spawnRate" binding-path="spawnRate" tooltip="The chance for this variant to spawn" />
+            <uie:PropertyField name="variantSpawnCondition" binding-path="variantSpawnCondition" tooltip="A speciric set of conditions that need to be met for this Variant to spawn, leave this null if you want no spawning conditions." />
+            <uie:PropertyField name="arrivalToken" binding-path="arrivalToken" tooltip="A token that gets displayed when the variant spawns, only gets used if the VariantTierDef has &quot;announces arrival&quot; set to true" />
             <ui:Label text="Inventory and States" name="inventoryAndStates" class="genericHolderHeader separatorLabel" />
-            <uie:PropertyField name="variantInventory" binding-path="variantInventory" />
-            <uie:PropertyField name="deathStateOverride" binding-path="deathStateOverride" />
-            <uie:PropertyField name="skillReplacements" binding-path="skillReplacements" />
-            <ui:Foldout text="Stat Modifiers" name="StatModifiersContainer" class="genericHolderFoldout">
-                <uie:PropertyField name="healthMultiplier" binding-path="healthMultiplier" />
-                <uie:PropertyField name="regenBonus" binding-path="regenBonus" />
-                <uie:PropertyField name="regenMultiplier" binding-path="regenMultiplier" />
-                <uie:PropertyField name="shieldBonus" binding-path="shieldBonus" />
-                <uie:PropertyField name="shieldMultiplier" binding-path="shieldMultiplier" />
-                <uie:PropertyField name="moveSpeedMultiplier" binding-path="moveSpeedMultiplier" />
-                <uie:PropertyField name="attackSpeedMultiplier" binding-path="attackSpeedMultiplier" />
-                <uie:PropertyField name="damageMultiplier" binding-path="damageMultiplier" />
-                <uie:PropertyField name="armorBonus" binding-path="armorBonus" />
-                <uie:PropertyField name="armorMultiplier" />
+            <uie:PropertyField name="variantInventory" binding-path="variantInventory" tooltip="An inventory to give to the variant, Leave this null if you want to add no inventory" />
+            <uie:PropertyField name="deathStateOverride" binding-path="deathStateOverride" tooltip="An override to the Variant&apos;s DeathState, leave this null if you dont want to modify the Death State" />
+            <uie:PropertyField name="skillReplacements" binding-path="skillReplacements" tooltip="A list of Skill Replacements for this variant." />
+            <ui:Foldout text="Stat Modifiers" name="StatModifiersContainer" tooltip="These stat modifiers are applied to the Variant&apos;s Base stats. for better stat modification consider making a custom item" class="genericHolderFoldout">
+                <uie:PropertyField name="healthMultiplier" binding-path="healthMultiplier" tooltip="Multiplier applied to the Variant&apos;s Health" />
+                <uie:PropertyField name="regenBonus" binding-path="regenBonus" tooltip="Extra Regen applied to the variant." />
+                <uie:PropertyField name="regenMultiplier" binding-path="regenMultiplier" tooltip="A regen multiplier for this variant, applied after Regen Bonus" />
+                <uie:PropertyField name="shieldBonus" binding-path="shieldBonus" tooltip="Bonus shield for this variant" />
+                <uie:PropertyField name="shieldMultiplier" binding-path="shieldMultiplier" tooltip="Shield multiplier applied to the variant, applied after Shield Bonus" />
+                <uie:PropertyField name="moveSpeedMultiplier" binding-path="moveSpeedMultiplier" tooltip="Multiplier applied to the variant&apos;s movement speed" />
+                <uie:PropertyField name="attackSpeedMultiplier" binding-path="attackSpeedMultiplier" tooltip="Multiplier applied to the variant&apos;s Attack Speed" />
+                <uie:PropertyField name="damageMultiplier" binding-path="damageMultiplier" tooltip="Multiplier applied to the variant&apos;s Damage" />
+                <uie:PropertyField name="armorBonus" binding-path="armorBonus" tooltip="Bonus armor applied to the variant" />
+                <uie:PropertyField name="armorMultiplier" binding-path="armorMultiplier" tooltip="Multiplier that&apos;s applied to tthe variant&apos;s armor stat, applied after &quot;Armor Bonus&quot;" />
             </ui:Foldout>
             <ui:Label text="Visual Data" name="visualData" class="genericHolderHeader separatorLabel" />
-            <uie:PropertyField name="visualModifier" binding-path="visualModifier" />
-            <uie:PropertyField name="sizeModifier" binding-path="sizeModifier" />
+            <uie:PropertyField name="visualModifier" binding-path="visualModifier" tooltip="The visual modifier for this variant, allowing for custom meshes, materials and lights. Leave null for no visual modifications" />
+            <uie:PropertyField name="sizeModifier" binding-path="sizeModifier" tooltip="A size modifier for this variant, leave blank for no modifications to the size" />
             <ui:Label text="Other" name="other" class="separatorLabel genericHolderHeader" />
-            <uie:PropertyField name="aiModifier" binding-path="aiModifier" />
-            <uie:PropertyField name="nameOverrides" binding-path="nameOverrides" />
-            <uie:PropertyField name="componentProviders" binding-path="componentProviders" />
+            <uie:PropertyField name="aiModifier" binding-path="aiModifier" tooltip="Basic AI modifiers for this variant" />
+            <uie:PropertyField name="nameOverrides" binding-path="nameOverrides" tooltip="Names used for this variant&apos;s naming scheme." />
+            <uie:PropertyField name="componentProviders" binding-path="componentProviders" tooltip="A list of components to give to the variant." />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

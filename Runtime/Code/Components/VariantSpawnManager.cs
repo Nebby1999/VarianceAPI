@@ -8,6 +8,7 @@ using UnityEngine;
 using R2API;
 using UnityEngine.Networking;
 using RoR2.ExpansionManagement;
+using System.Collections.ObjectModel;
 
 namespace VAPI.Components
 {
@@ -18,6 +19,8 @@ namespace VAPI.Components
         public Xoroshiro128Plus variantRNG;
         public float spawnRateMultiplier;
         public static event Action<VariantSpawnManager> OnAwake;
+        public static event Action<ReadOnlyCollection<VariantDef>, GameObject> OnVariantSpawnedServer;
+        public static event Action<ReadOnlyCollection<VariantDef>, DamageReport> OnVariantKilledServer;
 
         private void Awake()
         {
@@ -56,6 +59,7 @@ namespace VAPI.Components
                 rewards.AddVariants(variantsForBody);
                 rewards.Apply();
             }
+            OnVariantSpawnedServer?.Invoke(new ReadOnlyCollection<VariantDef>(variantsForBody), obj.gameObject);
         }
 
         private VariantDef[] Roll(BodyVariantDefProvider provider)
@@ -126,6 +130,11 @@ namespace VAPI.Components
             {
                 Instance = null;
             }
+        }
+
+        internal void OnVariantKilled(ReadOnlyCollection<VariantDef> variants, DamageReport damageReport)
+        {
+            OnVariantKilledServer?.Invoke(variants, damageReport);
         }
     }
 }

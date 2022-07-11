@@ -97,11 +97,11 @@ namespace VAPI.Components
                 try
                 {
                     VariantTierDef tier = current.VariantTierDef;
-                    if(!announcedArrival)
+                    if (!announcedArrival)
                         announcedArrival = AnnounceArrival(current, tier);
 
                     VariantInventory inventory = current.variantInventory;
-                    if(inventory)
+                    if (inventory)
                     {
                         if (CharacterMaster && CharacterMaster.inventory)
                         {
@@ -120,14 +120,14 @@ namespace VAPI.Components
                     ModifyStats(current);
 
                     VariantVisuals visuals = current.visualModifier;
-                    if(visuals && CharacterModel)
+                    if (visuals && CharacterModel)
                     {
                         visuals.ApplyMaterials(CharacterModel);
                         visuals.ApplyLights(CharacterModel);
-                        
-                        if(VAPIConfig.activateMeshReplacementSystem.Value)
+
+                        if (VAPIConfig.activateMeshReplacementSystem.Value)
                         {
-                            if(visuals.ApplyMeshes(CharacterModel, out storedIDRS, out MeshType meshType))
+                            if (visuals.ApplyMeshes(CharacterModel, out storedIDRS, out MeshType meshType))
                             {
                                 if (meshType != MeshType.Default)
                                     TryFuckWithBoneStructure(meshType);
@@ -136,7 +136,7 @@ namespace VAPI.Components
                     }
 
                     VariantSizeModifier sizeModifier = current.sizeModifier;
-                    if(sizeModifier && CharacterModel)
+                    if (sizeModifier && CharacterModel)
                     {
                         sizeModifier.ApplySize(CharacterModel.transform, CharacterBody.GetComponentsInChildren<KinematicCharacterMotor>());
                     }
@@ -147,19 +147,27 @@ namespace VAPI.Components
 
                     AddComponents(current.componentProviders);
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     VAPILog.Error($"Exception while trying to apply variant defs to {CharacterBody.GetDisplayName()}, {e}");
                 }
             }
+
+            if (NetworkServer.active)
+            {
+                CharacterBody.healthComponent.health = CharacterBody.healthComponent.fullHealth;
+                CharacterBody.healthComponent.shield = CharacterBody.healthComponent.fullShield;
+            }
+
+            CharacterBody.RecalculateStats();
         }
 
         private bool AnnounceArrival(VariantDef variantDef, VariantTierDef tierDef)
         {
             bool announced = false;
-            if(tierDef.announcesArrival)
+            if (tierDef.announcesArrival)
             {
-                if(!string.IsNullOrEmpty(variantDef.arrivalToken))
+                if (!string.IsNullOrEmpty(variantDef.arrivalToken))
                 {
                     Chat.AddMessage(Language.GetStringFormatted(variantDef.arrivalToken));
                 }
@@ -171,7 +179,7 @@ namespace VAPI.Components
                 announced = true;
             }
 
-            if(tierDef.soundEvent)
+            if (tierDef.soundEvent)
             {
                 EffectManager.SimpleSoundEffect(tierDef.soundEvent.index, transform.position, true);
                 announced = true;
@@ -182,11 +190,11 @@ namespace VAPI.Components
         private void ModifySkills(VariantDef.VariantSkillReplacement[] skillReplacements)
         {
             SkillLocator skillLocator = CharacterBody.skillLocator;
-            if(skillLocator)
+            if (skillLocator)
             {
-                foreach(VariantDef.VariantSkillReplacement skillReplacement in skillReplacements)
+                foreach (VariantDef.VariantSkillReplacement skillReplacement in skillReplacements)
                 {
-                    switch(skillReplacement.skillSlot)
+                    switch (skillReplacement.skillSlot)
                     {
                         case SkillSlot.Primary:
                             skillLocator.primary?.SetSkillOverride(gameObject, skillReplacement.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
@@ -213,6 +221,7 @@ namespace VAPI.Components
             CharacterBody.baseMoveSpeed *= variantDef.moveSpeedMultiplier;
             CharacterBody.baseAttackSpeed *= variantDef.attackSpeedMultiplier;
             CharacterBody.baseDamage *= variantDef.damageMultiplier;
+            CharacterBody.levelDamage = CharacterBody.baseDamage * 0.2f;
             CharacterBody.baseArmor += variantDef.armorBonus;
             CharacterBody.baseArmor *= variantDef.armorMultiplier;
             CharacterBody.baseRegen += variantDef.regenBonus;
@@ -225,8 +234,8 @@ namespace VAPI.Components
         {
             if (!CharacterMaster)
                 return;
-            
-            foreach(AISkillDriver driver in CharacterMaster.GetComponents<AISkillDriver>())
+
+            foreach (AISkillDriver driver in CharacterMaster.GetComponents<AISkillDriver>())
             {
                 if (driver)
                 {
@@ -237,7 +246,7 @@ namespace VAPI.Components
                         driver.minUserHealthFraction = Mathf.NegativeInfinity;
                         driver.maxUserHealthFraction = Mathf.Infinity;
                     }
-                    if(aiModifier.HasFlag(BasicAIModifier.ForceSprint))
+                    if (aiModifier.HasFlag(BasicAIModifier.ForceSprint))
                     {
                         driver.shouldSprint = true;
                     }
@@ -247,9 +256,9 @@ namespace VAPI.Components
 
         private void ModifyName(VariantDef.VariantOverrideName[] overrideNames)
         {
-            foreach(var overrideName in overrideNames)
+            foreach (var overrideName in overrideNames)
             {
-                switch(overrideName.overrideType)
+                switch (overrideName.overrideType)
                 {
                     case OverrideNameType.Prefix:
                         CharacterBody.baseNameToken = Language.GetStringFormatted(overrideName.token) + " " + CharacterBody.GetDisplayName();
@@ -266,27 +275,38 @@ namespace VAPI.Components
 
         private void AddComponents(VariantDef.VariantComponentProvider[] providers)
         {
-            foreach(var component in providers)
+            foreach (var component in providers)
             {
                 Type typeToAdd = (Type)component.componentToAdd;
 
-                switch(component.attachmentType)
+                switch (component.attachmentType)
                 {
                     case ComponentAttachmentType.Body:
-                        CharacterBody.gameObject.AddComponent(typeToAdd);
+                        SetupComponent(CharacterBody.gameObject.AddComponent(typeToAdd));
                         break;
                     case ComponentAttachmentType.Master:
                         if (CharacterMaster)
-                            CharacterMaster.gameObject.AddComponent(typeToAdd);
+                            SetupComponent(CharacterMaster.gameObject.AddComponent(typeToAdd));
                         break;
                     case ComponentAttachmentType.Model:
                         if (CharacterModel)
-                            CharacterModel.gameObject.AddComponent(typeToAdd);
+                            SetupComponent(CharacterModel.gameObject.AddComponent(typeToAdd));
                         break;
                 }
             }
         }
 
+        private void SetupComponent(Component component)
+        {
+            if(!(component is VariantComponent vc))
+            {
+                return;
+            }
+            vc.CharacterBody = CharacterBody;
+            vc.CharacterMaster = CharacterMaster;
+            vc.CharacterModel = CharacterModel;
+            vc.VariantDefs = variantsInBody;
+        }
         #region Mesh Replacement Jank
         private void TryFuckWithBoneStructure(MeshType meshType)
         {
