@@ -34,7 +34,7 @@
             <ui:Label text="Other" name="other" class="separatorLabel genericHolderHeader" />
             <uie:PropertyField name="aiModifier" binding-path="aiModifier" tooltip="Basic AI modifiers for this variant" />
             <uie:PropertyField name="nameOverrides" binding-path="nameOverrides" tooltip="Names used for this variant&apos;s naming scheme." />
-            <uie:PropertyField name="componentProviders" binding-path="componentProviders" tooltip="A list of components to give to the variant." />
+            <uie:PropertyField name="componentProviders" binding-path="componentProviders" tooltip="A list of components to give to the variant." usage-hints="GroupTransform" tabindex="1" />
         </ui:VisualElement>
     </ui:VisualElement>
 </ui:UXML>

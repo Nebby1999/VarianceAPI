@@ -140,7 +140,7 @@ namespace VAPI
                     return false;
                 }
 
-                if (!BodyCatalog.bodyNames.Contains(variant.name))
+                if (!BodyCatalog.bodyNames.Contains(variant.bodyName))
                 {
                     VAPILog.Warning($"Variant {variant} tries to modify a body with the name {variant.name}, but no such body exists in the catalog.");
                     return false;

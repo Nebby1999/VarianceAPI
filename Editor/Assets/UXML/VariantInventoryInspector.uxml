@@ -1,0 +1,18 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements">
+    <ui:VisualElement name="Container" class="genericHolder">
+        <Style src="/Packages/riskofthunder-ror2editorkit/Assets/USS/Inspectors/ScriptableObjectInspector.uss" />
+        <ui:Label text="Label" name="scriptType" tooltip="A VariantInventory contains inventory data for a variant, including Items, Buffs and Equipments" class="genericHolderHeader scriptType" />
+        <ui:VisualElement name="InspectorData" class="genericHolder">
+            <uie:PropertyField name="itemInventory" binding-path="itemInventory" />
+            <uie:PropertyField name="buffInfos" binding-path="buffInfos" />
+            <ui:Label text="Equipment Info" name="equipmentInfos" class="genericHolderHeader separatorLabel" />
+            <uie:PropertyField binding-path="equipmentInfo.equipmentDef" name="equipmentDef" />
+            <uie:PropertyField binding-path="equipmentInfo.usable" name="usable" />
+            <ui:VisualElement name="usableData">
+                <uie:PropertyField binding-path="equipmentInfo.aiMaxUseHealthFraction" name="aiMaxUseHealthFraction" />
+                <uie:PropertyField binding-path="equipmentInfo.aiMaxUseDistance" name="aiMaxUseDistance" />
+                <uie:PropertyField binding-path="equipmentInfo.aiUseDelayMax" name="aiUseDelayMax" />
+            </ui:VisualElement>
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

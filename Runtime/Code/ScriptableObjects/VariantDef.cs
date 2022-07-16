@@ -147,34 +147,34 @@ namespace VAPI
         [Serializable]
         public class VariantOverrideName
         {
-            [Tooltip("The token used for this override name")]
-            public string token;
-            [Tooltip("How the override is applied:" +
+            [Tooltip("The token used for this override name" +
+                "\nTo the right is a field to determine how the override is applied:" +
                 "\nPrefix: Applied before the Variant's original name" +
                 "\nSuffix: Applied after the Variant's original name" +
                 "\nOverride: Completely overrides the Variant's original name")]
+            public string token;
             public OverrideNameType overrideType;
         }
 
         [Serializable]
         public class VariantSkillReplacement
         {
-            [Tooltip("The SkillDef for this Variant Replacement")]
+            [Tooltip("The SkillDef for this Variant Replacement" +
+                "\nTo the right is a field where you can specify what SkillSlot this replacement targets.")]
             public SkillDef skillDef;
-            [Tooltip("The slot that this skill replacement targets")]
             public SkillSlot skillSlot;
         }
         [Serializable]
         public class VariantComponentProvider
         {
             [Tooltip("A component that inherits from VariantComponent to add to this variant." +
-                "\nYou'll probably want to use RoR2EditorKit for filling this.")]
-            [SerializableSystemType.RequiredBaseType(typeof(VariantComponent))]
-            public SerializableSystemType componentToAdd;
-            [Tooltip("Where the component is added." +
+                "\nYou'll probably want to use RoR2EditorKit for filling this." +
+                "\nTo the right is a field to determine Where the component is added." +
                 "\nBody: Added to same game object where the CharacterBody component is located." +
                 "\nModel: Added to the same game object where the CharacterModel component is located." +
                 "\nMaster: Added to the same game object where the CharacterMaster component is located.")]
+            [SerializableSystemType.RequiredBaseType(typeof(VariantComponent))]
+            public SerializableSystemType componentToAdd;
             public ComponentAttachmentType attachmentType;
         }
     }
