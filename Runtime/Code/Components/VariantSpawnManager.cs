@@ -29,6 +29,7 @@ namespace VAPI.Components
 
         private void Awake()
         {
+            Run.onRunStartGlobal += CreateRNG;
             variantRNG = new Xoroshiro128Plus(Run.instance.runRNG.nextUlong);
 
             CharacterBody.onBodyAwakeGlobal += TryCreateVariant;
@@ -37,8 +38,11 @@ namespace VAPI.Components
 
         private void OnDestroy()
         {
+            Run.onRunStartGlobal -= CreateRNG;
             CharacterBody.onBodyAwakeGlobal -= TryCreateVariant;
         }
+
+        private void CreateRNG(Run run) => variantRNG = new Xoroshiro128Plus(Run.instance.runRNG.nextUlong);
 
         private void TryCreateVariant(CharacterBody obj)
         {
