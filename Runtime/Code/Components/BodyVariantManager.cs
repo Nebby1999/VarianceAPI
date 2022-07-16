@@ -21,6 +21,7 @@ namespace VAPI.Components
         public CharacterDeathBehavior CharacterDeathBehavior { get; private set; }
         public CharacterModel CharacterModel { get; private set; }
 
+        [SyncVar]
         private SyncListInt variantIndices = new SyncListInt();
         private bool applied = false;
         private EquipmentIndex storedEquip;

@@ -78,7 +78,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f90f50ab454484d9910c483e6c2692, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnRateMultiplier: 1
+  defaultSpawnRateMultiplier: 1
+  varianceArtifact: {fileID: 11400000, guid: 2a46fba08bb7850458be28968471244b, type: 2}
 --- !u!114 &5235125077304693029
 MonoBehaviour:
   m_ObjectHideFlags: 0

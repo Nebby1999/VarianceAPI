@@ -30,8 +30,6 @@ namespace VAPI.Components
         private void Awake()
         {
             Run.onRunStartGlobal += CreateRNG;
-            variantRNG = new Xoroshiro128Plus(Run.instance.runRNG.nextUlong);
-
             CharacterBody.onBodyAwakeGlobal += TryCreateVariant;
             OnAwake?.Invoke(this);
         }
@@ -42,7 +40,7 @@ namespace VAPI.Components
             CharacterBody.onBodyAwakeGlobal -= TryCreateVariant;
         }
 
-        private void CreateRNG(Run run) => variantRNG = new Xoroshiro128Plus(Run.instance.runRNG.nextUlong);
+        private void CreateRNG(Run run) => variantRNG = new Xoroshiro128Plus(run.seed);
 
         private void TryCreateVariant(CharacterBody obj)
         {
@@ -79,14 +77,13 @@ namespace VAPI.Components
         private VariantDef[] Roll(BodyVariantDefProvider provider)
         {
             VariantDef[] uniques = provider.GetUniqueVariants(true);
-
-            if(uniques != null && RollUniques(uniques, out VariantDef uniqueResult))
+            if (uniques != null && RollUniques(uniques, out VariantDef uniqueResult))
             {
                 return new VariantDef[] { uniqueResult };
             }
 
             VariantDef[] notUniques = provider.GetVariants(true);
-            if (notUniques != null && RollNotUniques(uniques, out VariantDef[] result))
+            if (notUniques != null && RollNotUniques(notUniques, out VariantDef[] result))
             {
                 return result;
             }
@@ -110,22 +107,33 @@ namespace VAPI.Components
             bool success = index != -1;
 
             result = success ? pool[index] : null;
+            VAPILog.Info($"Unique Roll Success: {success}, Index: {index}");
             return success;
         }
 
         private bool RollNotUniques(VariantDef[] pool, out VariantDef[] result)
         {
             List<VariantDef> defs = new List<VariantDef>();
+            VAPILog.Info(pool.Length);
             for(int i = 0; i < pool.Length; i++)
             {
                 var currentDef = pool[i];
                 var spawnRate = Mathf.Min(100, currentDef.spawnRate * (RunArtifactManager.instance.IsArtifactEnabled(varianceArtifact) ? artifactSpawnRateMultiplier : defaultSpawnRateMultiplier));
+                VAPILog.Info($"{currentDef} spawn rate: {spawnRate}");
                 if (Util.CheckRoll(spawnRate))
+                {
+                    VAPILog.Info("Adding");
                     defs.Add(currentDef);
+                }
+                else
+                {
+                    VAPILog.Info("Not adding");
+                }
             }
             var success = defs.Count != 0;
             
             result = success ? defs.ToArray() : null;
+            VAPILog.Info($"Non Unique Roll Success: {success}. Result: {result}");
             return success;
         }
 

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading.Tasks;
 using UnityEngine.Networking;
 using R2API;
+using UnityEngine;
 
 namespace VAPI
 {
@@ -82,6 +83,11 @@ namespace VAPI
             return filtered ? filteredNonUniques : variantsForBody.Where(vd => !vd.isUnique).ToArray();
         }
 
+        public string GetBodyName()
+        {
+            GameObject prefab = BodyCatalog.GetBodyPrefab(TiedIndex);
+            return prefab ? prefab.name : null;
+        }
         public BodyVariantDefProvider(VariantDef[] variantsForBody, BodyIndex tiedIndex)
         {
             this.variantsForBody = variantsForBody;
