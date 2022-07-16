@@ -63,13 +63,13 @@ namespace VAPI.Components
                 return;
 
             managerForBody.AddVariants(variantsForBody);
-            managerForBody.Apply();
+            //managerForBody.Apply();
 
             BodyVariantReward rewards = obj.GetComponent<BodyVariantReward>();
             if(rewards)
             {
                 rewards.AddVariants(variantsForBody);
-                rewards.Apply();
+                //rewards.Apply();
             }
             OnVariantSpawnedServer?.Invoke(new ReadOnlyCollection<VariantDef>(variantsForBody), obj.gameObject);
         }

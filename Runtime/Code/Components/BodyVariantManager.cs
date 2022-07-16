@@ -23,6 +23,7 @@ namespace VAPI.Components
 
         [SyncVar]
         private SyncListInt variantIndices = new SyncListInt();
+        private List<int> indices = new List<int>();
         private bool applied = false;
         private EquipmentIndex storedEquip;
         private ItemDisplayRuleSet storedIDRS;
@@ -31,7 +32,16 @@ namespace VAPI.Components
         public override void OnStartClient()
         {
             variantIndices.Callback = UpdateList;
+            CmdServerSetIndices();
+            Apply();
         }
+
+        [Command]
+        private void CmdServerSetIndices()
+        {
+            indices.ForEach(x => variantIndices.Add(x));
+        }
+
         private void UpdateList(SyncList<int>.Operation op, int itemIndex)
         {
             variantsInBody = new ReadOnlyCollection<VariantDef>(variantIndices.Select(i => VariantCatalog.GetVariantDef((VariantIndex)i)).ToList());
@@ -64,12 +74,12 @@ namespace VAPI.Components
 
         private void RemoveVariantInternal(VariantIndex variant)
         {
-            variantIndices.Remove((int)variant);
+            indices.Remove((int)variant);
         }
 
         private void AddVariantInternal(VariantIndex index)
         {
-            variantIndices.Add((int)index);
+            indices.Add((int)index);
         }
         #endregion
 
@@ -85,11 +95,12 @@ namespace VAPI.Components
 
         public void Apply()
         {
-            if (!CharacterBody)
+            if (!CharacterBody || variantsInBody == null)
             {
                 Destroy(this);
                 return;
             }
+
 
             var announcedArrival = false;
             for (int i = 0; i < variantsInBody.Count; i++)
