@@ -122,21 +122,17 @@ namespace VAPI.Components
             {
                 var currentDef = pool[i];
                 var spawnRate = Mathf.Min(100, currentDef.spawnRate * (RunArtifactManager.instance.IsArtifactEnabled(varianceArtifact) ? artifactSpawnRateMultiplier : defaultSpawnRateMultiplier));
-                VAPILog.Info($"{currentDef} spawn rate: {spawnRate}");
                 if (Util.CheckRoll(spawnRate))
                 {
-                    VAPILog.Info("Adding");
                     defs.Add(currentDef);
                 }
                 else
                 {
-                    VAPILog.Info("Not adding");
                 }
             }
             var success = defs.Count != 0;
             
             result = success ? defs.ToArray() : null;
-            VAPILog.Info($"Non Unique Roll Success: {success}. Result: {result}");
             return success;
         }
 

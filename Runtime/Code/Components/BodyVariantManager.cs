@@ -2,6 +2,7 @@
 using RoR2;
 using RoR2.CharacterAI;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -25,6 +26,7 @@ namespace VAPI.Components
 
         [SyncVar]
         private readonly SyncListInt variantIndices = new SyncListInt();
+        private readonly List<VariantVisuals> visualsForCoroutine = new List<VariantVisuals>();
         private bool hasApplied = false;
         private EquipmentIndex storedEquip;
         private ItemDisplayRuleSet storedIDRS;
@@ -76,6 +78,7 @@ namespace VAPI.Components
             for (int i = 0; i < variantsInBody.Count; i++)
             {
                 VariantDef current = variantsInBody[i];
+                Debug.Log(current);
                 try
                 {
                     VariantTierDef tier = current.VariantTierDef;
@@ -83,39 +86,33 @@ namespace VAPI.Components
                         announcedArrival = AnnounceArrival(current, tier);
 
                     VariantInventory inventory = current.variantInventory;
-                    if (inventory)
+
+                    if(inventory)
                     {
-                        if (CharacterMaster && CharacterMaster.inventory)
+                        inventory.AddBuffs(CharacterBody);
+                    }
+                    tier.AddTierBuff(CharacterBody);
+
+                    if(CharacterMaster)
+                    {
+                        if(inventory)
                         {
                             inventory.AddItems(CharacterMaster.inventory);
                             inventory.SetEquipment(CharacterMaster.inventory, CharacterBody);
-                            tier.AddTierItems(CharacterMaster.inventory);
                         }
-                        inventory.AddBuffs(CharacterBody);
-                        tier.AddTierBuff(CharacterBody);
+                        tier.AddTierItems(CharacterMaster.inventory);
                     }
 
                     if (CharacterDeathBehavior && current.deathStateOverride.stateType != null)
                         CharacterDeathBehavior.deathState = current.deathStateOverride;
 
                     ModifySkills(current.skillReplacements);
-
                     ModifyStats(current);
 
                     VariantVisuals visuals = current.visualModifier;
-                    if (visuals && CharacterModel)
+                    if(visuals)
                     {
-                        visuals.ApplyMaterials(CharacterModel);
-                        visuals.ApplyLights(CharacterModel);
-
-                        if (VAPIConfig.activateMeshReplacementSystem.Value)
-                        {
-                            if (visuals.ApplyMeshes(CharacterModel, out storedIDRS, out MeshType meshType))
-                            {
-                                if (meshType != MeshType.Default)
-                                    TryFuckWithBoneStructure(meshType);
-                            }
-                        }
+                        visualsForCoroutine.Add(visuals);
                     }
 
                     VariantSizeModifier sizeModifier = current.sizeModifier;
@@ -143,8 +140,30 @@ namespace VAPI.Components
             }
 
             CharacterBody.RecalculateStats();
+            if(visualsForCoroutine.Count > 0)
+            {
+                StartCoroutine("ApplyVisuals");
+            }
         }
 
+        public IEnumerator ApplyVisuals()
+        {
+            yield return new WaitForEndOfFrame();
+            foreach(VariantVisuals visuals in visualsForCoroutine)
+            {
+                visuals.ApplyMaterials(CharacterModel);
+                visuals.ApplyLights(CharacterModel);
+
+                if (VAPIConfig.activateMeshReplacementSystem.Value)
+                {
+                    if (visuals.ApplyMeshes(CharacterModel, out storedIDRS, out MeshType meshType))
+                    {
+                        if (meshType != MeshType.Default)
+                            TryFuckWithBoneStructure(meshType);
+                    }
+                }
+            }
+        }
         private bool AnnounceArrival(VariantDef variantDef, VariantTierDef tierDef)
         {
             bool announced = false;

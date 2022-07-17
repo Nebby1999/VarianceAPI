@@ -89,17 +89,24 @@ namespace VAPI
             }
 
             var masterPrefab = MasterCatalog.FindMasterPrefab(master);
+
             string[] variantNames = Array.Empty<string>();
-            for(int i = 1; i < args.Count; i++)
+            for (int i = 1; i < args.Count; i++)
             {
                 HG.ArrayUtils.ArrayAppend(ref variantNames, args[i]);
             }
             List<VariantDef> variants = new List<VariantDef>();
-            foreach(string variantName in variantNames)
+            foreach (string variantName in variantNames)
             {
-                VariantIndex index = VariantCatalog.FindVariantIndex(variantName);
-                if (index != VariantIndex.None)
-                    variants.Add(VariantCatalog.GetVariantDef(index));
+                for (int i = 0; i < VariantCatalog.registeredVariants.Length; i++)
+                {
+                    var vd = VariantCatalog.registeredVariants[i];
+                    if (vd.name.ToLowerInvariant().Contains(variantName.ToLowerInvariant()))
+                    {
+                        variants.Add(vd);
+                        break;
+                    }
+                }
             }
 
             Vector3 location = args.sender.master.GetBody().transform.position;
@@ -168,9 +175,15 @@ namespace VAPI
             List<VariantDef> variants = new List<VariantDef>();
             foreach (string variantName in variantNames)
             {
-                VariantIndex index = VariantCatalog.FindVariantIndex(variantName);
-                if (index != VariantIndex.None)
-                    variants.Add(VariantCatalog.GetVariantDef(index));
+                for(int i = 0; i < VariantCatalog.registeredVariants.Length; i++)
+                {
+                    var vd = VariantCatalog.registeredVariants[i];
+                    if(vd.name.ToLowerInvariant().Contains(variantName.ToLowerInvariant()))
+                    {
+                        variants.Add(vd);
+                        break;
+                    }
+                }
             }
 
             master.bodyPrefab = newBody;
