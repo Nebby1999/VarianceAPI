@@ -22,7 +22,8 @@ namespace VAPI.Items
             var healthComponent = self._source;
             if (healthComponent)
             {
-                if (healthComponent.body.GetItemCount(ItemDef) > 0)
+                var iv = healthComponent.body.inventory;
+                if (iv && healthComponent.body.inventory.GetItemCount(ItemDef) > 0)
                 {
                     self.barInfoCollection.trailingOverHealthbarInfo.color = color;
                 }
