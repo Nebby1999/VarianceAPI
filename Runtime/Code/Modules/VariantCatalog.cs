@@ -17,7 +17,7 @@ namespace VAPI
         public static bool Initialized { get; private set; } = false;
 
         private static Dictionary<ConfigFile, List<VariantDef>> unregisteredVariants = new Dictionary<ConfigFile, List<VariantDef>>();
-        private static VariantDef[] registeredVariants = Array.Empty<VariantDef>();
+        internal static VariantDef[] registeredVariants = Array.Empty<VariantDef>();
         private static readonly Dictionary<string, VariantIndex> nameToIndex = new Dictionary<string, VariantIndex>();
 
         private static readonly Dictionary<BodyIndex, BodyVariantDefProvider> bodyIndexToDefProvider = new Dictionary<BodyIndex, BodyVariantDefProvider>();
@@ -192,6 +192,7 @@ namespace VAPI
                 VAPILog.Debug($"Registering {variant} (Index: {index})");
                 variant.VariantIndex = index;
                 nameToIndex.Add(variant.name, index);
+                _ = variant.VariantTierDef;
             }
             catch(Exception e)
             {

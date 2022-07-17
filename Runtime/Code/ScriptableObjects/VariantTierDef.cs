@@ -26,6 +26,26 @@ namespace VAPI
         public float whiteItemDropChance;
         public float greenItemDropChance;
         public float redItemDropChance;
+
+        public float ExperienceMultiplierMinus1
+        {
+            get
+            {
+                if (experienceMultiplier < 1)
+                    return experienceMultiplier;
+                return experienceMultiplier - 1;
+            }
+        }
+
+        public float GoldMultiplierMinus1
+        {
+            get
+            {
+                if (goldMultiplier < 1)
+                    return goldMultiplier;
+                return goldMultiplier - 1;
+            }
+        }
         
         public VariantTierIndex Tier { get => _tier; internal set => _tier = value; }
 

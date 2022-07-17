@@ -85,7 +85,6 @@ namespace VAPI
                 }
                 return variantTier;
             }
-
             set
             {
                 variantTierDef = VariantTierCatalog.GetVariantTierDef(value);
@@ -96,14 +95,14 @@ namespace VAPI
         {
             get
             {
-                if (variantTierDef)
-                    return variantTierDef;
-                return VariantTierCatalog.GetVariantTierDef(VariantTierIndex);
+                if (!variantTierDef)
+                    variantTierDef = VariantTierCatalog.GetVariantTierDef(VariantTierIndex);
+                return variantTierDef;
             }
             set
             {
                 variantTierDef = value;
-                variantTier = VariantTierIndex.AssignedAtRuntime;
+                variantTier = variantTierDef.Tier;
             }
         }
 

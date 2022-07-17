@@ -30,14 +30,14 @@ namespace VAPI.Components
         private void Awake()
         {
             Run.onRunStartGlobal += CreateRNG;
-            CharacterBody.onBodyAwakeGlobal += TryCreateVariant;
+            CharacterBody.onBodyStartGlobal += TryCreateVariant;
             OnAwake?.Invoke(this);
         }
 
         private void OnDestroy()
         {
             Run.onRunStartGlobal -= CreateRNG;
-            CharacterBody.onBodyAwakeGlobal -= TryCreateVariant;
+            CharacterBody.onBodyStartGlobal -= TryCreateVariant;
         }
 
         private void CreateRNG(Run run) => variantRNG = new Xoroshiro128Plus(run.seed);
@@ -45,6 +45,9 @@ namespace VAPI.Components
         private void TryCreateVariant(CharacterBody obj)
         {
             if (!NetworkServer.active)
+                return;
+
+            if (obj.GetComponent<DoNotTurnIntoVariant>())
                 return;
 
             BodyVariantDefProvider provider = VariantCatalog.GetBodyVariantDefProvider(obj.bodyIndex);

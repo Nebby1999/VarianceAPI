@@ -13,7 +13,7 @@ namespace VAPI
 {
     public class BodyVariantDefProvider
     {
-        private static List<BodyVariantDefProvider> instances = new List<BodyVariantDefProvider>();
+        internal static List<BodyVariantDefProvider> instances = new List<BodyVariantDefProvider>();
         [SystemInitializer]
         private static void SystemInitializer()
         {
@@ -55,6 +55,7 @@ namespace VAPI
         private VariantDef[] filteredUniques = Array.Empty<VariantDef>();
         private VariantDef[] filteredNonUniques = Array.Empty<VariantDef>();
         public BodyIndex TiedIndex { get; internal set; }
+        public int TotalVariantCount { get => variantsForBody.Length; }
 
         private void FilterVariants(DirectorAPI.StageInfo stageInfo, ExpansionDef[] runExpansions)
         {
@@ -83,11 +84,18 @@ namespace VAPI
             return filtered ? filteredNonUniques : variantsForBody.Where(vd => !vd.isUnique).ToArray();
         }
 
+        public VariantDef[] GetAllVariants(bool filtered)
+        {
+            return filtered ? filteredUniques.Concat(filteredNonUniques).ToArray() : variantsForBody;
+        }
+
         public string GetBodyName()
         {
             GameObject prefab = BodyCatalog.GetBodyPrefab(TiedIndex);
             return prefab ? prefab.name : null;
         }
+
+        public VariantDef GetVariantDef(int index) => HG.ArrayUtils.GetSafe(variantsForBody, index);
         public BodyVariantDefProvider(VariantDef[] variantsForBody, BodyIndex tiedIndex)
         {
             this.variantsForBody = variantsForBody;

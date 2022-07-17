@@ -1,6 +1,9 @@
 ﻿using Moonstorm;
 using RoR2;
+using MonoMod.Cil;
+using Mono.Cecil.Cil;
 using UnityEngine;
+using System;
 
 namespace VAPI.Items
 {
@@ -21,7 +24,7 @@ namespace VAPI.Items
             {
                 if (healthComponent.body.GetItemCount(ItemDef) > 0)
                 {
-                    self.barInfoCollection.instantHealthbarInfo.color = color;
+                    self.barInfoCollection.trailingOverHealthbarInfo.color = color;
                 }
             }
         }

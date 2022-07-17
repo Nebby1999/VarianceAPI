@@ -17,84 +17,54 @@ namespace VAPI.Components
         public ReadOnlyCollection<VariantDef> variantsInBody;
 
         public CharacterBody CharacterBody { get; private set; }
-        public CharacterMaster CharacterMaster { get; private set; }
+        public CharacterMaster CharacterMaster { get => CharacterBody.master; }
         public CharacterDeathBehavior CharacterDeathBehavior { get; private set; }
         public CharacterModel CharacterModel { get; private set; }
 
+        public bool applyOnStart = true;
+
         [SyncVar]
-        private SyncListInt variantIndices = new SyncListInt();
-        private List<int> indices = new List<int>();
-        private bool applied = false;
+        private readonly SyncListInt variantIndices = new SyncListInt();
+        private bool hasApplied = false;
         private EquipmentIndex storedEquip;
         private ItemDisplayRuleSet storedIDRS;
 
         #region Networking Related
-        public override void OnStartClient()
-        {
-            variantIndices.Callback = UpdateList;
-            CmdServerSetIndices();
-            Apply();
-        }
+        public void AddVariants(IEnumerable<VariantDef> vd) => vd.ToList().ForEach(v => AddVariant(v));
 
-        [Command]
-        private void CmdServerSetIndices()
-        {
-            indices.ForEach(x => variantIndices.Add(x));
-        }
-
-        private void UpdateList(SyncList<int>.Operation op, int itemIndex)
+        public void AddVariant(VariantDef vd) => variantIndices.Add((int)vd.VariantIndex);
+        
+        private void OnListChanged(SyncList<int>.Operation op, int index)
         {
             variantsInBody = new ReadOnlyCollection<VariantDef>(variantIndices.Select(i => VariantCatalog.GetVariantDef((VariantIndex)i)).ToList());
-        }
-
-        [Server]
-        public void AddVariants(VariantDef[] variantDefs)
-        {
-            foreach (VariantDef variant in variantDefs)
-                AddVariant(variant);
-        }
-
-        [Server]
-        public void AddVariant(VariantDef variant)
-        {
-            if (variant.VariantIndex == VariantIndex.None)
-                throw new InvalidOperationException($"{variant} has a VariantIndex of None");
-
-            AddVariantInternal(variant.VariantIndex);
-        }
-
-        [Server]
-        public void RemoveVariant(VariantDef variant)
-        {
-            if (variant.VariantIndex == VariantIndex.None)
-                throw new InvalidOperationException($"{variant} has a VariantIndex of None");
-
-            RemoveVariantInternal(variant.VariantIndex);
-        }
-
-        private void RemoveVariantInternal(VariantIndex variant)
-        {
-            indices.Remove((int)variant);
-        }
-
-        private void AddVariantInternal(VariantIndex index)
-        {
-            indices.Add((int)index);
         }
         #endregion
 
         public void Awake()
         {
+            variantIndices.Callback = OnListChanged;
+
             CharacterBody = GetComponent<CharacterBody>();
-            CharacterMaster = CharacterBody.master;
             CharacterDeathBehavior = GetComponent<CharacterDeathBehavior>();
 
             if (CharacterBody.modelLocator && CharacterBody.modelLocator.modelTransform)
                 CharacterModel = CharacterBody.modelLocator.modelTransform.GetComponent<CharacterModel>();
         }
 
+        public void Start()
+        {
+            if (applyOnStart && !hasApplied)
+                Apply();
+        }
         public void Apply()
         {
+            if (hasApplied)
+            {
+                VAPILog.Warning($"{this} has already been applied!");
+                return;
+            }    
+
+            hasApplied = true;
             if (!CharacterBody || variantsInBody == null)
             {
                 Destroy(this);

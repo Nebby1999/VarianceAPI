@@ -45,8 +45,8 @@ namespace VAPI
 
             foreach(VariantTierDef tierDef in tiers)
             {
-                goldMultiplier += tierDef.goldMultiplier;
-                experienceMultiplier += tierDef.experienceMultiplier;
+                goldMultiplier += tierDef.GoldMultiplierMinus1;
+                experienceMultiplier += tierDef.ExperienceMultiplierMinus1;
                 whiteChance += tierDef.whiteItemDropChance;
                 greenChance += tierDef.greenItemDropChance;
                 redChance += tierDef.redItemDropChance;
@@ -68,15 +68,15 @@ namespace VAPI
                 return;
             }
 
-            if(Util.CheckRoll(redChance, master))
+            if(Util.CheckRoll(redChance, master ? master.luck : 0))
             {
                 CreateDroplet(redItems[nextRedItem], damageReport);
             }
-            else if(Util.CheckRoll(redChance + greenChance, master))
+            else if(Util.CheckRoll(redChance + greenChance, master ? master.luck : 0))
             {
                 CreateDroplet(greenItems[nextGreenItem], damageReport);
             }
-            else if(Util.CheckRoll(redChance + greenChance + whiteChance, master))
+            else if(Util.CheckRoll(redChance + greenChance + whiteChance, master ? master.luck : 0))
             {
                 CreateDroplet(whiteItems[nextWhiteItem], damageReport);
             }

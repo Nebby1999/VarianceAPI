@@ -13,8 +13,10 @@ namespace VAPI.Components
     public class BodyVariantReward : MonoBehaviour, IOnKilledServerReceiver
     {
         public ReadOnlyCollection<VariantDef> variantsInBody;
+        public bool applyOnStart = true;
         private List<VariantDef> variants = new List<VariantDef>();
 
+        private bool hasApplied = false;
         private VariantRewardInfo reward;
         private DeathRewards deathRewards;
         private CharacterBody characterBody;
@@ -27,8 +29,21 @@ namespace VAPI.Components
             deathRewards = GetComponent<DeathRewards>();
             characterBody = GetComponent<CharacterBody>();
         }
+
+        private void Start()
+        {
+            if (applyOnStart && !hasApplied)
+                Apply();
+        }
         public void Apply()
         {
+            if (hasApplied)
+            {
+                VAPILog.Warning($"{this} has already been applied!");
+                return;
+            }
+
+            hasApplied = true;
             variantsInBody = new ReadOnlyCollection<VariantDef>(variants);
             reward = new VariantRewardInfo();
             reward.SetFromAverageOfTiers(variants.Select(vd => vd.VariantTierDef), Run.instance);
@@ -46,20 +61,26 @@ namespace VAPI.Components
             if (damageReport.attackerTeamIndex != TeamIndex.Player)
                 return;
 
-            if(Run.instance.isRunStopwatchPaused)
+            if (!Run.instance)
+                return;
+
+            if (!damageReport.attackerMaster)
+                return;
+
+            if (Run.instance.isRunStopwatchPaused)
             {
                 var chanceInRealm = VAPIConfig.hiddenRealmsItemRollChance.Value;
                 if (chanceInRealm <= 0)
                     return;
 
-                if (Util.CheckRoll(chanceInRealm, VAPIConfig.luckAffectsItemRewards.Value ? damageReport.attackerMaster : null))
+                if (Util.CheckRoll(chanceInRealm, VAPIConfig.luckAffectsItemRewards.Value ? damageReport.attackerMaster.luck : 0))
                 {
                     reward.TrySpawnDroplet(damageReport);
                 }
             }
             reward.TrySpawnDroplet(damageReport);
 
-            if(VariantSpawnManager.Instance)
+            if (VariantSpawnManager.Instance)
             {
                 VariantSpawnManager.Instance.OnVariantKilled(variantsInBody, damageReport);
             }
