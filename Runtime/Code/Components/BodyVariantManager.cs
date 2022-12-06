@@ -24,7 +24,6 @@ namespace VAPI.Components
 
         public bool applyOnStart = true;
 
-        [SyncVar]
         private readonly SyncListInt variantIndices = new SyncListInt();
         private readonly List<VariantVisuals> visualsForCoroutine = new List<VariantVisuals>();
         private bool hasApplied = false;
