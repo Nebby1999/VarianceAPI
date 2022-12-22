@@ -11,7 +11,6 @@ namespace VAPI
     [BepInDependency(DebugToolkit.DebugToolkit.GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(Moonstorm.MoonstormSharedUtils.GUID, BepInDependency.DependencyFlags.HardDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
-    [R2APISubmoduleDependency(nameof(CommandHelper))]
     [BepInPlugin(GUID, MODNAME, VERSION)]
     public class VAPIMain : BaseUnityPlugin
     {
@@ -31,9 +30,6 @@ namespace VAPI
             new VAPIContent().Init();
 
             ConfigurableFieldManager.AddMod(this);
-            TokenModifierManager.AddToManager();
-
-            CommandHelper.AddToConsoleWhenReady();
         }
     }
 }

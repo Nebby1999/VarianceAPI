@@ -1,10 +1,11 @@
-{
+﻿{
     "name": "VarianceAPI",
     "references": [
         "com.unity.multiplayer-hlapi.Runtime",
         "MoonstormSharedUtils",
         "Wwise"
     ],
+    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": false,
@@ -20,13 +21,18 @@
         "MonoMod.RuntimeDetour.dll",
         "MonoMod.Utils.dll",
         "Newtonsoft.Json.dll",
-        "R2API.dll",
         "RoR2.dll",
         "Unity.Addressables.dll",
-        "Unity.ResourceManager.dll"
+        "Unity.ResourceManager.dll",
+        "R2API.ArtifactCode.dll",
+        "R2API.Colors.dll",
+        "R2API.ContentManagement.dll",
+        "R2API.Core.dll",
+        "R2API.DamageType.dll",
+        "R2API.Director.dll",
+        "R2API.Elites.dll",
+        "R2API.RecalculateStats.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
-    "noEngineReferences": false
+    "defineConstraints": []
 }
