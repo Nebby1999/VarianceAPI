@@ -13,10 +13,10 @@ namespace VAPI
 {
     public static class VariantCatalog
     {
-        public static int variantCount => registeredVariants.Length;
+        public static int VariantCount => registeredVariants.Length;
         public static bool Initialized { get; private set; } = false;
+        public static event Action OnCatalogInitialized;
 
-        private static Dictionary<ConfigFile, List<VariantDef>> unregisteredVariants = new Dictionary<ConfigFile, List<VariantDef>>();
         internal static VariantDef[] registeredVariants = Array.Empty<VariantDef>();
         private static readonly Dictionary<string, VariantIndex> nameToIndex = new Dictionary<string, VariantIndex>();
 
@@ -48,75 +48,33 @@ namespace VAPI
         }
         #endregion
 
-        #region Add methods
-        public static void AddVariants(AssetBundle assetBundle, [NotNull] ConfigFile configFile)
-        {
-            ThrowIfInitialized();
-
-            if (configFile == null)
-                throw new NullReferenceException("configFile");
-
-            AddVariants(assetBundle.LoadAllAssets<VariantDef>(), configFile);
-        }
-
-        public static void AddVariants(IEnumerable<VariantDef> variants, [NotNull]ConfigFile configFile)
-        {
-            ThrowIfInitialized();
-            
-            if(configFile == null)
-                throw new NullReferenceException("configFile");
-
-            variants.ToList().ForEach(vd => AddVariant(vd, configFile));
-        }
-
-        public static void AddVariant(VariantDef variant, [NotNull]ConfigFile configFile)
-        {
-            ThrowIfInitialized();
-            
-            if(configFile == null)
-                throw new NullReferenceException("configFile");
-
-            if(!unregisteredVariants.ContainsKey(configFile))
-            {
-                unregisteredVariants.Add(configFile, new List<VariantDef>());
-            }
-            unregisteredVariants[configFile].Add(variant);
-        }
-        #endregion
-
         #region internal methods
-        [SystemInitializer(typeof(BodyCatalog), typeof(VariantTierCatalog))]
+        [SystemInitializer(typeof(BodyCatalog), typeof(VariantTierCatalog), typeof(VariantPackCatalog))]
         private static void SystemInitializer()
         {
-            if(unregisteredVariants.Count <= 0)
-            {
-                VAPILog.Info($"No Variants where Added prior to VariantCatalog initialization, returning.");
-                return;
-            }
-
             nameToIndex.Clear();
 
-            registeredVariants = RegisterVariants(unregisteredVariants).ToArray();
-            unregisteredVariants = null;
+            registeredVariants = RegisterVariantsFromPacks(VariantPackCatalog.registeredPacks).ToArray();
             PopulateBodyIndexToVariants();
 
             VAPILog.Info("Variant Catalog Initialized");
             Initialized = true;
         }
 
-        private static List<VariantDef> RegisterVariants(Dictionary<ConfigFile, List<VariantDef>> unregisteredVariants)
+        private static VariantDef[] RegisterVariantsFromPacks(VariantPackDef[] packs)
         {
-            VAPILog.Info($"Trying to register a total of {unregisteredVariants.Values.SelectMany(k => k).Count()} Variants");
             List<VariantDef> variantsToRegister = new List<VariantDef>();
 
-            foreach(KeyValuePair<ConfigFile, List<VariantDef>> configVariantsPair in unregisteredVariants)
+            foreach(VariantPackDef pack in packs)
             {
-                ConfigFile config = configVariantsPair.Key;
-                List<VariantDef> variants = configVariantsPair.Value;
-                VAPILog.Debug($"Validating the following variants: {string.Join("\n", variants.Select(vd => vd.name))}");
+                ConfigFile configFile = pack.configurationFile;
+                VariantDef[] variants = pack.variants;
 
-                variants = variants.Where(ValidateVariant).ToList();
-                ConfigureVariantsThatPassedFilter(config, variants);
+                if (variants.Length == 0)
+                    continue;
+
+                variants = variants.Where(ValidateVariant).ToArray();
+                ConfigureVariantsThatPassedFilter(configFile, variants);
                 variantsToRegister.AddRange(variants);
             }
 
@@ -126,8 +84,7 @@ namespace VAPI
             {
                 RegisterVariant(variantsToRegister[(int)variantIndex], variantIndex);
             }
-            VAPILog.Info($"Final Variants Registered: {variantsToRegister.Count}");
-            return variantsToRegister;
+            return variantsToRegister.ToArray();
         }
 
         private static bool ValidateVariant(VariantDef variant)
@@ -154,7 +111,7 @@ namespace VAPI
             }
         }
 
-        private static void ConfigureVariantsThatPassedFilter(ConfigFile configFile, List<VariantDef> variants)
+        private static void ConfigureVariantsThatPassedFilter(ConfigFile configFile, IEnumerable<VariantDef> variants)
         {
             foreach(VariantDef variant in variants)
             {

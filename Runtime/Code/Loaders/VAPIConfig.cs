@@ -17,6 +17,7 @@ namespace VAPI
         public override bool CreateSubFolder => true;
 
         public static ConfigFile generalConfig;
+        internal static ConfigEntry<bool> showVariantRuleCategory;
         internal static ConfigEntry<bool> enableDebugFeatures;
         internal static ConfigEntry<bool> enableArtifactOfVariance;
         internal static ConfigEntry<bool> activateMeshReplacementSystem;
@@ -35,8 +36,14 @@ namespace VAPI
             SetConfigs();
         }
 
+        internal static bool HiddenTestVariantRules() => showVariantRuleCategory.Value;
         private void SetConfigs()
         {
+            showVariantRuleCategory = generalConfig.Bind<bool>("VarianceAPI :: General",
+                "Show Variant Rule Category",
+                false,
+                "Uncovers the Variant rule category, allowing you to enable or disable variant spawning from the lobby.");
+
             enableDebugFeatures = generalConfig.Bind<bool>("VarianceAPI :: Debug Features",
                 "Enable Debug",
                 false,

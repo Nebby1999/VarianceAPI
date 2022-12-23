@@ -14,8 +14,8 @@ namespace VAPI
     {
         public static int variantTierCount => registeredTiers.Length;
         public static bool Initialized { get; private set; } = false;
+        public static event Action OnTiersAssigned;
 
-        private static Dictionary<ConfigFile, List<VariantTierDef>> unregisteredTiers = new Dictionary<ConfigFile, List<VariantTierDef>>();
         private static VariantTierDef[] registeredTiers;
         private static readonly Dictionary<VariantTierIndex, VariantTierDef> tierToDef = new Dictionary<VariantTierIndex, VariantTierDef>();
 
@@ -43,64 +43,30 @@ namespace VAPI
         }
         #endregion
 
-        #region Add Methods
-        public static void AddTiers(AssetBundle assetBundle, [NotNull] ConfigFile configFile)
-        {
-            ThrowIfInitialized();
-
-            if (configFile == null)
-                throw new NullReferenceException("configFile");
-
-            AddTiers(assetBundle.LoadAllAssets<VariantTierDef>(), configFile);
-        }
-
-        public static void AddTiers(IEnumerable<VariantTierDef> tierDefs, ConfigFile configFile)
-        {
-            ThrowIfInitialized();
-
-            if (configFile == null)
-                throw new NullReferenceException("configFile");
-
-            tierDefs.ToList().ForEach(vtd => AddTier(vtd, configFile));
-        }
-
-        public static void AddTier(VariantTierDef tierDef, ConfigFile configFile)
-        {
-            ThrowIfInitialized();
-
-            if (configFile == null)
-                throw new NullReferenceException("configFile");
-
-            if(!unregisteredTiers.ContainsKey(configFile))
-            {
-                unregisteredTiers.Add(configFile, new List<VariantTierDef>());
-            }
-            unregisteredTiers[configFile].Add(tierDef);
-        }
-        #endregion
-
         #region Internal Methods
-        [SystemInitializer]
+        [SystemInitializer(typeof(VariantPackCatalog))]
         private static void SystemInit()
         {
             tierToDef.Clear();
 
-            registeredTiers = RegisterTiers(unregisteredTiers).ToArray();
-            unregisteredTiers = null;
+            registeredTiers = RegisterTiersFromPacks(VariantPackCatalog.registeredPacks);
             Initialized = true;
+            OnTiersAssigned?.Invoke();
         }
 
-        private static List<VariantTierDef> RegisterTiers(Dictionary<ConfigFile, List<VariantTierDef>> unregisteredTiers)
+        private static VariantTierDef[] RegisterTiersFromPacks(VariantPackDef[] packs)
         {
             List<VariantTierDef> tiersToRegister = new List<VariantTierDef>();
             
-            foreach(KeyValuePair<ConfigFile, List<VariantTierDef>> configTiersPair in unregisteredTiers)
+            foreach(VariantPackDef pack in packs)
             {
-                ConfigFile config = configTiersPair.Key;
-                List<VariantTierDef> tiers = configTiersPair.Value;
+                ConfigFile configFile = pack.configurationFile;
+                VariantTierDef[] tiers = pack.variantTiers;
+                if (tiers.Length == 0)
+                    continue;
 
-                tiers = tiers.Where(ValidateTier).ToList();
-                ConfigureTiersThatPassedFilter(config, tiers);
+                tiers = tiers.Where(ValidateTier).ToArray();
+                ConfigureTiersThatPassedFilter(configFile, tiers);
                 tiersToRegister.AddRange(tiers);
             }
 
@@ -121,7 +87,7 @@ namespace VAPI
                     tierToDef.Add(tierDef.Tier, tierDef);
                 }
             }
-            return tiersToRegister;
+            return tiersToRegister.ToArray();
         }
 
         private static bool ValidateTier(VariantTierDef tierDef)
@@ -137,7 +103,7 @@ namespace VAPI
             }
         }
 
-        private static void ConfigureTiersThatPassedFilter(ConfigFile configFile, List<VariantTierDef> tierDefs)
+        private static void ConfigureTiersThatPassedFilter(ConfigFile configFile, IEnumerable<VariantTierDef> tierDefs)
         {
             foreach(VariantTierDef tierDef in tierDefs)
             {

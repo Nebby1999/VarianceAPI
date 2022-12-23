@@ -21,6 +21,11 @@ namespace VAPI
         AssignedAtRuntime = 4,
     }
 
+    public enum VariantPackIndex
+    {
+        None = -1,
+    }
+
     public enum ComponentAttachmentType
     {
         Body,
