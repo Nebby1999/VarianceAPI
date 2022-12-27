@@ -15,7 +15,9 @@ namespace VAPI
         public VariantPackIndex VariantPackIndex { get; internal set; }
         public string nameToken;
         public string tooltipToken;
-        public Sprite packIcon;
+        public string descriptionToken;
+        public Sprite packEnabledIcon;
+        public Sprite packDisabledIcon;
         public VariantTierDef[] variantTiers = Array.Empty<VariantTierDef>();
         public VariantDef[] variants = Array.Empty<VariantDef>();
     }

@@ -141,7 +141,7 @@ namespace VAPI
         {
             try
             {
-                if(!packDef.packIcon)
+                if(!packDef.packEnabledIcon)
                 {
                     throw new NullReferenceException($"{packDef} doesnt contain a pack icon! the field packIcon is null.");
                 }

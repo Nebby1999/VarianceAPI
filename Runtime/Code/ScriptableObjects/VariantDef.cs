@@ -119,6 +119,8 @@ namespace VAPI
             }
         }
 
+
+
         public bool IsAvailable()
         {
             if (!variantSpawnCondition)
