@@ -67,14 +67,17 @@ namespace VAPI
 
             foreach(VariantPackDef pack in packs)
             {
-                ConfigFile configFile = pack.configurationFile;
+                ConfigFile configFile = pack.variantConfiguration;
                 VariantDef[] variants = pack.variants;
 
                 if (variants.Length == 0)
                     continue;
 
                 variants = variants.Where(ValidateVariant).ToArray();
-                ConfigureVariantsThatPassedFilter(configFile, variants);
+
+                if(configFile != null)
+                    ConfigureVariantsThatPassedFilter(configFile, variants);
+
                 variantsToRegister.AddRange(variants);
             }
 

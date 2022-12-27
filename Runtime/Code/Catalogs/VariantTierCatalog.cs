@@ -60,13 +60,16 @@ namespace VAPI
             
             foreach(VariantPackDef pack in packs)
             {
-                ConfigFile configFile = pack.configurationFile;
+                ConfigFile configFile = pack.tierConfiguration;
                 VariantTierDef[] tiers = pack.variantTiers;
                 if (tiers.Length == 0)
                     continue;
 
                 tiers = tiers.Where(ValidateTier).ToArray();
-                ConfigureTiersThatPassedFilter(configFile, tiers);
+
+                if(configFile != null)
+                    ConfigureTiersThatPassedFilter(configFile, tiers);
+    
                 tiersToRegister.AddRange(tiers);
             }
 

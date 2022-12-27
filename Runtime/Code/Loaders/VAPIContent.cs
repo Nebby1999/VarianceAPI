@@ -64,8 +64,8 @@ namespace VAPI
                 },
                 () =>
                 {
-                    VAPILog.Info($"Adding default Variant Tiers");
-                    //VariantTierCatalog.AddTiers(VAPIAssets.LoadAllAssetsOfType<VariantTierDef>(), VAPIConfig.rewardsConfig);
+                    VAPILog.Info($"Adding base VariantPack");
+                    VariantPackCatalog.AddVariantPack(VAPIAssets.LoadAsset<VariantPackDef>("BaseVariantPack"), VAPIMain.Instance.Config);
                 },
             };
             PopulateFieldsDispatchers = new Action[]

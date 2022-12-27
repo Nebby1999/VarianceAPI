@@ -1,0 +1,25 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc7035143816f594298056766a5907ce, type: 3}
+  m_Name: BaseVariantPack
+  m_EditorClassIdentifier: 
+  nameToken: VAPI_BASEPACK_NAME
+  tooltipToken: VAPI_BASEPACK_TOOLTIP
+  descriptionToken: VAPI_BASEPACK_DESCRIPTION
+  packEnabledIcon: {fileID: 21300000, guid: 8375a67fafa218b419c8ab3eb7778293, type: 3}
+  packDisabledIcon: {fileID: 21300000, guid: 104b61f78b1553d4487de5b61c3414b8, type: 3}
+  variantTiers:
+  - {fileID: 11400000, guid: d8136eaf5d13ba04aaf56dd377715e8f, type: 2}
+  - {fileID: 11400000, guid: 8449c93bafcf6c24fa9688beb315d0c3, type: 2}
+  - {fileID: 11400000, guid: 3f20881c65b49af419cee8cf3c08d39e, type: 2}
+  - {fileID: 11400000, guid: 6b6abe15f78b6d64a89feae3f21a6d01, type: 2}
+  variants: []
