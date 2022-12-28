@@ -25,6 +25,8 @@ namespace VAPI.RuleSystem
             {
                 displayToken = "VAPI_RULE_HEADER_VARIANTPACKS",
                 subtitleToken = "VAPI_RULE_HEADER_VARIANTPACKS_SUBTITLE",
+                editToken = "VAPI_RULE_HEADER_VARIANTPACKS_EDIT",
+                emptyTipToken = "VAPI_RULE_HEADER_VARIANTPACKS_EMPTY",
                 ruleCategoryType = RuleCatalog.RuleCategoryType.VoteResultGrid,
                 color = Color.cyan,
                 hiddenTest = RuleCatalog.HiddenTestFalse
@@ -35,6 +37,8 @@ namespace VAPI.RuleSystem
             {
                 displayToken = "VAPI_RULE_HEADER_VARIANTS",
                 subtitleToken = "VAPI_RULE_HEADER_VARIANTS_SUBTITLE",
+                editToken = "VAPI_RULE_HEADER_VARIANTS_EDIT",
+                emptyTipToken = "VAPI_RULE_HEADER_VARIANTS_EMPTY",
                 ruleCategoryType = RuleCatalog.RuleCategoryType.VoteResultGrid,
                 color = Color.cyan,
                 hiddenTest = VAPIConfig.HiddenTestVariantRules,
@@ -69,6 +73,7 @@ namespace VAPI.RuleSystem
         private static RuleDef CreateRuleDefFromVariantPack(VariantPackDef variantPack)
         {
             RuleDef rule = new RuleDef($"VariantPacks.{variantPack.name}", variantPack.nameToken);
+            rule.displayToken = $"VAPI_VARIANTPACKRULE_{variantPack.nameToken}_DISPLAY";
 
             VAPIRuleChoiceDef onChoice = rule.AddVAPIChoice("On");
             onChoice.sprite = variantPack.packEnabledIcon;
@@ -91,6 +96,7 @@ namespace VAPI.RuleSystem
             CharacterBody body = BodyCatalog.GetBodyPrefabBodyComponent(BodyCatalog.FindBodyIndex(variantDef.bodyName));
             string variantName = GetNameFromOverrides(variantDef);
             RuleDef rule = new RuleDef($"Variants.{variantDef.name}", variantName);
+            rule.displayToken = $"VAPI_VARIANTRULE_{variantDef.name.ToUpperInvariant()}_DISPLAY";
 
             VAPIRuleChoiceDef onChoice = rule.AddVAPIChoice("On");
             onChoice.sprite = Sprite.Create((Texture2D)body.portraitIcon, new Rect(0f, 0f, body.portraitIcon.width, body.portraitIcon.height), new Vector2(0.5f, 0.5f), 100);
