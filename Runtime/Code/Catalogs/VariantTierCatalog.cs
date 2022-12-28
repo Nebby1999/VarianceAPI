@@ -14,7 +14,7 @@ namespace VAPI
     {
         public static int variantTierCount => registeredTiers.Length;
         public static bool Initialized { get; private set; } = false;
-        public static event Action OnTiersAssigned;
+        public static event Action OnCatalogInitialized;
 
         private static VariantTierDef[] registeredTiers;
         private static readonly Dictionary<VariantTierIndex, VariantTierDef> tierToDef = new Dictionary<VariantTierIndex, VariantTierDef>();
@@ -51,7 +51,9 @@ namespace VAPI
 
             registeredTiers = RegisterTiersFromPacks(VariantPackCatalog.registeredPacks);
             Initialized = true;
-            OnTiersAssigned?.Invoke();
+
+            OnCatalogInitialized?.Invoke();
+            OnCatalogInitialized = null;
         }
 
         private static VariantTierDef[] RegisterTiersFromPacks(VariantPackDef[] packs)

@@ -59,6 +59,9 @@ namespace VAPI
 
             VAPILog.Info("Variant Catalog Initialized");
             Initialized = true;
+
+            OnCatalogInitialized?.Invoke();
+            OnCatalogInitialized = null;
         }
 
         private static VariantDef[] RegisterVariantsFromPacks(VariantPackDef[] packs)

@@ -204,7 +204,9 @@ namespace VAPI
             registeredPacks = RegisterPacks(unregisteredPacks);
             unregisteredPacks = null;
             Initialized = true;
+
             OnPacksRegistered?.Invoke();
+            OnPacksRegistered = null;
         }
 
         private static VariantPackDef[] RegisterPacks(Dictionary<ConfigPair, List<VariantPackDef>> unregisteredPacks)
