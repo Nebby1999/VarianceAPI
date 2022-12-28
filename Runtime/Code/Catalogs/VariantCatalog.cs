@@ -49,7 +49,7 @@ namespace VAPI
         #endregion
 
         #region internal methods
-        [SystemInitializer(typeof(BodyCatalog), typeof(VariantTierCatalog), typeof(VariantPackCatalog))]
+        [SystemInitializer(typeof(BodyCatalog), typeof(VariantTierCatalog))]
         private static void SystemInitializer()
         {
             nameToIndex.Clear();

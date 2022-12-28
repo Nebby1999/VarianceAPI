@@ -11,7 +11,7 @@ namespace VAPI.RuleSystem
         private static int variantPackCategoryIndex;
         private static RuleCategoryDef variantCategory;
         private static int variantCategoryIndex;
-        [SystemInitializer(typeof(RuleCatalog), typeof(VariantTierCatalog), typeof(VariantCatalog), typeof(Language))]
+        [SystemInitializer(typeof(RuleCatalog), typeof(VariantCatalog))]
         private static void SystemInitializer()
         {
             AddNewCategories();
