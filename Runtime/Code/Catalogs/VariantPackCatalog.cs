@@ -16,42 +16,6 @@ namespace VAPI
         {
             public readonly ConfigFile tierConfig;
             public readonly ConfigFile variantConfig;
-
-            public override int GetHashCode()
-            {
-                return base.GetHashCode();
-            }
-
-            public override bool Equals(object obj)
-            {
-                if (!(obj is ConfigPair))
-                    return false;
-
-                ConfigPair other = (ConfigPair)obj;
-
-                bool tierEquals = false;
-                if(tierConfig != null && other.tierConfig != null)
-                {
-                    tierEquals = tierConfig.Equals(other.tierConfig);
-                }
-                else if(tierConfig == null && other.tierConfig == null)
-                {
-                    tierEquals = true; //Both are null, so true.
-                }
-
-                bool variantEquals = false;
-                if (variantConfig != null && other.variantConfig != null)
-                {
-                    variantEquals = tierConfig.Equals(other.tierConfig);
-                }
-                else if (variantConfig == null && other.variantConfig == null)
-                {
-                    variantEquals = true; //Both are null, so true.
-                }
-
-                return variantEquals && tierEquals;
-            }
-
             public ConfigPair(ConfigFile configFile)
             {
                 variantConfig = configFile;
@@ -63,6 +27,12 @@ namespace VAPI
                 tierConfig = tierFile;
                 variantConfig = variantFile;
             }
+
+            public override bool Equals(object obj) => obj is ConfigPair cp && this.Equals(cp);
+            public bool Equals(ConfigPair other) => this.tierConfig == other.tierConfig && this.variantConfig == other.variantConfig;
+            public override int GetHashCode() => base.GetHashCode();
+            public static bool operator ==(ConfigPair lhs, ConfigPair rhs) => lhs.Equals(rhs);
+            public static bool operator !=(ConfigPair lhs, ConfigPair rhs) => !(lhs == rhs);
         }
 
         public static int VariantPackCount => registeredPacks.Length;
