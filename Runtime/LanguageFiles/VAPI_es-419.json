@@ -46,10 +46,18 @@
         "VAPI_ITEM_PLUS1CRIT_PICKUP" : "Aumenta la probabilidad de golpes criticos en 1%",
         "VAPI_ITEM_PLUS1CRIT_DESC" : "Aumenta la probabilidad de golpes criticos en 1%",
 
-        "VAPI_ITEM_PURPLEHEALTHBAR_NAME" : "Barra de Vida Purpura",
-        "VAPI_ITEM_PURPLEHEALTHBAR_PICKUP" : "Tu Barra de Vida ahora es Purpura.",
-        "VAPI_ITEM_PURPLEHEALTHBAR_DESC" : "Tu Barra de Vida ahora es Purpura.",
+        "VAPI_ITEM_GREENHEALTHBAR_NAME" : "Barra de Vida Verde",
+        "VAPI_ITEM_GREENHEALTHBAR_PICKUP" : "Tu Barra de Vida es Verde.",
+        "VAPI_ITEM_GREENHEALTHBAR_DESC" : "Tu Barra de Vida es Verde.",
 
-        "VAPI_GENERIC_ARRIVAL": "Un {0} con propiedades unicas a aparecido!"
+        "VAPI_GENERIC_ARRIVAL": "Un {0} con propiedades unicas a aparecido!",
+
+        "VAPI_RULE_HEADER_VARIANTPACKS": "Variant Packs",
+        "VAPI_RULE_HEADER_VARIANTPACKS_SUBTITLE": "Variant Packs son collecciones de Varientes que otorgaran Variantes nuevos al juego, cada collecion puede estar activado o desactivado.",
+        
+        "VAPI_RULE_HEADER_VARIANTS": "Variantes Individuales",
+        "VAPI_RULE_HEADER_VARIANTS_SUBTITLE": "Variantes Individuales que pueden aparecer en esta partida. Cada variante puede causar desgracia, diversion, o una muerte dolorosa.",
+        "VAPI_RULE_VARIANT_ON_DESCRIPTION": "Este Variante puede aparecer en la partida.",
+        "VAPI_RULE_VARIANT_OFF_DESCRIPTION": "Este Variante no puede aparecer en la partida."
     }
 }

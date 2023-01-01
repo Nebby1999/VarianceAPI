@@ -14,8 +14,7 @@ namespace VAPI
     public static class VariantCatalog
     {
         public static int VariantCount => registeredVariants.Length;
-        public static bool Initialized { get; private set; } = false;
-        public static event Action OnCatalogInitialized;
+        public static ResourceAvailability Availability { get; } = default(ResourceAvailability);
 
         internal static VariantDef[] registeredVariants = Array.Empty<VariantDef>();
         private static readonly Dictionary<string, VariantIndex> nameToIndex = new Dictionary<string, VariantIndex>();
@@ -58,19 +57,18 @@ namespace VAPI
             PopulateBodyIndexToVariants();
 
             VAPILog.Info("Variant Catalog Initialized");
-            Initialized = true;
-
-            OnCatalogInitialized?.Invoke();
-            OnCatalogInitialized = null;
+            Availability.MakeAvailable();
         }
 
         private static VariantDef[] RegisterVariantsFromPacks(VariantPackDef[] packs)
         {
+            VAPILog.Info($"Registering VariantDefs from {VariantPackCatalog.VariantPackCount} VariantPacks");
+
             List<VariantDef> variantsToRegister = new List<VariantDef>();
 
             foreach(VariantPackDef pack in packs)
             {
-                ConfigFile configFile = pack.variantConfiguration;
+                ConfigFile configFile = pack.VariantConfiguration;
                 VariantDef[] variants = pack.variants;
 
                 if (variants.Length == 0)
@@ -84,7 +82,9 @@ namespace VAPI
                 variantsToRegister.AddRange(variants);
             }
 
-            variantsToRegister = variantsToRegister.OrderBy(vd => vd.name).ToList();
+            VAPILog.Debug($"Registering a total of {variantsToRegister.Count} Variants");
+
+            variantsToRegister = variantsToRegister.OrderBy(vd => $"{vd.bodyName}.{vd.name}").ToList();
             int variantAmount = variantsToRegister.ToArray().Length;
             for (VariantIndex variantIndex = 0; (int)variantIndex < variantAmount; variantIndex++)
             {
@@ -181,21 +181,15 @@ namespace VAPI
 
                     bodyIndexToDefProvider.Add(body.bodyIndex, new BodyVariantDefProvider(variantsForBody, body.bodyIndex));
 
-                    VAPILog.Debug($"Created a BodyVariantDefProvider for body {body.name}. (Variants: {string.Join("\n", variantsForBody.ToString())}");
+                    VAPILog.Debug($"Created a BodyVariantDefProvider for body {body.name}. (Variants Count: {variantsForBody.Length})");
                 }
             }
         }
 
         internal static void ThrowIfNotInitialized()
         {
-            if(!Initialized)
+            if(!Availability.available)
                 throw new InvalidOperationException($"VariantCatalog not initialized");
-        }
-
-        internal static void ThrowIfInitialized()
-        {
-            if(Initialized)
-                throw new InvalidOperationException("VariantCatalog already initialized.");
         }
         #endregion
     }

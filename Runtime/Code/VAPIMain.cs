@@ -5,6 +5,7 @@ using BepInEx;
 using RoR2;
 using R2API.Utils;
 using Moonstorm;
+using VAPI.RuleSystem;
 
 namespace VAPI
 {
@@ -30,6 +31,7 @@ namespace VAPI
             new VAPIContent().Init();
 
             ConfigurableFieldManager.AddMod(this);
+            SystemInitializerInjector.InjectDependency<RuleBook>(typeof(RuleBookExtras));
         }
     }
 }

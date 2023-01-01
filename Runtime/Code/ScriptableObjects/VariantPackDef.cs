@@ -1,4 +1,5 @@
 ﻿using BepInEx.Configuration;
+using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,11 @@ namespace VAPI
     [CreateAssetMenu(fileName = "New VariantPackDef", menuName = "VarianceAPI/VariantPackDef")]
     public class VariantPackDef : ScriptableObject
     {
-        public ConfigFile tierConfiguration { get; internal set; }
-        public ConfigFile variantConfiguration { get; internal set; }
+        public ConfigFile TierConfiguration { get; internal set; }
+        public ConfigFile VariantConfiguration { get; internal set; }
         public VariantPackIndex VariantPackIndex { get; internal set; }
+        public RuleChoiceDef EnabledChoice { get; internal set; }
+
         public string nameToken;
         public string tooltipToken;
         public string descriptionToken;

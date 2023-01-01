@@ -10,6 +10,7 @@ using System;
 using RoR2.Skills;
 using HG;
 using EntityStates;
+using VAPI.RuleSystem;
 
 namespace VAPI
 {
@@ -120,29 +121,34 @@ namespace VAPI
         }
 
 
-
         public bool IsAvailable()
         {
-            if (!variantSpawnCondition)
-                return true;
-
-            var run = Run.instance;
+            var runInstance = Run.instance;
             var sceneInfo = SceneInfo.instance;
 
-            return (run && sceneInfo) ? IsAvailable(run, sceneInfo) : false;
+            return (runInstance && sceneInfo) && IsAvailable(runInstance, sceneInfo, runInstance.ruleBook);
         }
 
-        public bool IsAvailable(Run run, SceneInfo sceneInfo)
+        public bool IsAvailable(Run run, SceneInfo sceneInfo) => IsAvailable(run, sceneInfo, run.ruleBook);
+
+        public bool IsAvailable(Run run, SceneInfo sceneInfo, RuleBook runRulebook)
         {
             ExpansionDef[] runExpansions = ExpansionCatalog.expansionDefs.Where(exp => run.IsExpansionEnabled(exp)).ToArray();
             DirectorAPI.StageInfo stageInfo = DirectorAPI.StageInfo.ParseInternalStageName(sceneInfo.sceneDef.baseSceneName);
 
-            return variantSpawnCondition ? IsAvailable(stageInfo, runExpansions) : true;
+            return IsAvailable(stageInfo, runExpansions, runRulebook);
         }
 
-        public bool IsAvailable(DirectorAPI.StageInfo stageInfo, ExpansionDef[] runExpansions)
+        public bool IsAvailable(DirectorAPI.StageInfo stageInfo, ExpansionDef[] runExpansions, RuleBook runRulebook)
         {
-            return variantSpawnCondition ? variantSpawnCondition.IsAvailable(stageInfo, runExpansions) : true;
+            bool variantRuleEnabled = RuleBookExtras.CanVariantSpawn(runRulebook, VariantIndex);
+
+            if(!variantRuleEnabled)
+            {
+                return false;
+            }
+
+            return variantSpawnCondition && variantSpawnCondition.IsAvailable(stageInfo, runExpansions);
         }
 
         [Serializable]

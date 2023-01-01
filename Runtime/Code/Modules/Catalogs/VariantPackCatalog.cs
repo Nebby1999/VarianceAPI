@@ -36,8 +36,7 @@ namespace VAPI
         }
 
         public static int VariantPackCount => registeredPacks.Length;
-        public static bool Initialized { get; private set; } = false;
-        public static event Action OnPacksRegistered;
+        public static ResourceAvailability Availability { get; } = default(ResourceAvailability);
 
         private static Dictionary<ConfigPair, List<VariantPackDef>> unregisteredPacks = new Dictionary<ConfigPair, List<VariantPackDef>>();
         internal static VariantPackDef[] registeredPacks = Array.Empty<VariantPackDef>();
@@ -201,24 +200,24 @@ namespace VAPI
         {
             nameToIndex.Clear();
 
-            registeredPacks = RegisterPacks(unregisteredPacks);
+            registeredPacks = RegisterPacks();
             unregisteredPacks = null;
-            Initialized = true;
 
-            OnPacksRegistered?.Invoke();
-            OnPacksRegistered = null;
+            VAPILog.Info("VariantPack Catalog Initialized");
+
+            Availability.MakeAvailable();
         }
 
-        private static VariantPackDef[] RegisterPacks(Dictionary<ConfigPair, List<VariantPackDef>> unregisteredPacks)
+        private static VariantPackDef[] RegisterPacks()
         {
             List<(VariantPackDef, ConfigPair)> packsToRegister = new List<(VariantPackDef, ConfigPair)>();
 
-            foreach(var (configFile, packs) in unregisteredPacks)
+            foreach(var (configPair, packs) in unregisteredPacks)
             {
                 var validatedPacks = new List<VariantPackDef>();
                 validatedPacks = packs.Where(ValidatePack).ToList();
 
-                packsToRegister.AddRange(validatedPacks.Select(x => (x, configFile)));
+                packsToRegister.AddRange(validatedPacks.Select(x => (x, configPair)));
             }
 
             packsToRegister = packsToRegister.OrderBy(vpd => vpd.Item1.name).ToList();
@@ -249,8 +248,8 @@ namespace VAPI
             try
             {
                 VariantPackDef packDef = variantPack.Item1;
-                packDef.tierConfiguration = variantPack.Item2.tierConfig;
-                packDef.variantConfiguration = variantPack.Item2.variantConfig;
+                packDef.TierConfiguration = variantPack.Item2.tierConfig;
+                packDef.VariantConfiguration = variantPack.Item2.variantConfig;
                 VAPILog.Debug($"Registering {variantPack} (Index: {index})");
                 packDef.VariantPackIndex = index;
                 nameToIndex.Add(packDef.name, index);
@@ -263,13 +262,13 @@ namespace VAPI
 
         private static void ThrowIfNotInitialized()
         {
-            if (!Initialized)
+            if (!Availability.available)
                 throw new InvalidOperationException("VariantPackCatalog not initialized");
         }
 
         private static void ThrowIfInitialized()
         {
-            if (Initialized)
+            if (Availability.available)
                 throw new InvalidOperationException("VariantPackCatalog already initialized");
         }
         #endregion

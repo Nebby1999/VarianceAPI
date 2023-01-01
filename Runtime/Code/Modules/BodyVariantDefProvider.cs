@@ -36,7 +36,7 @@ namespace VAPI
             ExpansionDef[] enabledExpansions = ExpansionCatalog._expansionDefs.Where(ed => run.IsExpansionEnabled(ed)).ToArray();
             
             foreach (BodyVariantDefProvider provider in instances)
-                provider.FilterVariants(stageInfo, enabledExpansions);
+                provider.FilterVariants(stageInfo, enabledExpansions, run.ruleBook);
         }
 
         public static BodyVariantDefProvider FindProvider(BodyIndex index)
@@ -57,16 +57,16 @@ namespace VAPI
         public BodyIndex TiedIndex { get; internal set; }
         public int TotalVariantCount { get => variantsForBody.Length; }
 
-        private void FilterVariants(DirectorAPI.StageInfo stageInfo, ExpansionDef[] runExpansions)
+        private void FilterVariants(DirectorAPI.StageInfo stageInfo, ExpansionDef[] runExpansions, RuleBook runRulebook)
         {
             try
             {
                 filteredUniques = variantsForBody.Where(vd => vd.isUnique)
-                    .Where(vd => vd.IsAvailable(stageInfo, runExpansions))
+                    .Where(vd => vd.IsAvailable(stageInfo, runExpansions, runRulebook))
                     .ToArray();
 
                 filteredNonUniques = variantsForBody.Where(vd => !vd.isUnique)
-                    .Where(vd => vd.IsAvailable(stageInfo, runExpansions))
+                    .Where(vd => vd.IsAvailable(stageInfo, runExpansions, runRulebook))
                     .ToArray();
             }
             catch(Exception e)

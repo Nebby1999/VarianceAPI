@@ -13,8 +13,7 @@ namespace VAPI
     public static class VariantTierCatalog
     {
         public static int variantTierCount => registeredTiers.Length;
-        public static bool Initialized { get; private set; } = false;
-        public static event Action OnCatalogInitialized;
+        public static ResourceAvailability Availability { get; } = default(ResourceAvailability);
 
         private static VariantTierDef[] registeredTiers;
         private static readonly Dictionary<VariantTierIndex, VariantTierDef> tierToDef = new Dictionary<VariantTierIndex, VariantTierDef>();
@@ -50,19 +49,20 @@ namespace VAPI
             tierToDef.Clear();
 
             registeredTiers = RegisterTiersFromPacks(VariantPackCatalog.registeredPacks);
-            Initialized = true;
 
-            OnCatalogInitialized?.Invoke();
-            OnCatalogInitialized = null;
+            VAPILog.Info("VariantTierCatalog Initialized");
+            Availability.MakeAvailable();
         }
 
         private static VariantTierDef[] RegisterTiersFromPacks(VariantPackDef[] packs)
         {
+            VAPILog.Info($"Registering VariantTierDefs from {VariantPackCatalog.VariantPackCount} VariantPacks.");
+
             List<VariantTierDef> tiersToRegister = new List<VariantTierDef>();
             
             foreach(VariantPackDef pack in packs)
             {
-                ConfigFile configFile = pack.tierConfiguration;
+                ConfigFile configFile = pack.TierConfiguration;
                 VariantTierDef[] tiers = pack.variantTiers;
                 if (tiers.Length == 0)
                     continue;
@@ -75,6 +75,7 @@ namespace VAPI
                 tiersToRegister.AddRange(tiers);
             }
 
+            VAPILog.Debug($"Registering a total of {tiersToRegister.Count} Tiers");
             tiersToRegister = tiersToRegister.OrderBy(vtd => vtd.name).ToList();
             int num = 0;
             foreach (VariantTierDef tierDef in tiersToRegister)
@@ -156,14 +157,8 @@ namespace VAPI
 
         private static void ThrowIfNotInitialized()
         {
-            if(!Initialized)
+            if(!Availability.available)
                 throw new InvalidOperationException($"VariantCatalog not initialized");
-        }
-
-        private static void ThrowIfInitialized()
-        {
-            if(Initialized)
-                throw new InvalidOperationException("VariantCatalog already initialized.");
         }
         #endregion
     }
