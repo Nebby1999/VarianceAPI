@@ -36,7 +36,7 @@ namespace VAPI
         }
 
         public static int VariantPackCount => registeredPacks.Length;
-        public static ResourceAvailability Availability { get; } = default(ResourceAvailability);
+        public static ResourceAvailability Availability = default(ResourceAvailability);
 
         private static Dictionary<ConfigPair, List<VariantPackDef>> unregisteredPacks = new Dictionary<ConfigPair, List<VariantPackDef>>();
         internal static VariantPackDef[] registeredPacks = Array.Empty<VariantPackDef>();

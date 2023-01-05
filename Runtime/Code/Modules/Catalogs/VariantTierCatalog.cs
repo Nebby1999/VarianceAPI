@@ -13,7 +13,7 @@ namespace VAPI
     public static class VariantTierCatalog
     {
         public static int variantTierCount => registeredTiers.Length;
-        public static ResourceAvailability Availability { get; } = default(ResourceAvailability);
+        public static ResourceAvailability availability = default(ResourceAvailability);
 
         private static VariantTierDef[] registeredTiers;
         private static readonly Dictionary<VariantTierIndex, VariantTierDef> tierToDef = new Dictionary<VariantTierIndex, VariantTierDef>();
@@ -51,7 +51,7 @@ namespace VAPI
             registeredTiers = RegisterTiersFromPacks(VariantPackCatalog.registeredPacks);
 
             VAPILog.Info("VariantTierCatalog Initialized");
-            Availability.MakeAvailable();
+            availability.MakeAvailable();
         }
 
         private static VariantTierDef[] RegisterTiersFromPacks(VariantPackDef[] packs)
@@ -157,7 +157,8 @@ namespace VAPI
 
         private static void ThrowIfNotInitialized()
         {
-            if(!Availability.available)
+            Debug.Log(availability.available);
+            if(!availability.available)
                 throw new InvalidOperationException($"VariantCatalog not initialized");
         }
         #endregion

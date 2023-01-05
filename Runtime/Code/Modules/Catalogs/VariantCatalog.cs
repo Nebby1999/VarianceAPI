@@ -14,7 +14,7 @@ namespace VAPI
     public static class VariantCatalog
     {
         public static int VariantCount => registeredVariants.Length;
-        public static ResourceAvailability Availability { get; } = default(ResourceAvailability);
+        public static ResourceAvailability Availability = default(ResourceAvailability);
 
         internal static VariantDef[] registeredVariants = Array.Empty<VariantDef>();
         private static readonly Dictionary<string, VariantIndex> nameToIndex = new Dictionary<string, VariantIndex>();
