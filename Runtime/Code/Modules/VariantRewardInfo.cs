@@ -62,13 +62,23 @@ namespace VAPI
         /// <param name="runInstance">The current run</param>
         public virtual void SetFromAverageOfTiers(IEnumerable<VariantTierDef> tiers, Run runInstance)
         {
+            var list = tiers.ToList();
+            if(list.Count == 0)
+            {
+                goldMultiplier = 1;
+                experienceMultiplier = 1;
+                whiteChance = 0;
+                greenChance = 0;
+                redChance = 0;
+                return;
+            }
             goldMultiplier = 0;
             experienceMultiplier = 0;
             whiteChance = 0;
             greenChance = 0;
             redChance = 0;
 
-            foreach (VariantTierDef tierDef in tiers)
+            foreach (VariantTierDef tierDef in list)
             {
                 goldMultiplier += tierDef.GoldMultiplierMinus1;
                 experienceMultiplier += tierDef.ExperienceMultiplierMinus1;
@@ -77,7 +87,7 @@ namespace VAPI
                 redChance += tierDef.redItemDropChance;
             }
 
-            int count = tiers.Count();
+            int count = list.Count;
             whiteChance /= count;
             greenChance /= count;
             redChance /= count;
