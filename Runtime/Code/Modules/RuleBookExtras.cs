@@ -1,16 +1,15 @@
-﻿using RoR2;
+﻿using Moonstorm.AddressableAssets;
+using R2API;
+using RoR2;
 using RoR2.ExpansionManagement;
-using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using R2API;
-using UnityEngine;
-using Moonstorm.AddressableAssets;
 using System.Reflection;
+using UnityEngine;
 
 namespace VAPI.RuleSystem
 {
-    public static class RuleBookExtras
+    internal static class RuleBookExtras
     {
         private static RuleChoiceDef varianceExpansionRuleChoice;
         private static RuleCategoryDef variantPackCategory;
@@ -28,7 +27,7 @@ namespace VAPI.RuleSystem
             AddVariantRules();
         }
 
-        public static bool TryCastVAPIRuleChoiceDef(RuleChoiceDef choice, out VAPIRuleChoiceDef vapiRuleChoiceDef)
+        internal static bool TryCastVAPIRuleChoiceDef(RuleChoiceDef choice, out VAPIRuleChoiceDef vapiRuleChoiceDef)
         {
             if (choice is VAPIRuleChoiceDef vrcd)
             {
@@ -39,7 +38,7 @@ namespace VAPI.RuleSystem
             return false;
         }
 
-        public static bool CanVariantSpawn(RuleBook runRulebook, VariantIndex variantToCheck)
+        internal static bool CanVariantSpawn(RuleBook runRulebook, VariantIndex variantToCheck)
         {
             if (variantToCheck == VariantIndex.None)
                 return false;
@@ -203,17 +202,17 @@ namespace VAPI.RuleSystem
             FieldInfo useDirectReference = typeof(AddressableExpansionDef).GetField("useDirectReference", BindingFlags.Instance | BindingFlags.NonPublic);
             FieldInfo asset = typeof(AddressableExpansionDef).GetField("asset", BindingFlags.Instance | BindingFlags.NonPublic);
 
-            foreach(AddressableExpansionDef expansionDef in variantDef.variantSpawnCondition.requiredExpansions)
+            foreach (AddressableExpansionDef expansionDef in variantDef.variantSpawnCondition.requiredExpansions)
             {
                 bool usesDirectReference = (bool)useDirectReference.GetValue(expansionDef);
-                if(usesDirectReference)
+                if (usesDirectReference)
                 {
                     expansions.Add((ExpansionDef)asset.GetValue(expansionDef));
                 }
                 else
                 {
                     ExpansionDef expansion = ExpansionCatalog.expansionDefs.FirstOrDefault(ed => ed.name == expansionDef.address);
-                    if(expansion)
+                    if (expansion)
                     {
                         expansions.Add(expansion);
                     }
@@ -237,7 +236,7 @@ namespace VAPI.RuleSystem
 
             AddressableUnlockableDef unlockable = variantDef.variantSpawnCondition.requiredUnlockableDef;
 
-            if((bool)useDirectReference.GetValue(unlockable))
+            if ((bool)useDirectReference.GetValue(unlockable))
             {
                 unlockables.Add((UnlockableDef)asset.GetValue(unlockable));
                 return unlockables;
@@ -245,7 +244,7 @@ namespace VAPI.RuleSystem
             else
             {
                 UnlockableDef unlockableDef = UnlockableCatalog.GetUnlockableDef(unlockable.address);
-                if(unlockableDef)
+                if (unlockableDef)
                 {
                     unlockables.Add(unlockableDef);
                     return unlockables;
@@ -278,13 +277,13 @@ namespace VAPI.RuleSystem
             if (!preGameControllerExists)
                 return true;
 
-            if(VAPIConfig.showVariantRuleCategory.Value == false)
+            if (VAPIConfig.showVariantRuleCategory.Value == false)
             {
                 return true;
             }
 
             bool anyPackActive = VariantPackCatalog.registeredPacks.Where(x => x.EnabledChoice != null).Any(x => PreGameController.instance.readOnlyRuleBook.IsChoiceActive(x.EnabledChoice));
-            if(!anyPackActive)
+            if (!anyPackActive)
             {
                 return true;
             }

@@ -1,12 +1,12 @@
 ﻿using Moonstorm;
 using RoR2;
-using MonoMod.Cil;
-using Mono.Cecil.Cil;
 using UnityEngine;
-using System;
 
 namespace VAPI.Items
 {
+    /// <summary>
+    /// <inheritdoc cref="GlobalCDR"/>
+    /// </summary>
     public class GreenHealthBar : ItemBase
     {
         public override ItemDef ItemDef { get; } = VAPIAssets.LoadAsset<ItemDef>("GreenHealthBar");

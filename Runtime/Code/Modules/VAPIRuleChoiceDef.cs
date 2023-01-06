@@ -1,13 +1,11 @@
-﻿using RoR2;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using R2API;
-using System.Threading.Tasks;
+﻿using R2API;
 
 namespace VAPI.RuleSystem
 {
+    /// <summary>
+    /// <inheritdoc cref="ExtendedRuleChoiceDef"/>
+    /// A VAPIRuleChoiceDef also specifies the ChoiceDef's variant index
+    /// </summary>
     public class VAPIRuleChoiceDef : ExtendedRuleChoiceDef
     {
         public VariantIndex variantIndex = VariantIndex.None;

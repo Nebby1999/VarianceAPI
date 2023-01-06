@@ -1,27 +1,34 @@
-﻿using System;
+﻿using RoR2;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using RoR2;
-using UnityEngine.Networking;
 using System.Collections.ObjectModel;
+using System.Linq;
+using UnityEngine;
 
 namespace VAPI.Components
 {
+    /// <summary>
+    /// The behaviour that handles VariantRewards
+    /// </summary>
     public class BodyVariantReward : MonoBehaviour, IOnKilledServerReceiver
     {
+        /// <summary>
+        /// The Body's VariantDefs
+        /// </summary>
         public ReadOnlyCollection<VariantDef> variantsInBody;
+        /// <summary>
+        /// Wether the rewards are applied on start
+        /// </summary>
         public bool applyOnStart = true;
+        /// <summary>
+        /// Wether this BodyVariantReward has applied the modifiers for rewards
+        /// </summary>
+        public bool HasApplied { get; private set; } = false;
         private List<VariantDef> variants = new List<VariantDef>();
-
-        private bool hasApplied = false;
         private VariantRewardInfo reward;
         private DeathRewards deathRewards;
         private CharacterBody characterBody;
-        
-        public void Awake()
+
+        private void Awake()
         {
             if (!Run.instance)
                 Destroy(this);
@@ -32,18 +39,21 @@ namespace VAPI.Components
 
         private void Start()
         {
-            if (applyOnStart && !hasApplied)
+            if (applyOnStart && !HasApplied)
                 Apply();
         }
+        /// <summary>
+        /// Applies the Rewards to this body
+        /// </summary>
         public void Apply()
         {
-            if (hasApplied)
+            if (HasApplied)
             {
                 VAPILog.Warning($"{this} has already been applied!");
                 return;
             }
 
-            hasApplied = true;
+            HasApplied = true;
             variantsInBody = new ReadOnlyCollection<VariantDef>(variants);
             reward = new VariantRewardInfo();
             reward.SetFromAverageOfTiers(variants.Select(vd => vd.VariantTierDef), Run.instance);
@@ -52,10 +62,39 @@ namespace VAPI.Components
             deathRewards.expReward *= (uint)reward.experienceMultiplier;
         }
 
-        public void AddVariant(VariantDef vd) => variants.Add(vd);
+        /// <summary>
+        /// Adds a VariantDef to the BodyVariantReward's internal variants list.
+        /// <para>Returns if <see cref="HasApplied"/> is true</para>
+        /// </summary>
+        /// <param name="vd">The VariantDef to add</param>
+        public void AddVariant(VariantDef vd)
+        {
+            if (HasApplied)
+            {
+                VAPILog.Warning($"{this} has already been applied!");
+                return;
+            }
+            variants.Add(vd);
+        }
 
-        public void AddVariants(IEnumerable<VariantDef> variantDefs) => variants.AddRange(variantDefs);
+        /// <summary>
+        /// Adds a VariantDef to the BodyVariantReward's internal variants list
+        /// <para>Returns if <see cref="HasApplied"/> is true</para>
+        /// </summary>
+        /// <param name="variantDefs">The VariantDefs to add</param>
+        public void AddVariants(IEnumerable<VariantDef> variantDefs)
+        {
+            if (HasApplied)
+            {
+                VAPILog.Warning($"{this} has already been applied!");
+                return;
+            }
+            variants.AddRange(variantDefs);
+        }
 
+        /// <summary>
+        /// Raised when the variant gets killed, do not trigger this yourself.
+        /// </summary>
         public void OnKilledServer(DamageReport damageReport)
         {
             if (damageReport.attackerTeamIndex != TeamIndex.Player)

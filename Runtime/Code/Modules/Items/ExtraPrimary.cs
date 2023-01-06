@@ -1,9 +1,11 @@
 ﻿using Moonstorm;
 using RoR2;
-using R2API;
 
 namespace VAPI.Items
 {
+    /// <summary>
+    /// <inheritdoc cref="GlobalCDR"/>
+    /// </summary>
     public class ExtraPrimary : ItemBase
     {
         public override ItemDef ItemDef { get; } = VAPIAssets.LoadAsset<ItemDef>("ExtraPrimary");
@@ -18,7 +20,7 @@ namespace VAPI.Items
         {
             orig(self);
             var skillLoc = self.skillLocator;
-            if(skillLoc.primary)
+            if (skillLoc.primary)
             {
                 skillLoc.primary.SetBonusStockFromBody(self.GetItemCount(ItemDef));
             }

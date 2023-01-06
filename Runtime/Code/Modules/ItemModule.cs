@@ -1,19 +1,28 @@
 ﻿using Moonstorm;
 using R2API.ScriptableObjects;
-using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace VAPI.Modules
 {
+    /// <summary>
+    /// VarianceAPI's ItemModule
+    /// </summary>
     public class ItemModule : ItemModuleBase
     {
+        /// <summary>
+        /// VarianceAPI's ContentPack
+        /// </summary>
         public override R2APISerializableContentPack SerializableContentPack => VAPIContent.Instance.SerializableContentPack;
 
+        /// <summary>
+        /// VarianceAPI's itemModule
+        /// </summary>
         public static ItemModule Instance { get; private set; }
 
+        /// <summary>
+        /// Do not call this twice.
+        /// </summary>
         public override void Initialize()
         {
             Instance = this;

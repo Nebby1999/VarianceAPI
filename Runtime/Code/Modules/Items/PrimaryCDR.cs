@@ -1,9 +1,12 @@
 ﻿using Moonstorm;
-using RoR2;
 using R2API;
+using RoR2;
 
 namespace VAPI.Items
 {
+    /// <summary>
+    /// <inheritdoc cref="GlobalCDR"/>
+    /// </summary>
     public class PrimaryCDR : ItemBase
     {
         public override ItemDef ItemDef { get; } = VAPIAssets.LoadAsset<ItemDef>("PrimaryCDR");

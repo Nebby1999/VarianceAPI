@@ -1,31 +1,43 @@
-﻿using RoR2;
+﻿using Moonstorm;
+using RoR2;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
-using R2API;
-using UnityEngine.Networking;
-using RoR2.ExpansionManagement;
 using System.Collections.ObjectModel;
-using Moonstorm;
+using UnityEngine;
+using UnityEngine.Networking;
 
 namespace VAPI.Components
 {
+    /// <summary>
+    /// A Singleton monobehaviour that takes care of spawning Variants for a run, this behaviour is instanciated with the Run gameObject when the VarianceAPI expansion is enabled
+    /// </summary>
     public class VariantSpawnManager : MonoBehaviour
     {
+        /// <summary>
+        /// The Artifact of Variance's SpawnRate multiplier
+        /// </summary>
         [ConfigurableField(VAPIConfig.general, ConfigSection = "Artifact of Variance", ConfigDesc = "Multiplier thats applied to the spawn chance of variants when the Artifact of Variance is enabled")]
         [TokenModifier("VAPI_ARTIFACT_VARIANCE_DESC", StatTypes.Default, 0)]
         public static float artifactSpawnRateMultiplier = 2f;
+        /// <summary>
+        /// The current instance of the VariantSpawnManager
+        /// </summary>
         public static VariantSpawnManager Instance { get; private set; }
-
-        public Xoroshiro128Plus variantRNG;
-        public float defaultSpawnRateMultiplier = 1;
-        public ArtifactDef varianceArtifact;
+        [SerializeField] private float defaultSpawnRateMultiplier = 1;
+        [SerializeField] private ArtifactDef varianceArtifact;
+        /// <summary>
+        /// Event raised when the VariantSpawnManager awakens
+        /// </summary>
         public static event Action<VariantSpawnManager> OnAwake;
+        /// <summary>
+        /// Event raised when a Variant spawns
+        /// </summary>
         public static event Action<ReadOnlyCollection<VariantDef>, GameObject> OnVariantSpawnedServer;
+        /// <summary>
+        /// Event raisedd when a Variant gets killed
+        /// </summary>
         public static event Action<ReadOnlyCollection<VariantDef>, DamageReport> OnVariantKilledServer;
+        private Xoroshiro128Plus variantRNG;
 
         private void Awake()
         {
@@ -56,7 +68,7 @@ namespace VAPI.Components
                 return;
 
             VariantDef[] variantsForBody = Roll(provider);
-            
+
             if (variantsForBody == null)
                 return;
 
@@ -69,7 +81,7 @@ namespace VAPI.Components
             //managerForBody.Apply();
 
             BodyVariantReward rewards = obj.GetComponent<BodyVariantReward>();
-            if(rewards)
+            if (rewards)
             {
                 rewards.AddVariants(variantsForBody);
                 //rewards.Apply();
@@ -118,7 +130,7 @@ namespace VAPI.Components
         {
             List<VariantDef> defs = new List<VariantDef>();
             VAPILog.Info(pool.Length);
-            for(int i = 0; i < pool.Length; i++)
+            for (int i = 0; i < pool.Length; i++)
             {
                 var currentDef = pool[i];
                 var spawnRate = Mathf.Min(100, currentDef.spawnRate * (RunArtifactManager.instance.IsArtifactEnabled(varianceArtifact) ? artifactSpawnRateMultiplier : defaultSpawnRateMultiplier));
@@ -131,7 +143,7 @@ namespace VAPI.Components
                 }
             }
             var success = defs.Count != 0;
-            
+
             result = success ? defs.ToArray() : null;
             return success;
         }
@@ -147,7 +159,7 @@ namespace VAPI.Components
 
         private void OnDisable()
         {
-            if(Instance == this)
+            if (Instance == this)
             {
                 Instance = null;
             }

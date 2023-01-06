@@ -1,19 +1,29 @@
 ﻿using RoR2;
 using RoR2.CharacterAI;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace VAPI.Components
 {
+    /// <summary>
+    /// A Component that allows a variant to use an Equipment, the arguments are taken from the VariantDef's <see cref="VariantDef.variantInventory"/>'s <see cref="VariantInventory.equipmentInfo"/>
+    /// </summary>
     public class VariantEquipmentHandler : MonoBehaviour
     {
+        /// <summary>
+        /// The tied body
+        /// </summary>
         public CharacterBody body;
+        /// <summary>
+        /// The fraction of health that must be missing for this variant to attempt to use the equipment
+        /// </summary>
         public float aiMaxUseHealthFraction;
+        /// <summary>
+        /// The distance required between variant and target for this variant to attempt to use the equipment
+        /// </summary>
         public float aiMaxUseDistance;
+        /// <summary>
+        /// the current timer to determine wether the variant can use the equipment
+        /// </summary>
         public float aiUseDelay;
         public float aiUseDelayMax;
         private bool aiCanUse = false;
@@ -21,15 +31,15 @@ namespace VAPI.Components
         private void FixedUpdate()
         {
             aiUseDelay -= Time.fixedDeltaTime;
-            if(aiUseDelay <= 0)
+            if (aiUseDelay <= 0)
             {
                 aiCanUse = true;
                 aiUseDelay = aiUseDelayMax;
             }
 
-            if(body.equipmentSlot && body.equipmentSlot.stock > 0 && body.inputBank && !body.isPlayerControlled)
+            if (body.equipmentSlot && body.equipmentSlot.stock > 0 && body.inputBank && !body.isPlayerControlled)
             {
-                if(aiCanUse)
+                if (aiCanUse)
                 {
                     aiCanUse = false;
 

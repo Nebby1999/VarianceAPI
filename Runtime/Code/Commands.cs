@@ -3,9 +3,6 @@ using R2API.Utils;
 using RoR2;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using VAPI.Components;
 
@@ -20,7 +17,7 @@ namespace VAPI
             toLog.Add("Modified Bodies:");
             toLog.Add("----------------");
 
-            foreach(BodyVariantDefProvider provider in BodyVariantDefProvider.instances)
+            foreach (BodyVariantDefProvider provider in BodyVariantDefProvider.instances)
             {
                 var bodyPrefab = BodyCatalog.GetBodyPrefab(provider.TiedIndex);
                 toLog.Add($"{bodyPrefab.name} (VariantDef count: {provider.TotalVariantCount})");
@@ -33,21 +30,21 @@ namespace VAPI
             "\nargs[0] = bodyName")]
         private static void CCvapi_ListVariants(ConCommandArgs args)
         {
-            if(args.Count == 0)
+            if (args.Count == 0)
             {
                 Debug.Log("No arguments given.");
                 return;
             }
 
             string character = StringFinder.Instance.GetBodyName(args[0]);
-            if(character == null)
+            if (character == null)
             {
                 Debug.Log("No body could be found with that name. To get a list of bodies that have variants, use \"vapi_list_bodies\".");
                 return;
             }
 
             var bodyVariantDefProvider = BodyVariantDefProvider.FindProvider(character);
-            if(bodyVariantDefProvider == null)
+            if (bodyVariantDefProvider == null)
             {
                 Debug.Log("The body provided does not have a BodyVariantDefProvider. To get a list of bodies that have variants, use \"vapi_list_bodies\".");
                 return;
@@ -56,7 +53,7 @@ namespace VAPI
             List<string> toLog = new List<string>();
             toLog.Add($"{character}'s Variants");
             toLog.Add("-----------------------");
-            for(int i = 0; i < bodyVariantDefProvider.TotalVariantCount; i++)
+            for (int i = 0; i < bodyVariantDefProvider.TotalVariantCount; i++)
             {
                 VariantDef def = bodyVariantDefProvider.GetVariantDef(i);
                 toLog.Add($"{i} - {def.name}");
@@ -69,20 +66,20 @@ namespace VAPI
             "\nArg[1 - Infinity] = VariantDef Names")]
         public static void SpawnVariant(ConCommandArgs args)
         {
-            if(args.sender == null)
+            if (args.sender == null)
             {
                 Debug.Log($"Sender does not exist");
                 return;
             }
 
-            if(args.Count == 0)
+            if (args.Count == 0)
             {
                 Debug.Log("No Arguments Given.");
                 return;
             }
 
             string master = StringFinder.Instance.GetMasterName(args[0]);
-            if(master == null)
+            if (master == null)
             {
                 Debug.Log("Could not find master.");
                 return;
@@ -126,7 +123,7 @@ namespace VAPI
 
             List<string> toLog = new List<string>();
             toLog.Add($"Spawned a {masterPrefab.name} with the following VariantDefs");
-            for(int i = 0; i < variants.Count; i++)
+            for (int i = 0; i < variants.Count; i++)
             {
                 toLog.Add($"{i} - {variants[i].name}");
             }
@@ -138,14 +135,14 @@ namespace VAPI
             "Arg[1 - Infinity] VariantDef names")]
         public static void SpawnAsVariant(ConCommandArgs args)
         {
-            if(args.Count == 0)
+            if (args.Count == 0)
             {
                 Debug.Log("No Arguments Given");
                 return;
             }
 
             string body = StringFinder.Instance.GetBodyName(args[0]);
-            if(body == null)
+            if (body == null)
             {
                 Debug.Log("No body could be found with that name");
                 return;
@@ -153,7 +150,7 @@ namespace VAPI
 
             GameObject newBody = BodyCatalog.FindBodyPrefab(body);
 
-            if(args.sender == null)
+            if (args.sender == null)
             {
                 Debug.Log("Sender does not exist");
                 return;
@@ -161,7 +158,7 @@ namespace VAPI
 
             CharacterMaster master = args.senderMaster;
 
-            if(!master.GetBody())
+            if (!master.GetBody())
             {
                 Debug.Log("Master has no body");
                 return;
@@ -175,10 +172,10 @@ namespace VAPI
             List<VariantDef> variants = new List<VariantDef>();
             foreach (string variantName in variantNames)
             {
-                for(int i = 0; i < VariantCatalog.registeredVariants.Length; i++)
+                for (int i = 0; i < VariantCatalog.registeredVariants.Length; i++)
                 {
                     var vd = VariantCatalog.registeredVariants[i];
-                    if(vd.name.ToLowerInvariant().Contains(variantName.ToLowerInvariant()))
+                    if (vd.name.ToLowerInvariant().Contains(variantName.ToLowerInvariant()))
                     {
                         variants.Add(vd);
                         break;
@@ -189,24 +186,24 @@ namespace VAPI
             master.bodyPrefab = newBody;
             List<string> toLog = new List<string>();
             toLog.Add($"{args.sender.userName} is spawning as {body} with the following VariantDefs:");
-            
+
             RoR2.ConVar.BoolConVar stage1pod = ((RoR2.ConVar.BoolConVar)(typeof(Stage)).GetFieldCached("stage1PodConVar").GetValue(null));
             bool oldVal = stage1pod.value;
             stage1pod.SetBool(false);
 
             var characterBody = master.Respawn(master.GetBody().footPosition, master.GetBody().transform.rotation);
-            if(characterBody)
+            if (characterBody)
             {
                 characterBody.gameObject.AddComponent<DoNotTurnIntoVariant>();
 
                 BodyVariantManager manager = characterBody.GetComponent<BodyVariantManager>();
                 BodyVariantReward reward = characterBody.GetComponent<BodyVariantReward>();
 
-                if(manager)
+                if (manager)
                 {
                     manager.AddVariants(variants);
                 }
-                if(reward)
+                if (reward)
                 {
                     reward.AddVariants(variants);
                 }

@@ -1,15 +1,16 @@
 ﻿using BepInEx.Configuration;
+using Moonstorm;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
-using Moonstorm;
 
 namespace VAPI
 {
+    /// <summary>
+    /// VarianceAPI's VariantPackCatalog
+    /// </summary>
     public static class VariantPackCatalog
     {
         private struct ConfigPair
@@ -35,36 +36,57 @@ namespace VAPI
             public static bool operator !=(ConfigPair lhs, ConfigPair rhs) => !(lhs == rhs);
         }
 
+        /// <summary>
+        /// The total amount of registered packs
+        /// </summary>
         public static int VariantPackCount => registeredPacks.Length;
-        public static ResourceAvailability Availability = default(ResourceAvailability);
+        /// <summary>
+        /// Utilize this to execute an Action as soon as the VariantPackCatalog becomes available
+        /// </summary>
+        public static ResourceAvailability availability = default(ResourceAvailability);
 
         private static Dictionary<ConfigPair, List<VariantPackDef>> unregisteredPacks = new Dictionary<ConfigPair, List<VariantPackDef>>();
         internal static VariantPackDef[] registeredPacks = Array.Empty<VariantPackDef>();
         private static readonly Dictionary<string, VariantPackIndex> nameToIndex = new Dictionary<string, VariantPackIndex>();
 
         #region Find Methods
+        /// <summary>
+        /// Gets the VariantPackDef tied to the given VariantPackIndex
+        /// </summary>
+        /// <param name="variantPackIndex">The VariantPackIndex</param>
+        /// <returns>The VariantPackDef, null if <paramref name="variantPackIndex"/> is invalid</returns>
         public static VariantPackDef GetVariantPackDef(VariantPackIndex variantPackIndex)
         {
             ThrowIfNotInitialized();
             return HG.ArrayUtils.GetSafe(registeredPacks, (int)variantPackIndex);
         }
 
+        /// <summary>
+        /// Finds the VariantPackIndex using the given name
+        /// </summary>
+        /// <param name="packName">The name of the VariantPackDef to use for the search</param>
+        /// <returns>The VariantPackIndex, none if none could be found.</returns>
         public static VariantPackIndex FindVariantPackIndex(string packName)
         {
             ThrowIfNotInitialized();
-            if(nameToIndex.TryGetValue(packName, out var index))
+            if (nameToIndex.TryGetValue(packName, out var index))
             {
                 return index;
             }
             return VariantPackIndex.None;
         }
 
+        /// <summary>
+        /// Finds the VariantPackDef that implements <paramref name="variant"/>
+        /// </summary>
+        /// <param name="variant">The VariantDef to use for the search</param>
+        /// <returns>The VariantPackDef that implements <paramref name="variant"/></returns>
         public static VariantPackDef FindVariantPackDef(VariantDef variant)
         {
             ThrowIfNotInitialized();
             foreach (VariantPackDef packDef in registeredPacks)
             {
-                if(packDef.variants.Contains(variant))
+                if (packDef.variants.Contains(variant))
                 {
                     return packDef;
                 }
@@ -72,6 +94,11 @@ namespace VAPI
             return null;
         }
 
+        /// <summary>
+        /// Finds the VariantPackDef that implements <paramref name="variantTier"/>
+        /// </summary>
+        /// <param name="variantTier">The VariantTierDef to use for the search</param>
+        /// <returns>The VariantPackDef that implements <paramref name="variantTier"/></returns>
         public static VariantPackDef FindVariantPackDef(VariantTierDef variantTier)
         {
             ThrowIfNotInitialized();
@@ -87,12 +114,22 @@ namespace VAPI
         #endregion
 
         #region Add Methods
+        /// <summary>
+        /// Adds all the VariantPacks found in <paramref name="assetBundle"/>, the VariantPacks added this way will not be configurable
+        /// </summary>
+        /// <param name="assetBundle">The Assetbundle to load from</param>
         public static void AddVariantPacks(AssetBundle assetBundle)
         {
             ThrowIfInitialized();
 
             AddVariantPacks(assetBundle.LoadAllAssets<VariantPackDef>());
         }
+        /// <summary>
+        /// Adds all the VariantPacks found in <paramref name="assetBundle"/>, the VariantPack's tiers and variants will be configurable using <paramref name="configFile"/>
+        /// </summary>
+        /// <param name="assetBundle">The AssetBundle to load from</param>
+        /// <param name="configFile">The configFile for the VariantPacks</param>
+        /// <exception cref="ArgumentNullException">When <paramref name="configFile"/> is null</exception>
         public static void AddVariantPacks(AssetBundle assetBundle, ConfigFile configFile)
         {
             ThrowIfInitialized();
@@ -102,6 +139,14 @@ namespace VAPI
 
             AddVariantPacks(assetBundle.LoadAllAssets<VariantPackDef>(), configFile);
         }
+
+        /// <summary>
+        /// Adds all the VariantPacks found in <paramref name="assetBundle"/>, the tiers will be configurable using <paramref name="tierConfig"/> and the variants using <paramref name="variantConfig"/>
+        /// </summary>
+        /// <param name="assetBundle">The AssetBundle to load from</param>
+        /// <param name="tierConfig">The config file for VariantTiers</param>
+        /// <param name="variantConfig">The config file for VariantDefs</param>
+        /// <exception cref="ArgumentNullException">When tierConfig or variantConfig are null</exception>
         public static void AddVariantPacks(AssetBundle assetBundle, ConfigFile tierConfig, ConfigFile variantConfig)
         {
             ThrowIfInitialized();
@@ -115,16 +160,26 @@ namespace VAPI
             AddVariantPacks(assetBundle.LoadAllAssets<VariantPackDef>(), tierConfig, variantConfig);
         }
 
+        /// <summary>
+        /// Adds all the VariantPacks specified in <paramref name="variantPacks"/>, the VariantPacks added this way will not be configurable
+        /// </summary>
+        /// <param name="variantPacks">The VariantPacks to add</param>
         public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks)
         {
             ThrowIfInitialized();
 
-            foreach(VariantPackDef packDef in variantPacks)
+            foreach (VariantPackDef packDef in variantPacks)
             {
                 AddVariantPack(packDef);
             }
         }
 
+        /// <summary>
+        /// Adds all the VariantPacks specified in <paramref name="variantPacks"/>, the VariantPack's tiers and variants will be configurable using <paramref name="configFile"/>
+        /// </summary>
+        /// <param name="variantPacks">The VariantPacks to add</param>
+        /// <param name="configFile">The config file for the VariantPacks</param>
+        /// <exception cref="ArgumentNullException">When configFile is null</exception>
         public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks, ConfigFile configFile)
         {
             ThrowIfInitialized();
@@ -138,6 +193,13 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Adds all the VariantPAcks specified in <paramref name="variantPacks"/>, the tiers will be configurable using <paramref name="tierConfig"/> and the variants using <paramref name="variantConfig"/>
+        /// </summary>
+        /// <param name="variantPacks">The VariantPacks to add</param>
+        /// <param name="tierConfig">The config file for VariantTiers</param>
+        /// <param name="variantConfig">The config file for VariantDefs</param>
+        /// <exception cref="ArgumentNullException">When tierConfig or variantConfig are null</exception>
         public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks, ConfigFile tierConfig, ConfigFile variantConfig)
         {
             ThrowIfInitialized();
@@ -154,6 +216,10 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Adds a single VariantPack, the pack added cannot be configured
+        /// </summary>
+        /// <param name="packDef">The pack to add</param>
         public static void AddVariantPack(VariantPackDef packDef)
         {
             ThrowIfInitialized();
@@ -161,6 +227,12 @@ namespace VAPI
             AddPackInternal(packDef, default(ConfigPair));
         }
 
+        /// <summary>
+        /// Adds a single VariantPackDef, the pack's tiers and variants can be configured using <paramref name="configFile"/>
+        /// </summary>
+        /// <param name="packDef">The pack to add</param>
+        /// <param name="configFile">The config file for the VariantPack</param>
+        /// <exception cref="ArgumentNullException">When configFile is null</exception>
         public static void AddVariantPack(VariantPackDef packDef, ConfigFile configFile)
         {
             ThrowIfInitialized();
@@ -171,6 +243,13 @@ namespace VAPI
             AddPackInternal(packDef, new ConfigPair(configFile));
         }
 
+        /// <summary>
+        /// Adds a single VariantPackDef, the tiers will be configurable using <paramref name="tierConfig"/> and the variants using <paramref name="variantConfig"/>
+        /// </summary>
+        /// <param name="packDef">The pack to add</param>
+        /// <param name="tierConfig">The config file for VariantTiers</param>
+        /// <param name="variantConfig">The config file for VariantDefs</param>
+        /// <exception cref="ArgumentNullException">When tierConfig or variantConfig are null</exception>
         public static void AddVariantPack(VariantPackDef packDef, ConfigFile tierConfig, ConfigFile variantConfig)
         {
             ThrowIfInitialized();
@@ -186,7 +265,7 @@ namespace VAPI
 
         private static void AddPackInternal(VariantPackDef packDef, ConfigPair configPair)
         {
-            if(!unregisteredPacks.ContainsKey(configPair))
+            if (!unregisteredPacks.ContainsKey(configPair))
             {
                 unregisteredPacks[configPair] = new List<VariantPackDef>();
             }
@@ -205,14 +284,14 @@ namespace VAPI
 
             VAPILog.Info("VariantPack Catalog Initialized");
 
-            Availability.MakeAvailable();
+            availability.MakeAvailable();
         }
 
         private static VariantPackDef[] RegisterPacks()
         {
             List<(VariantPackDef, ConfigPair)> packsToRegister = new List<(VariantPackDef, ConfigPair)>();
 
-            foreach(var (configPair, packs) in unregisteredPacks)
+            foreach (var (configPair, packs) in unregisteredPacks)
             {
                 var validatedPacks = new List<VariantPackDef>();
                 validatedPacks = packs.Where(ValidatePack).ToList();
@@ -222,7 +301,7 @@ namespace VAPI
 
             packsToRegister = packsToRegister.OrderBy(vpd => vpd.Item1.name).ToList();
             int packAmount = packsToRegister.ToArray().Length;
-            for(VariantPackIndex packIndex = 0; (int)packIndex < packAmount; packIndex++)
+            for (VariantPackIndex packIndex = 0; (int)packIndex < packAmount; packIndex++)
             {
                 RegisterPack(packsToRegister[(int)packIndex], packIndex);
             }
@@ -236,7 +315,7 @@ namespace VAPI
             {
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 VAPILog.Error($"Could not validate pack {packDef}: {e}");
                 return false;
@@ -262,13 +341,13 @@ namespace VAPI
 
         private static void ThrowIfNotInitialized()
         {
-            if (!Availability.available)
+            if (!availability.available)
                 throw new InvalidOperationException("VariantPackCatalog not initialized");
         }
 
         private static void ThrowIfInitialized()
         {
-            if (Availability.available)
+            if (availability.available)
                 throw new InvalidOperationException("VariantPackCatalog already initialized");
         }
         #endregion

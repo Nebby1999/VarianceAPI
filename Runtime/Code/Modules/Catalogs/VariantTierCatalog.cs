@@ -1,18 +1,23 @@
 ﻿using BepInEx.Configuration;
-using JetBrains.Annotations;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// VarianceAPI's VariantTierCatalog
+    /// </summary>
     public static class VariantTierCatalog
     {
+        /// <summary>
+        /// The total amount of registered tiers
+        /// </summary>
         public static int variantTierCount => registeredTiers.Length;
+        /// <summary>
+        /// Utilize this to execute an Action as soon as the VariantTierCatalog becomes available
+        /// </summary>
         public static ResourceAvailability availability = default(ResourceAvailability);
 
         private static VariantTierDef[] registeredTiers;
@@ -20,6 +25,11 @@ namespace VAPI
 
 
         #region Find Methods
+        /// <summary>
+        /// Gets the VariantTierDef tied to the given VariantTierIndex
+        /// </summary>
+        /// <param name="variantTier">The VariantTierIndex</param>
+        /// <returns>The VariantTierDef, null if <paramref name="variantTier"/> is invalid</returns>
         public static VariantTierDef GetVariantTierDef(VariantTierIndex variantTier)
         {
             ThrowIfNotInitialized();
@@ -28,12 +38,17 @@ namespace VAPI
             return null;
         }
 
+        /// <summary>
+        /// Finds the VariantTierDef with the given name
+        /// </summary>
+        /// <param name="tierName">The name of the VariantTierDef</param>
+        /// <returns>The VariantTierDef, null if none could be found</returns>
         public static VariantTierDef FindVariantTierDef(string tierName)
         {
             ThrowIfNotInitialized();
-            foreach(VariantTierDef tierDef in registeredTiers)
+            foreach (VariantTierDef tierDef in registeredTiers)
             {
-                if(tierDef.name == tierName)
+                if (tierDef.name == tierName)
                 {
                     return tierDef;
                 }
@@ -59,8 +74,8 @@ namespace VAPI
             VAPILog.Info($"Registering VariantTierDefs from {VariantPackCatalog.VariantPackCount} VariantPacks.");
 
             List<VariantTierDef> tiersToRegister = new List<VariantTierDef>();
-            
-            foreach(VariantPackDef pack in packs)
+
+            foreach (VariantPackDef pack in packs)
             {
                 ConfigFile configFile = pack.TierConfiguration;
                 VariantTierDef[] tiers = pack.variantTiers;
@@ -69,9 +84,9 @@ namespace VAPI
 
                 tiers = tiers.Where(ValidateTier).ToArray();
 
-                if(configFile != null)
+                if (configFile != null)
                     ConfigureTiersThatPassedFilter(configFile, tiers);
-    
+
                 tiersToRegister.AddRange(tiers);
             }
 
@@ -102,7 +117,7 @@ namespace VAPI
             {
                 return true;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 VAPILog.Error($"Could not validate tier {tierDef}: {e}");
                 return false;
@@ -111,13 +126,13 @@ namespace VAPI
 
         private static void ConfigureTiersThatPassedFilter(ConfigFile configFile, IEnumerable<VariantTierDef> tierDefs)
         {
-            foreach(VariantTierDef tierDef in tierDefs)
+            foreach (VariantTierDef tierDef in tierDefs)
             {
                 try
                 {
-                    tierDef.goldMultiplier = BindInternal<float>(tierDef, 
-                        "Gold Multiplier", 
-                        tierDef.goldMultiplier, 
+                    tierDef.goldMultiplier = BindInternal<float>(tierDef,
+                        "Gold Multiplier",
+                        tierDef.goldMultiplier,
                         "The Gold Multiplier for this tier");
 
                     tierDef.experienceMultiplier = BindInternal<float>(tierDef,
@@ -140,7 +155,7 @@ namespace VAPI
                         tierDef.redItemDropChance,
                         "The Chance for variants of this tier to drop a red item");
                 }
-                catch(Exception e)
+                catch (Exception e)
                 {
                     VAPILog.Error($"Error configuring tier {tierDef}: {e}\n(ConfigFile: {configFile}, Tier: {tierDef}");
                 }
@@ -157,8 +172,7 @@ namespace VAPI
 
         private static void ThrowIfNotInitialized()
         {
-            Debug.Log(availability.available);
-            if(!availability.available)
+            if (!availability.available)
                 throw new InvalidOperationException($"VariantCatalog not initialized");
         }
         #endregion

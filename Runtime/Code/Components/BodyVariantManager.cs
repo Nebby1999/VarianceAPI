@@ -6,22 +6,41 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 
 namespace VAPI.Components
 {
+    /// <summary>
+    /// The NetworkBehaviour that transforms a regular body into a variant
+    /// </summary>
     public class BodyVariantManager : NetworkBehaviour
     {
+        /// <summary>
+        /// The VariantDefs in the body
+        /// </summary>
         public ReadOnlyCollection<VariantDef> variantsInBody;
 
+        /// <summary>
+        /// The Variant's CharacterBody
+        /// </summary>
         public CharacterBody CharacterBody { get; private set; }
+        /// <summary>
+        /// The Variant's CharacterMaster
+        /// </summary>
         public CharacterMaster CharacterMaster { get => CharacterBody.master; }
+        /// <summary>
+        /// The Variant's CharacterDeathBehaviour
+        /// </summary>
         public CharacterDeathBehavior CharacterDeathBehavior { get; private set; }
+        /// <summary>
+        /// The Variant's CharacterModel
+        /// </summary>
         public CharacterModel CharacterModel { get; private set; }
 
+        /// <summary>
+        /// Wether the VariantDefs get applied on Start
+        /// </summary>
         public bool applyOnStart = true;
 
         private readonly SyncListInt variantIndices = new SyncListInt();
@@ -31,17 +50,25 @@ namespace VAPI.Components
         private ItemDisplayRuleSet storedIDRS;
 
         #region Networking Related
+        /// <summary>
+        /// Adds a list of Variants to the BodyVariantManager
+        /// </summary>
+        /// <param name="vd">The variants to add</param>
         public void AddVariants(IEnumerable<VariantDef> vd) => vd.ToList().ForEach(v => AddVariant(v));
 
+        /// <summary>
+        /// Adds a single Variant to the BodyVariantManager
+        /// </summary>
+        /// <param name="vd">The variant to add</param>
         public void AddVariant(VariantDef vd) => variantIndices.Add((int)vd.VariantIndex);
-        
+
         private void OnListChanged(SyncList<int>.Operation op, int index)
         {
             variantsInBody = new ReadOnlyCollection<VariantDef>(variantIndices.Select(i => VariantCatalog.GetVariantDef((VariantIndex)i)).ToList());
         }
         #endregion
 
-        public void Awake()
+        private void Awake()
         {
             variantIndices.Callback = OnListChanged;
 
@@ -52,18 +79,22 @@ namespace VAPI.Components
                 CharacterModel = CharacterBody.modelLocator.modelTransform.GetComponent<CharacterModel>();
         }
 
-        public void Start()
+        private void Start()
         {
             if (applyOnStart && !hasApplied)
                 Apply();
         }
+
+        /// <summary>
+        /// Applies the VariantDefs to this body
+        /// </summary>
         public void Apply()
         {
             if (hasApplied)
             {
                 VAPILog.Warning($"{this} has already been applied!");
                 return;
-            }    
+            }
 
             hasApplied = true;
             if (!CharacterBody || variantsInBody == null)
@@ -86,15 +117,15 @@ namespace VAPI.Components
 
                     VariantInventory inventory = current.variantInventory;
 
-                    if(inventory)
+                    if (inventory)
                     {
                         inventory.AddBuffs(CharacterBody);
                     }
                     tier.AddTierBuff(CharacterBody);
 
-                    if(CharacterMaster)
+                    if (CharacterMaster)
                     {
-                        if(inventory)
+                        if (inventory)
                         {
                             inventory.AddItems(CharacterMaster.inventory);
                             inventory.SetEquipment(CharacterMaster.inventory, CharacterBody);
@@ -109,7 +140,7 @@ namespace VAPI.Components
                     ModifyStats(current);
 
                     VariantVisuals visuals = current.visualModifier;
-                    if(visuals)
+                    if (visuals)
                     {
                         visualsForCoroutine.Add(visuals);
                     }
@@ -139,16 +170,16 @@ namespace VAPI.Components
             }
 
             CharacterBody.RecalculateStats();
-            if(visualsForCoroutine.Count > 0)
+            if (visualsForCoroutine.Count > 0)
             {
                 StartCoroutine("ApplyVisuals");
             }
         }
 
-        public IEnumerator ApplyVisuals()
+        private IEnumerator ApplyVisuals()
         {
             yield return new WaitForEndOfFrame();
-            foreach(VariantVisuals visuals in visualsForCoroutine)
+            foreach (VariantVisuals visuals in visualsForCoroutine)
             {
                 visuals.ApplyMaterials(CharacterModel);
                 visuals.ApplyLights(CharacterModel);
@@ -299,7 +330,7 @@ namespace VAPI.Components
 
         private void SetupComponent(Component component)
         {
-            if(!(component is VariantComponent vc))
+            if (!(component is VariantComponent vc))
             {
                 return;
             }
@@ -318,7 +349,7 @@ namespace VAPI.Components
                 Invoke(nameof(RestoreEquipment), 0.2f);
             }
 
-            switch(meshType)
+            switch (meshType)
             {
                 case MeshType.Default:
                     break;

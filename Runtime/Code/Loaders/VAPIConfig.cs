@@ -1,27 +1,37 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using BepInEx;
+﻿using BepInEx;
 using BepInEx.Configuration;
 using Moonstorm.Loaders;
 
 namespace VAPI
 {
+    /// <summary>
+    /// VAPI's ConfigLoader
+    /// </summary>
     public class VAPIConfig : ConfigLoader<VAPIConfig>
     {
+        /// <summary>
+        /// general config's identifier
+        /// </summary>
         public const string general = "VAPI.General";
+        /// <summary>
+        /// Rewards config identifier
+        /// </summary>
         public const string rewards = "VAPI.Rewards";
         public override BaseUnityPlugin MainClass => VAPIMain.Instance;
         public override bool CreateSubFolder => true;
 
+        /// <summary>
+        /// The general config file
+        /// </summary>
         public static ConfigFile generalConfig;
         internal static ConfigEntry<bool> showVariantRuleCategory;
         internal static ConfigEntry<bool> enableDebugFeatures;
         internal static ConfigEntry<bool> enableArtifactOfVariance;
         internal static ConfigEntry<bool> activateMeshReplacementSystem;
 
+        /// <summary>
+        /// The rewards config file
+        /// </summary>
         public static ConfigFile rewardsConfig;
         internal static ConfigEntry<bool> enableRewards;
         internal static ConfigEntry<bool> luckAffectsItemRewards;

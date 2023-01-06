@@ -4,6 +4,9 @@ using RoR2;
 
 namespace VAPI.Items
 {
+    /// <summary>
+    /// <inheritdoc cref="GlobalCDR"/>
+    /// </summary>
     public class SecondaryCDR : ItemBase
     {
         public override ItemDef ItemDef { get; } = VAPIAssets.LoadAsset<ItemDef>("SecondaryCDR");

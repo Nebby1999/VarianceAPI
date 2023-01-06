@@ -1,28 +1,36 @@
 ﻿using Moonstorm.AddressableAssets;
 using RoR2;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Networking;
 using VAPI.Components;
 
 namespace VAPI
 {
+    /// <summary>
+    /// A ScriptableObject that represents an Inventory of items, equipments and buffs to add to a variant
+    /// </summary>
     [CreateAssetMenu(fileName = "New VariantInventory", menuName = "VarianceAPI/VariantInventory")]
     public class VariantInventory : ScriptableObject
     {
+        /// <summary>
+        /// Represents a pair of ItemDef and item count
+        /// </summary>
         [Serializable]
         public class ItemPair
         {
             [Tooltip("A direct reference of address/item name for the item to give.\n" +
                 "To the right you can specify the stacks.")]
             public AddressableItemDef itemDef;
+            /// <summary>
+            /// The amount oif items to give
+            /// </summary>
             public int amount;
         }
 
+        /// <summary>
+        /// Represents a Buff to give to this variant
+        /// </summary>
         [Serializable]
         public class BuffInfo
         {
@@ -34,6 +42,9 @@ namespace VAPI
             public int amount;
         }
 
+        /// <summary>
+        /// Represents an Equipment to give to this variant
+        /// </summary>
         [Serializable]
         public class EquipmentInfo
         {
@@ -58,6 +69,10 @@ namespace VAPI
         [Tooltip("An equipment to give to the variant.")]
         public EquipmentInfo equipmentInfo;
 
+        /// <summary>
+        /// Adds the items in <see cref="itemInventory"/> to the target inventory
+        /// </summary>
+        /// <param name="targetInventory">The inventory that will recieve the items</param>
         public virtual void AddItems(Inventory targetInventory)
         {
             if (!NetworkServer.active)
@@ -65,19 +80,23 @@ namespace VAPI
 
             foreach (ItemPair pair in itemInventory)
             {
-                if(pair.itemDef.Asset)
+                if (pair.itemDef.Asset)
                 {
                     targetInventory.GiveItem(pair.itemDef.Asset, pair.amount);
                 }
             }
         }
 
+        /// <summary>
+        /// Adds the buffs in <see cref="buffInfos"/> to the target body
+        /// </summary>
+        /// <param name="targetBody">The boddy that will recieve the buffs</param>
         public virtual void AddBuffs(CharacterBody targetBody)
         {
             if (!NetworkServer.active)
                 return;
 
-            foreach(BuffInfo buff in buffInfos)
+            foreach (BuffInfo buff in buffInfos)
             {
                 if (buff.buffDef.Asset)
                 {
@@ -87,7 +106,7 @@ namespace VAPI
                     }
                     else
                     {
-                        for(int i = 0; i < buff.amount; i++)
+                        for (int i = 0; i < buff.amount; i++)
                         {
                             targetBody.AddTimedBuff(buff.buffDef.Asset, buff.time);
                         }
@@ -96,6 +115,11 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Sets the EquipmentInfo specified in <see cref="equipmentInfo"/> to a variant
+        /// </summary>
+        /// <param name="targetInventory">The variant's inventory</param>
+        /// <param name="body">The variant's body, used to adding the <see cref="VariantEquipmentHandler"/></param>
         public virtual void SetEquipment(Inventory targetInventory, CharacterBody body)
         {
             if (!NetworkServer.active)
@@ -104,7 +128,7 @@ namespace VAPI
             if (equipmentInfo.equipmentDef.Asset)
                 targetInventory.SetEquipmentIndex(equipmentInfo.equipmentDef.Asset.equipmentIndex);
 
-            if(equipmentInfo.usable)
+            if (equipmentInfo.usable)
             {
                 var equipHandler = body.gameObject.AddComponent<VariantEquipmentHandler>();
                 equipHandler.aiMaxUseHealthFraction = equipmentInfo.aiMaxUseHealthFraction;

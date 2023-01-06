@@ -1,14 +1,13 @@
 ﻿using Moonstorm.Loaders;
-using System;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// VAPI's AssetsLoader
+    /// </summary>
     public class VAPIAssets : AssetsLoader<VAPIAssets>
     {
         public string AssemblyDir => Path.GetDirectoryName(VAPIMain.Instance.Info.Location);
