@@ -209,7 +209,11 @@ namespace VAPI
                 return false;
             }
 
-            return variantSpawnCondition && variantSpawnCondition.IsAvailable(stageInfo, runExpansions);
+            if(variantSpawnCondition)
+            {
+                return variantSpawnCondition.IsAvailable(stageInfo, runExpansions);
+            }
+            return true;
         }
 
         /// <summary>

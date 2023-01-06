@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _tier: 2
   announcesArrival: 1
-  soundEvent: {fileID: 11400000, guid: a53b3a896fb5d8f478c374fb26f2ce7e, type: 2}
+  soundEvent: {fileID: 0}
   tierItems:
   - address: 
     useDirectReference: 1
