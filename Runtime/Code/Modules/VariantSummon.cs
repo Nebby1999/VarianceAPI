@@ -36,6 +36,10 @@ namespace VAPI
         /// </summary>
         public bool applyOnStart = true;
         /// <summary>
+        /// Wether or not to supress the reward for the summoned Body
+        /// </summary>
+        public bool supressRewards = false;
+        /// <summary>
         /// an event that gets triggered when a VariantSummon is performed
         /// </summary>
         public static event Action<VariantSummonReport> OnServerVariantSummonGlobal;
@@ -60,7 +64,10 @@ namespace VAPI
                 }
                 if (bodyVariantReward)
                 {
-                    bodyVariantReward.AddVariants(variantDefs);
+                    if(!supressRewards)
+                    {
+                        bodyVariantReward.AddVariants(variantDefs);
+                    }
                     bodyVariantReward.applyOnStart = applyOnStart;
                 }
             }
