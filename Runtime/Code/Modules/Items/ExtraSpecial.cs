@@ -22,7 +22,7 @@ namespace VAPI.Items
             var skillLoc = self.skillLocator;
             if (skillLoc.special)
             {
-                skillLoc.special.SetBonusStockFromBody(self.GetItemCount(ItemDef));
+                skillLoc.special.SetBonusStockFromBody(skillLoc.special.bonusStockFromBody + self.GetItemCount(ItemDef));
             }
         }
     }
