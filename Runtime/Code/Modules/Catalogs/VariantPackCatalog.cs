@@ -129,13 +129,9 @@ namespace VAPI
         /// </summary>
         /// <param name="assetBundle">The AssetBundle to load from</param>
         /// <param name="configFile">The configFile for the VariantPacks</param>
-        /// <exception cref="ArgumentNullException">When <paramref name="configFile"/> is null</exception>
         public static void AddVariantPacks(AssetBundle assetBundle, ConfigFile configFile)
         {
             ThrowIfInitialized();
-
-            if (configFile == null)
-                throw new ArgumentNullException("configFile");
 
             AddVariantPacks(assetBundle.LoadAllAssets<VariantPackDef>(), configFile);
         }
@@ -146,16 +142,9 @@ namespace VAPI
         /// <param name="assetBundle">The AssetBundle to load from</param>
         /// <param name="tierConfig">The config file for VariantTiers</param>
         /// <param name="variantConfig">The config file for VariantDefs</param>
-        /// <exception cref="ArgumentNullException">When tierConfig or variantConfig are null</exception>
         public static void AddVariantPacks(AssetBundle assetBundle, ConfigFile tierConfig, ConfigFile variantConfig)
         {
             ThrowIfInitialized();
-
-            if (tierConfig == null)
-                throw new ArgumentNullException("tierConfig");
-
-            if (variantConfig == null)
-                throw new ArgumentNullException("variantConfig");
 
             AddVariantPacks(assetBundle.LoadAllAssets<VariantPackDef>(), tierConfig, variantConfig);
         }
@@ -179,13 +168,9 @@ namespace VAPI
         /// </summary>
         /// <param name="variantPacks">The VariantPacks to add</param>
         /// <param name="configFile">The config file for the VariantPacks</param>
-        /// <exception cref="ArgumentNullException">When configFile is null</exception>
         public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks, ConfigFile configFile)
         {
             ThrowIfInitialized();
-
-            if (configFile == null)
-                throw new ArgumentNullException("configFile");
 
             foreach (VariantPackDef packDef in variantPacks)
             {
@@ -199,16 +184,9 @@ namespace VAPI
         /// <param name="variantPacks">The VariantPacks to add</param>
         /// <param name="tierConfig">The config file for VariantTiers</param>
         /// <param name="variantConfig">The config file for VariantDefs</param>
-        /// <exception cref="ArgumentNullException">When tierConfig or variantConfig are null</exception>
         public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks, ConfigFile tierConfig, ConfigFile variantConfig)
         {
             ThrowIfInitialized();
-
-            if (tierConfig == null)
-                throw new ArgumentNullException("tierConfig");
-
-            if (variantConfig == null)
-                throw new ArgumentNullException("variantConfig");
 
             foreach (VariantPackDef packDef in variantPacks)
             {
@@ -232,13 +210,9 @@ namespace VAPI
         /// </summary>
         /// <param name="packDef">The pack to add</param>
         /// <param name="configFile">The config file for the VariantPack</param>
-        /// <exception cref="ArgumentNullException">When configFile is null</exception>
         public static void AddVariantPack(VariantPackDef packDef, ConfigFile configFile)
         {
             ThrowIfInitialized();
-
-            if (configFile == null)
-                throw new ArgumentNullException("configFile");
 
             AddPackInternal(packDef, new ConfigPair(configFile));
         }
@@ -249,16 +223,9 @@ namespace VAPI
         /// <param name="packDef">The pack to add</param>
         /// <param name="tierConfig">The config file for VariantTiers</param>
         /// <param name="variantConfig">The config file for VariantDefs</param>
-        /// <exception cref="ArgumentNullException">When tierConfig or variantConfig are null</exception>
         public static void AddVariantPack(VariantPackDef packDef, ConfigFile tierConfig, ConfigFile variantConfig)
         {
             ThrowIfInitialized();
-
-            if (tierConfig == null)
-                throw new ArgumentNullException("tierConfig");
-
-            if (variantConfig == null)
-                throw new ArgumentNullException("variantConfig");
 
             AddPackInternal(packDef, new ConfigPair(tierConfig, variantConfig));
         }

@@ -88,7 +88,7 @@ namespace VAPI
                 () =>
                 {
                     VAPILog.Info($"Adding base VariantPack");
-                    VariantPackCatalog.AddVariantPack(VAPIAssets.LoadAsset<VariantPackDef>("BaseVariantPack"), VAPIConfig.rewardsConfig, null);
+                    VariantPackCatalog.AddVariantPack(VAPIAssets.LoadAsset<VariantPackDef>("BaseVariantPack"), VAPIConfig.rewardsConfig);
                 },
             };
             PopulateFieldsDispatchers = new Action[]

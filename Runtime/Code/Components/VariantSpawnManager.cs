@@ -16,7 +16,7 @@ namespace VAPI.Components
         /// <summary>
         /// The Artifact of Variance's SpawnRate multiplier
         /// </summary>
-        [ConfigurableField(VAPIConfig.general, ConfigSection = "Artifact of Variance", ConfigDesc = "Multiplier thats applied to the spawn chance of variants when the Artifact of Variance is enabled")]
+        [ConfigurableField(VAPIConfig.general, ConfigSection = "VarianceAPI :: General", ConfigDesc = "Multiplier thats applied to the spawn chance of variants when the Artifact of Variance is enabled")]
         [TokenModifier("VAPI_ARTIFACT_VARIANCE_DESC", StatTypes.Default, 0)]
         public static float artifactSpawnRateMultiplier = 2f;
         /// <summary>

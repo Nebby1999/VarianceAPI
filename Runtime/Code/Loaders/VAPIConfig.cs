@@ -64,8 +64,8 @@ namespace VAPI
                 false,
                 "Activates the Mesh Replacement System, allowing for Variants to have different meshes.\nExtremely jank, may not work at all, and tanks performance.");
 
-            enableArtifactOfVariance = generalConfig.Bind<bool>("Artifact Of Variance",
-                "Enable",
+            enableArtifactOfVariance = generalConfig.Bind<bool>("VarianceAPI :: General",
+                "Enable Artifact of Variance",
                 true,
                 "Wether the Artifact of Variance is enabled");
 

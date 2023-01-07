@@ -1,5 +1,9 @@
 # Changelog
 
+## '2.0.1' - Oops releases are my favorite kind of release
+* Fixed some typos in Config descriptions and names
+* The api no longer hard crashes the game
+
 ## '2.0.0' - Variants of the Void
 * Major rewrite to the codebase
 * This changelog is probably missing a LOT of changes, below are the most important ones
