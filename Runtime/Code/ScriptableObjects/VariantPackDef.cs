@@ -36,8 +36,6 @@ namespace VAPI
         public string descriptionToken;
         [Tooltip("An icon that's displayed when this VariantPack is enabled")]
         public Sprite packEnabledIcon;
-        [Tooltip("An icon that's displayed when this VariantPack is disabled")]
-        public Sprite packDisabledIcon;
         [Tooltip("The VariantPack's VariantTierDefs")]
         public VariantTierDef[] variantTiers = Array.Empty<VariantTierDef>();
         [Tooltip("The VariantPack's VariantDefs")]

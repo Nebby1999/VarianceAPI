@@ -100,7 +100,7 @@ namespace VAPI.RuleSystem
             variantPack.EnabledChoice = onChoice;
 
             VAPIRuleChoiceDef offChoice = AddVAPIChoice(rule, "Off");
-            offChoice.sprite = variantPack.packDisabledIcon;
+            offChoice.spritePath = "Textures/MiscIcons/texUnlockIcon";
             offChoice.tooltipNameToken = variantPack.nameToken;
             offChoice.tooltipNameColor = ColorCatalog.GetColor(ColorCatalog.ColorIndex.Unaffordable);
             offChoice.getTooltipName = RuleChoiceDef.GetOffTooltipNameFromToken;
