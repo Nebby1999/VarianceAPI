@@ -78,20 +78,36 @@ namespace VAPI
             greenChance = 0;
             redChance = 0;
 
-            foreach (VariantTierDef tierDef in list)
+            if(list.Count == 1)
             {
-                goldMultiplier += tierDef.GoldMultiplierMinus1;
-                experienceMultiplier += tierDef.ExperienceMultiplierMinus1;
-                whiteChance += tierDef.whiteItemDropChance;
-                greenChance += tierDef.greenItemDropChance;
-                redChance += tierDef.redItemDropChance;
+                VariantTierDef td = list.FirstOrDefault();
+                goldMultiplier = td.goldMultiplier;
+                experienceMultiplier = td.experienceMultiplier;
+                whiteChance = td.whiteItemDropChance;
+                greenChance = td.greenItemDropChance;
+                redChance = td.redItemDropChance;
             }
+            else
+            {
+                goldMultiplier = 1;
+                experienceMultiplier = 1;
+                whiteChance = 0;
+                greenChance = 0;
+                redChance = 0;
+                foreach (VariantTierDef tierDef in list)
+                {
+                    goldMultiplier += tierDef.GoldMultiplierMinus1;
+                    experienceMultiplier += tierDef.ExperienceMultiplierMinus1;
+                    whiteChance += tierDef.whiteItemDropChance;
+                    greenChance += tierDef.greenItemDropChance;
+                    redChance += tierDef.redItemDropChance;
+                }
 
-            int count = list.Count;
-            whiteChance /= count;
-            greenChance /= count;
-            redChance /= count;
-
+                int count = list.Count;
+                whiteChance /= count;
+                greenChance /= count;
+                redChance /= count;
+            }
             SetIndicesAndNextItems(runInstance);
         }
 
