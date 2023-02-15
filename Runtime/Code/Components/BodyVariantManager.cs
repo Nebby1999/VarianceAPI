@@ -226,19 +226,20 @@ namespace VAPI.Components
             {
                 foreach (VariantDef.VariantSkillReplacement skillReplacement in skillReplacements)
                 {
+                    var skillDefToSet = skillReplacement.skillDef ? skillReplacement.skillDef : VAPIAssets.Instance.emptySkillDef;
                     switch (skillReplacement.skillSlot)
                     {
                         case SkillSlot.Primary:
-                            skillLocator.primary?.SetSkillOverride(gameObject, skillReplacement.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                            skillLocator.primary?.SetSkillOverride(gameObject, skillDefToSet, GenericSkill.SkillOverridePriority.Upgrade);
                             break;
                         case SkillSlot.Secondary:
-                            skillLocator.secondary?.SetSkillOverride(gameObject, skillReplacement.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                            skillLocator.secondary?.SetSkillOverride(gameObject, skillDefToSet, GenericSkill.SkillOverridePriority.Upgrade);
                             break;
                         case SkillSlot.Utility:
-                            skillLocator.utility?.SetSkillOverride(gameObject, skillReplacement.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                            skillLocator.utility?.SetSkillOverride(gameObject, skillDefToSet, GenericSkill.SkillOverridePriority.Upgrade);
                             break;
                         case SkillSlot.Special:
-                            skillLocator.special?.SetSkillOverride(gameObject, skillReplacement.skillDef, GenericSkill.SkillOverridePriority.Upgrade);
+                            skillLocator.special?.SetSkillOverride(gameObject, skillDefToSet, GenericSkill.SkillOverridePriority.Upgrade);
                             break;
                         case SkillSlot.None:
                             break;

@@ -19,7 +19,8 @@ MonoBehaviour:
   effectPrefabs: []
   networkedObjectPrefabs:
   - {fileID: 6186782970129974865, guid: 4de399f5ad643f84c9ef4e48af6453ff, type: 3}
-  skillDefs: []
+  skillDefs:
+  - {fileID: 11400000, guid: 8734a130e6ab11b4da03ec22d02aa434, type: 2}
   skillFamilies: []
   sceneDefs: []
   itemDefs: []
@@ -42,7 +43,9 @@ MonoBehaviour:
   gameEndingDefs: []
   miscPickupDefs: []
   entityStateConfigurations: []
-  entityStateTypes: []
+  entityStateTypes:
+  - _typeName: EntityStates.EmptyState, VarianceAPI, Version=0.0.0.0, Culture=neutral,
+      PublicKeyToken=null
   expansionDefs:
   - {fileID: 11400000, guid: c6bb5aefe30f0ff449f147c467e0db10, type: 2}
   entitlementDefs: []
