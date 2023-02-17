@@ -110,8 +110,10 @@ namespace VAPI.RuleSystem
         }
         private static void AddVariantRules()
         {
-            Debug.Log("Adding Variant Rules");
-            Debug.LogError($"Registered Variants: {VariantCatalog.VariantCount}");
+            VAPILog.Info("Adding Variant Rules");
+#if DEBUG
+            VAPILog.Debug($"Registered Variants: {VariantCatalog.VariantCount}");
+#endif
             for (int i = 0; i < VariantCatalog.registeredVariants.Length; i++)
             {
                 VariantDef def = VariantCatalog.registeredVariants[i];
@@ -277,10 +279,12 @@ namespace VAPI.RuleSystem
             if (!preGameControllerExists)
                 return true;
 
+#if !DEBUG
             if (VAPIConfig.showVariantRuleCategory.Value == false)
             {
                 return true;
             }
+#endif
 
             bool anyPackActive = VariantPackCatalog.registeredPacks.Where(x => x.EnabledChoice != null).Any(x => PreGameController.instance.readOnlyRuleBook.IsChoiceActive(x.EnabledChoice));
             if (!anyPackActive)

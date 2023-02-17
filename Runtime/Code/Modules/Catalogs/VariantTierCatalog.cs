@@ -90,7 +90,9 @@ namespace VAPI
                 tiersToRegister.AddRange(tiers);
             }
 
+#if DEBUG
             VAPILog.Debug($"Registering a total of {tiersToRegister.Count} Tiers");
+#endif
             tiersToRegister = tiersToRegister.OrderBy(vtd => vtd.name).ToList();
             int num = 0;
             foreach (VariantTierDef tierDef in tiersToRegister)

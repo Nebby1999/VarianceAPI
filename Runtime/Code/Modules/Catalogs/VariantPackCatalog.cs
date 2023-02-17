@@ -272,7 +272,9 @@ namespace VAPI
             {
                 RegisterPack(packsToRegister[(int)packIndex], packIndex);
             }
+#if DEBUG
             VAPILog.Info($"Final Packs Registered: {packsToRegister.Count}");
+#endif
             return packsToRegister.Select(x => x.Item1).ToArray();
         }
 
@@ -296,7 +298,9 @@ namespace VAPI
                 VariantPackDef packDef = variantPack.Item1;
                 packDef.TierConfiguration = variantPack.Item2.tierConfig;
                 packDef.VariantConfiguration = variantPack.Item2.variantConfig;
+#if DEBUG
                 VAPILog.Debug($"Registering {variantPack} (Index: {index})");
+#endif
                 packDef.VariantPackIndex = index;
                 nameToIndex.Add(packDef.name, index);
             }

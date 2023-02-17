@@ -97,6 +97,9 @@ namespace VAPI.Components
         /// </summary>
         public void OnKilledServer(DamageReport damageReport)
         {
+            if (damageReport == null)
+                return;
+
             if (damageReport.attackerTeamIndex != TeamIndex.Player)
                 return;
 

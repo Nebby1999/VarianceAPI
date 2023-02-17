@@ -78,13 +78,11 @@ namespace VAPI.Components
                 return;
 
             managerForBody.AddVariants(variantsForBody);
-            //managerForBody.Apply();
 
             BodyVariantReward rewards = obj.GetComponent<BodyVariantReward>();
             if (rewards)
             {
                 rewards.AddVariants(variantsForBody);
-                //rewards.Apply();
             }
             OnVariantSpawnedServer?.Invoke(new ReadOnlyCollection<VariantDef>(variantsForBody), obj.gameObject);
         }
@@ -122,14 +120,15 @@ namespace VAPI.Components
             bool success = index != -1;
 
             result = success ? pool[index] : null;
-            VAPILog.Info($"Unique Roll Success: {success}, Index: {index}");
+#if DEBUG
+            VAPILog.Info($"Unique Roll Success: {success}, Chosen Unique Index: {index}");
+#endif
             return success;
         }
 
         private bool RollNotUniques(VariantDef[] pool, out VariantDef[] result)
         {
             List<VariantDef> defs = new List<VariantDef>();
-            VAPILog.Info(pool.Length);
             for (int i = 0; i < pool.Length; i++)
             {
                 var currentDef = pool[i];
@@ -137,9 +136,6 @@ namespace VAPI.Components
                 if (Util.CheckRoll(spawnRate))
                 {
                     defs.Add(currentDef);
-                }
-                else
-                {
                 }
             }
             var success = defs.Count != 0;

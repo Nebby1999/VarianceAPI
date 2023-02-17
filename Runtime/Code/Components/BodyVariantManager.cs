@@ -108,7 +108,9 @@ namespace VAPI.Components
             for (int i = 0; i < variantsInBody.Count; i++)
             {
                 VariantDef current = variantsInBody[i];
-                Debug.Log(current);
+#if DEBUG
+                VAPILog.Debug($"Applying {current} to {CharacterBody}");
+#endif
                 try
                 {
                     VariantTierDef tier = current.VariantTierDef;
@@ -205,7 +207,9 @@ namespace VAPI.Components
                 }
                 else
                 {
-                    VAPILog.Debug($"{variantDef}'s tier announces its arrival, but it doesnt have a token set, using generic message.");
+#if DEBUG
+                    VAPILog.Warning($"{variantDef}'s tier announces its arrival, but it doesnt have a token set, using generic message.");
+#endif
                     Chat.AddMessage(Language.GetStringFormatted("VAPI_GENERIC_ARRIVAL", CharacterBody.GetDisplayName()));
                 }
                 announced = true;

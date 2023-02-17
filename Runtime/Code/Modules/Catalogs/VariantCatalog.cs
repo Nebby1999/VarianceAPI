@@ -96,8 +96,9 @@ namespace VAPI
 
                 variantsToRegister.AddRange(variants);
             }
-
+#if DEBUG
             VAPILog.Debug($"Registering a total of {variantsToRegister.Count} Variants");
+#endif
 
             variantsToRegister = variantsToRegister.OrderBy(vd => $"{vd.bodyName}.{vd.name}").ToList();
             int variantAmount = variantsToRegister.ToArray().Length;
@@ -120,7 +121,9 @@ namespace VAPI
 
                 if (!BodyCatalog.bodyNames.Contains(variant.bodyName))
                 {
+#if DEBUG
                     VAPILog.Warning($"Variant {variant} tries to modify a body with the name {variant.bodyName}, but no such body exists in the catalog.");
+#endif
                     return false;
                 }
                 return true;
@@ -167,7 +170,9 @@ namespace VAPI
         {
             try
             {
+#if DEBUG
                 VAPILog.Debug($"Registering {variant} (Index: {index})");
+#endif
                 variant.VariantIndex = index;
                 nameToIndex.Add(variant.name, index);
                 _ = variant.VariantTierDef;
@@ -196,7 +201,9 @@ namespace VAPI
 
                     bodyIndexToDefProvider.Add(body.bodyIndex, new BodyVariantDefProvider(variantsForBody, body.bodyIndex));
 
+#if DEBUG
                     VAPILog.Debug($"Created a BodyVariantDefProvider for body {body.name}. (Variants Count: {variantsForBody.Length})");
+#endif
                 }
             }
         }

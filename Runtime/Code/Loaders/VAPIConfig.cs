@@ -25,7 +25,6 @@ namespace VAPI
         /// </summary>
         public static ConfigFile generalConfig;
         internal static ConfigEntry<bool> showVariantRuleCategory;
-        internal static ConfigEntry<bool> enableDebugFeatures;
         internal static ConfigEntry<bool> enableArtifactOfVariance;
         internal static ConfigEntry<bool> activateMeshReplacementSystem;
 
@@ -53,11 +52,6 @@ namespace VAPI
                 "Show Variant Rule Category",
                 false,
                 "Uncovers the Variant rule category, allowing you to enable or disable variant spawning from the lobby.");
-
-            enableDebugFeatures = generalConfig.Bind<bool>("VarianceAPI :: Debug Features",
-                "Enable Debug",
-                false,
-                "Enables Debug systems for VarianceAPI.");
 
             activateMeshReplacementSystem = generalConfig.Bind<bool>("VarianceAPI :: General",
                 "Activate Mesh Replacement Systems",
