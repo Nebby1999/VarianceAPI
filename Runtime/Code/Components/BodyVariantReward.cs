@@ -63,21 +63,6 @@ namespace VAPI.Components
         }
 
         /// <summary>
-        /// Adds a VariantDef to the BodyVariantReward's internal variants list.
-        /// <para>Returns if <see cref="HasApplied"/> is true</para>
-        /// </summary>
-        /// <param name="vd">The VariantDef to add</param>
-        public void AddVariant(VariantDef vd)
-        {
-            if (HasApplied)
-            {
-                VAPILog.Warning($"{this} has already been applied!");
-                return;
-            }
-            variants.Add(vd);
-        }
-
-        /// <summary>
         /// Adds a VariantDef to the BodyVariantReward's internal variants list
         /// <para>Returns if <see cref="HasApplied"/> is true</para>
         /// </summary>
@@ -89,7 +74,28 @@ namespace VAPI.Components
                 VAPILog.Warning($"{this} has already been applied!");
                 return;
             }
-            variants.AddRange(variantDefs);
+            foreach(VariantDef variant in variantDefs)
+            {
+                AddVariant(variant);
+            }
+        }
+
+        /// <summary>
+        /// Adds a VariantDef to the BodyVariantReward's internal variants list.
+        /// <para>Returns if <see cref="HasApplied"/> is true</para>
+        /// </summary>
+        /// <param name="vd">The VariantDef to add</param>
+        public void AddVariant(VariantDef vd)
+        {
+            if (HasApplied)
+            {
+                VAPILog.Warning($"{this} has already been applied!");
+                return;
+            }
+            if(vd)
+            {
+                variants.Add(vd);
+            }
         }
 
         /// <summary>

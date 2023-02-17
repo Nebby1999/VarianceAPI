@@ -60,7 +60,13 @@ namespace VAPI.Components
         /// Adds a single Variant to the BodyVariantManager
         /// </summary>
         /// <param name="vd">The variant to add</param>
-        public void AddVariant(VariantDef vd) => variantIndices.Add((int)vd.VariantIndex);
+        public void AddVariant(VariantDef vd)
+        {
+            if(vd)
+            {
+                variantIndices.Add((int)vd.VariantIndex);
+            }
+        }
 
         private void OnListChanged(SyncList<int>.Operation op, int index)
         {
