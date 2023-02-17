@@ -1,7 +1,9 @@
 ﻿using RoR2;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 using VAPI.Components;
 
 namespace VAPI
@@ -24,29 +26,36 @@ namespace VAPI
         private static GameObject HandleCustomRequest(On.RoR2.DirectorCore.orig_TrySpawnObject orig, DirectorCore self, DirectorSpawnRequest directorSpawnRequest)
         {
             var resultingMasterObject = orig(self, directorSpawnRequest);
-            if(directorSpawnRequest is VariantDirectorSpawnRequest variantInfo && resultingMasterObject)
+            try
             {
-                var characterMaster = resultingMasterObject.GetComponent<CharacterMaster>();
-                characterMaster.spawnOnStart = false;
-                var bodyObject = characterMaster.Respawn(characterMaster.transform.position, characterMaster.transform.rotation).gameObject;
-                bodyObject.AddComponent<DoNotTurnIntoVariant>();
-
-                var bodyVariantManager = bodyObject.GetComponent<BodyVariantManager>();
-                var bodyVariantReward = bodyObject.GetComponent<BodyVariantReward>();
-
-                if(bodyVariantManager)
+                if(directorSpawnRequest is VariantDirectorSpawnRequest variantInfo && resultingMasterObject)
                 {
-                    bodyVariantManager.AddVariants(variantInfo.variantDefs);
-                    bodyVariantManager.applyOnStart = variantInfo.applyOnStart;
-                }
-                if(bodyVariantReward)
-                {
-                    if(variantInfo.supressRewards)
+                    var characterMaster = resultingMasterObject.GetComponent<CharacterMaster>();
+                    characterMaster.spawnOnStart = false;
+                    var bodyObject = characterMaster.Respawn(characterMaster.transform.position, characterMaster.transform.rotation).gameObject;
+                    bodyObject.AddComponent<DoNotTurnIntoVariant>();
+
+                    var bodyVariantManager = bodyObject.GetComponent<BodyVariantManager>();
+                    var bodyVariantReward = bodyObject.GetComponent<BodyVariantReward>();
+
+                    if(bodyVariantManager && NetworkServer.active)
                     {
-                        bodyVariantReward.AddVariants(variantInfo.variantDefs);
+                        bodyVariantManager.AddVariants(variantInfo.variantDefs);
+                        bodyVariantManager.applyOnStart = variantInfo.applyOnStart;
                     }
-                    bodyVariantReward.applyOnStart = variantInfo.applyOnStart;
+                    if(bodyVariantReward)
+                    {
+                        if(variantInfo.supressRewards)
+                        {
+                            bodyVariantReward.AddVariants(variantInfo.variantDefs);
+                        }
+                        bodyVariantReward.applyOnStart = variantInfo.applyOnStart;
+                    }
                 }
+            }
+            catch(Exception e)
+            {
+                VAPILog.Error($"Exception on DirectorCore.TrySpawnObject hook for VariantDirectorSpawnRequest: {e}");
             }
             return resultingMasterObject;
         }
