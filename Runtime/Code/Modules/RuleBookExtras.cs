@@ -43,7 +43,9 @@ namespace VAPI.RuleSystem
             if (variantToCheck == VariantIndex.None)
                 return false;
 
-            return runRulebook.IsChoiceActive(variantIndexToRuleChoice[variantToCheck]);
+            var variantChoice = variantIndexToRuleChoice[variantToCheck];
+            var packEnabledChoice = variantChoice.tiedPackEnabledChoice;
+            return runRulebook.IsChoiceActive(packEnabledChoice) && runRulebook.IsChoiceActive(variantChoice);
         }
 
         private static void AddNewCategories()
@@ -96,6 +98,7 @@ namespace VAPI.RuleSystem
             onChoice.tooltipNameToken = variantPack.nameToken;
             onChoice.tooltipNameColor = Color.cyan;
             onChoice.tooltipBodyToken = variantPack.descriptionToken;
+            onChoice.variantPackIndex = variantPack.VariantPackIndex;
             rule.MakeNewestChoiceDefault();
             variantPack.EnabledChoice = onChoice;
 
@@ -138,6 +141,7 @@ namespace VAPI.RuleSystem
             onChoice.variantIndex = variantDef.VariantIndex;
             onChoice.onlyShowInGameBrowserIfNonDefault = true;
 
+            onChoice.tiedPackEnabledChoice = GetVariantPackEnabledChoice(variantDef);
             onChoice.requiredChoiceDefs = GetRequiredChoiceDefs(variantDef);
             onChoice.requiredExpansionDefs = GetRequiredExpansionDefs(variantDef);
             onChoice.requiredUnlockables = GetRequiredUnlockableDefs(variantDef);
@@ -193,6 +197,11 @@ namespace VAPI.RuleSystem
         private static List<RuleChoiceDef> GetRequiredChoiceDefs(VariantDef variantDef)
         {
             return new List<RuleChoiceDef> { VariantPackCatalog.FindVariantPackDef(variantDef).EnabledChoice };
+        }
+
+        private static RuleChoiceDef GetVariantPackEnabledChoice(VariantDef variantDef)
+        {
+            return VariantPackCatalog.FindVariantPackDef(variantDef).EnabledChoice;
         }
 
         private static List<ExpansionDef> GetRequiredExpansionDefs(VariantDef variantDef)

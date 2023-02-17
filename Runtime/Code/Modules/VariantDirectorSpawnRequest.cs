@@ -8,10 +8,22 @@ using VAPI.Components;
 
 namespace VAPI
 {
+    /// <summary>
+    /// An extended version of the game's <see cref="DirectorSpawnRequest"/>, which can allow you to request a specific variant spawn using the game's Director system
+    /// </summary>
     public class VariantDirectorSpawnRequest : DirectorSpawnRequest
     {
-        public VariantDef[] variantDefs;
+        /// <summary>
+        /// The VariantDefs that'll be given to the variant when spawned
+        /// </summary>
+        public VariantDef[] variantDefs = Array.Empty<VariantDef>();
+        /// <summary>
+        /// Wether or not to apply the variants to the Body on Start
+        /// </summary>
         public bool applyOnStart;
+        /// <summary>
+        /// Wether or not to supress the reward for the summoned Body
+        /// </summary>
         public bool supressRewards;
         public VariantDirectorSpawnRequest(SpawnCard spawnCard, DirectorPlacementRule placementRule, Xoroshiro128Plus rng) : base(spawnCard, placementRule, rng)
         {
