@@ -1,5 +1,11 @@
 # Changelog
 
+## '2.0.2' - More Fixes
+
+* Fixed an issue where Variants wouldnt drop the correct amount of gold and experience
+* Setting a Skill Replacement's skill def to none sets the skill locator's skillDef to a special, "DoNothing" skill
+* Removed some redundant logging that are now behing building the mod in debug mode
+
 ## '2.0.1' - Oops releases are my favorite kind of release
 * Fixed some typos in Config descriptions and names
 * The api no longer hard crashes the game
