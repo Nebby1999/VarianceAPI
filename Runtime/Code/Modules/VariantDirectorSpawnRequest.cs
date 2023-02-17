@@ -31,8 +31,7 @@ namespace VAPI
                 if(directorSpawnRequest is VariantDirectorSpawnRequest variantInfo && resultingMasterObject)
                 {
                     var characterMaster = resultingMasterObject.GetComponent<CharacterMaster>();
-                    characterMaster.spawnOnStart = false;
-                    var bodyObject = characterMaster.Respawn(characterMaster.transform.position, characterMaster.transform.rotation).gameObject;
+                    var bodyObject = characterMaster.bodyInstanceObject;
                     bodyObject.AddComponent<DoNotTurnIntoVariant>();
 
                     var bodyVariantManager = bodyObject.GetComponent<BodyVariantManager>();
