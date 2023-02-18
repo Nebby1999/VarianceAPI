@@ -1,4 +1,4 @@
-﻿using Moonstorm.AddressableAssets;
+using Moonstorm.AddressableAssets;
 using R2API;
 using RoR2;
 using RoR2.ExpansionManagement;
@@ -215,10 +215,15 @@ namespace VAPI.RuleSystem
 
             foreach (AddressableExpansionDef expansionDef in variantDef.variantSpawnCondition.requiredExpansions)
             {
+                ExpansionDef expansion = null;
                 bool usesDirectReference = (bool)useDirectReference.GetValue(expansionDef);
                 if (usesDirectReference)
                 {
-                    expansions.Add((ExpansionDef)asset.GetValue(expansionDef));
+                    expansion = (ExpansionDef)asset.GetValue(expansionDef);
+                    if(expansion)
+                    {
+                        expansions.Add((ExpansionDef)asset.GetValue(expansionDef));
+                    }
                 }
                 else
                 {
@@ -253,7 +258,11 @@ namespace VAPI.RuleSystem
 
             if ((bool)useDirectReference.GetValue(unlockable))
             {
-                unlockables.Add((UnlockableDef)asset.GetValue(unlockable));
+                unlockableDef = (UnlockableDef)asset.GetValue(unlockable);
+                if (unlockableDef)
+                {
+                    unlockables.Add(unlockableDef);
+                }
                 return unlockables;
             }
             else
