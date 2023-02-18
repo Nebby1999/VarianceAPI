@@ -22,6 +22,17 @@ namespace VAPI
         /// </summary>
         public bool applyOnStart;
         /// <summary>
+        /// If supplied, the spawned variant will drop XP and gold, just like a regular, director spawned enemy
+        /// <para>The base values of the gold and xp are determined by the supplied DeathRewards, multiplied by the <see cref="deathRewardsCoefficient"/></para>
+        /// <para>Ifnored if <see cref="supressRewards"/> is false</para>
+        /// </summary>
+        public DeathRewards deathRewardsBase;
+        /// <summary>
+        /// If <see cref="deathRewardsBase"/> is supplied, the spawned variant will drop XP and gold, said amounts of gold and XP are multiplied by this value.
+        /// <para>Ifnored if <see cref="supressRewards"/> is false</para>
+        /// </summary>
+        public float deathRewardsCoefficient;
+        /// <summary>
         /// Wether or not to supress the reward for the summoned Body
         /// </summary>
         public bool supressRewards;
@@ -43,24 +54,34 @@ namespace VAPI
                 if(directorSpawnRequest is VariantDirectorSpawnRequest variantInfo && resultingMasterObject)
                 {
                     var characterMaster = resultingMasterObject.GetComponent<CharacterMaster>();
+
                     var bodyObject = characterMaster.bodyInstanceObject;
-                    bodyObject.AddComponent<DoNotTurnIntoVariant>();
-
-                    var bodyVariantManager = bodyObject.GetComponent<BodyVariantManager>();
-                    var bodyVariantReward = bodyObject.GetComponent<BodyVariantReward>();
-
-                    if(bodyVariantManager && NetworkServer.active)
+                    if(bodyObject)
                     {
-                        bodyVariantManager.AddVariants(variantInfo.variantDefs);
-                        bodyVariantManager.applyOnStart = variantInfo.applyOnStart;
-                    }
-                    if(bodyVariantReward)
-                    {
-                        if(variantInfo.supressRewards)
+                        var summonedBodyDeathRewards = bodyObject.GetComponent<DeathRewards>();
+                        if(variantInfo.deathRewardsBase && summonedBodyDeathRewards && !variantInfo.supressRewards)
                         {
-                            bodyVariantReward.AddVariants(variantInfo.variantDefs);
+                            summonedBodyDeathRewards.expReward = (uint)(variantInfo.deathRewardsBase.expReward * variantInfo.deathRewardsCoefficient);
+                            summonedBodyDeathRewards.goldReward = (uint)(variantInfo.deathRewardsBase.goldReward * variantInfo.deathRewardsCoefficient);
                         }
-                        bodyVariantReward.applyOnStart = variantInfo.applyOnStart;
+                        bodyObject.AddComponent<DoNotTurnIntoVariant>();
+
+                        var bodyVariantManager = bodyObject.GetComponent<BodyVariantManager>();
+                        var bodyVariantReward = bodyObject.GetComponent<BodyVariantReward>();
+
+                        if(bodyVariantManager && NetworkServer.active)
+                        {
+                            bodyVariantManager.AddVariants(variantInfo.variantDefs);
+                            bodyVariantManager.applyOnStart = variantInfo.applyOnStart;
+                        }
+                        if(bodyVariantReward)
+                        {
+                            if(variantInfo.supressRewards)
+                            {
+                                bodyVariantReward.AddVariants(variantInfo.variantDefs);
+                            }
+                            bodyVariantReward.applyOnStart = variantInfo.applyOnStart;
+                        }
                     }
                 }
             }

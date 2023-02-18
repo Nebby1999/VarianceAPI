@@ -36,6 +36,17 @@ namespace VAPI
         /// </summary>
         public bool applyOnStart = true;
         /// <summary>
+        /// If supplied, the spawned variant will drop XP and gold, just like a regular, director spawned enemy
+        /// <para>The base values of the gold and xp are determined by the supplied DeathRewards, multiplied by the <see cref="deathRewardsCoefficient"/></para>
+        /// <para>Ifnored if <see cref="supressRewards"/> is false</para>
+        /// </summary>
+        public DeathRewards summonerDeathRewards;
+        /// <summary>
+        /// If <see cref="summonerDeathRewards"/> is supplied, the spawned variant will drop XP and gold, said amounts of gold and XP are multiplied by this value.
+        /// <para>Ifnored if <see cref="supressRewards"/> is false</para>
+        /// </summary>
+        public float deathRewardsCoefficient;
+        /// <summary>
         /// Wether or not to supress the reward for the summoned Body
         /// </summary>
         public bool supressRewards = false;
@@ -53,6 +64,13 @@ namespace VAPI
             var body = master.GetBodyObject();
             if (body)
             {
+                var summonedBodyDeathRewards = body.GetComponent<DeathRewards>();
+                if (summonerDeathRewards && summonedBodyDeathRewards && !supressRewards)
+                {
+                    summonedBodyDeathRewards.expReward = (uint)(summonerDeathRewards.expReward * deathRewardsCoefficient);
+                    summonedBodyDeathRewards.goldReward = (uint)(summonerDeathRewards.goldReward * deathRewardsCoefficient);
+                }
+
                 body.AddComponent<DoNotTurnIntoVariant>();
                 var bodyVariantManager = body.GetComponent<BodyVariantManager>();
                 var bodyVariantReward = body.GetComponentInParent<BodyVariantReward>();

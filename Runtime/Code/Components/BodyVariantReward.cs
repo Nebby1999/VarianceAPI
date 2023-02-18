@@ -115,6 +115,9 @@ namespace VAPI.Components
             if (!damageReport.attackerMaster)
                 return;
 
+            if (reward == null)
+                return;
+
             if (Run.instance.isRunStopwatchPaused)
             {
                 var chanceInRealm = VAPIConfig.hiddenRealmsItemRollChance.Value;
