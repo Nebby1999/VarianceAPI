@@ -229,7 +229,11 @@ namespace VAPI.RuleSystem
                     }
                     else
                     {
-                        expansions.Add(UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<ExpansionDef>(expansionDef.address).WaitForCompletion());
+                        expansion = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<ExpansionDef>(expansionDef.address).WaitForCompletion();
+                        if(expansion)
+                        {
+                            expansions.Add(expansion);
+                        }
                     }
                 }
             }
@@ -262,7 +266,10 @@ namespace VAPI.RuleSystem
                 }
 
                 unlockableDef = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<UnlockableDef>(unlockable.address).WaitForCompletion();
-                unlockables.Add(unlockableDef);
+                if(unlockableDef)
+                {
+                    unlockables.Add(unlockableDef);
+                }
                 return unlockables;
             }
         }
