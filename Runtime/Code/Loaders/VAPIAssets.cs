@@ -1,8 +1,10 @@
 ﻿using Moonstorm.Loaders;
+using RoR2.ExpansionManagement;
 using RoR2.Skills;
 using System.IO;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 
 namespace VAPI
 {
@@ -21,6 +23,7 @@ namespace VAPI
             var bundlePath = Path.Combine(AssemblyDir, "assetbundles", "vapiassets");
             _assetBundle = AssetBundle.LoadFromFile(bundlePath);
             emptySkillDef = MainAssetBundle.LoadAsset<SkillDef>("EmptySkillDef");
+            _assetBundle.LoadAsset<ExpansionDef>("VarianceExpansion").disabledIconSprite = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texUnlockIcon.png").WaitForCompletion();
         }
 
         internal void SwapShaders()

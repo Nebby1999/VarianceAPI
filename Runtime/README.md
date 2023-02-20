@@ -12,7 +12,7 @@ VarianceAPI was made with ThunderKit in mind, as such, almost all of it's system
 
 VarianceAPI comes bundled with VariantPacks, each VariantPack contains the Variants that are going to be added to the game alongside other tidbits, thanks to this system, it is completely possible to use the Lobby's rule system to enable and disable entire Packs together, or Variants themselves with a config change.
 
-![](https://media.discordapp.net/attachments/850538397647110145/1061051452748988596/image.png?width=276&height=676)
+![](https://cdn.discordapp.com/attachments/850538397647110145/1077369013656621116/image.png)
 
 ### Custom Tiers
 
@@ -59,32 +59,43 @@ The current 2.0 version of VarianceAPI does not have Documentation on the github
 
 ## Official Variant Packs (Variant Packs made by Nebby)
 
-Below are the official VariantPacks that where made by Nebby.
+Below are the official VariantPacks that where made by Nebby. you can click the icon and a new tab will open showing the variant pack's thunderstore page.
 
 ### The Original 30
 
 The original 30 is a complete port of Rob's original 30 Monster Variants, it includes a plethora of QoL changes such as using intrinsic items, better balancing and more.
 
-* Get it here! (just click the icon!)
-
-[![TO30 Icon](https://cdn.discordapp.com/attachments/850538397647110145/850546340403478528/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_TheOriginal30/)
+[![TO30 Icon](https://media.discordapp.net/attachments/850538397647110145/1077361557295616051/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_TheOriginal30/)
 
 ### Nebby's Wrath
 
-Nebby's Wrath is a compelte port of the Additional variants of the MonsterVariantsPlus addon.
-These variants encompass all the variants except for the ones related to Monster Allies, such as Squid Turrets, Empathy Cores, Beetle Guard Allies, Etc
+Nebby's Wrath is a complete port of the Additional variants of the MonsterVariantsPlus addon.
 
-* ~~Get it here! (just click the icon!)~~ Nebby's Wrath is not updated to SOTV yet, this is going to change soon.
+[![NW Icon](https://cdn.discordapp.com/attachments/850538397647110145/1077366233994895431/icon.png)](https://thunderstore.io/package/Nebby/VariantPack_NebbysWrath/)
 
-[![NW Icon](https://cdn.discordapp.com/attachments/850538397647110145/854535054658895892/icon.png)]()
 
-* Bellow is a list of community made VariantPacks
+### Community Made Variants
+<details><summary>(Click me!)</summary>
+<p>
+
+(Note: click the icon to open a new tab to the variant pack)
+| Icon/URL | Name | Description |
+|--|--|--|
+|[![ShbonesIcon](https://gcdn.thunderstore.io/live/repository/icons/shbones-ShbonesVariants-0.0.2.png.128x128_q95.png)](https://thunderstore.io/package/shbones/ShbonesVariants/)| Shbones Variants | Adds new monster variants to the game using Nebby's VarianceAPI. |
+
+</p>
+</details>
 
 ### Official Nebby's Mods discord server.
 
 * If you wish to contact me about my risk of rain mods, you can do so here in this Discord server.
 
 https://discord.gg/kWn8T4fM5W
+
+### Donations
+
+If you like what i do, and wish to help me out, consider donating on my Ko-fi
+[![ko-fi](https://media.discordapp.net/attachments/850538397647110145/994431434817273936/SupportNebby.png)](https://ko-fi.com/nebby1999)
 
 ### Special thanks.
 
@@ -94,6 +105,6 @@ https://discord.gg/kWn8T4fM5W
 * Aaron, Gaforb, "come on and SLAM", & especially TheTimeSweeper ~~Love you habibi~~ for helping me with networking issues.
 * Aaron for creating a weighted selection for the Unique variants.
 * Dotflare for making the Variance artifact token and other tidbits from the official variant packs.
-* Twiner for Thunderkit and helping me a lot with certain editor scripts.
+* PassivePicasso for Thunderkit and helping me a lot with certain editor scripts.
 * Rob for creating MonsterVariants.
 * Papa Zach for creating the Artifact & Expansion icon

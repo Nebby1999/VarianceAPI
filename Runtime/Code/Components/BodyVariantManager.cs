@@ -120,7 +120,7 @@ namespace VAPI.Components
                 try
                 {
                     VariantTierDef tier = current.VariantTierDef;
-                    if (!announcedArrival)
+                    if (!announcedArrival && VAPIConfig.sendArrivalMesssages.Value)
                         announcedArrival = AnnounceArrival(current, tier);
 
                     VariantInventory inventory = current.variantInventory;

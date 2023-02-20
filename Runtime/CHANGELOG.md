@@ -1,5 +1,15 @@
 # Changelog
 
+## '2.1.0'
+* Added a ``VariantDirectorSpawnRequest`` which can be used for spawning Variants the same way you'd spawn enemies using DirectorSpawnRequests.
+* Fixed an issue where disabling a VariantPack won't stop variants from said pack from spawning
+* Disabling a VariantPack hides all the Variants related to it in the lobby.
+* Fixed some bugs regarding null reference exceptions in BodyVariantManagers and BodyVariantRewards
+* ``VariantDirectorSpawnRequest`` & ``VariantSummon`` can now pass on a ``DeathRewards`` and a float value for determining XP and Gold rewards from spawned variants.
+* Fixed an issue where having a VariantSpawnCondition would cause null entries on required unlockables, making the variant impossible to encounter.
+* Variants which spawn rate is 0 won't show up in the lobby rules panel
+* Added back a config for enabling or disabling variant arrival messages
+
 ## '2.0.2' - More Fixes
 
 * Fixed an issue where Variants wouldnt drop the correct amount of gold and experience

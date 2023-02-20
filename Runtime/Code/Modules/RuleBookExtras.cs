@@ -121,6 +121,9 @@ namespace VAPI.RuleSystem
             {
                 VariantDef def = VariantCatalog.registeredVariants[i];
 
+                if (def.spawnRate == 0)
+                    continue;
+
                 RuleDef variantRule = CreateRuleDefFromVariant(def);
                 RuleCatalogExtras.AddRuleToCatalog(variantRule, variantCategoryIndex);
             }
@@ -139,24 +142,23 @@ namespace VAPI.RuleSystem
             onChoice.tooltipNameColor = Color.cyan;
             onChoice.tooltipBodyToken = "VAPI_RULE_VARIANT_ON_DESCRIPTION";
             onChoice.variantIndex = variantDef.VariantIndex;
-            onChoice.onlyShowInGameBrowserIfNonDefault = true;
 
             onChoice.tiedPackEnabledChoice = GetVariantPackEnabledChoice(variantDef);
             onChoice.requiredChoiceDefs = GetRequiredChoiceDefs(variantDef);
             onChoice.requiredExpansionDefs = GetRequiredExpansionDefs(variantDef);
             onChoice.requiredUnlockables = GetRequiredUnlockableDefs(variantDef);
+            rule.MakeNewestChoiceDefault();
 
             variantIndexToRuleChoice.Add(variantDef.VariantIndex, onChoice);
 
-            rule.MakeNewestChoiceDefault();
 
-            RuleChoiceDef offChoice = AddVAPIChoice(rule, "Off");
+            VAPIRuleChoiceDef offChoice = AddVAPIChoice(rule, "Off");
             offChoice.spritePath = "Textures/MiscIcons/texUnlockIcon";
             offChoice.tooltipNameToken = variantName;
             offChoice.tooltipNameColor = ColorCatalog.GetColor(ColorCatalog.ColorIndex.Unaffordable);
             offChoice.getTooltipName = RuleChoiceDef.GetOffTooltipNameFromToken;
             offChoice.tooltipBodyToken = "VAPI_RULE_VARIANT_OFF_DESCRIPTION";
-            offChoice.onlyShowInGameBrowserIfNonDefault = true;
+            offChoice.requiredChoiceDefs = GetRequiredChoiceDefs(variantDef);
             return rule;
         }
 
@@ -227,7 +229,7 @@ namespace VAPI.RuleSystem
                 }
                 else
                 {
-                    ExpansionDef expansion = ExpansionCatalog.expansionDefs.FirstOrDefault(ed => ed.name == expansionDef.address);
+                    expansion = ExpansionCatalog.expansionDefs.FirstOrDefault(ed => ed.name == expansionDef.address);
                     if (expansion)
                     {
                         expansions.Add(expansion);
@@ -255,7 +257,7 @@ namespace VAPI.RuleSystem
             FieldInfo asset = typeof(AddressableUnlockableDef).GetField("asset", BindingFlags.Instance | BindingFlags.NonPublic);
 
             AddressableUnlockableDef unlockable = variantDef.variantSpawnCondition.requiredUnlockableDef;
-
+            UnlockableDef unlockableDef = null;
             if ((bool)useDirectReference.GetValue(unlockable))
             {
                 unlockableDef = (UnlockableDef)asset.GetValue(unlockable);
@@ -267,7 +269,7 @@ namespace VAPI.RuleSystem
             }
             else
             {
-                UnlockableDef unlockableDef = UnlockableCatalog.GetUnlockableDef(unlockable.address);
+                unlockableDef = UnlockableCatalog.GetUnlockableDef(unlockable.address);
                 if (unlockableDef)
                 {
                     unlockables.Add(unlockableDef);

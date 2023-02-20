@@ -27,6 +27,7 @@ namespace VAPI
         internal static ConfigEntry<bool> showVariantRuleCategory;
         internal static ConfigEntry<bool> enableArtifactOfVariance;
         internal static ConfigEntry<bool> activateMeshReplacementSystem;
+        internal static ConfigEntry<bool> sendArrivalMesssages;
 
         /// <summary>
         /// The rewards config file
@@ -53,15 +54,20 @@ namespace VAPI
                 false,
                 "Uncovers the Variant rule category, allowing you to enable or disable variant spawning from the lobby.");
 
+            enableArtifactOfVariance = generalConfig.Bind<bool>("VarianceAPI :: General",
+                "Enable Artifact of Variance",
+                true,
+                "Wether the Artifact of Variance is enabled");
+
             activateMeshReplacementSystem = generalConfig.Bind<bool>("VarianceAPI :: General",
                 "Activate Mesh Replacement Systems",
                 false,
                 "Activates the Mesh Replacement System, allowing for Variants to have different meshes.\nExtremely jank, may not work at all, and tanks performance.");
 
-            enableArtifactOfVariance = generalConfig.Bind<bool>("VarianceAPI :: General",
-                "Enable Artifact of Variance",
+            sendArrivalMesssages = generalConfig.Bind<bool>("VarianceAPI :: General",
+                "Send Arrival Messages",
                 true,
-                "Wether the Artifact of Variance is enabled");
+                "Wether variants which tier's send messages on arrival send said messages.");
 
             enableRewards = rewardsConfig.Bind<bool>("VarianceAPI :: Rewards",
                 "Activate Rewards Systems",
