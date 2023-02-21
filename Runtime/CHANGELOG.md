@@ -1,6 +1,9 @@
 # Changelog
 
-## '2.1.0'
+## '2.1.1' - I LOVE READMES!!!
+* Fixed readme
+
+## '2.1.0' - I dont know what to write here this time
 * Added a ``VariantDirectorSpawnRequest`` which can be used for spawning Variants the same way you'd spawn enemies using DirectorSpawnRequests.
 * Fixed an issue where disabling a VariantPack won't stop variants from said pack from spawning
 * Disabling a VariantPack hides all the Variants related to it in the lobby.

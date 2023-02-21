@@ -95,6 +95,7 @@ https://discord.gg/kWn8T4fM5W
 ### Donations
 
 If you like what i do, and wish to help me out, consider donating on my Ko-fi
+
 [![ko-fi](https://media.discordapp.net/attachments/850538397647110145/994431434817273936/SupportNebby.png)](https://ko-fi.com/nebby1999)
 
 ### Special thanks.
