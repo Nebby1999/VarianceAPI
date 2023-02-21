@@ -1,5 +1,8 @@
 # Changelog
 
+## '2.1.2' - I think i'll just start meme-ing on these names unless i have a good name
+* Fixed an issue where a spawn rate of 0 would cause a failure on filtering variants.
+
 ## '2.1.1' - I LOVE READMES!!!
 * Fixed readme
 

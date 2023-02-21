@@ -202,6 +202,10 @@ namespace VAPI
         /// <returns>True if available, false otherwise</returns>
         public bool IsAvailable(DirectorAPI.StageInfo stageInfo, ExpansionDef[] runExpansions, RuleBook runRulebook)
         {
+            if(spawnRate == 0)
+            {
+                return false;
+            }
             bool variantRulesEnabled = RuleBookExtras.CanVariantSpawn(runRulebook, VariantIndex);
 
             if (!variantRulesEnabled)
