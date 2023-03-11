@@ -178,9 +178,16 @@ namespace VAPI.Components
             }
 
             CharacterBody.RecalculateStats();
+            var healthComponent = CharacterBody.healthComponent;
+            if(healthComponent)
+            {
+                healthComponent.health = healthComponent.fullHealth;
+                healthComponent.shield = healthComponent.fullShield;
+            }
+
             if (visualsForCoroutine.Count > 0)
             {
-                StartCoroutine("ApplyVisuals");
+                StartCoroutine(nameof(ApplyVisuals));
             }
         }
 

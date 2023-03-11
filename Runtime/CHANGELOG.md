@@ -1,5 +1,8 @@
 # Changelog
 
+## '2.1.3' - Health Fix Thingy
+* Fixes issue where certain mod interactions would cause monsters to gain the health boost, but not spawn with max health.
+
 ## '2.1.2' - I think i'll just start meme-ing on these names unless i have a good name
 * Fixed an issue where a spawn rate of 0 would cause a failure on filtering variants.
 
