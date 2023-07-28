@@ -1,5 +1,5 @@
-﻿using RoR2EditorKit.Core.Inspectors;
-using RoR2EditorKit.Utilities;
+﻿using RoR2EditorKit.Inspectors;
+using RoR2EditorKit;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
@@ -35,10 +35,9 @@ namespace VAPI.EditorUtils.Inspectors
             variantTier.RegisterCallback<ChangeEvent<string>>(OnTierSet);
             OnTierSet();
 
-            AddSimpleContextMenu(arrivalToken, new ContextMenuData(
-                "Auto Populate",
+            arrivalToken.AddSimpleContextMenu(new RoR2EditorKit.ContextMenuData("Auto Populate",
                 AutoPopulateToken,
-                dma => Settings.TokenPrefix.IsNullOrEmptyOrWhitespace() ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal));
+                dma => Settings.tokenPrefix.IsNullOrEmptyOrWhitespace() ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal));
         }
 
         private void OnTierSet(ChangeEvent<string> evt = null)

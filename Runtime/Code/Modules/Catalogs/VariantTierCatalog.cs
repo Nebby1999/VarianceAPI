@@ -1,4 +1,7 @@
-﻿using BepInEx.Configuration;
+﻿using BepInEx;
+using BepInEx.Configuration;
+using Moonstorm.Config;
+using RiskOfOptions.OptionConfigs;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -78,6 +81,7 @@ namespace VAPI
             foreach (VariantPackDef pack in packs)
             {
                 ConfigFile configFile = pack.TierConfiguration;
+                BepInPlugin plugin = pack.BepInPlugin;
                 VariantTierDef[] tiers = pack.variantTiers;
                 if (tiers.Length == 0)
                     continue;
@@ -85,7 +89,7 @@ namespace VAPI
                 tiers = tiers.Where(ValidateTier).ToArray();
 
                 if (configFile != null)
-                    ConfigureTiersThatPassedFilter(configFile, tiers);
+                    ConfigureTiersThatPassedFilter(configFile, plugin, tiers);
 
                 tiersToRegister.AddRange(tiers);
             }
@@ -126,49 +130,118 @@ namespace VAPI
             }
         }
 
-        private static void ConfigureTiersThatPassedFilter(ConfigFile configFile, IEnumerable<VariantTierDef> tierDefs)
+        private static void ConfigureTiersThatPassedFilter(ConfigFile configFile, BepInPlugin plugin, IEnumerable<VariantTierDef> tierDefs)
         {
             foreach (VariantTierDef tierDef in tierDefs)
             {
                 try
                 {
-                    tierDef.goldMultiplier = BindInternal<float>(tierDef,
-                        "Gold Multiplier",
-                        tierDef.goldMultiplier,
-                        "The Gold Multiplier for this tier");
+                    tierDef.goldMultiplier = new ConfigurableFloat(tierDef.goldMultiplier)
+                    {
+                        Section = $"{tierDef.name} Tier",
+                        Key = "Gold Multiplier",
+                        Description = "The Gold Multiplier for this tier",
+                        ConfigFile = configFile,
+                        ModName = plugin.Name,
+                        ModGUID = plugin.GUID,
+                        UseStepSlider = false,
+                        SliderConfig = new SliderConfig
+                        {
+                            formatString = "{0:0.0}",
+                            min = 0,
+                            max = 100,
+                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                        },
+                    }.AddOnConfigChanged(f =>
+                    {
+                        tierDef.goldMultiplier = f;
+                    }).DoConfigure();
 
-                    tierDef.experienceMultiplier = BindInternal<float>(tierDef,
-                        "XP Multiplier",
-                        tierDef.experienceMultiplier,
-                        "The Experience Multiplier for this tier");
+                    tierDef.experienceMultiplier = new ConfigurableFloat(tierDef.experienceMultiplier)
+                    {
+                        Section = $"{tierDef.name} Tier",
+                        Key = "Experience Multiplier",
+                        Description = "The Experience Multiplier for this tier",
+                        ConfigFile = configFile,
+                        ModName = plugin.Name,
+                        ModGUID = plugin.GUID,
+                        UseStepSlider = false,
+                        SliderConfig = new SliderConfig
+                        {
+                            formatString = "{0:0.0}",
+                            min = 0,
+                            max = 100,
+                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                        },
+                    }.AddOnConfigChanged(f =>
+                    {
+                        tierDef.experienceMultiplier = f;
+                    }).DoConfigure();
 
-                    tierDef.whiteItemDropChance = BindInternal<float>(tierDef,
-                        "White Item Drop Chance",
-                        tierDef.whiteItemDropChance,
-                        "The Chance for variants of this tier to drop a white item");
+                    tierDef.whiteItemDropChance = new ConfigurableFloat(tierDef.whiteItemDropChance)
+                    {
+                        Section = $"{tierDef.name} Tier",
+                        Key = "White Item Drop Chance",
+                        Description = "The Chance for variants of this tier to drop a White Item",
+                        ConfigFile = configFile,
+                        ModName = plugin.Name,
+                        ModGUID = plugin.GUID,
+                        UseStepSlider = false,
+                        SliderConfig = new SliderConfig
+                        {
+                            min = 0,
+                            max = 100,
+                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                        },
+                    }.AddOnConfigChanged(f =>
+                    {
+                        tierDef.whiteItemDropChance = f;
+                    }).DoConfigure();
 
-                    tierDef.greenItemDropChance = BindInternal<float>(tierDef,
-                        "Green Item Drop Chance",
-                        tierDef.greenItemDropChance,
-                        "The Chance for variants of this tier to drop a green item");
+                    tierDef.greenItemDropChance = new ConfigurableFloat(tierDef.greenItemDropChance)
+                    {
+                        Section = $"{tierDef.name} Tier",
+                        Key = "Green Item Drop Chance",
+                        Description = "The Chance for variants of this tier to drop a Green Item",
+                        ConfigFile = configFile,
+                        ModName = plugin.Name,
+                        ModGUID = plugin.GUID,
+                        UseStepSlider = false,
+                        SliderConfig = new SliderConfig
+                        {
+                            min = 0,
+                            max = 100,
+                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                        },
+                    }.AddOnConfigChanged(f =>
+                    {
+                        tierDef.greenItemDropChance = f;
+                    }).DoConfigure();
 
-                    tierDef.redItemDropChance = BindInternal<float>(tierDef,
-                        "Red Item Drop Chance",
-                        tierDef.redItemDropChance,
-                        "The Chance for variants of this tier to drop a red item");
+                    tierDef.redItemDropChance = new ConfigurableFloat(tierDef.redItemDropChance)
+                    {
+                        Section = $"{tierDef.name} Tier",
+                        Key = "Red Item Drop Chance",
+                        Description = "The Chance for variants of this tier to drop a Red Item",
+                        ConfigFile = configFile,
+                        ModName = plugin.Name,
+                        ModGUID = plugin.GUID,
+                        UseStepSlider = false,
+                        SliderConfig = new SliderConfig
+                        {
+                            min = 0,
+                            max = 100,
+                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                        },
+                    }.AddOnConfigChanged(f =>
+                    {
+                        tierDef.redItemDropChance = f;
+                    }).DoConfigure();
                 }
                 catch (Exception e)
                 {
                     VAPILog.Error($"Error configuring tier {tierDef}: {e}\n(ConfigFile: {configFile}, Tier: {tierDef}");
                 }
-            }
-
-            T BindInternal<T>(VariantTierDef tierDef, string key, T val, string desc)
-            {
-                return configFile.Bind<T>($"{tierDef.name} Tier",
-                    $"{tierDef.name} {key}",
-                    val,
-                    desc).Value;
             }
         }
 

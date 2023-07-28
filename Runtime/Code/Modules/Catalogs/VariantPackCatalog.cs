@@ -1,9 +1,12 @@
-﻿using BepInEx.Configuration;
+﻿using BepInEx;
+using BepInEx.Configuration;
 using Moonstorm;
+using RiskOfOptions;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 namespace VAPI
@@ -45,9 +48,9 @@ namespace VAPI
         /// </summary>
         public static ResourceAvailability availability = default(ResourceAvailability);
 
-        private static Dictionary<ConfigPair, List<VariantPackDef>> unregisteredPacks = new Dictionary<ConfigPair, List<VariantPackDef>>();
+        private static Dictionary<ConfigPair, List<(VariantPackDef, BepInPlugin)>> unregisteredPacks = new Dictionary<ConfigPair, List<(VariantPackDef, BepInPlugin)>>();
         internal static VariantPackDef[] registeredPacks = Array.Empty<VariantPackDef>();
-        private static readonly Dictionary<string, VariantPackIndex> nameToIndex = new Dictionary<string, VariantPackIndex>();
+        private static readonly Dictionary<string, VariantPackIndex> nameToIndex = new Dictionary<string, VariantPackIndex>(StringComparer.OrdinalIgnoreCase);
 
         #region Find Methods
         /// <summary>
@@ -113,6 +116,7 @@ namespace VAPI
         }
         #endregion
 
+        //This is complete cancer and needs to be rectified in the next breaking update of the api.
         #region Add Methods
         /// <summary>
         /// Adds all the VariantPacks found in <paramref name="assetBundle"/>, the VariantPacks added this way will not be configurable
@@ -121,8 +125,30 @@ namespace VAPI
         public static void AddVariantPacks(AssetBundle assetBundle)
         {
             ThrowIfInitialized();
+            var cfg = default(ConfigPair);
+            var plugin = GetBepInPlugin(Assembly.GetCallingAssembly());
+            foreach (VariantPackDef packDef in assetBundle.LoadAllAssets<VariantPackDef>())
+            {
+                AddPackInternal(packDef, cfg, plugin);
+            }
+        }
 
-            AddVariantPacks(assetBundle.LoadAllAssets<VariantPackDef>());
+        /// <summary>
+        /// Adds all the VariantPacks found in <paramref name="assetBundle"/>, the VariantPacks added this way will not be configurable
+        /// </summary>
+        /// <param name="assetBundle">The Assetbundle to load from</param>
+        /// <param name="ownerPlugin">The plugin that added the variant packs</param>
+        public static void AddVariantPacks(AssetBundle assetBundle, BaseUnityPlugin ownerPlugin)
+        {
+            ThrowIfInitialized();
+
+            var cfg = default(ConfigPair);
+            var plugin = ownerPlugin.Info.Metadata;
+            foreach(VariantPackDef packDef in assetBundle.LoadAllAssets<VariantPackDef>())
+            {
+                AddPackInternal(packDef, cfg, plugin);
+            }
+
         }
         /// <summary>
         /// Adds all the VariantPacks found in <paramref name="assetBundle"/>, the VariantPack's tiers and variants will be configurable using <paramref name="configFile"/>
@@ -133,7 +159,29 @@ namespace VAPI
         {
             ThrowIfInitialized();
 
-            AddVariantPacks(assetBundle.LoadAllAssets<VariantPackDef>(), configFile);
+            var cfg = new ConfigPair(configFile);
+            var plugin = GetBepInPlugin(Assembly.GetCallingAssembly());
+            foreach (VariantPackDef packDef in assetBundle.LoadAllAssets<VariantPackDef>())
+            {
+                AddPackInternal(packDef, cfg, plugin);
+            }
+        }
+
+        /// <summary>
+        /// Adds all the VariantPacks found in <paramref name="assetBundle"/>, the VariantPack's tiers and variants will be configurable using <paramref name="configFile"/>
+        /// </summary>
+        /// <param name="assetBundle">The AssetBundle to load from</param>
+        /// <param name="configFile">The configFile for the VariantPacks</param>
+        /// <param name="ownerPlugin">The plugin that added the variant packs</param>
+        public static void AddVariantPacks(AssetBundle assetBundle, ConfigFile configFile, BaseUnityPlugin ownerPlugin)
+        {
+            ThrowIfInitialized();
+            var cfg = new ConfigPair(configFile);
+            var plugin = ownerPlugin.Info.Metadata;
+            foreach(VariantPackDef def in assetBundle.LoadAllAssets<VariantPackDef>())
+            {
+                AddPackInternal(def, cfg, plugin);
+            }
         }
 
         /// <summary>
@@ -145,8 +193,30 @@ namespace VAPI
         public static void AddVariantPacks(AssetBundle assetBundle, ConfigFile tierConfig, ConfigFile variantConfig)
         {
             ThrowIfInitialized();
+            var cfg = new ConfigPair(tierConfig, variantConfig);
+            var plugin = GetBepInPlugin(Assembly.GetCallingAssembly());
+            foreach(VariantPackDef packDef in assetBundle.LoadAllAssets<VariantPackDef>())
+            {
+                AddPackInternal(packDef, cfg, plugin);
+            }
+        }
 
-            AddVariantPacks(assetBundle.LoadAllAssets<VariantPackDef>(), tierConfig, variantConfig);
+        /// <summary>
+        /// Adds all the VariantPacks found in <paramref name="assetBundle"/>, the tiers will be configurable using <paramref name="tierConfig"/> and the variants using <paramref name="variantConfig"/>
+        /// </summary>
+        /// <param name="assetBundle">The AssetBundle to load from</param>
+        /// <param name="tierConfig">The config file for VariantTiers</param>
+        /// <param name="variantConfig">The config file for VariantDefs</param>
+        /// <param name="ownerPlugin">The plugin that added the variant packs</param>
+        public static void AddVariantPacks(AssetBundle assetBundle, ConfigFile tierConfig, ConfigFile variantConfig, BaseUnityPlugin ownerPlugin)
+        {
+            ThrowIfInitialized();
+            var cfg = new ConfigPair(tierConfig, variantConfig);
+            var plugin = ownerPlugin.Info.Metadata;
+            foreach(VariantPackDef packDef in assetBundle.LoadAllAssets<VariantPackDef>())
+            {
+                AddPackInternal(packDef, cfg, plugin);
+            }
         }
 
         /// <summary>
@@ -156,10 +226,25 @@ namespace VAPI
         public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks)
         {
             ThrowIfInitialized();
-
+            var plugin = GetBepInPlugin(Assembly.GetCallingAssembly());
             foreach (VariantPackDef packDef in variantPacks)
             {
-                AddVariantPack(packDef);
+                AddPackInternal(packDef, default(ConfigPair), plugin);
+            }
+        }
+
+        /// <summary>
+        /// Adds all the VariantPacks specified in <paramref name="variantPacks"/>, the VariantPacks added this way will not be configurable
+        /// </summary>
+        /// <param name="variantPacks">The VariantPacks to add</param>
+        /// <param name="ownerPlugin">The plugin that added the variant packs</param>
+        public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks, BaseUnityPlugin ownerPlugin)
+        {
+            ThrowIfInitialized();
+            var plugin = ownerPlugin.Info.Metadata;
+            foreach(VariantPackDef packDef in variantPacks)
+            {
+                AddPackInternal(packDef, default(ConfigPair), plugin);
             }
         }
 
@@ -171,10 +256,28 @@ namespace VAPI
         public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks, ConfigFile configFile)
         {
             ThrowIfInitialized();
-
+            var cfg = new ConfigPair(configFile);
+            var plugin = GetBepInPlugin(Assembly.GetCallingAssembly());
             foreach (VariantPackDef packDef in variantPacks)
             {
-                AddVariantPack(packDef, configFile);
+                AddPackInternal(packDef, cfg, plugin); ;
+            }
+        }
+
+        /// <summary>
+        /// Adds all the VariantPacks specified in <paramref name="variantPacks"/>, the VariantPack's tiers and variants will be configurable using <paramref name="configFile"/>
+        /// </summary>
+        /// <param name="variantPacks">The VariantPacks to add</param>
+        /// <param name="configFile">The config file for the VariantPacks</param>
+        /// <param name="ownerPlugin">The plugin that added the variant packs</param>
+        public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks, ConfigFile configFile, BaseUnityPlugin ownerPlugin)
+        {
+            ThrowIfInitialized();
+            var cfg = new ConfigPair(configFile);
+            var plugin = ownerPlugin.Info.Metadata;
+            foreach (VariantPackDef packDef in variantPacks)
+            {
+                AddPackInternal(packDef, cfg, plugin); ;
             }
         }
 
@@ -187,10 +290,29 @@ namespace VAPI
         public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks, ConfigFile tierConfig, ConfigFile variantConfig)
         {
             ThrowIfInitialized();
-
+            var cfg = new ConfigPair(tierConfig, variantConfig);
+            var plugin = GetBepInPlugin(Assembly.GetCallingAssembly());
             foreach (VariantPackDef packDef in variantPacks)
             {
-                AddVariantPack(packDef, tierConfig, variantConfig);
+                AddPackInternal(packDef, cfg, plugin);
+            }
+        }
+
+        /// <summary>
+        /// Adds all the VariantPAcks specified in <paramref name="variantPacks"/>, the tiers will be configurable using <paramref name="tierConfig"/> and the variants using <paramref name="variantConfig"/>
+        /// </summary>
+        /// <param name="variantPacks">The VariantPacks to add</param>
+        /// <param name="tierConfig">The config file for VariantTiers</param>
+        /// <param name="variantConfig">The config file for VariantDefs</param>
+        /// <param name="ownerPlugin">The plugin that added the variant packs</param>
+        public static void AddVariantPacks(IEnumerable<VariantPackDef> variantPacks, ConfigFile tierConfig, ConfigFile variantConfig, BaseUnityPlugin ownerPlugin)
+        {
+            ThrowIfInitialized();
+            var cfg = new ConfigPair(tierConfig, variantConfig);
+            var plugin = ownerPlugin.Info.Metadata;
+            foreach (VariantPackDef packDef in variantPacks)
+            {
+                AddPackInternal(packDef, cfg, plugin);
             }
         }
 
@@ -202,7 +324,19 @@ namespace VAPI
         {
             ThrowIfInitialized();
 
-            AddPackInternal(packDef, default(ConfigPair));
+            AddPackInternal(packDef, default(ConfigPair), GetBepInPlugin(Assembly.GetCallingAssembly()));
+        }
+
+        /// <summary>
+        /// Adds a single VariantPack, the pack added cannot be configured
+        /// </summary>
+        /// <param name="packDef">The pack to add</param>
+        /// <param name="ownerPlugin">The plugin that added the VariantPack</param>
+        public static void AddVariantPack(VariantPackDef packDef, BaseUnityPlugin ownerPlugin)
+        {
+            ThrowIfInitialized();
+
+            AddPackInternal(packDef, default(ConfigPair), ownerPlugin.Info.Metadata);
         }
 
         /// <summary>
@@ -214,7 +348,20 @@ namespace VAPI
         {
             ThrowIfInitialized();
 
-            AddPackInternal(packDef, new ConfigPair(configFile));
+            AddPackInternal(packDef, new ConfigPair(configFile), GetBepInPlugin(Assembly.GetCallingAssembly()));
+        }
+
+        /// <summary>
+        /// Adds a single VariantPackDef, the pack's tiers and variants can be configured using <paramref name="configFile"/>
+        /// </summary>
+        /// <param name="packDef">The pack to add</param>
+        /// <param name="configFile">The config file for the VariantPack</param>
+        /// <param name="ownerPlugin">The plugin that added the VariantPack</param>
+        public static void AddVariantPack(VariantPackDef packDef, ConfigFile configFile, BaseUnityPlugin ownerPlugin)
+        {
+            ThrowIfInitialized();
+
+            AddPackInternal(packDef, new ConfigPair(configFile), ownerPlugin.Info.Metadata);
         }
 
         /// <summary>
@@ -227,16 +374,37 @@ namespace VAPI
         {
             ThrowIfInitialized();
 
-            AddPackInternal(packDef, new ConfigPair(tierConfig, variantConfig));
+            AddPackInternal(packDef, new ConfigPair(tierConfig, variantConfig), GetBepInPlugin(Assembly.GetCallingAssembly()));
         }
 
-        private static void AddPackInternal(VariantPackDef packDef, ConfigPair configPair)
+        /// <summary>
+        /// Adds a single VariantPackDef, the tiers will be configurable using <paramref name="tierConfig"/> and the variants using <paramref name="variantConfig"/>
+        /// </summary>
+        /// <param name="packDef">The pack to add</param>
+        /// <param name="tierConfig">The config file for VariantTiers</param>
+        /// <param name="variantConfig">The config file for VariantDefs</param>
+        /// <param name="ownerPlugin">The plugin that added the VariantPack</param>
+        public static void AddVariantPack(VariantPackDef packDef, ConfigFile tierConfig, ConfigFile variantConfig, BaseUnityPlugin ownerPlugin)
+        {
+            ThrowIfInitialized();
+
+            AddPackInternal(packDef, new ConfigPair(tierConfig, variantConfig), ownerPlugin.Info.Metadata);
+        }
+        private static BepInPlugin GetBepInPlugin(Assembly assembly)
+        {
+            return assembly.GetTypesSafe()
+                .Where(t => t.GetCustomAttribute<BepInPlugin>() != null)
+                .Select(t => t.GetCustomAttribute<BepInPlugin>())
+                .FirstOrDefault();
+        }
+
+        private static void AddPackInternal(VariantPackDef packDef, ConfigPair configPair, BepInPlugin plugin)
         {
             if (!unregisteredPacks.ContainsKey(configPair))
             {
-                unregisteredPacks[configPair] = new List<VariantPackDef>();
+                unregisteredPacks[configPair] = new List<(VariantPackDef, BepInPlugin)>();
             }
-            unregisteredPacks[configPair].Add(packDef);
+            unregisteredPacks[configPair].Add((packDef, plugin));
         }
         #endregion
 
@@ -256,14 +424,14 @@ namespace VAPI
 
         private static VariantPackDef[] RegisterPacks()
         {
-            List<(VariantPackDef, ConfigPair)> packsToRegister = new List<(VariantPackDef, ConfigPair)>();
+            List<(VariantPackDef, ConfigPair, BepInPlugin)> packsToRegister = new List<(VariantPackDef, ConfigPair, BepInPlugin)>();
 
             foreach (var (configPair, packs) in unregisteredPacks)
             {
-                var validatedPacks = new List<VariantPackDef>();
+                var validatedPacks = new List<(VariantPackDef, BepInPlugin)>();
                 validatedPacks = packs.Where(ValidatePack).ToList();
 
-                packsToRegister.AddRange(validatedPacks.Select(x => (x, configPair)));
+                packsToRegister.AddRange(validatedPacks.Select(x => (x.Item1, configPair, x.Item2)));
             }
 
             packsToRegister = packsToRegister.OrderBy(vpd => vpd.Item1.name).ToList();
@@ -278,7 +446,7 @@ namespace VAPI
             return packsToRegister.Select(x => x.Item1).ToArray();
         }
 
-        private static bool ValidatePack(VariantPackDef packDef)
+        private static bool ValidatePack((VariantPackDef packDef, BepInPlugin plugin) tuple)
         {
             try
             {
@@ -286,18 +454,21 @@ namespace VAPI
             }
             catch (Exception e)
             {
-                VAPILog.Error($"Could not validate pack {packDef}: {e}");
+                VAPILog.Error($"Could not validate pack {tuple.packDef}: {e}");
                 return false;
             }
         }
 
-        private static void RegisterPack((VariantPackDef, ConfigPair) variantPack, VariantPackIndex index)
+        private static void RegisterPack((VariantPackDef packDef, ConfigPair pair, BepInPlugin plugin) variantPack, VariantPackIndex index)
         {
             try
             {
-                VariantPackDef packDef = variantPack.Item1;
-                packDef.TierConfiguration = variantPack.Item2.tierConfig;
-                packDef.VariantConfiguration = variantPack.Item2.variantConfig;
+                VariantPackDef packDef = variantPack.packDef;
+                packDef.TierConfiguration = variantPack.pair.tierConfig;
+                packDef.VariantConfiguration = variantPack.pair.variantConfig;
+                packDef.BepInPlugin = variantPack.plugin;
+                ModSettingsManager.SetModIcon(packDef.packEnabledIcon, packDef.BepInPlugin.GUID, packDef.BepInPlugin.Name);
+                ModSettingsManager.SetModDescriptionToken(packDef.descriptionToken, packDef.BepInPlugin.GUID, packDef.BepInPlugin.Name);
 #if DEBUG
                 VAPILog.Debug($"Registering {variantPack} (Index: {index})");
 #endif

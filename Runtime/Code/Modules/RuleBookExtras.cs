@@ -17,6 +17,7 @@ namespace VAPI.RuleSystem
         private static RuleCategoryDef variantCategory;
         private static int variantCategoryIndex;
         private static Dictionary<VariantIndex, VAPIRuleChoiceDef> variantIndexToRuleChoice = new Dictionary<VariantIndex, VAPIRuleChoiceDef>();
+        internal static RuleDef varianceArtifactRuleDef;
 
         [SystemInitializer(typeof(RuleCatalog), typeof(VariantCatalog))]
         private static void SystemInitializer()
@@ -25,6 +26,7 @@ namespace VAPI.RuleSystem
             AddNewCategories();
             AddVariantPackRules();
             AddVariantRules();
+            varianceArtifactRuleDef = RuleCatalog.FindRuleDef("Artifacts.Variance");
         }
 
         internal static bool TryCastVAPIRuleChoiceDef(RuleChoiceDef choice, out VAPIRuleChoiceDef vapiRuleChoiceDef)
@@ -121,9 +123,6 @@ namespace VAPI.RuleSystem
             {
                 VariantDef def = VariantCatalog.registeredVariants[i];
 
-                if (def.spawnRate == 0)
-                    continue;
-
                 RuleDef variantRule = CreateRuleDefFromVariant(def);
                 RuleCatalogExtras.AddRuleToCatalog(variantRule, variantCategoryIndex);
             }
@@ -159,6 +158,19 @@ namespace VAPI.RuleSystem
             offChoice.getTooltipName = RuleChoiceDef.GetOffTooltipNameFromToken;
             offChoice.tooltipBodyToken = "VAPI_RULE_VARIANT_OFF_DESCRIPTION";
             offChoice.requiredChoiceDefs = GetRequiredChoiceDefs(variantDef);
+
+            var display = variantDef.spawnRate > 0;
+            rule.forceLobbyDisplay = display;
+            onChoice.excludeByDefault = !display;
+            offChoice.excludeByDefault = !display;
+            variantDef.spawnRateConfig.OnConfigChanged += f =>
+            {
+                bool b = f > 0;
+                rule.forceLobbyDisplay = b;
+                onChoice.excludeByDefault = !b;
+                offChoice.excludeByDefault = !b;
+            };
+
             return rule;
         }
 
@@ -307,7 +319,7 @@ namespace VAPI.RuleSystem
                 return true;
 
 #if !DEBUG
-            if (VAPIConfig.showVariantRuleCategory.Value == false)
+            if (!VAPIConfig.showVariantRuleCategory)
             {
                 return true;
             }

@@ -146,7 +146,7 @@ namespace VAPI
         protected virtual void CreateDroplet(PickupIndex dropletIndex, DamageReport report)
         {
             PickupDropletController.CreatePickupDroplet(dropletIndex,
-                VAPIConfig.itemRewardsSpawnOnPlayer.Value ? report.attacker.transform.position : report.victim.transform.position,
+                VAPIConfig.itemRewardsSpawnOnPlayer ? report.attacker.transform.position : report.victim.transform.position,
                 (Vector3.up * 20) + (Vector3.right * Random.Range(1, 5) + (Vector3.forward * Random.Range(1, 5))));
         }
 

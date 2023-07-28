@@ -1,0 +1,42 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 462267d798a056b4ab94d737b7da67f6, type: 3}
+  m_Name: ecUniqueVariants
+  m_EditorClassIdentifier: 
+  eventFlags: 0
+  eventState:
+    _typeName: EntityStates.Events.VariantEvents.UniqueVariantsEvent, VarianceAPI,
+      Version=0.0.0.0, Culture=neutral, PublicKeyToken=null
+  requiredStateMachine: VariantEvent
+  startMessageToken: VAPI_EVENT_UNIQUE_START
+  endMessageToken: VAPI_EVENT_UNIQUE_END
+  messageColor: {r: 0.76470596, g: 0.3529412, b: 0.96470594, a: 1}
+  startSound: {fileID: 0}
+  availableStages: 470275071
+  customStageNames: []
+  category: CommonEvents
+  selectionWeight: 20
+  cost: 2000
+  repeatedSelectionCostCoefficient: 2
+  minimumStageCompletions: 1
+  requiredUnlockableDef:
+    address: 
+    useDirectReference: 1
+    asset: {fileID: 0}
+  forbiddenUnlockableDef:
+    address: 
+    useDirectReference: 1
+    asset: {fileID: 0}
+  requiredExpansions:
+  - address: 
+    useDirectReference: 1
+    asset: {fileID: 11400000, guid: c6bb5aefe30f0ff449f147c467e0db10, type: 2}

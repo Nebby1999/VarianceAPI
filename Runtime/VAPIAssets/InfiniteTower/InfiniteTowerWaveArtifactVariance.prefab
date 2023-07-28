@@ -1,0 +1,185 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1 &7635682304446702881
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4031434804719898690}
+  - component: {fileID: 4393440351205386539}
+  - component: {fileID: 8134360286916782091}
+  - component: {fileID: 3002966120919938665}
+  - component: {fileID: 2706669868781504814}
+  - component: {fileID: 8716647715268195811}
+  m_Layer: 0
+  m_Name: InfiniteTowerWaveArtifactVariance
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4031434804719898690
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7635682304446702881}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 8.375019, y: 3.8602703, z: -0.3355502}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &4393440351205386539
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7635682304446702881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f8258ea15b8f74c4889ce485d21cbbb1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  m_SceneId:
+    m_Value: 0
+  m_AssetId:
+    i0: 0
+    i1: 0
+    i2: 0
+    i3: 0
+    i4: 0
+    i5: 0
+    i6: 0
+    i7: 0
+    i8: 0
+    i9: 0
+    i10: 0
+    i11: 0
+    i12: 0
+    i13: 0
+    i14: 0
+    i15: 0
+  m_ServerOnly: 0
+  m_LocalPlayerAuthority: 0
+--- !u!114 &8134360286916782091
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7635682304446702881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 653292689, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  customName: 
+  monsterCredit: 0
+  expRewardCoefficient: 0.1
+  goldRewardCoefficient: 0.2
+  minSeriesSpawnInterval: 0.5
+  maxSeriesSpawnInterval: 0.5
+  minRerollSpawnInterval: 3
+  maxRerollSpawnInterval: 2
+  moneyWaveIntervals: []
+  teamIndex: 2
+  creditMultiplier: 0.75
+  spawnDistanceMultiplier: 1
+  maxSpawnDistance: 60
+  minSpawnRange: 30
+  shouldSpawnOneWave: 0
+  targetPlayers: 0
+  skipSpawnIfTooCheap: 1
+  maxConsecutiveCheapSkips: 10
+  resetMonsterCardIfFailed: 1
+  maximumNumberToSpawnBeforeSkipping: 10
+  eliteBias: 1.5
+  onSpawnedServer:
+    m_PersistentCalls:
+      m_Calls: []
+  combatSquad: {fileID: 3002966120919938665}
+  spawnEffectPrefab: {fileID: 0}
+  ignoreTeamSizeLimit: 0
+  _monsterCards: {fileID: 0}
+  fallBackToStageMonsterCards: 1
+  currentSpawnTarget: {fileID: 0}
+--- !u!114 &3002966120919938665
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7635682304446702881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1720486850, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  propagateMembershipToSummons: 1
+  grantBonusHealthInMultiplayer: 1
+  onDefeatedClientLogicEvent:
+    m_PersistentCalls:
+      m_Calls: []
+  onDefeatedServerLogicEvent:
+    m_PersistentCalls:
+      m_Calls: []
+--- !u!114 &2706669868781504814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7635682304446702881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -906186375, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  isBossWave: 0
+  combatDirector: {fileID: 8134360286916782091}
+  combatSquad: {fileID: 3002966120919938665}
+  baseCredits: 159
+  linearCreditsPerWave: 0
+  wavePeriodSeconds: 30
+  secondsBeforeSuddenDeath: 60
+  secondsBeforeFailsafe: 60
+  suddenDeathRadiusConstrictingPerSecond: 0.05
+  suddenDeathChatToken: INFINITETOWER_SUDDEN_DEATH
+  immediateCreditsFraction: 0.15
+  maxSquadSize: 30
+  secondsAfterWave: 10
+  squadDefeatGracePeriod: 1
+  uiPrefab: {fileID: 0}
+  overlayEntries:
+  - prefab: {fileID: 0}
+    hudChildName: CrosshairExtras
+  convertGoldOnWaveFinish: 0
+  goldToExpConversionRatio: 0
+  rewardDropTable: {fileID: 0}
+  rewardDisplayTier: 0
+  rewardOptionCount: 3
+  rewardPickupPrefab: {fileID: 0}
+  rewardOffset: {x: 0, y: 3, z: 0}
+  beginChatToken: 
+  beginSoundString: Play_UI_arenaMode_wave_start
+  onAllEnemiesDefeatedSoundString: Play_UI_arenaMode_wave_complete
+--- !u!114 &8716647715268195811
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7635682304446702881}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 793003435, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  artifactDef: {fileID: 11400000, guid: 2a46fba08bb7850458be28968471244b, type: 2}

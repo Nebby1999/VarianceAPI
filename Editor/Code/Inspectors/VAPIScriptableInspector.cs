@@ -1,4 +1,4 @@
-﻿using RoR2EditorKit.Core.Inspectors;
+﻿using RoR2EditorKit.Inspectors;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;

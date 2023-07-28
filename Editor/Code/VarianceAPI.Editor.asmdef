@@ -13,7 +13,8 @@
     "allowUnsafeCode": false,
     "overrideReferences": true,
     "precompiledReferences": [
-        "RoR2.dll"
+        "RoR2.dll",
+        "Assembly-CSharp.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

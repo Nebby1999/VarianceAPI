@@ -1,5 +1,6 @@
 ﻿using EntityStates;
 using HG;
+using Moonstorm.Config;
 using R2API;
 using RoR2;
 using RoR2.ExpansionManagement;
@@ -22,6 +23,9 @@ namespace VAPI
         /// The variant's VariantIndex, do not set this value yourself
         /// </summary>
         public VariantIndex VariantIndex { get; internal set; }
+
+        internal ConfigurableFloat spawnRateConfig;
+        internal ConfigurableBool isUniqueConfig;
 
         [Tooltip("The BodyPrefab's name for this variant, taken directly from the BodyCatalog")]
         public string bodyName;

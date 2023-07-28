@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StagingPaths:
   - <BuildPath>
+  includeMetaFiles: 0
   files:
   - {fileID: 4900000, guid: 501c5eb442da75842af61bf54eee9452, type: 3}
   - {fileID: 4900000, guid: e2803a8c442fd2d43a4a5210156315b5, type: 3}
@@ -100,6 +101,7 @@ MonoBehaviour:
   Dependencies:
   - {fileID: 11400000, guid: 5ceb1d8ed3af40d4d806e9756b403649, type: 2}
   - {fileID: 11400000, guid: 613d4ca030e90a832defdb35afe5393b, type: 2}
+  - {fileID: 11400000, guid: a644a53693d44639c70550096ce74b93, type: 2}
 --- !u!114 &114431642618062350
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -132,6 +134,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   StagingPaths:
   - <BuildPathSoundbanks>
+  includeMetaFiles: 0
   files: []
 --- !u!114 &8324102109481770816
 MonoBehaviour:

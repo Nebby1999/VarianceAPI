@@ -124,7 +124,7 @@ namespace VAPI.Components
                 if (chanceInRealm <= 0)
                     return;
 
-                if (Util.CheckRoll(chanceInRealm, VAPIConfig.luckAffectsItemRewards.Value ? damageReport.attackerMaster.luck : 0))
+                if (Util.CheckRoll(chanceInRealm, VAPIConfig.luckAffectsItemRewards ? damageReport.attackerMaster.luck : 0))
                 {
                     reward.TrySpawnDroplet(damageReport);
                 }

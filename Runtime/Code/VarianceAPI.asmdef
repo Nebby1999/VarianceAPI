@@ -31,7 +31,11 @@
         "R2API.Director.dll",
         "R2API.Elites.dll",
         "R2API.RecalculateStats.dll",
-        "R2API.Rules.dll"
+        "R2API.Rules.dll",
+        "RiskOfOptions.dll",
+        "UnityEngine.UI.dll",
+        "Unity.TextMeshPro.dll",
+        "R2API.Prefab.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

@@ -1,10 +1,12 @@
 ﻿using Moonstorm;
+using Moonstorm.Config;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using UnityEngine;
 using UnityEngine.Networking;
+using RiskOfOptions.OptionConfigs;
 
 namespace VAPI.Components
 {
@@ -16,13 +18,30 @@ namespace VAPI.Components
         /// <summary>
         /// The Artifact of Variance's SpawnRate multiplier
         /// </summary>
-        [ConfigurableField(VAPIConfig.general, ConfigSection = "VarianceAPI :: General", ConfigDesc = "Multiplier thats applied to the spawn chance of variants when the Artifact of Variance is enabled")]
         [TokenModifier("VAPI_ARTIFACT_VARIANCE_DESC", StatTypes.Default, 0)]
-        public static float artifactSpawnRateMultiplier = 2f;
+        public static ConfigurableFloat artifactSpawnRateMultiplier = VAPIConfig.MakeConfigurableFloat(2f, (f) =>
+        {
+            f.Section = "General";
+            f.Description = "Multiplier thats applied to the spawn chance of variants when the Artifact of Variance is enabled";
+            f.ConfigFile = VAPIConfig.generalConfig;
+            f.UseStepSlider = false;
+            f.SliderConfig = new SliderConfig
+            {
+                formatString = "{0:0.0}",
+                min = 0,
+                max = 100,
+                checkIfDisabled = () => !VAPIConfig.enableArtifactOfVariance
+            };
+        });
+
         /// <summary>
         /// The current instance of the VariantSpawnManager
         /// </summary>
         public static VariantSpawnManager Instance { get; private set; }
+        /// <summary>
+        /// A Spawn Rate Multiplier applied to all variantDefs, this will never be a negative number.
+        /// </summary>
+        public float DefaultSpawnRateMultiplier { get => defaultSpawnRateMultiplier; set => defaultSpawnRateMultiplier = Mathf.Max(0, value); }
         [SerializeField] private float defaultSpawnRateMultiplier = 1;
         [SerializeField] private ArtifactDef varianceArtifact;
         /// <summary>
@@ -108,9 +127,10 @@ namespace VAPI.Components
         {
             var uniqueRng = new WeightedSelection<int>();
             float notUniqueChance = 0f;
+            var spawnRateMultiplier = RunArtifactManager.instance.IsArtifactEnabled(varianceArtifact) ? artifactSpawnRateMultiplier + defaultSpawnRateMultiplier : defaultSpawnRateMultiplier;
             for (int i = 0; i < pool.Length; i++)
             {
-                var chance = pool[i].spawnRate * (RunArtifactManager.instance.IsArtifactEnabled(varianceArtifact) ? artifactSpawnRateMultiplier : defaultSpawnRateMultiplier);
+                var chance = pool[i].spawnRate * spawnRateMultiplier;
                 uniqueRng.AddChoice(i, Mathf.Min(100, chance));
                 notUniqueChance += Mathf.Max(0, 100 - chance);
             }
@@ -132,8 +152,12 @@ namespace VAPI.Components
             for (int i = 0; i < pool.Length; i++)
             {
                 var currentDef = pool[i];
-                var spawnRate = Mathf.Min(100, currentDef.spawnRate * (RunArtifactManager.instance.IsArtifactEnabled(varianceArtifact) ? artifactSpawnRateMultiplier : defaultSpawnRateMultiplier));
-                if (Util.CheckRoll(spawnRate))
+                var spawnRateMultiplier = RunArtifactManager.instance.IsArtifactEnabled(varianceArtifact) ? artifactSpawnRateMultiplier + defaultSpawnRateMultiplier : defaultSpawnRateMultiplier;
+                var spawnRate = Mathf.Min(100, currentDef.spawnRate * spawnRateMultiplier);
+                if (spawnRate <= 0)
+                    continue;
+
+                if(variantRNG.RangeFloat(0, 100) <= spawnRate)
                 {
                     defs.Add(currentDef);
                 }

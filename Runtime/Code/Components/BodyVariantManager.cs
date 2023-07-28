@@ -120,7 +120,7 @@ namespace VAPI.Components
                 try
                 {
                     VariantTierDef tier = current.VariantTierDef;
-                    if (!announcedArrival && VAPIConfig.sendArrivalMesssages.Value)
+                    if (!announcedArrival && VAPIConfig.sendArrivalMesssages)
                         announcedArrival = AnnounceArrival(current, tier);
 
                     VariantInventory inventory = current.variantInventory;
@@ -199,7 +199,7 @@ namespace VAPI.Components
                 visuals.ApplyMaterials(CharacterModel);
                 visuals.ApplyLights(CharacterModel);
 
-                if (VAPIConfig.activateMeshReplacementSystem.Value)
+                if (VAPIConfig.activateMeshReplacementSystem)
                 {
                     if (visuals.ApplyMeshes(CharacterModel, out storedIDRS, out MeshType meshType))
                     {

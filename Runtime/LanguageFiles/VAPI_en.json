@@ -58,6 +58,12 @@
         "VAPI_RULE_HEADER_VARIANTS": "Individual Variants",
         "VAPI_RULE_HEADER_VARIANTS_SUBTITLE": "Individual Variants that can spawn in this Run. Each variant may cause you misfortune, fun, or a gruesome death.",
         "VAPI_RULE_VARIANT_ON_DESCRIPTION": "This variant will be able to spawn in this Run.",
-        "VAPI_RULE_VARIANT_OFF_DESCRIPTION": "This variant cannot spawn in this Run."
+      "VAPI_RULE_VARIANT_OFF_DESCRIPTION": "This variant cannot spawn in this Run.",
+
+        "VAPI_EVENT_SPAWNRATE_START": "The creatures grow Restless...",
+        "VAPI_EVENT_SPAWNRATE_END":  "The creatures return to normal...",
+        "VAPI_EVENT_UNIQUE_START": "Subspecies become more common...",
+        "VAPI_EVENT_UNIQUE_END":  "The Subspecies die down...",
+        "VAPI_INFINITETOWER_WAVE_COUNTER_VARIANCE":  "Wave {0} - Augment of Variety"
     }
 }

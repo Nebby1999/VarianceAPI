@@ -1,4 +1,7 @@
-﻿using BepInEx.Configuration;
+﻿using BepInEx;
+using BepInEx.Configuration;
+using Moonstorm.Config;
+using RiskOfOptions.OptionConfigs;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -22,7 +25,7 @@ namespace VAPI
         public static ResourceAvailability availability = default(ResourceAvailability);
 
         internal static VariantDef[] registeredVariants = Array.Empty<VariantDef>();
-        private static readonly Dictionary<string, VariantIndex> nameToIndex = new Dictionary<string, VariantIndex>();
+        private static readonly Dictionary<string, VariantIndex> nameToIndex = new Dictionary<string, VariantIndex>(StringComparer.OrdinalIgnoreCase);
 
         private static readonly Dictionary<BodyIndex, BodyVariantDefProvider> bodyIndexToDefProvider = new Dictionary<BodyIndex, BodyVariantDefProvider>();
         #region Get Methods
@@ -84,6 +87,7 @@ namespace VAPI
             foreach (VariantPackDef pack in packs)
             {
                 ConfigFile configFile = pack.VariantConfiguration;
+                BepInPlugin plugin = pack.BepInPlugin;
                 VariantDef[] variants = pack.variants;
 
                 if (variants.Length == 0)
@@ -92,7 +96,7 @@ namespace VAPI
                 variants = variants.Where(ValidateVariant).ToArray();
 
                 if (configFile != null)
-                    ConfigureVariantsThatPassedFilter(configFile, variants);
+                    ConfigureVariantsThatPassedFilter(configFile, plugin, variants);
 
                 variantsToRegister.AddRange(variants);
             }
@@ -135,34 +139,44 @@ namespace VAPI
             }
         }
 
-        private static void ConfigureVariantsThatPassedFilter(ConfigFile configFile, IEnumerable<VariantDef> variants)
+        private static void ConfigureVariantsThatPassedFilter(ConfigFile configFile, BepInPlugin plugin,  IEnumerable<VariantDef> variants)
         {
             foreach (VariantDef variant in variants)
             {
                 try
                 {
-                    variant.spawnRate = BindInternal(variant,
-                        "Spawn Rate",
-                        variant.spawnRate,
-                        $"Chance for the {variant.name} variant to spawn\n(Percentage, 0-100)");
+                    variant.spawnRateConfig = new ConfigurableFloat(variant.spawnRate)
+                    {
+                        Section = $"{variant.bodyName} Variants",
+                        Key = $"{variant.name} Spawn Rate",
+                        Description = $"Chance for the {variant.name} variant to spawn\n(Percentage, 0-100)",
+                        ConfigFile = configFile,
+                        ModGUID = plugin.GUID,
+                        ModName = plugin.Name,
+                        UseStepSlider = false,
+                        SliderConfig = new SliderConfig
+                        {
+                            min = 0,
+                            max = 100,
+                        }
+                    };
+                    variant.spawnRateConfig.OnConfigChanged += f => variant.spawnRate = f;
+                    variant.spawnRateConfig.DoConfigure();
 
-                    variant.isUnique = BindInternal<bool>(variant,
-                        "Is Unique",
-                        variant.isUnique,
-                        $"Wether or not {variant.name} is Unique");
+                    variant.isUniqueConfig = new ConfigurableBool(variant.isUnique)
+                    {
+                        Section = $"{variant.bodyName} Variants",
+                        Key = $"{variant.name} Uniqueness",
+                        Description = $"Wether or not {variant.name} is Unique",
+                        ConfigFile = configFile,
+                        ModGUID = plugin.GUID,
+                        ModName = plugin.Name,
+                    }.AddOnConfigChanged(b => variant.isUnique = b).DoConfigure();
                 }
                 catch (Exception e)
                 {
                     VAPILog.Error($"Error Configuring Variant {variant}: {e}\n(ConfigFile: {configFile}, Variant: {variant})");
                 }
-            }
-
-            T BindInternal<T>(VariantDef variant, string key, T val, string desc)
-            {
-                return configFile.Bind<T>($"{variant.bodyName} Variants",
-                    $"{variant.name} {key}",
-                    val,
-                    desc).Value;
             }
         }
 
@@ -196,7 +210,7 @@ namespace VAPI
                 {
                     body.gameObject.AddComponent<BodyVariantManager>();
 
-                    if (VAPIConfig.enableRewards.Value)
+                    if (VAPIConfig.enableRewards)
                         body.gameObject.AddComponent<BodyVariantReward>();
 
                     bodyIndexToDefProvider.Add(body.bodyIndex, new BodyVariantDefProvider(variantsForBody, body.bodyIndex));

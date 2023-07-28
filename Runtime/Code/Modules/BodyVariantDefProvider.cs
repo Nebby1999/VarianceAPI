@@ -17,17 +17,26 @@ namespace VAPI
         [SystemInitializer]
         private static void SystemInitializer()
         {
-            Stage.onStageStartGlobal += OnStageStartGlobal;
+            Stage.onStageStartGlobal += (_) =>
+            {
+                OnStageStartGlobal(SceneInfo.instance, Run.instance);
+            };
         }
 
-        private static void OnStageStartGlobal(Stage obj)
+        /// <summary>
+        /// Forces all the BodyVariantProviders to filter their current variants depending on the sceneInfo and Run provided.
+        /// This shouldnt be called unless you know what youre doing
+        /// </summary>
+        public static void FilterVariants(SceneInfo sceneInfo, Run run)
         {
-            SceneInfo info = SceneInfo.instance;
-            Run run = Run.instance;
+            OnStageStartGlobal(sceneInfo, run);
+        }
 
+        private static void OnStageStartGlobal(SceneInfo info, Run run)
+        {
             if (!info || !run)
             {
-                VAPILog.Error($"A Stage ({obj}) has started, but there is no Run And/Or SceneInfo instances! Variants will not be filtered." +
+                VAPILog.Error($"A Stage ({Stage.instance.sceneDef.baseSceneNameOverride}) has started, but there is no Run And/Or SceneInfo instances! Variants will not be filtered." +
                     $"\n(Run: {run}, SceneInfo: {info}");
                 return;
             }

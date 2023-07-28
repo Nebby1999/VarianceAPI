@@ -1,4 +1,5 @@
-﻿using BepInEx.Configuration;
+﻿using BepInEx;
+using BepInEx.Configuration;
 using RoR2;
 using System;
 using UnityEngine;
@@ -19,6 +20,10 @@ namespace VAPI
         /// The ConfigFile used for this VariantPack's VariantDefs
         /// </summary>
         public ConfigFile VariantConfiguration { get; internal set; }
+        /// <summary>
+        /// The BepInPlugin that registered this VariantPackDef
+        /// </summary>
+        public BepInPlugin BepInPlugin { get; internal set; }
         /// <summary>
         /// The VariantPack's index, do not set this value manually
         /// </summary>

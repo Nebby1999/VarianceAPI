@@ -58,7 +58,7 @@ namespace VAPI
         /// Performs the VariantSummon
         /// </summary>
         /// <returns>The Summoned variant's CharacterMaster</returns>
-        public CharacterMaster Perform()
+        public new CharacterMaster Perform()
         {
             var master = base.Perform();
             var body = master.GetBodyObject();
