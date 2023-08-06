@@ -1,7 +1,9 @@
 ﻿using Moonstorm.AddressableAssets;
 using R2API;
+using R2API.AddressReferencedAssets;
 using RoR2;
 using RoR2.ExpansionManagement;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -22,16 +24,52 @@ namespace VAPI
         public List<string> customStages = new List<string>();
 
         [Space]
+
         [Tooltip("This unlockable must be unlocked for this variant to spawn")]
+        public AddressReferencedUnlockableDef requiredUnlock;
+        [HideInInspector, Obsolete("Use \"requiredUnlock\" instead")]
         public AddressableUnlockableDef requiredUnlockableDef;
+
         [Tooltip("This unlockable CANNOT be unlocked for this variant to spawn")]
+        public AddressReferencedUnlockableDef forbiddenUnlock;
+        [HideInInspector, Obsolete("Use \"forbiddenUnlock\" instead")]
         public AddressableUnlockableDef forbiddenUnlockableDef;
+
         [Tooltip("These expansions must be enabled for this variant to spawn")]
+        public List<AddressReferencedExpansionDef> requiredExpansionDefs = new List<AddressReferencedExpansionDef>();
+        [HideInInspector, Obsolete("Use \"requiredExpansionDefs\" instead")]
         public List<AddressableExpansionDef> requiredExpansions = new List<AddressableExpansionDef>();
 
         private void OnValidate()
         {
             customStages = customStages.Select(stage => stage.ToLowerInvariant()).ToList();
+        }
+
+        /// <summary>
+        /// Awake method for VariantSpawnCondition
+        /// <para>Ensures the now deprecated <see cref="requiredExpansions"/>, <see cref="forbiddenUnlockableDef"/>, and <see cref="requiredUnlockableDef"/> are migrated to their new fields</para>
+        /// </summary>
+        protected virtual void Awake()
+        {
+#if !UNITY_EDITOR
+            Migrate();
+#endif
+        }
+
+
+        [ContextMenu("Migrate to R2API.Addressables")]
+        private void Migrate()
+        {
+            if(requiredUnlock.IsInvalid)
+                requiredUnlock = requiredUnlockableDef;
+
+            if (forbiddenUnlock.IsInvalid)
+                forbiddenUnlock = forbiddenUnlockableDef;
+
+            if(requiredExpansionDefs.Count == 0 && requiredExpansions.Count > 0)
+            {
+                requiredExpansionDefs.AddRange(requiredExpansions.Select(x => (AddressReferencedExpansionDef)x));
+            }
         }
 
         /// <summary>
@@ -60,12 +98,12 @@ namespace VAPI
             if (!Run.instance)
                 return false;
 
-            bool flag0 = !requiredUnlockableDef.Asset || Run.instance.IsUnlockableUnlocked(requiredUnlockableDef.Asset);
-            bool flag1 = forbiddenUnlockableDef.Asset && Run.instance.DoesEveryoneHaveThisUnlockableUnlocked(forbiddenUnlockableDef.Asset);
+            bool flag0 = !requiredUnlock || Run.instance.IsUnlockableUnlocked(requiredUnlockableDef);
+            bool flag1 = forbiddenUnlock && Run.instance.DoesEveryoneHaveThisUnlockableUnlocked(forbiddenUnlock);
 
             if (Run.instance.stageClearCount >= minimumStageCompletions && flag0 && !flag1)
             {
-                List<ExpansionDef> expansions = requiredExpansions.Where(exp => exp.Asset)
+                List<ExpansionDef> expansions = requiredExpansionDefs.Where(exp => exp.AssetExists)
                     .Select(exp => exp.Asset)
                     .ToList();
 

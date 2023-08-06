@@ -35,7 +35,8 @@
         "RiskOfOptions.dll",
         "UnityEngine.UI.dll",
         "Unity.TextMeshPro.dll",
-        "R2API.Prefab.dll"
+        "R2API.Prefab.dll",
+        "R2API.Addressables.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [],

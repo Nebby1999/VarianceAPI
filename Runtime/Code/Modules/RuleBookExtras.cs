@@ -1,11 +1,13 @@
 using Moonstorm.AddressableAssets;
 using R2API;
+using R2API.AddressReferencedAssets;
 using RoR2;
 using RoR2.ExpansionManagement;
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
+using Moonstorm;
 
 namespace VAPI.RuleSystem
 {
@@ -27,6 +29,19 @@ namespace VAPI.RuleSystem
             AddVariantPackRules();
             AddVariantRules();
             varianceArtifactRuleDef = RuleCatalog.FindRuleDef("Artifacts.Variance");
+
+            AddressReferencedAsset.OnAddressReferencedAssetsLoaded += FinishRuleChoices;
+        }
+
+        private static void FinishRuleChoices()
+        {
+            foreach(var (variantIndex, ruleChoice) in variantIndexToRuleChoice)
+            {
+                VariantDef def = VariantCatalog.GetVariantDef(variantIndex);
+
+                ruleChoice.requiredUnlockables = GetRequiredUnlockableDefs(def);
+                ruleChoice.requiredExpansionDefs = GetRequiredExpansionDefs(def);
+            }
         }
 
         internal static bool TryCastVAPIRuleChoiceDef(RuleChoiceDef choice, out VAPIRuleChoiceDef vapiRuleChoiceDef)
@@ -144,8 +159,8 @@ namespace VAPI.RuleSystem
 
             onChoice.tiedPackEnabledChoice = GetVariantPackEnabledChoice(variantDef);
             onChoice.requiredChoiceDefs = GetRequiredChoiceDefs(variantDef);
-            onChoice.requiredExpansionDefs = GetRequiredExpansionDefs(variantDef);
-            onChoice.requiredUnlockables = GetRequiredUnlockableDefs(variantDef);
+            /*onChoice.requiredExpansionDefs = GetRequiredExpansionDefs(variantDef);
+            onChoice.requiredUnlockables = GetRequiredUnlockableDefs(variantDef);*/
             rule.MakeNewestChoiceDefault();
 
             variantIndexToRuleChoice.Add(variantDef.VariantIndex, onChoice);
@@ -221,80 +236,22 @@ namespace VAPI.RuleSystem
         private static List<ExpansionDef> GetRequiredExpansionDefs(VariantDef variantDef)
         {
             List<ExpansionDef> expansions = new List<ExpansionDef>();
-            if (!variantDef.variantSpawnCondition)
+            var spawnCondition = variantDef.variantSpawnCondition;
+            if (!spawnCondition)
                 return expansions;
 
-            FieldInfo useDirectReference = typeof(AddressableExpansionDef).GetField("useDirectReference", BindingFlags.Instance | BindingFlags.NonPublic);
-            FieldInfo asset = typeof(AddressableExpansionDef).GetField("asset", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            foreach (AddressableExpansionDef expansionDef in variantDef.variantSpawnCondition.requiredExpansions)
-            {
-                ExpansionDef expansion = null;
-                bool usesDirectReference = (bool)useDirectReference.GetValue(expansionDef);
-                if (usesDirectReference)
-                {
-                    expansion = (ExpansionDef)asset.GetValue(expansionDef);
-                    if(expansion)
-                    {
-                        expansions.Add((ExpansionDef)asset.GetValue(expansionDef));
-                    }
-                }
-                else
-                {
-                    expansion = ExpansionCatalog.expansionDefs.FirstOrDefault(ed => ed.name == expansionDef.address);
-                    if (expansion)
-                    {
-                        expansions.Add(expansion);
-                    }
-                    else
-                    {
-                        expansion = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<ExpansionDef>(expansionDef.address).WaitForCompletion();
-                        if(expansion)
-                        {
-                            expansions.Add(expansion);
-                        }
-                    }
-                }
-            }
+            expansions.AddRange(spawnCondition.requiredExpansionDefs.Where(x => x.AssetExists).Select(x => x.Asset));
             return expansions;
         }
 
         private static List<UnlockableDef> GetRequiredUnlockableDefs(VariantDef variantDef)
         {
             List<UnlockableDef> unlockables = new List<UnlockableDef>();
-            if (!variantDef.variantSpawnCondition)
-                return unlockables;
+            var spawnCondition = variantDef.variantSpawnCondition;
+            if (spawnCondition && spawnCondition.requiredUnlock.AssetExists)
+                unlockables.Add(spawnCondition.requiredUnlock);
 
-            FieldInfo useDirectReference = typeof(AddressableUnlockableDef).GetField("useDirectReference", BindingFlags.Instance | BindingFlags.NonPublic);
-            FieldInfo asset = typeof(AddressableUnlockableDef).GetField("asset", BindingFlags.Instance | BindingFlags.NonPublic);
-
-            AddressableUnlockableDef unlockable = variantDef.variantSpawnCondition.requiredUnlockableDef;
-            UnlockableDef unlockableDef = null;
-            if ((bool)useDirectReference.GetValue(unlockable))
-            {
-                unlockableDef = (UnlockableDef)asset.GetValue(unlockable);
-                if (unlockableDef)
-                {
-                    unlockables.Add(unlockableDef);
-                }
-                return unlockables;
-            }
-            else
-            {
-                unlockableDef = UnlockableCatalog.GetUnlockableDef(unlockable.address);
-                if (unlockableDef)
-                {
-                    unlockables.Add(unlockableDef);
-                    return unlockables;
-                }
-
-                unlockableDef = UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<UnlockableDef>(unlockable.address).WaitForCompletion();
-                if(unlockableDef)
-                {
-                    unlockables.Add(unlockableDef);
-                }
-                return unlockables;
-            }
+            return unlockables;
         }
 
         //Sometimes being verbose is helpful ngl

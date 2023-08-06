@@ -19,6 +19,7 @@ namespace VAPI.Components
         /// The Artifact of Variance's SpawnRate multiplier
         /// </summary>
         [TokenModifier("VAPI_ARTIFACT_VARIANCE_DESC", StatTypes.Default, 0)]
+#if !UNITY_EDITOR
         public static ConfigurableFloat artifactSpawnRateMultiplier = VAPIConfig.MakeConfigurableFloat(2f, (f) =>
         {
             f.Section = "General";
@@ -33,6 +34,9 @@ namespace VAPI.Components
                 checkIfDisabled = () => !VAPIConfig.enableArtifactOfVariance
             };
         });
+#else
+        public static ConfigurableFloat artifactSpawnRateMultiplier;
+#endif
 
         /// <summary>
         /// The current instance of the VariantSpawnManager

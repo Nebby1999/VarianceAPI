@@ -97,7 +97,7 @@ MonoBehaviour:
   Name: VarianceAPI
   Description: VarianceAPI allows you to create Variants for CharacterBodies, Variants
     can have different textures, lights, skills, and more.
-  Version: 2.1.3
+  Version: 2.2.0
   Dependencies:
   - {fileID: 11400000, guid: 5ceb1d8ed3af40d4d806e9756b403649, type: 2}
   - {fileID: 11400000, guid: 613d4ca030e90a832defdb35afe5393b, type: 2}

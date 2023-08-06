@@ -13,8 +13,9 @@ namespace VAPI
     /// <summary>
     /// VarianceAPI's Main class
     /// </summary>
-    [BepInDependency(DebugToolkit.DebugToolkit.GUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(DebugToolkit.DebugToolkit.GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [BepInDependency(Moonstorm.MoonstormSharedUtils.GUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(R2API.AddressablesPlugin.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(GUID, MODNAME, VERSION)]
     public class VAPIMain : BaseUnityPlugin
@@ -30,7 +31,7 @@ namespace VAPI
         /// <summary>
         /// VAPI's Version
         /// </summary>
-        public const string VERSION = "2.1.3";
+        public const string VERSION = "2.2.0";
 
         /// <summary>
         /// The instancee class of the Main class
