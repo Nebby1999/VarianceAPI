@@ -6,7 +6,7 @@
             <uie:PropertyField name="itemInventory" binding-path="itemInventory" />
             <uie:PropertyField name="buffInfos" binding-path="buffInfos" />
             <ui:Label text="Equipment Info" name="equipmentInfos" class="genericHolderHeader separatorLabel" />
-            <uie:PropertyField binding-path="equipmentInfo.equipmentDef" name="equipmentDef" />
+            <uie:PropertyField binding-path="equipmentInfo.equipment" name="equipmentDef" />
             <uie:PropertyField binding-path="equipmentInfo.usable" name="usable" />
             <ui:VisualElement name="usableData">
                 <uie:PropertyField binding-path="equipmentInfo.aiMaxUseHealthFraction" name="aiMaxUseHealthFraction" />
