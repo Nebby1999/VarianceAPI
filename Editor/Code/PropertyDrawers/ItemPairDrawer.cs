@@ -15,7 +15,7 @@ namespace VAPI.EditorUtils.PropertyDrawers
             EditorGUI.BeginProperty(position, label, property);
 
             var fieldRect = new Rect(position.x, position.y, position.width * 0.75f, position.height);
-            EditorGUI.PropertyField(fieldRect, property.FindPropertyRelative("itemDef"));
+            EditorGUI.PropertyField(fieldRect, property.FindPropertyRelative("item"));
 
             var amountProp = property.FindPropertyRelative("amount");
             var enumRect = new Rect(fieldRect.xMax, fieldRect.y, position.width * 0.25f, position.height);

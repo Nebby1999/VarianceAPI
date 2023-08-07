@@ -15,10 +15,18 @@ MonoBehaviour:
   _tier: 1
   announcesArrival: 0
   soundEvent: {fileID: 0}
+  tierItemDefs:
+  - _asset: {fileID: 11400000, guid: a2a82a10e9342d646b28637fa5fd4f2f, type: 2}
+    _address: 
+    _useDirectReference: 1
   tierItems:
   - address: 
     useDirectReference: 1
     asset: {fileID: 11400000, guid: a2a82a10e9342d646b28637fa5fd4f2f, type: 2}
+  tierBuffDef:
+    _asset: {fileID: 11400000, guid: 90986a7ed35921c498b9ef9b25264d9a, type: 2}
+    _address: 
+    _useDirectReference: 1
   tierBuff:
     address: 
     useDirectReference: 1

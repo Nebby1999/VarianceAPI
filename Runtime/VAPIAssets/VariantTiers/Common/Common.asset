@@ -15,7 +15,12 @@ MonoBehaviour:
   _tier: 0
   announcesArrival: 0
   soundEvent: {fileID: 0}
+  tierItemDefs: []
   tierItems: []
+  tierBuffDef:
+    _asset: {fileID: 11400000, guid: 90986a7ed35921c498b9ef9b25264d9a, type: 2}
+    _address: 
+    _useDirectReference: 1
   tierBuff:
     address: 
     useDirectReference: 1
