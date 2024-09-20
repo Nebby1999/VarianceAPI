@@ -1,6 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using Moonstorm;
+using MSU;
+using R2API.Utils;
 using RiskOfOptions;
 using RoR2;
 using System;
@@ -16,7 +17,7 @@ namespace VAPI
     /// </summary>
     public static class VariantPackCatalog
     {
-        private struct ConfigPair
+        private readonly struct ConfigPair
         {
             public readonly ConfigFile tierConfig;
             public readonly ConfigFile variantConfig;
@@ -42,14 +43,14 @@ namespace VAPI
         /// <summary>
         /// The total amount of registered packs
         /// </summary>
-        public static int VariantPackCount => registeredPacks.Length;
+        public static int variantPackCount => _registeredPacks.Length;
         /// <summary>
         /// Utilize this to execute an Action as soon as the VariantPackCatalog becomes available
         /// </summary>
         public static ResourceAvailability availability = default(ResourceAvailability);
 
-        private static Dictionary<ConfigPair, List<(VariantPackDef, BepInPlugin)>> unregisteredPacks = new Dictionary<ConfigPair, List<(VariantPackDef, BepInPlugin)>>();
-        internal static VariantPackDef[] registeredPacks = Array.Empty<VariantPackDef>();
+        private static Dictionary<ConfigPair, List<(VariantPackDef, BepInPlugin)>> _unregisteredPacks = new Dictionary<ConfigPair, List<(VariantPackDef, BepInPlugin)>>();
+        internal static VariantPackDef[] _registeredPacks = Array.Empty<VariantPackDef>();
         private static readonly Dictionary<string, VariantPackIndex> nameToIndex = new Dictionary<string, VariantPackIndex>(StringComparer.OrdinalIgnoreCase);
 
         #region Find Methods
@@ -61,7 +62,7 @@ namespace VAPI
         public static VariantPackDef GetVariantPackDef(VariantPackIndex variantPackIndex)
         {
             ThrowIfNotInitialized();
-            return HG.ArrayUtils.GetSafe(registeredPacks, (int)variantPackIndex);
+            return HG.ArrayUtils.GetSafe(_registeredPacks, (int)variantPackIndex);
         }
 
         /// <summary>
@@ -87,7 +88,7 @@ namespace VAPI
         public static VariantPackDef FindVariantPackDef(VariantDef variant)
         {
             ThrowIfNotInitialized();
-            foreach (VariantPackDef packDef in registeredPacks)
+            foreach (VariantPackDef packDef in _registeredPacks)
             {
                 if (packDef.variants.Contains(variant))
                 {
@@ -105,7 +106,7 @@ namespace VAPI
         public static VariantPackDef FindVariantPackDef(VariantTierDef variantTier)
         {
             ThrowIfNotInitialized();
-            foreach (VariantPackDef packDef in registeredPacks)
+            foreach (VariantPackDef packDef in _registeredPacks)
             {
                 if (packDef.variantTiers.Contains(variantTier))
                 {
@@ -390,9 +391,11 @@ namespace VAPI
 
             AddPackInternal(packDef, new ConfigPair(tierConfig, variantConfig), ownerPlugin.Info.Metadata);
         }
+
         private static BepInPlugin GetBepInPlugin(Assembly assembly)
         {
-            return assembly.GetTypesSafe()
+            Reflection.GetTypesSafe(assembly, out var types);
+            return types
                 .Where(t => t.GetCustomAttribute<BepInPlugin>() != null)
                 .Select(t => t.GetCustomAttribute<BepInPlugin>())
                 .FirstOrDefault();
@@ -400,11 +403,11 @@ namespace VAPI
 
         private static void AddPackInternal(VariantPackDef packDef, ConfigPair configPair, BepInPlugin plugin)
         {
-            if (!unregisteredPacks.ContainsKey(configPair))
+            if (!_unregisteredPacks.ContainsKey(configPair))
             {
-                unregisteredPacks[configPair] = new List<(VariantPackDef, BepInPlugin)>();
+                _unregisteredPacks[configPair] = new List<(VariantPackDef, BepInPlugin)>();
             }
-            unregisteredPacks[configPair].Add((packDef, plugin));
+            _unregisteredPacks[configPair].Add((packDef, plugin));
         }
         #endregion
 
@@ -414,8 +417,8 @@ namespace VAPI
         {
             nameToIndex.Clear();
 
-            registeredPacks = RegisterPacks();
-            unregisteredPacks = null;
+            _registeredPacks = RegisterPacks();
+            _unregisteredPacks = null;
 
             VAPILog.Info("VariantPack Catalog Initialized");
 
@@ -426,7 +429,7 @@ namespace VAPI
         {
             List<(VariantPackDef, ConfigPair, BepInPlugin)> packsToRegister = new List<(VariantPackDef, ConfigPair, BepInPlugin)>();
 
-            foreach (var (configPair, packs) in unregisteredPacks)
+            foreach (var (configPair, packs) in _unregisteredPacks)
             {
                 var validatedPacks = new List<(VariantPackDef, BepInPlugin)>();
                 validatedPacks = packs.Where(ValidatePack).ToList();
@@ -464,15 +467,15 @@ namespace VAPI
             try
             {
                 VariantPackDef packDef = variantPack.packDef;
-                packDef.TierConfiguration = variantPack.pair.tierConfig;
-                packDef.VariantConfiguration = variantPack.pair.variantConfig;
-                packDef.BepInPlugin = variantPack.plugin;
-                ModSettingsManager.SetModIcon(packDef.packEnabledIcon, packDef.BepInPlugin.GUID, packDef.BepInPlugin.Name);
-                ModSettingsManager.SetModDescriptionToken(packDef.descriptionToken, packDef.BepInPlugin.GUID, packDef.BepInPlugin.Name);
+                packDef.tierConfiguration = variantPack.pair.tierConfig;
+                packDef.variantConfiguration = variantPack.pair.variantConfig;
+                packDef.bepInPlugin = variantPack.plugin;
+                ModSettingsManager.SetModIcon(packDef.packEnabledIcon, packDef.bepInPlugin.GUID, packDef.bepInPlugin.Name);
+                ModSettingsManager.SetModDescriptionToken(packDef.descriptionToken, packDef.bepInPlugin.GUID, packDef.bepInPlugin.Name);
 #if DEBUG
                 VAPILog.Debug($"Registering {variantPack} (Index: {index})");
 #endif
-                packDef.VariantPackIndex = index;
+                packDef.variantPackIndex = index;
                 nameToIndex.Add(packDef.name, index);
             }
             catch (Exception e)

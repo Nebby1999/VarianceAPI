@@ -16,7 +16,7 @@ namespace VAPI.Editor.Inspectors
 
         private void OnTierSet(ChangeEvent<string> evt = null)
         {
-            VariantTierIndex index = evt == null ? targetType.variantTier : (VariantTierIndex)Enum.Parse(typeof(VariantTierIndex), evt.newValue.Replace(" ", ""));
+            VariantTierIndex index = evt == null ? targetType._variantTier : (VariantTierIndex)Enum.Parse(typeof(VariantTierIndex), evt.newValue.Replace(" ", ""));
 
             _variantTierDef.SetDisplay(index == VariantTierIndex.AssignedAtRuntime);
         }

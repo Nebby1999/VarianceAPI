@@ -44,7 +44,7 @@ namespace VAPI
         /// <summary>
         /// Returns <see cref="goldMultiplier"/> minus 1 if <see cref="goldMultiplier"/> is greater than 1
         /// </summary>
-        public float ExperienceMultiplierMinus1
+        public float experienceMultiplierMinus1
         {
             get
             {
@@ -57,7 +57,7 @@ namespace VAPI
         /// <summary>
         /// Returns <see cref="goldMultiplier"/> minus 1 if <see cref="goldMultiplier"/> is greater than 1
         /// </summary>
-        public float GoldMultiplierMinus1
+        public float goldMultiplierMinus1
         {
             get
             {
@@ -70,7 +70,7 @@ namespace VAPI
         /// <summary>
         /// The internal tier for this variant
         /// </summary>
-        public VariantTierIndex Tier { get => _tier; internal set => _tier = value; }
+        public VariantTierIndex tier { get => _tier; internal set => _tier = value; }
 
         /// <summary>
         /// Awake method for VariantTierDef

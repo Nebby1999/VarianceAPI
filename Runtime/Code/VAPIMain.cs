@@ -1,6 +1,6 @@
 ﻿using BepInEx;
-using Moonstorm;
-using Moonstorm.Config;
+using MSU;
+using MSU.Config;
 using R2API.Utils;
 using RoR2;
 using VAPI.RuleSystem;
@@ -14,7 +14,7 @@ namespace VAPI
     /// VarianceAPI's Main class
     /// </summary>
     [BepInDependency(DebugToolkit.DebugToolkit.GUID, BepInDependency.DependencyFlags.SoftDependency)]
-    [BepInDependency(Moonstorm.MoonstormSharedUtils.GUID, BepInDependency.DependencyFlags.HardDependency)]
+    [BepInDependency(MSU.MSUMain.GUID, BepInDependency.DependencyFlags.HardDependency)]
     [BepInDependency(R2API.AddressablesPlugin.PluginGUID, BepInDependency.DependencyFlags.HardDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(GUID, MODNAME, VERSION)]
@@ -36,10 +36,10 @@ namespace VAPI
         /// <summary>
         /// The instancee class of the Main class
         /// </summary>
-        public static VAPIMain Instance { get; private set; }
+        public static VAPIMain instance { get; private set; }
         private void Awake()
         {
-            Instance = this;
+            instance = this;
             new VAPIConfig().Init();
 
             new VAPILog(Logger);
@@ -47,14 +47,9 @@ namespace VAPI
             new VAPILang().Init();
             new VAPIContent().Init();
 
-            ConfigSystem.AddMod(this);
             ModSettingsManager.SetModIcon(VAPIAssets.LoadAsset<Sprite>("ExpansionIcon"));
             SystemInitializerInjector.InjectDependency<RuleBook>(typeof(RuleBookExtras));
             InfiniteTower.Init();
-            if(VAPIConfig.addVariantEvents)
-            {
-                Events.Init();
-            }
         }
     }
 }

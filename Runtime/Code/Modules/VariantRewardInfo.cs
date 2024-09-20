@@ -96,8 +96,8 @@ namespace VAPI
                 redChance = 0;
                 foreach (VariantTierDef tierDef in list)
                 {
-                    goldMultiplier += tierDef.GoldMultiplierMinus1;
-                    experienceMultiplier += tierDef.ExperienceMultiplierMinus1;
+                    goldMultiplier += tierDef.goldMultiplierMinus1;
+                    experienceMultiplier += tierDef.experienceMultiplierMinus1;
                     whiteChance += tierDef.whiteItemDropChance;
                     greenChance += tierDef.greenItemDropChance;
                     redChance += tierDef.redItemDropChance;

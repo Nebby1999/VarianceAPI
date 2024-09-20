@@ -1,4 +1,4 @@
-﻿using Moonstorm.Loaders;
+﻿using MSU.Loaders;
 using RoR2.ExpansionManagement;
 using RoR2.Skills;
 using System.IO;
@@ -13,7 +13,7 @@ namespace VAPI
     /// </summary>
     public class VAPIAssets : AssetsLoader<VAPIAssets>
     {
-        public string AssemblyDir => Path.GetDirectoryName(VAPIMain.Instance.Info.Location);
+        public string AssemblyDir => Path.GetDirectoryName(VAPIMain.instance.Info.Location);
         public override AssetBundle MainAssetBundle => _assetBundle;
         private AssetBundle _assetBundle;
         internal SkillDef emptySkillDef;

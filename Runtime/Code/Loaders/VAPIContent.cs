@@ -1,6 +1,6 @@
 ﻿using EntityStates;
-using Moonstorm;
-using Moonstorm.Loaders;
+using MSU;
+using MSU.Loaders;
 using R2API.ScriptableObjects;
 using RoR2;
 using System;

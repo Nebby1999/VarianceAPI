@@ -1,6 +1,6 @@
-﻿using Moonstorm;
-using Moonstorm.Components;
-using Moonstorm.Config;
+﻿/*using MSU;
+using MSU.Components;
+using MSU.Config;
 using R2API;
 using RiskOfOptions.OptionConfigs;
 using System;
@@ -13,9 +13,9 @@ namespace VAPI.Modules
 {
     internal static class Events
     {
-        private static Dictionary<EventCard, ConfigurableBool> cardToEnabled = new Dictionary<EventCard, ConfigurableBool>();
+        private static Dictionary<EventCard, ConfiguredBool> cardToEnabled = new Dictionary<EventCard, ConfiguredBool>();
 
-        public static ConfigurableBool IsCardEnabled(EventCard card)
+        public static ConfiguredBool IsCardEnabled(EventCard card)
         {
             return cardToEnabled.TryGetValue(card, out var val) ? val : null;
         }
@@ -36,13 +36,13 @@ namespace VAPI.Modules
             }
         }
 
-        private static ConfigurableBool ShouldAdd(EventCard card)
+        private static ConfiguredBool ShouldAdd(EventCard card)
         {
             string nicified = card.name.Substring(2);
             nicified = MSUtil.NicifyString(nicified);
 
             var key = $"Event - {nicified} :: ";
-            return VAPIConfig.MakeConfigurableBool(true, b =>
+            return VAPIConfig.MakeConfiguredBool(true, b =>
             {
                 b.Section = "Events";
                 b.Key = key + "Enabled";
@@ -59,10 +59,11 @@ namespace VAPI.Modules
         public class EventCardConfig
         {
             public string key;
-            public ConfigurableBool enabled;
+            public ConfiguredBool enabled;
             public ConfigurableInt cost;
             public ConfigurableInt minimumStageCompletions;
             public ConfigurableEnum<DirectorAPI.Stage> stages;
         }
     }
 }
+*/

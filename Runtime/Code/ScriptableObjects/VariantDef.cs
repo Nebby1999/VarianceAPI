@@ -1,6 +1,6 @@
 ﻿using EntityStates;
 using HG;
-using Moonstorm.Config;
+using MSU.Config;
 using R2API;
 using RoR2;
 using RoR2.ExpansionManagement;
@@ -8,6 +8,7 @@ using RoR2.Skills;
 using System;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.Serialization;
 using VAPI.Components;
 using VAPI.RuleSystem;
 
@@ -22,18 +23,18 @@ namespace VAPI
         /// <summary>
         /// The variant's VariantIndex, do not set this value yourself
         /// </summary>
-        public VariantIndex VariantIndex { get; internal set; }
+        public VariantIndex variantIndex { get; internal set; }
 
-        internal ConfigurableFloat spawnRateConfig;
-        internal ConfigurableBool isUniqueConfig;
+        internal ConfiguredFloat _spawnRateConfig;
+        internal ConfiguredBool _isUniqueConfig;
 
         [Tooltip("The BodyPrefab's name for this variant, taken directly from the BodyCatalog")]
         public string bodyName;
 
         [Tooltip("The variant's Tier, set this to the existing enums, or to AssignedAtRuntime to specify a custom VariantTier")]
-        [SerializeField] internal VariantTierIndex variantTier;
+        [SerializeField, FormerlySerializedAs("variantTier")] internal VariantTierIndex _variantTier;
         [Tooltip("The Variant's TierDef, only applicable if variantTier is set to AssignedAtRuntime ")]
-        [SerializeField] internal VariantTierDef variantTierDef;
+        [SerializeField, FormerlySerializedAs("variantTierDef")] internal VariantTierDef _variantTierDef;
 
         [Tooltip("Wether this variant can merge with other variants of the same body")]
         public bool isUnique = false;
@@ -115,50 +116,50 @@ namespace VAPI
         /// <summary>
         /// Represents the Variant's TierIndex
         /// </summary>
-        public VariantTierIndex VariantTierIndex
+        public VariantTierIndex variantTierIndex
         {
             get
             {
-                if (variantTierDef)
+                if (_variantTierDef)
                 {
-                    return variantTierDef.Tier;
+                    return _variantTierDef.tier;
                 }
-                return variantTier;
+                return _variantTier;
             }
             set
             {
-                variantTierDef = VariantTierCatalog.GetVariantTierDef(value);
+                _variantTierDef = VariantTierCatalog.GetVariantTierDef(value);
             }
         }
 
         /// <summary>
         /// The Variant's TierDef
         /// </summary>
-        public VariantTierDef VariantTierDef
+        public VariantTierDef variantTierDef
         {
             get
             {
-                if (!variantTierDef)
-                    variantTierDef = VariantTierCatalog.GetVariantTierDef(VariantTierIndex);
-                return variantTierDef;
+                if (!_variantTierDef)
+                    _variantTierDef = VariantTierCatalog.GetVariantTierDef(variantTierIndex);
+                return _variantTierDef;
             }
             set
             {
-                variantTierDef = value;
-                variantTier = variantTierDef.Tier;
+                _variantTierDef = value;
+                _variantTier = _variantTierDef.tier;
             }
         }
 
         private void OnValidate()
         {
-            if (variantTier == VariantTierIndex.AssignedAtRuntime && !variantTierDef)
+            if (_variantTier == VariantTierIndex.AssignedAtRuntime && !_variantTierDef)
             {
                 Debug.LogError($"{this} has a variantTier set to AssignedAtRuntime, but no variantTierDef asset asigned!");
             }
 
-            if (variantTierDef)
+            if (_variantTierDef)
             {
-                variantTier = VariantTierIndex.AssignedAtRuntime;
+                _variantTier = VariantTierIndex.AssignedAtRuntime;
             }
         }
 
@@ -210,7 +211,7 @@ namespace VAPI
             {
                 return false;
             }
-            bool variantRulesEnabled = RuleBookExtras.CanVariantSpawn(runRulebook, VariantIndex);
+            bool variantRulesEnabled = RuleBookExtras.CanVariantSpawn(runRulebook, variantIndex);
 
             if (!variantRulesEnabled)
             {

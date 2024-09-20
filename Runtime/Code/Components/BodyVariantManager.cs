@@ -24,19 +24,19 @@ namespace VAPI.Components
         /// <summary>
         /// The Variant's CharacterBody
         /// </summary>
-        public CharacterBody CharacterBody { get; private set; }
+        public CharacterBody characterBody { get; private set; }
         /// <summary>
         /// The Variant's CharacterMaster
         /// </summary>
-        public CharacterMaster CharacterMaster { get => CharacterBody.master; }
+        public CharacterMaster characterMaster { get => characterBody.master; }
         /// <summary>
         /// The Variant's CharacterDeathBehaviour
         /// </summary>
-        public CharacterDeathBehavior CharacterDeathBehavior { get; private set; }
+        public CharacterDeathBehavior characterDeathBehavior { get; private set; }
         /// <summary>
         /// The Variant's CharacterModel
         /// </summary>
-        public CharacterModel CharacterModel { get; private set; }
+        public CharacterModel characterModel { get; private set; }
 
         /// <summary>
         /// Wether the VariantDefs get applied on Start
@@ -64,7 +64,7 @@ namespace VAPI.Components
         {
             if(vd)
             {
-                variantIndices.Add((int)vd.VariantIndex);
+                variantIndices.Add((int)vd.variantIndex);
             }
         }
 
@@ -78,11 +78,11 @@ namespace VAPI.Components
         {
             variantIndices.Callback = OnListChanged;
 
-            CharacterBody = GetComponent<CharacterBody>();
-            CharacterDeathBehavior = GetComponent<CharacterDeathBehavior>();
+            characterBody = GetComponent<CharacterBody>();
+            characterDeathBehavior = GetComponent<CharacterDeathBehavior>();
 
-            if (CharacterBody.modelLocator && CharacterBody.modelLocator.modelTransform)
-                CharacterModel = CharacterBody.modelLocator.modelTransform.GetComponent<CharacterModel>();
+            if (characterBody.modelLocator && characterBody.modelLocator.modelTransform)
+                characterModel = characterBody.modelLocator.modelTransform.GetComponent<CharacterModel>();
         }
 
         private void Start()
@@ -103,7 +103,7 @@ namespace VAPI.Components
             }
 
             hasApplied = true;
-            if (!CharacterBody || variantsInBody == null)
+            if (!characterBody || variantsInBody == null)
             {
                 Destroy(this);
                 return;
@@ -115,11 +115,11 @@ namespace VAPI.Components
             {
                 VariantDef current = variantsInBody[i];
 #if DEBUG
-                VAPILog.Debug($"Applying {current} to {CharacterBody}");
+                VAPILog.Debug($"Applying {current} to {characterBody}");
 #endif
                 try
                 {
-                    VariantTierDef tier = current.VariantTierDef;
+                    VariantTierDef tier = current.variantTierDef;
                     if (!announcedArrival && VAPIConfig.sendArrivalMesssages)
                         announcedArrival = AnnounceArrival(current, tier);
 
@@ -127,22 +127,22 @@ namespace VAPI.Components
 
                     if (inventory)
                     {
-                        inventory.AddBuffs(CharacterBody);
+                        inventory.AddBuffs(characterBody);
                     }
-                    tier.AddTierBuff(CharacterBody);
+                    tier.AddTierBuff(characterBody);
 
-                    if (CharacterMaster)
+                    if (characterMaster)
                     {
                         if (inventory)
                         {
-                            inventory.AddItems(CharacterMaster.inventory);
-                            inventory.SetEquipment(CharacterMaster.inventory, CharacterBody);
+                            inventory.AddItems(characterMaster.inventory);
+                            inventory.SetEquipment(characterMaster.inventory, characterBody);
                         }
-                        tier.AddTierItems(CharacterMaster.inventory);
+                        tier.AddTierItems(characterMaster.inventory);
                     }
 
-                    if (CharacterDeathBehavior && current.deathStateOverride.stateType != null)
-                        CharacterDeathBehavior.deathState = current.deathStateOverride;
+                    if (characterDeathBehavior && current.deathStateOverride.stateType != null)
+                        characterDeathBehavior.deathState = current.deathStateOverride;
 
                     ModifySkills(current.skillReplacements);
                     ModifyStats(current);
@@ -154,9 +154,9 @@ namespace VAPI.Components
                     }
 
                     VariantSizeModifier sizeModifier = current.sizeModifier;
-                    if (sizeModifier && CharacterModel)
+                    if (sizeModifier && characterModel)
                     {
-                        sizeModifier.ApplySize(CharacterModel.transform, CharacterBody.GetComponentsInChildren<KinematicCharacterMotor>());
+                        sizeModifier.ApplySize(characterModel.transform, characterBody.GetComponentsInChildren<KinematicCharacterMotor>());
                     }
 
                     ModifyAI(current.aiModifier);
@@ -167,18 +167,18 @@ namespace VAPI.Components
                 }
                 catch (Exception e)
                 {
-                    VAPILog.Error($"Exception while trying to apply variant defs to {CharacterBody.GetDisplayName()}, {e}");
+                    VAPILog.Error($"Exception while trying to apply variant defs to {characterBody.GetDisplayName()}, {e}");
                 }
             }
 
             if (NetworkServer.active)
             {
-                CharacterBody.healthComponent.health = CharacterBody.healthComponent.fullHealth;
-                CharacterBody.healthComponent.shield = CharacterBody.healthComponent.fullShield;
+                characterBody.healthComponent.health = characterBody.healthComponent.fullHealth;
+                characterBody.healthComponent.shield = characterBody.healthComponent.fullShield;
             }
 
-            CharacterBody.RecalculateStats();
-            var healthComponent = CharacterBody.healthComponent;
+            characterBody.RecalculateStats();
+            var healthComponent = characterBody.healthComponent;
             if(healthComponent)
             {
                 healthComponent.health = healthComponent.fullHealth;
@@ -196,12 +196,12 @@ namespace VAPI.Components
             yield return new WaitForEndOfFrame();
             foreach (VariantVisuals visuals in visualsForCoroutine)
             {
-                visuals.ApplyMaterials(CharacterModel);
-                visuals.ApplyLights(CharacterModel);
+                visuals.ApplyMaterials(characterModel);
+                visuals.ApplyLights(characterModel);
 
                 if (VAPIConfig.activateMeshReplacementSystem)
                 {
-                    if (visuals.ApplyMeshes(CharacterModel, out storedIDRS, out MeshType meshType))
+                    if (visuals.ApplyMeshes(characterModel, out storedIDRS, out MeshType meshType))
                     {
                         if (meshType != MeshType.Default)
                             TryFuckWithBoneStructure(meshType);
@@ -223,7 +223,7 @@ namespace VAPI.Components
 #if DEBUG
                     VAPILog.Warning($"{variantDef}'s tier announces its arrival, but it doesnt have a token set, using generic message.");
 #endif
-                    Chat.AddMessage(Language.GetStringFormatted("VAPI_GENERIC_ARRIVAL", CharacterBody.GetDisplayName()));
+                    Chat.AddMessage(Language.GetStringFormatted("VAPI_GENERIC_ARRIVAL", characterBody.GetDisplayName()));
                 }
                 announced = true;
             }
@@ -238,7 +238,7 @@ namespace VAPI.Components
 
         private void ModifySkills(VariantDef.VariantSkillReplacement[] skillReplacements)
         {
-            SkillLocator skillLocator = CharacterBody.skillLocator;
+            SkillLocator skillLocator = characterBody.skillLocator;
             if (skillLocator)
             {
                 foreach (VariantDef.VariantSkillReplacement skillReplacement in skillReplacements)
@@ -267,25 +267,25 @@ namespace VAPI.Components
 
         private void ModifyStats(VariantDef variantDef)
         {
-            CharacterBody.baseMaxHealth *= variantDef.healthMultiplier;
-            CharacterBody.baseMoveSpeed *= variantDef.moveSpeedMultiplier;
-            CharacterBody.baseAttackSpeed *= variantDef.attackSpeedMultiplier;
-            CharacterBody.baseDamage *= variantDef.damageMultiplier;
-            CharacterBody.levelDamage = CharacterBody.baseDamage * 0.2f;
-            CharacterBody.baseArmor += variantDef.armorBonus;
-            CharacterBody.baseArmor *= variantDef.armorMultiplier;
-            CharacterBody.baseRegen += variantDef.regenBonus;
-            CharacterBody.baseRegen *= variantDef.regenMultiplier;
-            CharacterBody.baseMaxShield += variantDef.shieldBonus;
-            CharacterBody.baseMaxShield *= variantDef.shieldMultiplier;
+            characterBody.baseMaxHealth *= variantDef.healthMultiplier;
+            characterBody.baseMoveSpeed *= variantDef.moveSpeedMultiplier;
+            characterBody.baseAttackSpeed *= variantDef.attackSpeedMultiplier;
+            characterBody.baseDamage *= variantDef.damageMultiplier;
+            characterBody.levelDamage = characterBody.baseDamage * 0.2f;
+            characterBody.baseArmor += variantDef.armorBonus;
+            characterBody.baseArmor *= variantDef.armorMultiplier;
+            characterBody.baseRegen += variantDef.regenBonus;
+            characterBody.baseRegen *= variantDef.regenMultiplier;
+            characterBody.baseMaxShield += variantDef.shieldBonus;
+            characterBody.baseMaxShield *= variantDef.shieldMultiplier;
         }
 
         private void ModifyAI(BasicAIModifier aiModifier)
         {
-            if (!CharacterMaster)
+            if (!characterMaster)
                 return;
 
-            foreach (AISkillDriver driver in CharacterMaster.GetComponents<AISkillDriver>())
+            foreach (AISkillDriver driver in characterMaster.GetComponents<AISkillDriver>())
             {
                 if (driver)
                 {
@@ -311,13 +311,13 @@ namespace VAPI.Components
                 switch (overrideName.overrideType)
                 {
                     case OverrideNameType.Prefix:
-                        CharacterBody.baseNameToken = Language.GetStringFormatted(overrideName.token) + " " + CharacterBody.GetDisplayName();
+                        characterBody.baseNameToken = Language.GetStringFormatted(overrideName.token) + " " + characterBody.GetDisplayName();
                         break;
                     case OverrideNameType.Suffix:
-                        CharacterBody.baseNameToken = CharacterBody.GetDisplayName() + " " + Language.GetStringFormatted(overrideName.token);
+                        characterBody.baseNameToken = characterBody.GetDisplayName() + " " + Language.GetStringFormatted(overrideName.token);
                         break;
                     case OverrideNameType.Complete:
-                        CharacterBody.baseNameToken = Language.GetStringFormatted(overrideName.token);
+                        characterBody.baseNameToken = Language.GetStringFormatted(overrideName.token);
                         break;
                 }
             }
@@ -332,15 +332,15 @@ namespace VAPI.Components
                 switch (component.attachmentType)
                 {
                     case ComponentAttachmentType.Body:
-                        SetupComponent(CharacterBody.gameObject.AddComponent(typeToAdd));
+                        SetupComponent(characterBody.gameObject.AddComponent(typeToAdd));
                         break;
                     case ComponentAttachmentType.Master:
-                        if (CharacterMaster)
-                            SetupComponent(CharacterMaster.gameObject.AddComponent(typeToAdd));
+                        if (characterMaster)
+                            SetupComponent(characterMaster.gameObject.AddComponent(typeToAdd));
                         break;
                     case ComponentAttachmentType.Model:
-                        if (CharacterModel)
-                            SetupComponent(CharacterModel.gameObject.AddComponent(typeToAdd));
+                        if (characterModel)
+                            SetupComponent(characterModel.gameObject.AddComponent(typeToAdd));
                         break;
                 }
             }
@@ -352,18 +352,18 @@ namespace VAPI.Components
             {
                 return;
             }
-            vc.CharacterBody = CharacterBody;
-            vc.CharacterMaster = CharacterMaster;
-            vc.CharacterModel = CharacterModel;
-            vc.VariantDefs = variantsInBody;
+            vc.characterBody = characterBody;
+            vc.characterMaster = characterMaster;
+            vc.characterModel = characterModel;
+            vc.variantDefs = variantsInBody;
         }
         #region Mesh Replacement Jank
         private void TryFuckWithBoneStructure(MeshType meshType)
         {
-            if (CharacterMaster && CharacterMaster.inventory)
+            if (characterMaster && characterMaster.inventory)
             {
-                storedEquip = CharacterMaster.inventory.GetEquipmentIndex();
-                CharacterMaster.inventory.SetEquipmentIndex(EquipmentIndex.None);
+                storedEquip = characterMaster.inventory.GetEquipmentIndex();
+                characterMaster.inventory.SetEquipmentIndex(EquipmentIndex.None);
                 Invoke(nameof(RestoreEquipment), 0.2f);
             }
 
@@ -392,7 +392,7 @@ namespace VAPI.Components
         private void BeetleMeshReplacement()
         {
             List<Transform> transforms = new List<Transform>();
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (!item.name.Contains("Hurtbox") && !item.name.Contains("BeetleBody") && !item.name.Contains("Mesh") && !item.name.Contains("mdl"))
                 {
@@ -409,7 +409,7 @@ namespace VAPI.Components
             temp = transforms[16];
             transforms[16] = transforms[13];
             transforms[13] = temp;
-            foreach (var item in CharacterBody.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var item in characterBody.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 item.bones = transforms.ToArray();
             }
@@ -418,14 +418,14 @@ namespace VAPI.Components
         private void BeetleGuardMeshReplacement()
         {
             List<Transform> t = new List<Transform>();
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (!item.name.Contains("Hurtbox") && !item.name.Contains("IK") && !item.name.Contains("_end"))
                 {
                     t.Add(item);
                 }
             }
-            foreach (var item in CharacterBody.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var item in characterBody.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 item.bones = t.ToArray();
             }
@@ -434,7 +434,7 @@ namespace VAPI.Components
         private void MiniMushrumMeshReplacement()
         {
             List<Transform> t = new List<Transform>();
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (!item.name.Contains("Hurtbox") && !item.name.Contains("IK") && !item.name.Contains("_end") && !item.name.Contains("miniMush_R_Palps_02"))
                 {
@@ -445,7 +445,7 @@ namespace VAPI.Components
             {
                 t.RemoveAt(t.Count - 1);
             }
-            foreach (var item in CharacterBody.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var item in characterBody.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 item.bones = t.ToArray();
             }
@@ -454,35 +454,35 @@ namespace VAPI.Components
         private void MagmaWormMeshReplacement()
         {
             List<Transform> t = new List<Transform>();
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (item.name.Contains("Head") && !item.name.Contains("_end") && !item.name.Contains("Center"))
                 {
                     t.Add(item);
                 }
             }
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (item.name.Contains("Jaw") && !item.name.Contains("_end"))
                 {
                     t.Add(item);
                 }
             }
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (item.name.Contains("eye.") && !item.name.Contains("_end"))
                 {
                     t.Add(item);
                 }
             }
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (item.name.Contains("Neck") && !item.name.Contains("_end"))
                 {
                     t.Add(item);
                 }
             }
-            foreach (var item in CharacterBody.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var item in characterBody.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 item.bones = t.ToArray();
             }
@@ -491,35 +491,35 @@ namespace VAPI.Components
         private void OverloadingWormMeshReplacement()
         {
             List<Transform> t = new List<Transform>();
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (item.name.Contains("Head") && !item.name.Contains("_end") && !item.name.Contains("Center"))
                 {
                     t.Add(item);
                 }
             }
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (item.name.Contains("Jaw") && !item.name.Contains("_end"))
                 {
                     t.Add(item);
                 }
             }
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (item.name.Contains("eye.") && !item.name.Contains("_end"))
                 {
                     t.Add(item);
                 }
             }
-            foreach (var item in CharacterBody.GetComponentsInChildren<Transform>())
+            foreach (var item in characterBody.GetComponentsInChildren<Transform>())
             {
                 if (item.name.Contains("Neck") && !item.name.Contains("_end"))
                 {
                     t.Add(item);
                 }
             }
-            foreach (var item in CharacterBody.GetComponentsInChildren<SkinnedMeshRenderer>())
+            foreach (var item in characterBody.GetComponentsInChildren<SkinnedMeshRenderer>())
             {
                 item.bones = t.ToArray();
             }
@@ -527,9 +527,9 @@ namespace VAPI.Components
 
         private void RestoreEquipment()
         {
-            CharacterModel.itemDisplayRuleSet = storedIDRS;
+            characterModel.itemDisplayRuleSet = storedIDRS;
 
-            CharacterMaster.inventory.SetEquipmentIndex(storedEquip);
+            characterMaster.inventory.SetEquipmentIndex(storedEquip);
         }
         #endregion
     }

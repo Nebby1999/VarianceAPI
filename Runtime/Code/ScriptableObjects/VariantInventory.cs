@@ -75,7 +75,7 @@ namespace VAPI
 
         /// <summary>
         /// Awake method for VariantInventory
-        /// <para>Ensures <see cref="itemInventory"/>, <see cref="buffInfos"/>, and <see cref="equipmentInfo"/> are using R2API.Addressables instead of the now deprecated Moonstorm.AddressableAssets</para>
+        /// <para>Ensures <see cref="itemInventory"/>, <see cref="buffInfos"/>, and <see cref="equipmentInfo"/> are using R2API.Addressables instead of the now deprecated MSU.AddressableAssets</para>
         /// </summary>
         protected virtual void Awake()
         {

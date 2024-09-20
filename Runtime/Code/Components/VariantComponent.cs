@@ -12,18 +12,18 @@ namespace VAPI.Components
         /// <summary>
         /// The Variant's VariantDefs
         /// </summary>
-        public ReadOnlyCollection<VariantDef> VariantDefs { get; internal set; }
+        public ReadOnlyCollection<VariantDef> variantDefs { get; internal set; }
         /// <summary>
         /// The Variant's CharacterBody
         /// </summary>
-        public CharacterBody CharacterBody { get; internal set; }
+        public CharacterBody characterBody { get; internal set; }
         /// <summary>
         /// The Variant's CharacterMaster
         /// </summary>
-        public CharacterMaster CharacterMaster { get; internal set; }
+        public CharacterMaster characterMaster { get; internal set; }
         /// <summary>
         /// The Variant's CharacterModel
         /// </summary>
-        public CharacterModel CharacterModel { get; internal set; }
+        public CharacterModel characterModel { get; internal set; }
     }
 }

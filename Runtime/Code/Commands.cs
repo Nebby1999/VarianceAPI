@@ -19,8 +19,8 @@ namespace VAPI
 
             foreach (BodyVariantDefProvider provider in BodyVariantDefProvider.instances)
             {
-                var bodyPrefab = BodyCatalog.GetBodyPrefab(provider.TiedIndex);
-                toLog.Add($"{bodyPrefab.name} (VariantDef count: {provider.TotalVariantCount})");
+                var bodyPrefab = BodyCatalog.GetBodyPrefab(provider.tiedIndex);
+                toLog.Add($"{bodyPrefab.name} (VariantDef count: {provider.totalVariantCount})");
             }
 
             Debug.Log(string.Join("\n", toLog));
@@ -53,7 +53,7 @@ namespace VAPI
             List<string> toLog = new List<string>();
             toLog.Add($"{character}'s Variants");
             toLog.Add("-----------------------");
-            for (int i = 0; i < bodyVariantDefProvider.TotalVariantCount; i++)
+            for (int i = 0; i < bodyVariantDefProvider.totalVariantCount; i++)
             {
                 VariantDef def = bodyVariantDefProvider.GetVariantDef(i);
                 toLog.Add($"{i} - {def.name}");
@@ -95,9 +95,9 @@ namespace VAPI
             List<VariantDef> variants = new List<VariantDef>();
             foreach (string variantName in variantNames)
             {
-                for (int i = 0; i < VariantCatalog.registeredVariants.Length; i++)
+                for (int i = 0; i < VariantCatalog._registeredVariants.Length; i++)
                 {
-                    var vd = VariantCatalog.registeredVariants[i];
+                    var vd = VariantCatalog._registeredVariants[i];
                     if (vd.name.ToLowerInvariant().Contains(variantName.ToLowerInvariant()))
                     {
                         variants.Add(vd);
@@ -172,9 +172,9 @@ namespace VAPI
             List<VariantDef> variants = new List<VariantDef>();
             foreach (string variantName in variantNames)
             {
-                for (int i = 0; i < VariantCatalog.registeredVariants.Length; i++)
+                for (int i = 0; i < VariantCatalog._registeredVariants.Length; i++)
                 {
-                    var vd = VariantCatalog.registeredVariants[i];
+                    var vd = VariantCatalog._registeredVariants[i];
                     if (vd.name.ToLowerInvariant().Contains(variantName.ToLowerInvariant()))
                     {
                         variants.Add(vd);

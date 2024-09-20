@@ -15,23 +15,23 @@ namespace VAPI
         /// <summary>
         /// The ConfigFile used for this VariantPack's TierDefs
         /// </summary>
-        public ConfigFile TierConfiguration { get; internal set; }
+        public ConfigFile tierConfiguration { get; internal set; }
         /// <summary>
         /// The ConfigFile used for this VariantPack's VariantDefs
         /// </summary>
-        public ConfigFile VariantConfiguration { get; internal set; }
+        public ConfigFile variantConfiguration { get; internal set; }
         /// <summary>
         /// The BepInPlugin that registered this VariantPackDef
         /// </summary>
-        public BepInPlugin BepInPlugin { get; internal set; }
+        public BepInPlugin bepInPlugin { get; internal set; }
         /// <summary>
         /// The VariantPack's index, do not set this value manually
         /// </summary>
-        public VariantPackIndex VariantPackIndex { get; internal set; }
+        public VariantPackIndex variantPackIndex { get; internal set; }
         /// <summary>
         /// The choice that represents if this VariantPack is enabled
         /// </summary>
-        public RuleChoiceDef EnabledChoice { get; internal set; }
+        public RuleChoiceDef enabledChoice { get; internal set; }
 
         [Tooltip("The VariantPack's name")]
         public string nameToken;

@@ -1,7 +1,7 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using Moonstorm.Loaders;
-using Moonstorm.Config;
+using MSU.Loaders;
+using MSU.Config;
 using RiskOfOptions.OptionConfigs;
 using VAPI.RuleSystem;
 using UnityEngine;
@@ -22,28 +22,28 @@ namespace VAPI
         /// Rewards config identifier
         /// </summary>
         public const string rewards = "VAPI.Rewards";
-        public override BaseUnityPlugin MainClass => VAPIMain.Instance;
+        public override BaseUnityPlugin MainClass => VAPIMain.instance;
         public override bool CreateSubFolder => true;
 
         /// <summary>
         /// The general config file
         /// </summary>
         public static ConfigFile generalConfig;
-        internal static ConfigurableBool addVariantEvents;
-        internal static ConfigurableBool showVariantRuleCategory;
-        internal static ConfigurableBool enableArtifactOfVariance;
-        internal static ConfigurableBool activateMeshReplacementSystem;
-        internal static ConfigurableBool sendArrivalMesssages;
+        internal static ConfiguredBool addVariantEvents;
+        internal static ConfiguredBool showVariantRuleCategory;
+        internal static ConfiguredBool enableArtifactOfVariance;
+        internal static ConfiguredBool activateMeshReplacementSystem;
+        internal static ConfiguredBool sendArrivalMesssages;
         internal static ConfigurableColor variantHealthBarColor;
 
         /// <summary>
         /// The rewards config file
         /// </summary>
         public static ConfigFile rewardsConfig;
-        internal static ConfigurableBool enableRewards;
-        internal static ConfigurableBool luckAffectsItemRewards;
-        internal static ConfigurableBool itemRewardsSpawnOnPlayer;
-        internal static ConfigurableFloat hiddenRealmsItemRollChance;
+        internal static ConfiguredBool enableRewards;
+        internal static ConfiguredBool luckAffectsItemRewards;
+        internal static ConfiguredBool itemRewardsSpawnOnPlayer;
+        internal static ConfiguredFloat hiddenRealmsItemRollChance;
 
         public void Init()
         {
@@ -54,7 +54,7 @@ namespace VAPI
         }
         private void SetConfigs()
         {
-            addVariantEvents = MakeConfigurableBool(true, b =>
+            addVariantEvents = MakeConfiguredBool(true, b =>
             {
                 b.ConfigFile = generalConfig;
                 b.Section = "General";
@@ -66,7 +66,7 @@ namespace VAPI
                 };
             }).DoConfigure();
 
-            showVariantRuleCategory = new ConfigurableBool(false)
+            showVariantRuleCategory = new ConfiguredBool(false)
             {
                 Section = "General",
                 Key = "Show Variant Rule Category",
@@ -74,7 +74,7 @@ namespace VAPI
                 ConfigFile = generalConfig,
             };
 
-            enableArtifactOfVariance = new ConfigurableBool(true)
+            enableArtifactOfVariance = new ConfiguredBool(true)
             {
                 Section = "General",
                 Key = "Enable Artifact of Variance",
@@ -82,7 +82,7 @@ namespace VAPI
                 ConfigFile = generalConfig,
             }.AddOnConfigChanged(b =>
             {
-                var ruleDef = RuleBookExtras.varianceArtifactRuleDef;
+                var ruleDef = RuleBookExtras._varianceArtifactRuleDef;
                 ruleDef.FindChoice("On").excludeByDefault = !b;
                 ruleDef.FindChoice("Off").excludeByDefault = !b;
                 ruleDef.forceLobbyDisplay = b;
@@ -91,7 +91,7 @@ namespace VAPI
             });
             
 
-            activateMeshReplacementSystem = new ConfigurableBool(true)
+            activateMeshReplacementSystem = new ConfiguredBool(true)
             {
                 Section = "General",
                 Key = "Activate Mesh Replacecment Systems",
@@ -99,7 +99,7 @@ namespace VAPI
                 ConfigFile = generalConfig
             };
 
-            sendArrivalMesssages = new ConfigurableBool(true)
+            sendArrivalMesssages = new ConfiguredBool(true)
             {
                 Section = "General",
                 Key = "Send Arrival Messages",
@@ -115,7 +115,7 @@ namespace VAPI
                 ConfigFile = generalConfig
             };
 
-            enableRewards = new ConfigurableBool(true)
+            enableRewards = new ConfiguredBool(true)
             {
                 Section = "Rewards",
                 Key = "Activate Rewards Systems",
@@ -127,7 +127,7 @@ namespace VAPI
                 }
             };
 
-            luckAffectsItemRewards = new ConfigurableBool(false)
+            luckAffectsItemRewards = new ConfiguredBool(false)
             {
                 Section = "Rewards",
                 Key = "Luck affects item rewards",
@@ -139,7 +139,7 @@ namespace VAPI
                 }
             };
 
-            itemRewardsSpawnOnPlayer = new ConfigurableBool(false)
+            itemRewardsSpawnOnPlayer = new ConfiguredBool(false)
             {
                 Section = "Rewards",
                 Key = "Item Rewards Spawn on Player",
@@ -151,7 +151,7 @@ namespace VAPI
                 }
             };
 
-            hiddenRealmsItemRollChance = new ConfigurableFloat(100f)
+            hiddenRealmsItemRollChance = new ConfiguredFloat(100f)
             {
                 Section = "Rewards",
                 Key = "Chance for ItemDrops in Hidden Realms",

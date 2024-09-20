@@ -132,11 +132,11 @@ namespace VAPI
         /// <summary>
         /// The BodyIndex that's tied to this BodyVariantDefProvider
         /// </summary>
-        public BodyIndex TiedIndex { get; internal set; }
+        public BodyIndex tiedIndex { get; internal set; }
         /// <summary>
         /// The total amount of variants that this body has
         /// </summary>
-        public int TotalVariantCount { get => variantsForBody.Length; }
+        public int totalVariantCount { get => variantsForBody.Length; }
 
         private void FilterVariants(DirectorAPI.StageInfo stageInfo, ExpansionDef[] runExpansions, RuleBook runRulebook)
         {
@@ -152,7 +152,7 @@ namespace VAPI
             }
             catch (Exception e)
             {
-                VAPILog.Error($"Could not filter variants for body {BodyCatalog.GetBodyName(TiedIndex)}: {e}");
+                VAPILog.Error($"Could not filter variants for body {BodyCatalog.GetBodyName(tiedIndex)}: {e}");
             }
         }
         /// <summary>
@@ -191,7 +191,7 @@ namespace VAPI
         /// <returns>the tied body prefab's name</returns>
         public string GetBodyName()
         {
-            GameObject prefab = BodyCatalog.GetBodyPrefab(TiedIndex);
+            GameObject prefab = BodyCatalog.GetBodyPrefab(tiedIndex);
             return prefab ? prefab.name : null;
         }
 
@@ -207,7 +207,7 @@ namespace VAPI
         public BodyVariantDefProvider(VariantDef[] variantsForBody, BodyIndex tiedIndex)
         {
             this.variantsForBody = variantsForBody;
-            TiedIndex = tiedIndex;
+            this.tiedIndex = tiedIndex;
             instances.Add(this);
         }
 

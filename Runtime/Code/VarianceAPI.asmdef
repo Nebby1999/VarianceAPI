@@ -1,8 +1,9 @@
 {
     "name": "VarianceAPI",
+    "rootNamespace": "",
     "references": [
         "com.unity.multiplayer-hlapi.Runtime",
-        "MoonstormSharedUtils",
+        "MSU.Runtime",
         "Wwise",
         "Ak.Wwise.Api.WAAPI",
         "AK.Wwise.Unity.API",

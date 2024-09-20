@@ -1,5 +1,5 @@
 ﻿using BepInEx.Logging;
-using Moonstorm.Loaders;
+using MSU.Loaders;
 using System.Runtime.CompilerServices;
 
 namespace VAPI
