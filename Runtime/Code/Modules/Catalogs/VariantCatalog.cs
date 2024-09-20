@@ -210,7 +210,7 @@ namespace VAPI
                 {
                     body.gameObject.AddComponent<BodyVariantManager>();
 
-                    if (VAPIConfig.enableRewards)
+                    if (VAPIConfig._enableRewards)
                         body.gameObject.AddComponent<BodyVariantReward>();
 
                     _bodyIndexToDefProvider.Add(body.bodyIndex, new BodyVariantDefProvider(variantsForBody, body.bodyIndex));

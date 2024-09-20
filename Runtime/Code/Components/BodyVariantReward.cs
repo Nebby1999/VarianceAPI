@@ -120,11 +120,11 @@ namespace VAPI.Components
 
             if (Run.instance.isRunStopwatchPaused)
             {
-                var chanceInRealm = VAPIConfig.hiddenRealmsItemRollChance.Value;
+                var chanceInRealm = VAPIConfig._hiddenRealmsItemRollChance.value;
                 if (chanceInRealm <= 0)
                     return;
 
-                if (Util.CheckRoll(chanceInRealm, VAPIConfig.luckAffectsItemRewards ? damageReport.attackerMaster.luck : 0))
+                if (Util.CheckRoll(chanceInRealm, VAPIConfig._luckAffectsItemRewards ? damageReport.attackerMaster.luck : 0))
                 {
                     _reward.TrySpawnDroplet(damageReport);
                 }

@@ -120,7 +120,7 @@ namespace VAPI.Components
                 try
                 {
                     VariantTierDef tier = current.variantTierDef;
-                    if (!announcedArrival && VAPIConfig.sendArrivalMesssages)
+                    if (!announcedArrival && VAPIConfig._sendArrivalMesssages)
                         announcedArrival = AnnounceArrival(current, tier);
 
                     VariantInventory inventory = current.variantInventory;
@@ -199,7 +199,7 @@ namespace VAPI.Components
                 visuals.ApplyMaterials(characterModel);
                 visuals.ApplyLights(characterModel);
 
-                if (VAPIConfig.activateMeshReplacementSystem)
+                if (VAPIConfig._activateMeshReplacementSystem)
                 {
                     if (visuals.ApplyMeshes(characterModel, out storedIDRS, out MeshType meshType))
                     {
@@ -243,7 +243,7 @@ namespace VAPI.Components
             {
                 foreach (VariantDef.VariantSkillReplacement skillReplacement in skillReplacements)
                 {
-                    var skillDefToSet = skillReplacement.skillDef ? skillReplacement.skillDef : VAPIAssets.Instance.emptySkillDef;
+                    var skillDefToSet = skillReplacement.skillDef ? skillReplacement.skillDef : VAPIAssets._emptySkillDef;
                     switch (skillReplacement.skillSlot)
                     {
                         case SkillSlot.Primary:

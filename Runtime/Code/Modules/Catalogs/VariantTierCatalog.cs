@@ -150,7 +150,7 @@ namespace VAPI
                             FormatString = "{0:0.0}",
                             min = 0,
                             max = 100,
-                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                            checkIfDisabled = () => !VAPIConfig._enableRewards
                         },
                     }.WithConfigChange(f =>
                     {
@@ -171,7 +171,7 @@ namespace VAPI
                             FormatString = "{0:0.0}",
                             min = 0,
                             max = 100,
-                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                            checkIfDisabled = () => !VAPIConfig._enableRewards
                         },
                     }.WithConfigChange(f =>
                     {
@@ -191,7 +191,7 @@ namespace VAPI
                         {
                             min = 0,
                             max = 100,
-                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                            checkIfDisabled = () => !VAPIConfig._enableRewards
                         },
                     }.WithConfigChange(f =>
                     {
@@ -211,7 +211,7 @@ namespace VAPI
                         {
                             min = 0,
                             max = 100,
-                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                            checkIfDisabled = () => !VAPIConfig._enableRewards
                         },
                     }.WithConfigChange(f =>
                     {
@@ -231,7 +231,7 @@ namespace VAPI
                         {
                             min = 0,
                             max = 100,
-                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                            checkIfDisabled = () => !VAPIConfig._enableRewards
                         },
                     }.WithConfigChange(f =>
                     {

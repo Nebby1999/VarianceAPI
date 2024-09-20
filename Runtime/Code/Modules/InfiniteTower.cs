@@ -1,6 +1,8 @@
-﻿using RoR2;
+﻿using MSU;
+using RoR2;
 using RoR2.UI;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,25 +51,37 @@ namespace VAPI.Modules
             _waveIndex = -1;
         }
 
-        internal static void Init()
+        internal static IEnumerator Init()
         {
+            VAPILog.Info($"Initializing infinite tower support");
             _init = true;
 
-            _commonWaveCategory = Addressables.LoadAssetAsync<InfiniteTowerWaveCategory>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveCategories/CommonWaveCategory.asset").WaitForCompletion();
-            _wavePrefab = VAPIAssets.LoadAsset<GameObject>("InfiniteTowerWaveArtifactVariance");
-            _wavePrerequisite = VAPIAssets.LoadAsset<InfiniteTowerWaveArtifactPrerequisites>("ArtifactVarianceDisabledPrerequisite");
-            CloneOverlayEntry(Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerCurrentArtifactWispOnDeathUI.prefab").WaitForCompletion());
+            var commonWaveCategoryRequest = Addressables.LoadAssetAsync<InfiniteTowerWaveCategory>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveCategories/CommonWaveCategory.asset");
+            var overlayEntryRequest = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerCurrentArtifactWispOnDeathUI.prefab");
+            var assetCollectionRequest = VAPIAssets.LoadAssetAsync<AssetCollection>("acInfiniteTower");
+
+            ParallelCoroutine coroutine = new ParallelCoroutine();
+            coroutine.Add(commonWaveCategoryRequest);
+            coroutine.Add(overlayEntryRequest);
+            coroutine.Add(assetCollectionRequest);
+
+            while (!coroutine.IsDone())
+                yield return null;
+
+            _commonWaveCategory = commonWaveCategoryRequest.Result;
+
+            var assetCollection = assetCollectionRequest.asset;
+            _wavePrefab = assetCollection.FindAsset<GameObject>("InfiniteTowerWaveArtifactVariance");
+            _wavePrerequisite = assetCollection.FindAsset<InfiniteTowerWaveArtifactPrerequisites>("ArtifactVarianceDisabledPrerequisite");
+
+            CloneOverlayEntry(overlayEntryRequest.Result);
             FinishPrefab(_wavePrefab);
 
             _weightedWave = new InfiniteTowerWaveCategory.WeightedWave
             {
                 prerequisites = _wavePrerequisite,
                 wavePrefab = _wavePrefab,
-#if DEBUG
-                weight = 100f
-#else
                 weight = 1f
-#endif
             };
         }
 

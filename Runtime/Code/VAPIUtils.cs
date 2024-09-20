@@ -8,7 +8,7 @@ namespace VAPI
     public static class VAPIUtils
     {
         /// <summary>
-        /// Writes a variantIndex to the network writer
+        /// Writes a <see cref="VariantIndex"/> to the network writer
         /// </summary>
         /// <param name="writer">The writer to use</param>
         /// <param name="index">The index to write</param>
@@ -26,6 +26,28 @@ namespace VAPI
         {
             var integer = reader.ReadInt32();
             return (VariantIndex)integer;
+        }
+
+        public static void WriteVariantTierIndex(this NetworkWriter writer, VariantTierIndex index)
+        {
+            writer.Write((int)index);
+        }
+
+        public static VariantTierIndex ReadVariantTierIndex(this NetworkReader reader)
+        {
+            var integer = reader.ReadInt32();
+            return (VariantTierIndex)integer;
+        }
+
+        public static void WriteVariantPackIndex(this NetworkWriter writer, VariantPackIndex index)
+        {
+            writer.Write((int)index);
+        }
+
+        public static VariantPackIndex ReadVariantPackIndex(this NetworkReader reader)
+        {
+            var integer = reader.ReadInt32();
+            return (VariantPackIndex)integer;
         }
     }
 }

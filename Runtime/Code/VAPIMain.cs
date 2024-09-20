@@ -40,16 +40,16 @@ namespace VAPI
         private void Awake()
         {
             instance = this;
-            new VAPIConfig().Init();
 
             new VAPILog(Logger);
-            new VAPIAssets().Init();
-            new VAPILang().Init();
-            new VAPIContent().Init();
 
-            ModSettingsManager.SetModIcon(VAPIAssets.LoadAsset<Sprite>("ExpansionIcon"));
+            new VAPIConfig(this);
+
+            new VAPIContent();
+            
+            LanguageFileLoader.AddLanguageFilesFromMod(this, "languages");
+
             SystemInitializerInjector.InjectDependency<RuleBook>(typeof(RuleBookExtras));
-            InfiniteTower.Init();
         }
     }
 }
