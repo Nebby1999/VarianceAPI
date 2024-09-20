@@ -4,7 +4,7 @@ using System.IO;
 using UnityEditor;
 using UnityEngine;
 
-namespace VAPI.EditorUtils
+namespace VAPI.Editor
 {
     public static class Constants
     {

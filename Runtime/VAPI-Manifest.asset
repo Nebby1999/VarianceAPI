@@ -13,35 +13,13 @@ MonoBehaviour:
   m_Name: Files
   m_EditorClassIdentifier: 
   StagingPaths:
-  - <BuildPath>
+  - <MSUBuildPath>
   includeMetaFiles: 0
   files:
   - {fileID: 4900000, guid: 501c5eb442da75842af61bf54eee9452, type: 3}
   - {fileID: 4900000, guid: e2803a8c442fd2d43a4a5210156315b5, type: 3}
   - {fileID: 2800000, guid: 17e7291e3ba22bf44987a915ddf8eed0, type: 3}
 --- !u!114 &-3892906877110538616
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 3230df44b431ebc49a958dde5afa4f88, type: 3}
-  m_Name: LanguageFolderTree
-  m_EditorClassIdentifier: 
-  StagingPaths:
-  - <BuildPathPlugins>
-  rootFolderName: VAPILang
-  languageFolders:
-  - languageName: en
-    languageFiles:
-    - {fileID: 4900000, guid: 84da845bba7a7604586ae516e761d4fb, type: 3}
-  - languageName: es-419
-    languageFiles:
-    - {fileID: 4900000, guid: b684d5e09172f0644aa0ad5a48a510d6, type: 3}
---- !u!114 &11400000
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -58,11 +36,29 @@ MonoBehaviour:
   - {fileID: 114107831304456238}
   - {fileID: 114431642618062350}
   - {fileID: 114987763159783732}
-  - {fileID: -3892906877110538616}
+  - {fileID: -544536280802138537}
   - {fileID: 8324102109481770816}
   - {fileID: -4467616490986340797}
   identity: {fileID: 114211852988908172}
   QuickAccess: 1
+--- !u!114 &-544536280802138537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <MSUBuildPathStreamingLanguage>
+  includeMetaFiles: 0
+  files:
+  - {fileID: 102900000, guid: 891d8d984af3d3e4e86cbbc1a030d55f, type: 3}
+  - {fileID: 102900000, guid: 008116736e13f7e49b4e41b4941bf28a, type: 3}
 --- !u!114 &114107831304456238
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -76,7 +72,7 @@ MonoBehaviour:
   m_Name: AssemblyDefinitions
   m_EditorClassIdentifier: 
   StagingPaths:
-  - <BuildPathPlugins>
+  - <MSUBuildPathPlugins>
   definitions:
   - {fileID: 5897886265953266890, guid: fb6ca6d7e9e2b7b44bc5ad0e375b6669, type: 3}
 --- !u!114 &114211852988908172
@@ -115,7 +111,7 @@ MonoBehaviour:
   m_Name: AssetBundleDefinitions
   m_EditorClassIdentifier: 
   StagingPaths:
-  - <BuildPathAssets>
+  - <MSUBuildPathAssets>
   assetBundles:
   - assetBundleName: vapiassets
     assets:
@@ -133,7 +129,7 @@ MonoBehaviour:
   m_Name: Files
   m_EditorClassIdentifier: 
   StagingPaths:
-  - <BuildPathSoundbanks>
+  - <MSUBuildPathStreamingSoundbank>
   includeMetaFiles: 0
   files: []
 --- !u!114 &8324102109481770816
@@ -149,5 +145,5 @@ MonoBehaviour:
   m_Name: ThunderstoreData
   m_EditorClassIdentifier: 
   StagingPaths:
-  - <BuildPath>
+  - <MSUBuildPath>
   url: https://github.com/Nebby1999/VarianceAPI

@@ -18,8 +18,19 @@ namespace VAPI
     {
         [Tooltip("The amount of stages that need to be completed before the variant can spawn")]
         public int minimumStageCompletions;
+        public DirectorAPI.Stage stages
+        {
+            get
+            {
+                return _stages;
+            }
+            set
+            {
+                _stages = value;
+            }
+        }
         [Tooltip("A flag of vanilla stages where this variant can spawn, Add the custom flag if you want this variant to spawn on custom stages")]
-        public DirectorAPI.Stage stages;
+        [SerializeField] private DirectorAPI.StageSerde _stages;
         [Tooltip("A list of custom stageDef baseSceneNames where this variant can spawn")]
         public List<string> customStages = new List<string>();
 
