@@ -1,4 +1,4 @@
-﻿using Moonstorm.AddressableAssets;
+﻿
 using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
@@ -25,13 +25,9 @@ namespace VAPI
 
         [Tooltip("A list of items that are added to variants of this tier when they spawn")]
         public List<AddressReferencedItemDef> tierItemDefs = new List<AddressReferencedItemDef>();
-        [HideInInspector, Obsolete("Use \"tierItemDefs\" instead")]
-        public List<AddressableItemDef> tierItems = new List<AddressableItemDef>();
 
         [Tooltip("A non timedd buff that's applied to variants of this tier when they spawn")]
         public AddressReferencedBuffDef tierBuffDef;
-        [HideInInspector, Obsolete("Use \"tierBuffDef\" instead")]
-        public AddressableBuffDef tierBuff;
 
         [Space]
         [Tooltip("The experience muttliplier for Variants of this tier")]
@@ -82,22 +78,8 @@ namespace VAPI
         /// </summary>
         public virtual void Awake()
         {
-#if !UNITY_EDITOR
-            Migrate();
-#endif
         }
 
-        [ContextMenu("Migrate to R2API.Addressables")]
-        private void Migrate()
-        {
-            if (tierBuffDef.IsInvalid)
-                tierBuffDef = tierBuff;
-
-            if(tierItemDefs.Count == 0 && tierItems.Count > 0)
-            {
-                tierItemDefs.AddRange(tierItems.Select(x => (AddressReferencedItemDef)x));
-            }
-        }
         /// <summary>
         /// Adds the items specified in <see cref="tierItems"/> to the target inventory
         /// </summary>

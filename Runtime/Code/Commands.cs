@@ -36,8 +36,8 @@ namespace VAPI
                 return;
             }
 
-            string character = StringFinder.Instance.GetBodyName(args[0]);
-            if (character == null)
+            BodyIndex character = StringFinder.Instance.GetBodyFromPartial(args[0]);
+            if (character == BodyIndex.None)
             {
                 Debug.Log("No body could be found with that name. To get a list of bodies that have variants, use \"vapi_list_bodies\".");
                 return;
@@ -78,14 +78,14 @@ namespace VAPI
                 return;
             }
 
-            string master = StringFinder.Instance.GetMasterName(args[0]);
-            if (master == null)
+            MasterCatalog.MasterIndex master = StringFinder.Instance.GetAiFromPartial(args[0]);
+            if (master == MasterCatalog.MasterIndex.none)
             {
                 Debug.Log("Could not find master.");
                 return;
             }
 
-            var masterPrefab = MasterCatalog.FindMasterPrefab(master);
+            var masterPrefab = MasterCatalog.GetMasterPrefab(master);
 
             string[] variantNames = Array.Empty<string>();
             for (int i = 1; i < args.Count; i++)
@@ -141,14 +141,14 @@ namespace VAPI
                 return;
             }
 
-            string body = StringFinder.Instance.GetBodyName(args[0]);
-            if (body == null)
+            BodyIndex body = StringFinder.Instance.GetBodyFromPartial(args[0]);
+            if (body == BodyIndex.None)
             {
                 Debug.Log("No body could be found with that name");
                 return;
             }
 
-            GameObject newBody = BodyCatalog.FindBodyPrefab(body);
+            GameObject newBody = BodyCatalog.GetBodyPrefab(body);
 
             if (args.sender == null)
             {

@@ -1,4 +1,4 @@
-﻿using Moonstorm.AddressableAssets;
+﻿
 using R2API;
 using R2API.AddressReferencedAssets;
 using RoR2;
@@ -27,18 +27,12 @@ namespace VAPI
 
         [Tooltip("This unlockable must be unlocked for this variant to spawn")]
         public AddressReferencedUnlockableDef requiredUnlock;
-        [HideInInspector, Obsolete("Use \"requiredUnlock\" instead")]
-        public AddressableUnlockableDef requiredUnlockableDef;
 
         [Tooltip("This unlockable CANNOT be unlocked for this variant to spawn")]
         public AddressReferencedUnlockableDef forbiddenUnlock;
-        [HideInInspector, Obsolete("Use \"forbiddenUnlock\" instead")]
-        public AddressableUnlockableDef forbiddenUnlockableDef;
 
         [Tooltip("These expansions must be enabled for this variant to spawn")]
         public List<AddressReferencedExpansionDef> requiredExpansionDefs = new List<AddressReferencedExpansionDef>();
-        [HideInInspector, Obsolete("Use \"requiredExpansionDefs\" instead")]
-        public List<AddressableExpansionDef> requiredExpansions = new List<AddressableExpansionDef>();
 
         private void OnValidate()
         {
@@ -51,25 +45,6 @@ namespace VAPI
         /// </summary>
         protected virtual void Awake()
         {
-#if !UNITY_EDITOR
-            Migrate();
-#endif
-        }
-
-
-        [ContextMenu("Migrate to R2API.Addressables")]
-        private void Migrate()
-        {
-            if(requiredUnlock.IsInvalid)
-                requiredUnlock = requiredUnlockableDef;
-
-            if (forbiddenUnlock.IsInvalid)
-                forbiddenUnlock = forbiddenUnlockableDef;
-
-            if(requiredExpansionDefs.Count == 0 && requiredExpansions.Count > 0)
-            {
-                requiredExpansionDefs.AddRange(requiredExpansions.Select(x => (AddressReferencedExpansionDef)x));
-            }
         }
 
         /// <summary>
@@ -98,7 +73,7 @@ namespace VAPI
             if (!Run.instance)
                 return false;
 
-            bool flag0 = !requiredUnlock || Run.instance.IsUnlockableUnlocked(requiredUnlockableDef);
+            bool flag0 = !requiredUnlock || Run.instance.IsUnlockableUnlocked(requiredUnlock);
             bool flag1 = forbiddenUnlock && Run.instance.DoesEveryoneHaveThisUnlockableUnlocked(forbiddenUnlock);
 
             if (Run.instance.stageClearCount >= minimumStageCompletions && flag0 && !flag1)

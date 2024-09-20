@@ -1,4 +1,4 @@
-﻿using Moonstorm.AddressableAssets;
+﻿
 using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
@@ -23,8 +23,6 @@ namespace VAPI
             [Tooltip("A direct reference of address/item name for the item to give.\n" +
                 "To the right you can specify the stacks.")]
             public AddressReferencedItemDef item = new AddressReferencedItemDef();
-            [HideInInspector, Obsolete("Use \"item\" instead")]
-            public AddressableItemDef itemDef = new AddressableItemDef();
 
             /// <summary>
             /// The amount oif items to give
@@ -40,8 +38,6 @@ namespace VAPI
         {
             [Tooltip("A direct reference of address/buffDef name for the buff to give.")]
             public AddressReferencedBuffDef buff = new AddressReferencedBuffDef();
-            [HideInInspector, Obsolete("Use \"buff\" instead")]
-            public AddressableBuffDef buffDef = new AddressableBuffDef();
 
             [Tooltip("The amount of time this buff lasts, set this to 0 to make it permanent.")]
             public float time;
@@ -57,8 +53,6 @@ namespace VAPI
         {
             [Tooltip("A direct reference of Address/EquipmentDef name for the equipment to give")]
             public AddressReferencedEquipmentDef equipment = new AddressReferencedEquipmentDef();
-            [HideInInspector, Obsolete("Use \"equipment\" instead")]
-            public AddressableEquipmentDef equipmentDef = new AddressableEquipmentDef();
 
             [Tooltip("Wether the variant has the ability to trigger this equipment")]
             public bool usable;
@@ -85,30 +79,8 @@ namespace VAPI
         /// </summary>
         protected virtual void Awake()
         {
-#if !UNITY_EDITOR
-            Migrate();
-#endif
         }
 
-        [ContextMenu("Migrate to R2API.Addressables")]
-        private void Migrate()
-        {
-            foreach(ItemPair pair in itemInventory)
-            {
-                if (pair.item.IsInvalid)
-                    pair.item = pair.itemDef;
-            }
-
-            foreach(BuffInfo info in buffInfos)
-            {
-                if (info.buff.IsInvalid)
-                    info.buff = info.buffDef;
-            }
-
-            if (equipmentInfo.equipment?.IsInvalid ?? false)
-                equipmentInfo.equipment = equipmentInfo.equipmentDef;
-
-        }
         /// <summary>
         /// Adds the items in <see cref="itemInventory"/> to the target inventory
         /// </summary>
