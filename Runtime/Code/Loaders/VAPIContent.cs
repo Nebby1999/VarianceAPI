@@ -140,6 +140,7 @@ namespace VAPI
             ContentManager.collectContentPackProviders += AddSelf;
             VAPIAssets.assetsAvailability.CallWhenAvailable(() =>
             {
+                _parallelPreLoadDispatchers.Add(LanguageFileLoader.AddLanguageFilesFromModAsync, VAPIMain.instance, "languages");
                 LoadFromAssetBundles();
             });
         }

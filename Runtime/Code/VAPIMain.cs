@@ -46,8 +46,6 @@ namespace VAPI
             new VAPIConfig(this);
 
             new VAPIContent();
-            
-            LanguageFileLoader.AddLanguageFilesFromMod(this, "languages");
 
             SystemInitializerInjector.InjectDependency<RuleBook>(typeof(RuleBookExtras));
         }
