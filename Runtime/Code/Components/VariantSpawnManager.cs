@@ -19,24 +19,21 @@ namespace VAPI.Components
         /// The Artifact of Variance's SpawnRate multiplier
         /// </summary>
         [FormatToken("VAPI_ARTIFACT_VARIANCE_DESC")]
-#if !UNITY_EDITOR
-        public static ConfiguredFloat artifactSpawnRateMultiplier = VAPIConfig.MakeConfiguredFloat(2f, (f) =>
+        [ConfiguredVariable.AutoConfig]
+        public static ConfiguredFloat artifactSpawnRateMultiplier = new ConfiguredFloat(2f)
         {
-            f.Section = "General";
-            f.Description = "Multiplier thats applied to the spawn chance of variants when the Artifact of Variance is enabled";
-            f.ConfigFile = VAPIConfig.generalConfig;
-            f.UseStepSlider = false;
-            f.SliderConfig = new SliderConfig
+            section = "General",
+            description = "Multiplier that's applied to the spawn chance of variants when the Artifact of Variance is Enabled.",
+            configFileIdentifier = VAPIConfig.GENERAL,
+            sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+            sliderConfig = new SliderConfig
             {
-                formatString = "{0:0.0}",
+                FormatString = "{0:0.0}",
                 min = 0,
                 max = 100,
-                checkIfDisabled = () => !VAPIConfig.enableArtifactOfVariance
-            };
-        });
-#else
-        public static ConfiguredFloat artifactSpawnRateMultiplier;
-#endif
+                checkIfDisabled = () => !VAPIConfig._enableArtifactOfVariance
+            }
+        };
 
         /// <summary>
         /// The current instance of the VariantSpawnManager
