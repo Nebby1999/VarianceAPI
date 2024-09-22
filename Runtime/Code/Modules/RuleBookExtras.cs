@@ -276,7 +276,7 @@ namespace VAPI.RuleSystem
                 return true;
 
 #if !DEBUG
-            if (!VAPIConfig.showVariantRuleCategory)
+            if (!VAPIConfig._showVariantRuleCategory)
             {
                 return true;
             }

@@ -29,13 +29,8 @@ namespace VAPI
 
         private static Action[] _fieldAssignDispatchers;
 
-        private bool _initialized;
-
         public IEnumerator LoadStaticContentAsync(LoadStaticContentAsyncArgs args)
         {
-            if (_initialized)
-                yield break;
-
             var enumerator = VAPIAssets.Initialize();
             while(!enumerator.IsDone())
             {
@@ -124,7 +119,8 @@ namespace VAPI
             IEnumerator PopulateWithAssetCollectionContentPack()
             {
                 var request = VAPIAssets.LoadAssetAsync<AssetCollection>("acContentPack");
-                while (!request.isDone) yield return null;
+                while (!request.isDone) 
+                    yield return null;
 
                 contentPack.AddContentFromAssetCollection(request.asset);
             }
