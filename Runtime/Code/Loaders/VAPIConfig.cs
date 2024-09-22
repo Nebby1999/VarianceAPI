@@ -43,7 +43,7 @@ namespace VAPI
         {
             configFactory = new ConfigFactory(plugin);
             generalConfig = configFactory.CreateConfigFile(GENERAL, false);
-            rewardsConfig = configFactory.CreateConfigFile(GENERAL, false);
+            rewardsConfig = configFactory.CreateConfigFile(REWARDS, false);
 
             SetConfigs();
         }

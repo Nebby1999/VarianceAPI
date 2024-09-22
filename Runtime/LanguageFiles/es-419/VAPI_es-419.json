@@ -1,5 +1,6 @@
 {
-  "strings": {
+    "strings":
+    {
     "VAPI_EXPANSION_NAME": "VarianceAPI",
     "VAPI_EXPANSION_DESC": "Permite que los variantes aparezcan en la partida.",
 
@@ -54,16 +55,15 @@
 
     "VAPI_RULE_HEADER_VARIANTPACKS": "Variant Packs",
     "VAPI_RULE_HEADER_VARIANTPACKS_SUBTITLE": "Variant Packs son collecciones de Varientes que otorgaran Variantes nuevos al juego, cada collecion puede estar activado o desactivado.",
-
+    "VAPI_RULE_HEADER_VARIANTPACKS_EMPTY": "No hay Variant Packs instalados.",
+    
+    
     "VAPI_RULE_HEADER_VARIANTS": "Variantes Individuales",
+    "VAPI_RULE_HEADER_VARIANTS_EMPTY": "No hay Variantes disponibles",
     "VAPI_RULE_HEADER_VARIANTS_SUBTITLE": "Variantes Individuales que pueden aparecer en esta partida. Cada variante puede causar desgracia, diversion, o una muerte dolorosa.",
     "VAPI_RULE_VARIANT_ON_DESCRIPTION": "Este Variante puede aparecer en la partida.",
     "VAPI_RULE_VARIANT_OFF_DESCRIPTION": "Este Variante no puede aparecer en la partida.",
 
-    "VAPI_EVENT_SPAWNRATE_START": "Las criaturas se vuelven inquietas...",
-    "VAPI_EVENT_SPAWNRATE_END": "Las criaturas vuelven a la normalidad",
-    "VAPI_EVENT_UNIQUE_START": "Subespecies se vuelven mas comunes...",
-    "VAPI_EVENT_UNIQUE_END": "Las Subespecies vuelven a la normalidad...",
     "VAPI_INFINITETOWER_WAVE_COUNTER_VARIANCE": "Oleada {0} - Aumento de Variedad"
-  }
+    }
 }
