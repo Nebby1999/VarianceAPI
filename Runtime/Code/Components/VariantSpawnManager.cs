@@ -42,7 +42,7 @@ namespace VAPI.Components
         /// <summary>
         /// A Spawn Rate Multiplier applied to all variantDefs, this will never be a negative number.
         /// </summary>
-        public float defaultSpawnRateMultiplier { get => defaultSpawnRateMultiplier; set => defaultSpawnRateMultiplier = Mathf.Max(0, value); }
+        public float defaultSpawnRateMultiplier { get => _defaultSpawnRateMultiplier; set => _defaultSpawnRateMultiplier = Mathf.Max(0, value); }
         [SerializeField] private float _defaultSpawnRateMultiplier = 1;
         [SerializeField] private ArtifactDef _varianceArtifact;
         /// <summary>

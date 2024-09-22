@@ -161,7 +161,7 @@ namespace VAPI
                         }
                     };
                     variant._spawnRateConfig.onConfigChanged += f => variant.spawnRate = f;
-                    variant._spawnRateConfig.DoConfigure();
+                    //This is config'd later in the rulebook.
 
                     variant._isUniqueConfig = new ConfiguredBool(variant.isUnique)
                     {

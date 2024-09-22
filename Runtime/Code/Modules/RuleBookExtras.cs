@@ -19,6 +19,7 @@ namespace VAPI.RuleSystem
         private static RuleCategoryDef _variantCategory;
         private static int _variantCategoryIndex;
         private static Dictionary<VariantIndex, VAPIRuleChoiceDef> _variantIndexToRuleChoice = new Dictionary<VariantIndex, VAPIRuleChoiceDef>();
+        private static List<(VariantDef, VAPIRuleChoiceDef, VAPIRuleChoiceDef)> _choicesToReComputeNameWhenLanguageChanges = new List<(VariantDef, VAPIRuleChoiceDef, VAPIRuleChoiceDef)>();
         internal static RuleDef _varianceArtifactRuleDef;
 
         [SystemInitializer(typeof(RuleCatalog), typeof(VariantCatalog))]
@@ -31,6 +32,17 @@ namespace VAPI.RuleSystem
             _varianceArtifactRuleDef = RuleCatalog.FindRuleDef("Artifacts.Variance");
 
             AddressReferencedAsset.OnAddressReferencedAssetsLoaded += FinishRuleChoices;
+            RoR2.Language.onCurrentLanguageChanged += RecomputeTokenValues;
+        }
+
+        private static void RecomputeTokenValues()
+        {
+            foreach(var (variantDef, onChoice, offChoice) in _choicesToReComputeNameWhenLanguageChanges)
+            {
+                var variantName = GetNameFromOverrides(variantDef);
+                onChoice.tooltipNameToken = variantName;
+                offChoice.tooltipNameToken = variantName;
+            }
         }
 
         private static void FinishRuleChoices()
@@ -185,6 +197,9 @@ namespace VAPI.RuleSystem
                 onChoice.excludeByDefault = !b;
                 offChoice.excludeByDefault = !b;
             };
+            variantDef._spawnRateConfig.DoConfigure();
+
+            _choicesToReComputeNameWhenLanguageChanges.Add((variantDef, onChoice, offChoice));
 
             return rule;
         }

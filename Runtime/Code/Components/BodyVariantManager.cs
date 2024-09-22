@@ -208,6 +208,7 @@ namespace VAPI.Components
                     }
                 }
             }
+            characterModel.materialsDirty = true;
         }
         private bool AnnounceArrival(VariantDef variantDef, VariantTierDef tierDef)
         {
