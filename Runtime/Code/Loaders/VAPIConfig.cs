@@ -6,6 +6,8 @@ using VAPI.RuleSystem;
 using UnityEngine;
 using VAPI.Modules;
 using static MSU.Config.ConfiguredVariable;
+using RoR2;
+using UnityEngine.Networking;
 
 namespace VAPI
 {
@@ -69,9 +71,11 @@ namespace VAPI
                 var ruleDef = RuleBookExtras._varianceArtifactRuleDef;
                 ruleDef.FindChoice("On").excludeByDefault = !b;
                 ruleDef.FindChoice("Off").excludeByDefault = !b;
-                ruleDef.forceLobbyDisplay = b;
 
                 InfiniteTower.AddOrRemoveWave(b);
+
+                if (PreGameController.instance && NetworkServer.active)
+                    PreGameController.instance.RecalculateModifierAvailability();
             });
 
 

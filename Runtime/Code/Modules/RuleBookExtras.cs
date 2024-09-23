@@ -8,6 +8,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 using MSU;
+using UnityEngine.Networking;
 
 namespace VAPI.RuleSystem
 {
@@ -51,8 +52,10 @@ namespace VAPI.RuleSystem
             {
                 VariantDef def = VariantCatalog.GetVariantDef(variantIndex);
 
+                var expansions = GetRequiredExpansionDefs(def);
                 ruleChoice.requiredUnlockables = GetRequiredUnlockableDefs(def);
                 ruleChoice.requiredExpansionDefs = GetRequiredExpansionDefs(def);
+                ruleChoice.requiredChoiceDefs.AddRange(expansions.Select(def => def.enabledChoice));
             }
         }
 
@@ -171,8 +174,6 @@ namespace VAPI.RuleSystem
 
             onChoice.tiedPackEnabledChoice = GetVariantPackEnabledChoice(variantDef);
             onChoice.requiredChoiceDefs = GetRequiredChoiceDefs(variantDef);
-            /*onChoice.requiredExpansionDefs = GetRequiredExpansionDefs(variantDef);
-            onChoice.requiredUnlockables = GetRequiredUnlockableDefs(variantDef);*/
             rule.MakeNewestChoiceDefault();
 
             _variantIndexToRuleChoice.Add(variantDef.variantIndex, onChoice);
@@ -187,15 +188,17 @@ namespace VAPI.RuleSystem
             offChoice.requiredChoiceDefs = GetRequiredChoiceDefs(variantDef);
 
             var display = variantDef.spawnRate > 0;
-            rule.forceLobbyDisplay = display;
             onChoice.excludeByDefault = !display;
             offChoice.excludeByDefault = !display;
             variantDef._spawnRateConfig.onConfigChanged += f =>
             {
                 bool b = f > 0;
-                rule.forceLobbyDisplay = b;
                 onChoice.excludeByDefault = !b;
                 offChoice.excludeByDefault = !b;
+                if(NetworkServer.active && PreGameController.instance)
+                {
+                    PreGameController.instance.RecalculateModifierAvailability();
+                }
             };
             variantDef._spawnRateConfig.DoConfigure();
 
