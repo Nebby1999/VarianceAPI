@@ -7,6 +7,16 @@ namespace VAPI
     /// </summary>
     public static class VAPIUtils
     {
+        public static Xoroshiro128Plus GetVariantRNG()
+        {
+            if(!VAPI.Components.VariantSpawnManager.instance)
+            {
+                throw new System.NullReferenceException("Cannot get variant RNG when there's no Variant Spawn Manager.");
+            }
+
+            return VAPI.Components.VariantSpawnManager.instance.variantRNG;
+        }
+
         /// <summary>
         /// Writes a <see cref="VariantIndex"/> to the network writer
         /// </summary>

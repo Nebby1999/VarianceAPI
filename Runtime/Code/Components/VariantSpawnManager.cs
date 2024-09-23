@@ -57,7 +57,8 @@ namespace VAPI.Components
         /// Event raisedd when a Variant gets killed
         /// </summary>
         public static event Action<ReadOnlyCollection<VariantDef>, DamageReport> OnVariantKilledServer;
-        private Xoroshiro128Plus _variantRNG;
+        private Xoroshiro128Plus _spawnRNG;
+        public Xoroshiro128Plus variantRNG;
 
         private void Awake()
         {
@@ -72,7 +73,11 @@ namespace VAPI.Components
             CharacterBody.onBodyStartGlobal -= TryCreateVariant;
         }
 
-        private void CreateRNG(Run run) => _variantRNG = new Xoroshiro128Plus(run.seed);
+        private void CreateRNG(Run run)
+        {
+            _spawnRNG = new Xoroshiro128Plus(run.seed);
+            variantRNG = new Xoroshiro128Plus(_spawnRNG.nextUlong);
+        }
 
         private void TryCreateVariant(CharacterBody obj)
         {
@@ -137,7 +142,7 @@ namespace VAPI.Components
             }
             uniqueRng.AddChoice(-1, notUniqueChance);
 
-            var index = uniqueRng.Evaluate(_variantRNG.nextNormalizedFloat);
+            var index = uniqueRng.Evaluate(_spawnRNG.nextNormalizedFloat);
             bool success = index != -1;
 
             result = success ? pool[index] : null;
@@ -158,7 +163,7 @@ namespace VAPI.Components
                 if (spawnRate <= 0)
                     continue;
 
-                if(_variantRNG.RangeFloat(0, 100) <= spawnRate)
+                if(_spawnRNG.RangeFloat(0, 100) <= spawnRate)
                 {
                     defs.Add(currentDef);
                 }
