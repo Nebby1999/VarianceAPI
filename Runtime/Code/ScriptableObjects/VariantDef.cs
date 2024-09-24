@@ -107,6 +107,13 @@ namespace VAPI
             "\nForceSprint: The variant always sprints")]
         public BasicAIModifier aiModifier;
 
+        [Tooltip("This value is added to the Variant's BaseAI's aimVectorDampTime.")]
+        public float baseAIDampBonus;
+
+        [Tooltip("Direct multiplier that's applied to the Variant's BaseAI's aimVectorDampTime. Applied after \"baseAIDampBonus\" is applied.")]
+        [Min(0)]
+        public float baseAIDampMultiplier = 1;
+
         [Tooltip("A set of name overrides that's applied to this variant")]
         public VariantOverrideName[] nameOverrides = Array.Empty<VariantOverrideName>();
 

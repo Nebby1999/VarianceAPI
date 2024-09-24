@@ -159,7 +159,7 @@ namespace VAPI.Components
                         sizeModifier.ApplySize(characterModel.transform, characterBody.GetComponentsInChildren<KinematicCharacterMotor>());
                     }
 
-                    ModifyAI(current.aiModifier);
+                    ModifyAI(current.aiModifier, current.baseAIDampBonus, current.baseAIDampMultiplier);
 
                     ModifyName(current.nameOverrides);
 
@@ -281,10 +281,16 @@ namespace VAPI.Components
             characterBody.baseMaxShield *= variantDef.shieldMultiplier;
         }
 
-        private void ModifyAI(BasicAIModifier aiModifier)
+        private void ModifyAI(BasicAIModifier aiModifier, float baseAIDampBonus, float baseAIDampModifier)
         {
             if (!characterMaster)
                 return;
+
+            foreach(var baseAI in characterMaster.GetComponents<BaseAI>())
+            {
+                baseAI.aimVectorDampTime += baseAIDampBonus;
+                baseAI.aimVectorMaxSpeed *= baseAIDampModifier;
+            }
 
             foreach (AISkillDriver driver in characterMaster.GetComponents<AISkillDriver>())
             {
