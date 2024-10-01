@@ -94,9 +94,9 @@ namespace VAPI
                     .ToList();
 
                 bool metExpansionRequirements = false;
-                foreach (ExpansionDef expansion in runExpansions)
+                foreach (ExpansionDef expansion in expansions)
                 {
-                    metExpansionRequirements = expansions.Contains(expansion);
+                    metExpansionRequirements = runExpansions.Contains(expansion);
                 }
                 return metExpansionRequirements;
             }
