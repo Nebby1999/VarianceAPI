@@ -40,6 +40,8 @@ namespace VAPI
         public float greenItemDropChance;
         [Tooltip("The chances for Variants of this tier to drop Red items")]
         public float redItemDropChance;
+        [Tooltip("Armor bonus applied to variants of this tier, this stacks with the TOTAL variant count.")]
+        public float armorBonus;
 
         /// <summary>
         /// Returns <see cref="goldMultiplier"/> minus 1 if <see cref="goldMultiplier"/> is greater than 1

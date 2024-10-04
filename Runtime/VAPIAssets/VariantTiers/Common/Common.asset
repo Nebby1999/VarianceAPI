@@ -16,17 +16,13 @@ MonoBehaviour:
   announcesArrival: 0
   soundEvent: {fileID: 0}
   tierItemDefs: []
-  tierItems: []
   tierBuffDef:
     _asset: {fileID: 11400000, guid: 90986a7ed35921c498b9ef9b25264d9a, type: 2}
     _address: 
     _useDirectReference: 1
-  tierBuff:
-    address: 
-    useDirectReference: 1
-    asset: {fileID: 11400000, guid: 90986a7ed35921c498b9ef9b25264d9a, type: 2}
   experienceMultiplier: 1.3
   goldMultiplier: 1.3
-  whiteItemDropChance: 3
+  whiteItemDropChance: 1
   greenItemDropChance: 0
   redItemDropChance: 0
+  armorBonus: 0

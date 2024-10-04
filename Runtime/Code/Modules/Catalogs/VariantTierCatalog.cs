@@ -237,6 +237,25 @@ namespace VAPI
                     {
                         tierDef.redItemDropChance = f;
                     }).DoConfigure();
+
+                    tierDef.armorBonus = new ConfiguredFloat(tierDef.armorBonus)
+                    {
+                        section = $"{tierDef.name} Tier",
+                        key = "Tier Armor Bonus",
+                        description = "Armor bonus applied to variants with this tier, this value stacks if the variant has multiple VariantDefs applied.",
+                        configFile = configFile,
+                        modName = plugin.Name,
+                        modGUID = plugin.GUID,
+                        sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+                        sliderConfig = new SliderConfig
+                        {
+                            min = 0,
+                            max = 100
+                        },
+                    }.WithConfigChange(f =>
+                    {
+                        tierDef.armorBonus = f;
+                    }).DoConfigure();
                 }
                 catch (Exception e)
                 {

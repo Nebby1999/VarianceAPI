@@ -273,7 +273,7 @@ namespace VAPI.Components
             characterBody.baseAttackSpeed *= variantDef.attackSpeedMultiplier;
             characterBody.baseDamage *= variantDef.damageMultiplier;
             characterBody.levelDamage = characterBody.baseDamage * 0.2f;
-            characterBody.baseArmor += variantDef.armorBonus;
+            characterBody.baseArmor += variantDef.armorBonus + (variantDef.variantTierDef ? variantDef.variantTierDef.armorBonus : 0);
             characterBody.baseArmor *= variantDef.armorMultiplier;
             characterBody.baseRegen += variantDef.regenBonus;
             characterBody.baseRegen *= variantDef.regenMultiplier;
