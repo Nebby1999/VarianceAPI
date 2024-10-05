@@ -30,7 +30,7 @@ namespace VAPI
         /// <summary>
         /// The VariantDefs that'll be given to the variant when spawned
         /// </summary>
-        public VariantDef[] variantDefs;
+        public VariantDef[] variantDefs = Array.Empty<VariantDef>();
         /// <summary>
         /// Wether or not to apply the variants to the Body on Start
         /// </summary>

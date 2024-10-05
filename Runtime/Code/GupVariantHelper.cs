@@ -6,6 +6,7 @@ using RoR2;
 using System;
 using VAPI.Components;
 using System.Collections.ObjectModel;
+using UnityEngine;
 
 namespace VAPI
 {
@@ -23,8 +24,11 @@ namespace VAPI
 
         public static void AddGupProgression(VariantDef gupVariant, VariantDef geepVariant, VariantDef gipVariant)
         {
-            _gupToGeep.Add(gupVariant, geepVariant);
-            _geepToGip.Add(geepVariant, gipVariant);
+            VariantCatalog.availability.CallWhenAvailable(() =>
+            {
+                _gupToGeep.Add(gupVariant, geepVariant);
+                _geepToGip.Add(geepVariant, gipVariant);
+            });
         }
 
         internal static void HandleDeathState(ILContext context)
@@ -65,17 +69,33 @@ namespace VAPI
                 if (!baseSplitDeath.characterBody.TryGetComponent<BodyVariantManager>(out var manager))
                     return;
 
-                newSummon.variantDefs = FilterVariants(manager.variantsInBody);
+                newSummon.variantDefs = FilterVariants(manager.variantsInBody, splitter.masterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex);
             }
         }
 
-        private static VariantDef[] FilterVariants(ReadOnlyCollection<VariantDef> variantDefs)
+        private static VariantDef[] FilterVariants(ReadOnlyCollection<VariantDef> variantDefs, GameObject masterSummonPrefb, BodyIndex dyingBodyIndex)
         {
             List<VariantDef> filtered = new List<VariantDef>();
-            foreach(var variantDef in variantDefs)
+
+            var childBodyIndex = BodyIndex.None;
+            if(masterSummonPrefb.TryGetComponent<CharacterMaster>(out var mstr))
+            {
+                if(mstr.bodyPrefab.TryGetComponent<CharacterBody>(out var bdy))
+                {
+                    childBodyIndex = bdy.bodyIndex;
+                }
+            }
+
+            foreach (var variantDef in variantDefs)
             {
                 if (_blacklistedVariants.Contains(variantDef))
                     continue;
+
+                if(childBodyIndex == dyingBodyIndex) //Indirect hardcode for Gup variant splitting into more gups.
+                {
+                    filtered.Add(variantDef);
+                    continue;
+                }
 
                 if (_gupToGeep.TryGetValue(variantDef, out var chosen))
                 {
