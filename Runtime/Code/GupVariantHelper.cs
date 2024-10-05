@@ -52,9 +52,6 @@ namespace VAPI
                 if (!baseSplitDeath.characterBody)
                     return;
 
-                if (!baseSplitDeath.characterBody.TryGetComponent<BodyVariantManager>(out var manager))
-                    return;
-
                 var orig = splitter.masterSummon;
                 var newSummon = new VariantSummon
                 {
@@ -63,8 +60,12 @@ namespace VAPI
                     useAmbientLevel = null,
                     teamIndexOverride = null
                 };
-                newSummon.variantDefs = FilterVariants(manager.variantsInBody);
                 splitter.masterSummon = newSummon;
+
+                if (!baseSplitDeath.characterBody.TryGetComponent<BodyVariantManager>(out var manager))
+                    return;
+
+                newSummon.variantDefs = FilterVariants(manager.variantsInBody);
             }
         }
 
