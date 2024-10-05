@@ -29,6 +29,8 @@ namespace VAPI
         [AutoConfig]
         internal static ConfiguredBool _sendArrivalMesssages;
         [AutoConfig]
+        internal static ConfiguredBool _modifyGupDeathStates;
+        [AutoConfig]
         internal static ConfiguredColor _variantHealthBarColor;
 
         public static ConfigFile rewardsConfig { get; private set; }
@@ -94,6 +96,26 @@ namespace VAPI
                 description = "Wether variants which tier's send messages on arrival send said messages.",
                 configFile = generalConfig,
             };
+
+            _modifyGupDeathStates = new ConfiguredBool(true)
+            {
+                section = "General",
+                key = "Modify Gup/Geep Death States",
+                description = "Modifies the Death state of Gup and Geep so that the split enemies retain some variant logic. For example, A Variant gup will spleet into Geeps that only have the parent's variant defs. And a variant geep will not spawn from a normal gup.",
+                configFile = generalConfig,
+            }
+            .WithConfigChange(b =>
+            {
+                if(b)
+                {
+                    IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate -= GupVariantHelper.HandleDeathState;
+                    IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate += GupVariantHelper.HandleDeathState;
+                }
+                else
+                {
+                    IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate -= GupVariantHelper.HandleDeathState;
+                }
+            });
 
             _variantHealthBarColor = new ConfiguredColor(new Color32(0, 255, 144, byte.MaxValue))
             {

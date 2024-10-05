@@ -54,14 +54,20 @@ namespace VAPI
         /// an event that gets triggered when a VariantSummon is performed
         /// </summary>
         public static event Action<VariantSummonReport> OnServerVariantSummonGlobal;
-        /// <summary>
-        /// Performs the VariantSummon
-        /// </summary>
-        /// <returns>The Summoned variant's CharacterMaster</returns>
+
+        [Obsolete("Call \"PerformSummon\" instead.", true)]
         public new CharacterMaster Perform()
         {
             var master = base.Perform();
-            var body = master.GetBodyObject();
+            ModifySpawnedInstance(master);
+            return master;
+        }
+
+        public CharacterMaster PreformSummon() => base.Perform();
+
+        private void ModifySpawnedInstance(CharacterMaster spawnedMaster)
+        {
+            var body = spawnedMaster.GetBodyObject();
             if (body)
             {
                 var summonedBodyDeathRewards = body.GetComponent<DeathRewards>();
@@ -82,7 +88,7 @@ namespace VAPI
                 }
                 if (bodyVariantReward)
                 {
-                    if(!supressRewards)
+                    if (!supressRewards)
                     {
                         bodyVariantReward.AddVariants(variantDefs);
                     }
@@ -103,11 +109,24 @@ namespace VAPI
             {
                 leaderMasterInstance = leader,
                 summonInstanceVariants = variantDefs,
-                summonMasterInstance = master,
+                summonMasterInstance = spawnedMaster,
             };
             OnServerVariantSummonGlobal?.Invoke(report);
+        }
 
-            return master;
+        //Nasty as fuck
+        [SystemInitializer]
+        private static void SystemInit()
+        {
+            On.RoR2.MasterSummon.Perform += (orig, self) =>
+            {
+                var instance = orig(self);
+                if(self is VariantSummon summon)
+                {
+                    summon.ModifySpawnedInstance(instance);
+                }
+                return instance;
+            };
         }
     }
 }
