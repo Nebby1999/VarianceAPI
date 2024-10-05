@@ -93,11 +93,13 @@ namespace VAPI
                 HG.ArrayUtils.ArrayAppend(ref variantNames, args[i]);
             }
             List<VariantDef> variants = new List<VariantDef>();
+            var provider = BodyVariantDefProvider.FindProvider(master);
+            var availableVariants = provider.GetAllVariants(false);
             foreach (string variantName in variantNames)
             {
-                for (int i = 0; i < VariantCatalog._registeredVariants.Length; i++)
+                for (int i = 0; i < availableVariants.Length; i++)
                 {
-                    var vd = VariantCatalog._registeredVariants[i];
+                    var vd = availableVariants[i];
                     if (vd.name.ToLowerInvariant().Contains(variantName.ToLowerInvariant()))
                     {
                         variants.Add(vd);
@@ -119,7 +121,7 @@ namespace VAPI
                 summonerBodyObject = null,
                 teamIndexOverride = masterPrefab.GetComponent<CharacterMaster>().teamIndex,
             };
-            summon.Perform();
+            summon.PreformSummon();
 
             List<string> toLog = new List<string>();
             toLog.Add($"Spawned a {masterPrefab.name} with the following VariantDefs");
@@ -170,11 +172,13 @@ namespace VAPI
                 HG.ArrayUtils.ArrayAppend(ref variantNames, args[i]);
             }
             List<VariantDef> variants = new List<VariantDef>();
+            var provider = BodyVariantDefProvider.FindProvider(body);
+            var availableVariants = provider.GetAllVariants(false);
             foreach (string variantName in variantNames)
             {
-                for (int i = 0; i < VariantCatalog._registeredVariants.Length; i++)
+                for (int i = 0; i < availableVariants.Length; i++)
                 {
-                    var vd = VariantCatalog._registeredVariants[i];
+                    var vd = availableVariants[i];
                     if (vd.name.ToLowerInvariant().Contains(variantName.ToLowerInvariant()))
                     {
                         variants.Add(vd);
