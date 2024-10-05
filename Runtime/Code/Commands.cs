@@ -121,7 +121,7 @@ namespace VAPI
                 summonerBodyObject = null,
                 teamIndexOverride = masterPrefab.GetComponent<CharacterMaster>().teamIndex,
             };
-            summon.PreformSummon();
+            summon.PerformSummon();
 
             List<string> toLog = new List<string>();
             toLog.Add($"Spawned a {masterPrefab.name} with the following VariantDefs");

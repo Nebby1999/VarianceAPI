@@ -63,7 +63,7 @@ namespace VAPI
             return master;
         }
 
-        public CharacterMaster PreformSummon() => base.Perform();
+        public CharacterMaster PerformSummon() => base.Perform();
 
         private void ModifySpawnedInstance(CharacterMaster spawnedMaster)
         {
