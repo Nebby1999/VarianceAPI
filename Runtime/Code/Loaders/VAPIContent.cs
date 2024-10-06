@@ -21,11 +21,11 @@ namespace VAPI
 
         internal static ContentPack contentPack { get; } = new ContentPack();
 
-        internal static ParallelMultiStartCoroutine _parallelPreLoadDispatchers = new ParallelMultiStartCoroutine();
+        internal static ParallelCoroutine _parallelPreLoadDispatchers = new ParallelCoroutine();
 
         private static Func<IEnumerator>[] _loadDispatchers;
 
-        internal static ParallelMultiStartCoroutine _parallelPostLoadDispatchers = new ParallelMultiStartCoroutine();
+        internal static ParallelCoroutine _parallelPostLoadDispatchers = new ParallelCoroutine();
 
         private static Action[] _fieldAssignDispatchers;
 
@@ -37,7 +37,6 @@ namespace VAPI
                 yield return null;
             }
 
-            _parallelPreLoadDispatchers.Start();
             while (!_parallelPreLoadDispatchers.isDone)
                 yield return null;
 
@@ -49,7 +48,6 @@ namespace VAPI
                 while (enumerator?.MoveNext() ?? false) yield return null; //await
             }
 
-            _parallelPostLoadDispatchers.Start();
             while (!_parallelPostLoadDispatchers.isDone)
                 yield return null;
 
@@ -86,9 +84,9 @@ namespace VAPI
 
         private static void LoadFromAssetBundles()
         {
-            _parallelPreLoadDispatchers.Add(PopulateWithAssetCollectionContentPack);
-            _parallelPostLoadDispatchers.Add(LoadEmptySkillDef);
-            _parallelPostLoadDispatchers.Add(LoadLockedIconAndAssignToExpansionDef);
+            _parallelPreLoadDispatchers.Add(PopulateWithAssetCollectionContentPack());
+            _parallelPostLoadDispatchers.Add(LoadEmptySkillDef());
+            _parallelPostLoadDispatchers.Add(LoadLockedIconAndAssignToExpansionDef());
 
             IEnumerator LoadEmptySkillDef()
             {
@@ -136,7 +134,7 @@ namespace VAPI
             ContentManager.collectContentPackProviders += AddSelf;
             VAPIAssets.assetsAvailability.CallWhenAvailable(() =>
             {
-                _parallelPreLoadDispatchers.Add(LanguageFileLoader.AddLanguageFilesFromModAsync, VAPIMain.instance, "languages");
+                _parallelPreLoadDispatchers.Add(LanguageFileLoader.AddLanguageFilesFromModAsync(VAPIMain.instance, "languages"));
                 LoadFromAssetBundles();
             });
         }

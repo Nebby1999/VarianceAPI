@@ -59,11 +59,13 @@ namespace VAPI.Modules
             var commonWaveCategoryRequest = Addressables.LoadAssetAsync<InfiniteTowerWaveCategory>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveCategories/CommonWaveCategory.asset");
             var overlayEntryRequest = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerCurrentArtifactWispOnDeathUI.prefab");
             var assetCollectionRequest = VAPIAssets.LoadAssetAsync<AssetCollection>("acInfiniteTower");
+            var wispWave = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveArtifactWispOnDeath.prefab");
 
             ParallelCoroutine coroutine = new ParallelCoroutine();
             coroutine.Add(commonWaveCategoryRequest);
             coroutine.Add(overlayEntryRequest);
             coroutine.Add(assetCollectionRequest);
+            coroutine.Add(wispWave);
 
             while (!coroutine.IsDone())
                 yield return null;
@@ -75,7 +77,7 @@ namespace VAPI.Modules
             _wavePrerequisite = assetCollection.FindAsset<InfiniteTowerWaveArtifactPrerequisites>("ArtifactVarianceDisabledPrerequisite");
 
             CloneOverlayEntry(overlayEntryRequest.Result);
-            FinishPrefab(_wavePrefab);
+            FinishPrefab(_wavePrefab, wispWave.Result);
 
             _weightedWave = new InfiniteTowerWaveCategory.WeightedWave
             {
@@ -85,9 +87,8 @@ namespace VAPI.Modules
             };
         }
 
-        private static void FinishPrefab(GameObject prefab)
+        private static void FinishPrefab(GameObject prefab, GameObject wispWave)
         {
-            var wispWave = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveArtifactWispOnDeath.prefab").WaitForCompletion();
 
             var wispWaveController = wispWave.GetComponent<InfiniteTowerWaveController>();
             var prefabWaveController = prefab.GetComponent<InfiniteTowerWaveController>();
@@ -102,7 +103,6 @@ namespace VAPI.Modules
         private static GameObject CloneOverlayEntry(GameObject original)
         {
             _clonedShitIHateCloning = R2API.PrefabAPI.InstantiateClone(original, "VarianceAugmentDisplay", false);
-            Debug.Log(_clonedShitIHateCloning);
             var offset = _clonedShitIHateCloning.transform.GetChild(0);
             var waveIcon = offset.GetChild(0);
             var iconGameObject = waveIcon.GetChild(0);

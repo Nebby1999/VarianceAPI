@@ -55,12 +55,11 @@ namespace VAPI
                 yield return null;
             }
 
-            ParallelMultiStartCoroutine coroutine = new ParallelMultiStartCoroutine();
+            ParallelCoroutine coroutine = new ParallelCoroutine();
 
-            coroutine.Add(SwapShaders);
-            coroutine.Add(SwapAddressableShaders);
+            coroutine.Add(SwapShaders());
+            coroutine.Add(SwapAddressableShaders());
 
-            coroutine.Start();
             while (!coroutine.isDone)
                 yield return null;
 
