@@ -15,6 +15,9 @@ namespace VAPI
 
         public int GetHashCode(VariantDef obj)
         {
+            if (!obj)
+                return -1;
+
             return obj.variantIndex.GetHashCode();
         }
     }

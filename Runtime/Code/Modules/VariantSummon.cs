@@ -50,6 +50,8 @@ namespace VAPI
         /// Wether or not to supress the reward for the summoned Body
         /// </summary>
         public bool supressRewards = false;
+
+        public event Action<CharacterMaster> onSummonCompleted;
         /// <summary>
         /// an event that gets triggered when a VariantSummon is performed
         /// </summary>
@@ -105,6 +107,9 @@ namespace VAPI
                     leader = summonerBody.master;
                 }
             }
+
+            onSummonCompleted?.Invoke(spawnedMaster);
+
             VariantSummonReport report = new VariantSummonReport
             {
                 leaderMasterInstance = leader,
