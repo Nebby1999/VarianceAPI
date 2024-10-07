@@ -1,6 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using Moonstorm.Config;
+using MSU.Config;
 using RiskOfOptions.OptionConfigs;
 using RoR2;
 using System;
@@ -18,16 +18,16 @@ namespace VAPI
         /// <summary>
         /// The total amount of registered variants
         /// </summary>
-        public static int VariantCount => registeredVariants.Length;
+        public static int variantCount => _registeredVariants.Length;
         /// <summary>
         /// Utilize this to execute an Action as soon as the VariantCatalog becomes available
         /// </summary>
         public static ResourceAvailability availability = default(ResourceAvailability);
 
-        internal static VariantDef[] registeredVariants = Array.Empty<VariantDef>();
-        private static readonly Dictionary<string, VariantIndex> nameToIndex = new Dictionary<string, VariantIndex>(StringComparer.OrdinalIgnoreCase);
+        internal static VariantDef[] _registeredVariants = Array.Empty<VariantDef>();
+        private static readonly Dictionary<string, VariantIndex> _nameToIndex = new Dictionary<string, VariantIndex>(StringComparer.OrdinalIgnoreCase);
 
-        private static readonly Dictionary<BodyIndex, BodyVariantDefProvider> bodyIndexToDefProvider = new Dictionary<BodyIndex, BodyVariantDefProvider>();
+        private static readonly Dictionary<BodyIndex, BodyVariantDefProvider> _bodyIndexToDefProvider = new Dictionary<BodyIndex, BodyVariantDefProvider>();
         #region Get Methods
         /// <summary>
         /// Gets the VariantDef tied to the given VariantIndex
@@ -37,7 +37,7 @@ namespace VAPI
         public static VariantDef GetVariantDef(VariantIndex variantIndex)
         {
             ThrowIfNotInitialized();
-            return HG.ArrayUtils.GetSafe(registeredVariants, (int)variantIndex);
+            return HG.ArrayUtils.GetSafe(_registeredVariants, (int)variantIndex);
         }
 
         /// <summary>
@@ -48,7 +48,7 @@ namespace VAPI
         public static VariantIndex FindVariantIndex(string variantName)
         {
             ThrowIfNotInitialized();
-            if (nameToIndex.TryGetValue(variantName, out VariantIndex index))
+            if (_nameToIndex.TryGetValue(variantName, out VariantIndex index))
             {
                 return index;
             }
@@ -57,7 +57,7 @@ namespace VAPI
 
         internal static BodyVariantDefProvider GetBodyVariantDefProvider(BodyIndex index)
         {
-            if (bodyIndexToDefProvider.TryGetValue(index, out var provider))
+            if (_bodyIndexToDefProvider.TryGetValue(index, out var provider))
             {
                 return provider;
             }
@@ -69,9 +69,9 @@ namespace VAPI
         [SystemInitializer(typeof(BodyCatalog), typeof(VariantTierCatalog))]
         private static void SystemInitializer()
         {
-            nameToIndex.Clear();
+            _nameToIndex.Clear();
 
-            registeredVariants = RegisterVariantsFromPacks(VariantPackCatalog.registeredPacks).ToArray();
+            _registeredVariants = RegisterVariantsFromPacks(VariantPackCatalog._registeredPacks).ToArray();
             PopulateBodyIndexToVariants();
 
             VAPILog.Info("Variant Catalog Initialized");
@@ -80,14 +80,14 @@ namespace VAPI
 
         private static VariantDef[] RegisterVariantsFromPacks(VariantPackDef[] packs)
         {
-            VAPILog.Info($"Registering VariantDefs from {VariantPackCatalog.VariantPackCount} VariantPacks");
+            VAPILog.Info($"Registering VariantDefs from {VariantPackCatalog.variantPackCount} VariantPacks");
 
             List<VariantDef> variantsToRegister = new List<VariantDef>();
 
             foreach (VariantPackDef pack in packs)
             {
-                ConfigFile configFile = pack.VariantConfiguration;
-                BepInPlugin plugin = pack.BepInPlugin;
+                ConfigFile configFile = pack.variantConfiguration;
+                BepInPlugin plugin = pack.bepInPlugin;
                 VariantDef[] variants = pack.variants;
 
                 if (variants.Length == 0)
@@ -145,33 +145,33 @@ namespace VAPI
             {
                 try
                 {
-                    variant.spawnRateConfig = new ConfigurableFloat(variant.spawnRate)
+                    variant._spawnRateConfig = new ConfiguredFloat(variant.spawnRate)
                     {
-                        Section = $"{variant.bodyName} Variants",
-                        Key = $"{variant.name} Spawn Rate",
-                        Description = $"Chance for the {variant.name} variant to spawn\n(Percentage, 0-100)",
-                        ConfigFile = configFile,
-                        ModGUID = plugin.GUID,
-                        ModName = plugin.Name,
-                        UseStepSlider = false,
-                        SliderConfig = new SliderConfig
+                        section = $"{variant.bodyName} Variants",
+                        key = $"{variant.name} Spawn Rate",
+                        description = $"Chance for the {variant.name} variant to spawn\n(Percentage, 0-100)",
+                        configFile = configFile,
+                        modGUID = plugin.GUID,
+                        modName = plugin.Name,
+                        sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+                        sliderConfig = new SliderConfig
                         {
                             min = 0,
                             max = 100,
                         }
                     };
-                    variant.spawnRateConfig.OnConfigChanged += f => variant.spawnRate = f;
-                    variant.spawnRateConfig.DoConfigure();
+                    variant._spawnRateConfig.onConfigChanged += f => variant.spawnRate = f;
+                    //This is config'd later in the rulebook.
 
-                    variant.isUniqueConfig = new ConfigurableBool(variant.isUnique)
+                    variant._isUniqueConfig = new ConfiguredBool(variant.isUnique)
                     {
-                        Section = $"{variant.bodyName} Variants",
-                        Key = $"{variant.name} Uniqueness",
-                        Description = $"Wether or not {variant.name} is Unique",
-                        ConfigFile = configFile,
-                        ModGUID = plugin.GUID,
-                        ModName = plugin.Name,
-                    }.AddOnConfigChanged(b => variant.isUnique = b).DoConfigure();
+                        section = $"{variant.bodyName} Variants",
+                        key = $"{variant.name} Uniqueness",
+                        description = $"Wether or not {variant.name} is Unique",
+                        configFile = configFile,
+                        modGUID = plugin.GUID,
+                        modName = plugin.Name,
+                    }.WithConfigChange(b => variant.isUnique = b).DoConfigure();
                 }
                 catch (Exception e)
                 {
@@ -187,9 +187,9 @@ namespace VAPI
 #if DEBUG
                 VAPILog.Debug($"Registering {variant} (Index: {index})");
 #endif
-                variant.VariantIndex = index;
-                nameToIndex.Add(variant.name, index);
-                _ = variant.VariantTierDef;
+                variant.variantIndex = index;
+                _nameToIndex.Add(variant.name, index);
+                _ = variant.variantTierDef;
             }
             catch (Exception e)
             {
@@ -202,7 +202,7 @@ namespace VAPI
             VAPILog.Info("Creating BodyVariantDefProviders for registered variants");
             foreach (CharacterBody body in BodyCatalog.allBodyPrefabBodyBodyComponents)
             {
-                VariantDef[] variantsForBody = registeredVariants
+                VariantDef[] variantsForBody = _registeredVariants
                     .Where(vd => vd.bodyName.Equals(body.name, StringComparison.OrdinalIgnoreCase))
                     .ToArray();
 
@@ -210,10 +210,10 @@ namespace VAPI
                 {
                     body.gameObject.AddComponent<BodyVariantManager>();
 
-                    if (VAPIConfig.enableRewards)
+                    if (VAPIConfig._enableRewards)
                         body.gameObject.AddComponent<BodyVariantReward>();
 
-                    bodyIndexToDefProvider.Add(body.bodyIndex, new BodyVariantDefProvider(variantsForBody, body.bodyIndex));
+                    _bodyIndexToDefProvider.Add(body.bodyIndex, new BodyVariantDefProvider(variantsForBody, body.bodyIndex));
 
 #if DEBUG
                     VAPILog.Debug($"Created a BodyVariantDefProvider for body {body.name}. (Variants Count: {variantsForBody.Length})");

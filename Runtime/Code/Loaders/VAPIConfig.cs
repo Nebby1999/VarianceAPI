@@ -1,166 +1,176 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using Moonstorm.Loaders;
-using Moonstorm.Config;
+using MSU.Config;
 using RiskOfOptions.OptionConfigs;
 using VAPI.RuleSystem;
 using UnityEngine;
 using VAPI.Modules;
+using static MSU.Config.ConfiguredVariable;
+using RoR2;
+using UnityEngine.Networking;
 
 namespace VAPI
 {
-    /// <summary>
-    /// VAPI's ConfigLoader
-    /// </summary>
-    public class VAPIConfig : ConfigLoader<VAPIConfig>
+    public class VAPIConfig
     {
-        /// <summary>
-        /// general config's identifier
-        /// </summary>
-        public const string general = "VAPI.General";
-        /// <summary>
-        /// Rewards config identifier
-        /// </summary>
-        public const string rewards = "VAPI.Rewards";
-        public override BaseUnityPlugin MainClass => VAPIMain.Instance;
-        public override bool CreateSubFolder => true;
+        public const string PREFIX = "VAPI.";
+        public const string GENERAL = PREFIX + "General";
+        public const string REWARDS = PREFIX + "Rewards";
 
-        /// <summary>
-        /// The general config file
-        /// </summary>
-        public static ConfigFile generalConfig;
-        internal static ConfigurableBool addVariantEvents;
-        internal static ConfigurableBool showVariantRuleCategory;
-        internal static ConfigurableBool enableArtifactOfVariance;
-        internal static ConfigurableBool activateMeshReplacementSystem;
-        internal static ConfigurableBool sendArrivalMesssages;
-        internal static ConfigurableColor variantHealthBarColor;
+        internal static ConfigFactory configFactory { get; private set; }
+        
+        public static ConfigFile generalConfig { get; private set; }
+        [AutoConfig]
+        internal static ConfiguredBool _showVariantRuleCategory;
+        [AutoConfig]
+        internal static ConfiguredBool _enableArtifactOfVariance;
+        [AutoConfig]
+        internal static ConfiguredBool _activateMeshReplacementSystem;
+        [AutoConfig]
+        internal static ConfiguredBool _sendArrivalMesssages;
+        [AutoConfig]
+        internal static ConfiguredBool _modifyGupDeathStates;
+        [AutoConfig]
+        internal static ConfiguredColor _variantHealthBarColor;
 
-        /// <summary>
-        /// The rewards config file
-        /// </summary>
-        public static ConfigFile rewardsConfig;
-        internal static ConfigurableBool enableRewards;
-        internal static ConfigurableBool luckAffectsItemRewards;
-        internal static ConfigurableBool itemRewardsSpawnOnPlayer;
-        internal static ConfigurableFloat hiddenRealmsItemRollChance;
+        public static ConfigFile rewardsConfig { get; private set; }
+        [AutoConfig]
+        internal static ConfiguredBool _enableRewards;
+        [AutoConfig]
+        internal static ConfiguredBool _luckAffectsItemRewards;
+        [AutoConfig]
+        internal static ConfiguredBool _itemRewardsSpawnOnPlayer;
+        [AutoConfig]
+        internal static ConfiguredFloat _hiddenRealmsItemRollChance;
 
-        public void Init()
+        internal VAPIConfig(BaseUnityPlugin plugin)
         {
-            generalConfig = CreateConfigFile(general, false);
-            rewardsConfig = CreateConfigFile(rewards, false);
+            configFactory = new ConfigFactory(plugin);
+            generalConfig = configFactory.CreateConfigFile(GENERAL, false);
+            rewardsConfig = configFactory.CreateConfigFile(REWARDS, false);
 
             SetConfigs();
         }
+
         private void SetConfigs()
         {
-            addVariantEvents = MakeConfigurableBool(true, b =>
+            _showVariantRuleCategory = new ConfiguredBool(false)
             {
-                b.ConfigFile = generalConfig;
-                b.Section = "General";
-                b.Key = "Add Variant Events";
-                b.Description = "Adds Variant related Events using the MSU Event Director";
-                b.CheckBoxConfig = new CheckBoxConfig
-                {
-                    restartRequired = true
-                };
-            }).DoConfigure();
-
-            showVariantRuleCategory = new ConfigurableBool(false)
-            {
-                Section = "General",
-                Key = "Show Variant Rule Category",
-                Description = "Uncovers the Variant rule category, allowing you to enable or disable variant spawning from the lobby.",
-                ConfigFile = generalConfig,
+                section = "General",
+                key = "Show Variant Rule Category",
+                description = "Uncovers the Variant rule category, allowing you to enable or disable variant spawning from the lobby.",
+                configFile = generalConfig,
             };
 
-            enableArtifactOfVariance = new ConfigurableBool(true)
+            _enableArtifactOfVariance = new ConfiguredBool(true)
             {
-                Section = "General",
-                Key = "Enable Artifact of Variance",
-                Description = "Wether the artifact of Variance is enabled",
-                ConfigFile = generalConfig,
-            }.AddOnConfigChanged(b =>
+                section = "General",
+                key = "Enable Artifact of Variance",
+                description = "Wether the artifact of Variance is enabled",
+                configFile = generalConfig,
+            }.WithConfigChange(b =>
             {
-                var ruleDef = RuleBookExtras.varianceArtifactRuleDef;
+                var ruleDef = RuleBookExtras._varianceArtifactRuleDef;
                 ruleDef.FindChoice("On").excludeByDefault = !b;
                 ruleDef.FindChoice("Off").excludeByDefault = !b;
-                ruleDef.forceLobbyDisplay = b;
 
                 InfiniteTower.AddOrRemoveWave(b);
+
+                if (PreGameController.instance && NetworkServer.active)
+                    PreGameController.instance.RecalculateModifierAvailability();
             });
-            
 
-            activateMeshReplacementSystem = new ConfigurableBool(true)
+
+            _activateMeshReplacementSystem = new ConfiguredBool(true)
             {
-                Section = "General",
-                Key = "Activate Mesh Replacecment Systems",
-                Description = "Activates the Mesh Replacement System, allowing for some Variants to have different meshes.\nExtremely jank, may not work at all, and could tank performance.",
-                ConfigFile = generalConfig
+                section = "General",
+                key = "Activate Mesh Replacecment Systems",
+                description = "Activates the Mesh Replacement System, allowing for some Variants to have different meshes.\nExtremely jank, may not work at all, and could tank performance.",
+                configFile = generalConfig
             };
 
-            sendArrivalMesssages = new ConfigurableBool(true)
+            _sendArrivalMesssages = new ConfiguredBool(true)
             {
-                Section = "General",
-                Key = "Send Arrival Messages",
-                Description = "Wether variants which tier's send messages on arrival send said messages.",
-                ConfigFile = generalConfig,
+                section = "General",
+                key = "Send Arrival Messages",
+                description = "Wether variants which tier's send messages on arrival send said messages.",
+                configFile = generalConfig,
             };
 
-            variantHealthBarColor = new ConfigurableColor(new Color32(0, 255, 144, byte.MaxValue))
+            _modifyGupDeathStates = new ConfiguredBool(true)
             {
-                Section = "General",
-                Key = "Variant Healthbar Color",
-                Description = "The Healthbar Colour for Variants",
-                ConfigFile = generalConfig
+                section = "General",
+                key = "Modify Gup/Geep Death States",
+                description = "Modifies the Death state of Gup and Geep so that the split enemies retain some variant logic. For example, A Variant gup will spleet into Geeps that only have the parent's variant defs. And a variant geep will not spawn from a normal gup.",
+                configFile = generalConfig,
+            }
+            .WithConfigChange(b =>
+            {
+                if(b)
+                {
+                    IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate -= GupVariantHelper.HandleDeathState;
+                    IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate += GupVariantHelper.HandleDeathState;
+                }
+                else
+                {
+                    IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate -= GupVariantHelper.HandleDeathState;
+                }
+            });
+
+            _variantHealthBarColor = new ConfiguredColor(new Color32(0, 255, 144, byte.MaxValue))
+            {
+                section = "General",
+                key = "Variant Healthbar Color",
+                description = "The Healthbar Colour for Variants",
+                configFile = generalConfig
             };
 
-            enableRewards = new ConfigurableBool(true)
+            _enableRewards = new ConfiguredBool(true)
             {
-                Section = "Rewards",
-                Key = "Activate Rewards Systems",
-                Description = "Activates the Rewards Systems, when enabled, variants drop extra gold and experiencee, alongside a chance for an item.",
-                ConfigFile = rewardsConfig,
-                CheckBoxConfig = new CheckBoxConfig
+                section = "Rewards",
+                key = "Activate Rewards Systems",
+                description = "Activates the Rewards Systems, when enabled, variants drop extra gold and experiencee, alongside a chance for an item.",
+                configFile = rewardsConfig,
+                checkBoxConfig = new CheckBoxConfig
                 {
                     restartRequired = true
                 }
             };
 
-            luckAffectsItemRewards = new ConfigurableBool(false)
+            _luckAffectsItemRewards = new ConfiguredBool(false)
             {
-                Section = "Rewards",
-                Key = "Luck affects item rewards",
-                Description = "If true, the Luck stat will influence the chance for an Item Reward",
-                ConfigFile = rewardsConfig,
-                CheckBoxConfig = new CheckBoxConfig
+                section = "Rewards",
+                key = "Luck affects item rewards",
+                description = "If true, the Luck stat will influence the chance for an Item Reward",
+                configFile = rewardsConfig,
+                checkBoxConfig = new CheckBoxConfig
                 {
-                    checkIfDisabled = () => !enableRewards
+                    checkIfDisabled = () => !_enableRewards
                 }
             };
 
-            itemRewardsSpawnOnPlayer = new ConfigurableBool(false)
+            _itemRewardsSpawnOnPlayer = new ConfiguredBool(false)
             {
-                Section = "Rewards",
-                Key = "Item Rewards Spawn on Player",
-                Description = "Setting this to true makes item rewards spawn on the player that dealt the killing blow to a variant, instead of the variant's position.",
-                ConfigFile = rewardsConfig,
-                CheckBoxConfig = new CheckBoxConfig
+                section = "Rewards",
+                key = "Item Rewards Spawn on Player",
+                description = "Setting this to true makes item rewards spawn on the player that dealt the killing blow to a variant, instead of the variant's position.",
+                configFile = rewardsConfig,
+                checkBoxConfig = new CheckBoxConfig
                 {
-                    checkIfDisabled = () => !enableRewards
+                    checkIfDisabled = () => !_enableRewards
                 }
             };
 
-            hiddenRealmsItemRollChance = new ConfigurableFloat(100f)
+            _hiddenRealmsItemRollChance = new ConfiguredFloat(100f)
             {
-                Section = "Rewards",
-                Key = "Chance for ItemDrops in Hidden Realms",
-                Description = "The chance for an Item drop in a hidden realm, this check must pass before the variant even has a chance to drop an item.\nSet this to 0 for no item drops in hidden realms.",
-                ConfigFile = rewardsConfig,
-                UseStepSlider = false,
-                SliderConfig = new SliderConfig
+                section = "Rewards",
+                key = "Chance for ItemDrops in Hidden Realms",
+                description = "The chance for an Item drop in a hidden realm, this check must pass before the variant even has a chance to drop an item.\nSet this to 0 for no item drops in hidden realms.",
+                configFile = rewardsConfig,
+                sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+                sliderConfig = new SliderConfig
                 {
-                    checkIfDisabled = () => !enableRewards,
+                    checkIfDisabled = () => !_enableRewards,
                     min = 0,
                     max = 100
                 }

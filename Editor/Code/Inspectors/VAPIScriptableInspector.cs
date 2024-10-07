@@ -1,13 +1,13 @@
-﻿using RoR2EditorKit.Inspectors;
-using System.Collections;
+﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using RoR2.Editor;
 
-namespace VAPI.EditorUtils.Inspectors
+namespace VAPI.Editor.Inspectors
 {
-    public abstract class VAPIScriptableInspector<T> : ScriptableObjectInspector<T> where T : UnityEngine.ScriptableObject
+    public abstract class VAPIScriptableInspector<T> : VisualElementScriptableObjectInspector<T> where T : UnityEngine.ScriptableObject
     {
-        protected sealed override bool ValidateUXMLPath(string path)
+        protected sealed override bool ValidatePath(string path)
         {
             return path.Contains("nebby-varianceapi");
         }

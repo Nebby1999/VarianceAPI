@@ -1,57 +1,48 @@
-﻿using RoR2EditorKit.Inspectors;
-using RoR2EditorKit;
+﻿using RoR2.Editor;
 using UnityEngine;
 using UnityEngine.UIElements;
 using UnityEditor;
 using UnityEditor.UIElements;
 using System;
 
-namespace VAPI.EditorUtils.Inspectors
+namespace VAPI.Editor.Inspectors
 {
     [CustomEditor(typeof(VariantDef))]
     public sealed class VariantDefInspector : VAPIScriptableInspector<VariantDef>
     {
-        VisualElement inspectorData;
-
-        PropertyField variantTier;
-        PropertyField variantTierDef;
-        PropertyField arrivalToken;
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            OnVisualTreeCopy += () =>
-            {
-                var container = DrawInspectorElement.Q<VisualElement>("Container");
-                inspectorData = container.Q<VisualElement>("InspectorData");
-
-                variantTier = inspectorData.Q<PropertyField>("variantTier");
-                variantTierDef = inspectorData.Q<PropertyField>("variantTierDef");
-                arrivalToken = inspectorData.Q<PropertyField>("arrivalToken");
-            };
-        }
-        protected override void DrawInspectorGUI()
-        {
-            variantTier.RegisterCallback<ChangeEvent<string>>(OnTierSet);
-            OnTierSet();
-
-            arrivalToken.AddSimpleContextMenu(new RoR2EditorKit.ContextMenuData("Auto Populate",
-                AutoPopulateToken,
-                dma => Settings.tokenPrefix.IsNullOrEmptyOrWhitespace() ? DropdownMenuAction.Status.Disabled : DropdownMenuAction.Status.Normal));
-        }
+        PropertyField _variantTier;
+        PropertyField _variantTierDef;
+        PropertyField _arrivalToken;
 
         private void OnTierSet(ChangeEvent<string> evt = null)
         {
-            VariantTierIndex index = evt == null ? TargetType.variantTier : (VariantTierIndex)Enum.Parse(typeof(VariantTierIndex), evt.newValue.Replace(" ", ""));
+            VariantTierIndex index = evt == null ? targetType._variantTier : (VariantTierIndex)Enum.Parse(typeof(VariantTierIndex), evt.newValue.Replace(" ", ""));
 
-            variantTierDef.SetDisplay(index == VariantTierIndex.AssignedAtRuntime);
+            _variantTierDef.SetDisplay(index == VariantTierIndex.AssignedAtRuntime);
         }
 
         private void AutoPopulateToken(DropdownMenuAction dma)
         {
-            string tokenBase = Settings.GetPrefixUppercase();
-            TargetType.arrivalToken = $"{tokenBase}_{name.ToUpperInvariant()}_ARRIVAL";
+            string tokenBase = R2EKSettings.instance.GetTokenAllUpperCase();
+            targetType.arrivalToken = $"{tokenBase}_{name.ToUpperInvariant()}_ARRIVAL";
             serializedObject.ApplyModifiedProperties();
+        }
+
+        protected override void InitializeVisualElement(VisualElement templateInstanceRoot)
+        {
+            _variantTier = templateInstanceRoot.Q<PropertyField>("variantTier");
+            _variantTierDef = templateInstanceRoot.Q<PropertyField>("variantTierDef");
+            _arrivalToken = templateInstanceRoot.Q<PropertyField>("arrivalToken");
+
+            _variantTier.RegisterCallback<ChangeEvent<string>>(OnTierSet);
+            OnTierSet();
+
+            _arrivalToken.AddSimpleContextMenu(new ContextMenuData
+            {
+                menuAction = AutoPopulateToken,
+                menuName = "Auto Populate",
+                actionStatusCheck = dma => R2EKSettings.instance.tokenExists ? DropdownMenuAction.Status.Normal : DropdownMenuAction.Status.Disabled
+            });
         }
     }
 }

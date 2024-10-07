@@ -30,7 +30,7 @@ namespace VAPI
         /// <summary>
         /// The VariantDefs that'll be given to the variant when spawned
         /// </summary>
-        public VariantDef[] variantDefs;
+        public VariantDef[] variantDefs = Array.Empty<VariantDef>();
         /// <summary>
         /// Wether or not to apply the variants to the Body on Start
         /// </summary>
@@ -50,18 +50,26 @@ namespace VAPI
         /// Wether or not to supress the reward for the summoned Body
         /// </summary>
         public bool supressRewards = false;
+
+        public event Action<CharacterMaster> onSummonCompleted;
         /// <summary>
         /// an event that gets triggered when a VariantSummon is performed
         /// </summary>
         public static event Action<VariantSummonReport> OnServerVariantSummonGlobal;
-        /// <summary>
-        /// Performs the VariantSummon
-        /// </summary>
-        /// <returns>The Summoned variant's CharacterMaster</returns>
+
+        [Obsolete("Call \"PerformSummon\" instead.", true)]
         public new CharacterMaster Perform()
         {
             var master = base.Perform();
-            var body = master.GetBodyObject();
+            ModifySpawnedInstance(master);
+            return master;
+        }
+
+        public CharacterMaster PerformSummon() => base.Perform();
+
+        private void ModifySpawnedInstance(CharacterMaster spawnedMaster)
+        {
+            var body = spawnedMaster.GetBodyObject();
             if (body)
             {
                 var summonedBodyDeathRewards = body.GetComponent<DeathRewards>();
@@ -82,7 +90,7 @@ namespace VAPI
                 }
                 if (bodyVariantReward)
                 {
-                    if(!supressRewards)
+                    if (!supressRewards)
                     {
                         bodyVariantReward.AddVariants(variantDefs);
                     }
@@ -99,15 +107,31 @@ namespace VAPI
                     leader = summonerBody.master;
                 }
             }
+
+            onSummonCompleted?.Invoke(spawnedMaster);
+
             VariantSummonReport report = new VariantSummonReport
             {
                 leaderMasterInstance = leader,
                 summonInstanceVariants = variantDefs,
-                summonMasterInstance = master,
+                summonMasterInstance = spawnedMaster,
             };
             OnServerVariantSummonGlobal?.Invoke(report);
+        }
 
-            return master;
+        //Nasty as fuck
+        [SystemInitializer]
+        private static void SystemInit()
+        {
+            On.RoR2.MasterSummon.Perform += (orig, self) =>
+            {
+                var instance = orig(self);
+                if(self is VariantSummon summon)
+                {
+                    summon.ModifySpawnedInstance(instance);
+                }
+                return instance;
+            };
         }
     }
 }

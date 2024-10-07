@@ -1,6 +1,6 @@
 ﻿using BepInEx;
 using BepInEx.Configuration;
-using Moonstorm.Config;
+using MSU.Config;
 using RiskOfOptions.OptionConfigs;
 using RoR2;
 using System;
@@ -17,14 +17,14 @@ namespace VAPI
         /// <summary>
         /// The total amount of registered tiers
         /// </summary>
-        public static int variantTierCount => registeredTiers.Length;
+        public static int variantTierCount => _registeredTiers.Length;
         /// <summary>
         /// Utilize this to execute an Action as soon as the VariantTierCatalog becomes available
         /// </summary>
         public static ResourceAvailability availability = default(ResourceAvailability);
 
-        private static VariantTierDef[] registeredTiers;
-        private static readonly Dictionary<VariantTierIndex, VariantTierDef> tierToDef = new Dictionary<VariantTierIndex, VariantTierDef>();
+        private static VariantTierDef[] _registeredTiers;
+        private static readonly Dictionary<VariantTierIndex, VariantTierDef> _tierToDef = new Dictionary<VariantTierIndex, VariantTierDef>();
 
 
         #region Find Methods
@@ -36,7 +36,7 @@ namespace VAPI
         public static VariantTierDef GetVariantTierDef(VariantTierIndex variantTier)
         {
             ThrowIfNotInitialized();
-            if (tierToDef.TryGetValue(variantTier, out var def))
+            if (_tierToDef.TryGetValue(variantTier, out var def))
                 return def;
             return null;
         }
@@ -49,7 +49,7 @@ namespace VAPI
         public static VariantTierDef FindVariantTierDef(string tierName)
         {
             ThrowIfNotInitialized();
-            foreach (VariantTierDef tierDef in registeredTiers)
+            foreach (VariantTierDef tierDef in _registeredTiers)
             {
                 if (tierDef.name == tierName)
                 {
@@ -64,9 +64,9 @@ namespace VAPI
         [SystemInitializer(typeof(VariantPackCatalog))]
         private static void SystemInit()
         {
-            tierToDef.Clear();
+            _tierToDef.Clear();
 
-            registeredTiers = RegisterTiersFromPacks(VariantPackCatalog.registeredPacks);
+            _registeredTiers = RegisterTiersFromPacks(VariantPackCatalog._registeredPacks);
 
             VAPILog.Info("VariantTierCatalog Initialized");
             availability.MakeAvailable();
@@ -74,14 +74,14 @@ namespace VAPI
 
         private static VariantTierDef[] RegisterTiersFromPacks(VariantPackDef[] packs)
         {
-            VAPILog.Info($"Registering VariantTierDefs from {VariantPackCatalog.VariantPackCount} VariantPacks.");
+            VAPILog.Info($"Registering VariantTierDefs from {VariantPackCatalog.variantPackCount} VariantPacks.");
 
             List<VariantTierDef> tiersToRegister = new List<VariantTierDef>();
 
             foreach (VariantPackDef pack in packs)
             {
-                ConfigFile configFile = pack.TierConfiguration;
-                BepInPlugin plugin = pack.BepInPlugin;
+                ConfigFile configFile = pack.tierConfiguration;
+                BepInPlugin plugin = pack.bepInPlugin;
                 VariantTierDef[] tiers = pack.variantTiers;
                 if (tiers.Length == 0)
                     continue;
@@ -101,17 +101,17 @@ namespace VAPI
             int num = 0;
             foreach (VariantTierDef tierDef in tiersToRegister)
             {
-                if (tierDef.Tier == VariantTierIndex.AssignedAtRuntime)
+                if (tierDef.tier == VariantTierIndex.AssignedAtRuntime)
                 {
-                    tierDef.Tier = (VariantTierIndex)(++num + 10);
+                    tierDef.tier = (VariantTierIndex)(++num + 10);
                 }
-                if (tierToDef.ContainsKey(tierDef.Tier))
+                if (_tierToDef.ContainsKey(tierDef.tier))
                 {
-                    VAPILog.Error($"Duplicate TierDef for tier {tierDef.Tier}");
+                    VAPILog.Error($"Duplicate TierDef for tier {tierDef.tier}");
                 }
                 else
                 {
-                    tierToDef.Add(tierDef.Tier, tierDef);
+                    _tierToDef.Add(tierDef.tier, tierDef);
                 }
             }
             return tiersToRegister.ToArray();
@@ -136,106 +136,125 @@ namespace VAPI
             {
                 try
                 {
-                    tierDef.goldMultiplier = new ConfigurableFloat(tierDef.goldMultiplier)
+                    tierDef.goldMultiplier = new ConfiguredFloat(tierDef.goldMultiplier)
                     {
-                        Section = $"{tierDef.name} Tier",
-                        Key = "Gold Multiplier",
-                        Description = "The Gold Multiplier for this tier",
-                        ConfigFile = configFile,
-                        ModName = plugin.Name,
-                        ModGUID = plugin.GUID,
-                        UseStepSlider = false,
-                        SliderConfig = new SliderConfig
+                        section = $"{tierDef.name} Tier",
+                        key = "Gold Multiplier",
+                        description = "The Gold Multiplier for this tier",
+                        configFile = configFile,
+                        modName = plugin.Name,
+                        modGUID = plugin.GUID,
+                        sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+                        sliderConfig = new SliderConfig
                         {
-                            formatString = "{0:0.0}",
+                            FormatString = "{0:0.0}",
                             min = 0,
                             max = 100,
-                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                            checkIfDisabled = () => !VAPIConfig._enableRewards
                         },
-                    }.AddOnConfigChanged(f =>
+                    }.WithConfigChange(f =>
                     {
                         tierDef.goldMultiplier = f;
                     }).DoConfigure();
 
-                    tierDef.experienceMultiplier = new ConfigurableFloat(tierDef.experienceMultiplier)
+                    tierDef.experienceMultiplier = new ConfiguredFloat(tierDef.experienceMultiplier)
                     {
-                        Section = $"{tierDef.name} Tier",
-                        Key = "Experience Multiplier",
-                        Description = "The Experience Multiplier for this tier",
-                        ConfigFile = configFile,
-                        ModName = plugin.Name,
-                        ModGUID = plugin.GUID,
-                        UseStepSlider = false,
-                        SliderConfig = new SliderConfig
+                        section = $"{tierDef.name} Tier",
+                        key = "Experience Multiplier",
+                        description = "The Experience Multiplier for this tier",
+                        configFile = configFile,
+                        modName = plugin.Name,
+                        modGUID = plugin.GUID,
+                        sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+                        sliderConfig = new SliderConfig
                         {
-                            formatString = "{0:0.0}",
+                            FormatString = "{0:0.0}",
                             min = 0,
                             max = 100,
-                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                            checkIfDisabled = () => !VAPIConfig._enableRewards
                         },
-                    }.AddOnConfigChanged(f =>
+                    }.WithConfigChange(f =>
                     {
                         tierDef.experienceMultiplier = f;
                     }).DoConfigure();
 
-                    tierDef.whiteItemDropChance = new ConfigurableFloat(tierDef.whiteItemDropChance)
+                    tierDef.whiteItemDropChance = new ConfiguredFloat(tierDef.whiteItemDropChance)
                     {
-                        Section = $"{tierDef.name} Tier",
-                        Key = "White Item Drop Chance",
-                        Description = "The Chance for variants of this tier to drop a White Item",
-                        ConfigFile = configFile,
-                        ModName = plugin.Name,
-                        ModGUID = plugin.GUID,
-                        UseStepSlider = false,
-                        SliderConfig = new SliderConfig
+                        section = $"{tierDef.name} Tier",
+                        key = "White Item Drop Chance",
+                        description = "The Chance for variants of this tier to drop a White Item",
+                        configFile = configFile,
+                        modName = plugin.Name,
+                        modGUID = plugin.GUID,
+                        sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+                        sliderConfig = new SliderConfig
                         {
                             min = 0,
                             max = 100,
-                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                            checkIfDisabled = () => !VAPIConfig._enableRewards
                         },
-                    }.AddOnConfigChanged(f =>
+                    }.WithConfigChange(f =>
                     {
                         tierDef.whiteItemDropChance = f;
                     }).DoConfigure();
 
-                    tierDef.greenItemDropChance = new ConfigurableFloat(tierDef.greenItemDropChance)
+                    tierDef.greenItemDropChance = new ConfiguredFloat(tierDef.greenItemDropChance)
                     {
-                        Section = $"{tierDef.name} Tier",
-                        Key = "Green Item Drop Chance",
-                        Description = "The Chance for variants of this tier to drop a Green Item",
-                        ConfigFile = configFile,
-                        ModName = plugin.Name,
-                        ModGUID = plugin.GUID,
-                        UseStepSlider = false,
-                        SliderConfig = new SliderConfig
+                        section = $"{tierDef.name} Tier",
+                        key = "Green Item Drop Chance",
+                        description = "The Chance for variants of this tier to drop a Green Item",
+                        configFile = configFile,
+                        modName = plugin.Name,
+                        modGUID = plugin.GUID,
+                        sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+                        sliderConfig = new SliderConfig
                         {
                             min = 0,
                             max = 100,
-                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                            checkIfDisabled = () => !VAPIConfig._enableRewards
                         },
-                    }.AddOnConfigChanged(f =>
+                    }.WithConfigChange(f =>
                     {
                         tierDef.greenItemDropChance = f;
                     }).DoConfigure();
 
-                    tierDef.redItemDropChance = new ConfigurableFloat(tierDef.redItemDropChance)
+                    tierDef.redItemDropChance = new ConfiguredFloat(tierDef.redItemDropChance)
                     {
-                        Section = $"{tierDef.name} Tier",
-                        Key = "Red Item Drop Chance",
-                        Description = "The Chance for variants of this tier to drop a Red Item",
-                        ConfigFile = configFile,
-                        ModName = plugin.Name,
-                        ModGUID = plugin.GUID,
-                        UseStepSlider = false,
-                        SliderConfig = new SliderConfig
+                        section = $"{tierDef.name} Tier",
+                        key = "Red Item Drop Chance",
+                        description = "The Chance for variants of this tier to drop a Red Item",
+                        configFile = configFile,
+                        modName = plugin.Name,
+                        modGUID = plugin.GUID,
+                        sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+                        sliderConfig = new SliderConfig
                         {
                             min = 0,
                             max = 100,
-                            checkIfDisabled = () => !VAPIConfig.enableRewards
+                            checkIfDisabled = () => !VAPIConfig._enableRewards
                         },
-                    }.AddOnConfigChanged(f =>
+                    }.WithConfigChange(f =>
                     {
                         tierDef.redItemDropChance = f;
+                    }).DoConfigure();
+
+                    tierDef.armorBonus = new ConfiguredFloat(tierDef.armorBonus)
+                    {
+                        section = $"{tierDef.name} Tier",
+                        key = "Tier Armor Bonus",
+                        description = "Armor bonus applied to variants with this tier, this value stacks if the variant has multiple VariantDefs applied.",
+                        configFile = configFile,
+                        modName = plugin.Name,
+                        modGUID = plugin.GUID,
+                        sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+                        sliderConfig = new SliderConfig
+                        {
+                            min = 0,
+                            max = 100
+                        },
+                    }.WithConfigChange(f =>
+                    {
+                        tierDef.armorBonus = f;
                     }).DoConfigure();
                 }
                 catch (Exception e)

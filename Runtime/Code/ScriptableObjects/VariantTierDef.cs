@@ -1,4 +1,4 @@
-﻿using Moonstorm.AddressableAssets;
+﻿
 using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
@@ -25,13 +25,9 @@ namespace VAPI
 
         [Tooltip("A list of items that are added to variants of this tier when they spawn")]
         public List<AddressReferencedItemDef> tierItemDefs = new List<AddressReferencedItemDef>();
-        [HideInInspector, Obsolete("Use \"tierItemDefs\" instead")]
-        public List<AddressableItemDef> tierItems = new List<AddressableItemDef>();
 
         [Tooltip("A non timedd buff that's applied to variants of this tier when they spawn")]
         public AddressReferencedBuffDef tierBuffDef;
-        [HideInInspector, Obsolete("Use \"tierBuffDef\" instead")]
-        public AddressableBuffDef tierBuff;
 
         [Space]
         [Tooltip("The experience muttliplier for Variants of this tier")]
@@ -44,11 +40,13 @@ namespace VAPI
         public float greenItemDropChance;
         [Tooltip("The chances for Variants of this tier to drop Red items")]
         public float redItemDropChance;
+        [Tooltip("Armor bonus applied to variants of this tier, this stacks with the TOTAL variant count.")]
+        public float armorBonus;
 
         /// <summary>
         /// Returns <see cref="goldMultiplier"/> minus 1 if <see cref="goldMultiplier"/> is greater than 1
         /// </summary>
-        public float ExperienceMultiplierMinus1
+        public float experienceMultiplierMinus1
         {
             get
             {
@@ -61,7 +59,7 @@ namespace VAPI
         /// <summary>
         /// Returns <see cref="goldMultiplier"/> minus 1 if <see cref="goldMultiplier"/> is greater than 1
         /// </summary>
-        public float GoldMultiplierMinus1
+        public float goldMultiplierMinus1
         {
             get
             {
@@ -74,7 +72,7 @@ namespace VAPI
         /// <summary>
         /// The internal tier for this variant
         /// </summary>
-        public VariantTierIndex Tier { get => _tier; internal set => _tier = value; }
+        public VariantTierIndex tier { get => _tier; internal set => _tier = value; }
 
         /// <summary>
         /// Awake method for VariantTierDef
@@ -82,22 +80,8 @@ namespace VAPI
         /// </summary>
         public virtual void Awake()
         {
-#if !UNITY_EDITOR
-            Migrate();
-#endif
         }
 
-        [ContextMenu("Migrate to R2API.Addressables")]
-        private void Migrate()
-        {
-            if (tierBuffDef.IsInvalid)
-                tierBuffDef = tierBuff;
-
-            if(tierItemDefs.Count == 0 && tierItems.Count > 0)
-            {
-                tierItemDefs.AddRange(tierItems.Select(x => (AddressReferencedItemDef)x));
-            }
-        }
         /// <summary>
         /// Adds the items specified in <see cref="tierItems"/> to the target inventory
         /// </summary>

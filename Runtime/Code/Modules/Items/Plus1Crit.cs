@@ -1,15 +1,16 @@
-﻿using Moonstorm;
+﻿using MSU;
 using R2API;
 using RoR2;
+using RoR2.ContentManagement;
 
 namespace VAPI.Items
 {
     /// <summary>
     /// <inheritdoc cref="GlobalCDR"/>
     /// </summary>
-    public class Plus1Crit : ItemBase
+    public class Plus1Crit : VAPIItem
     {
-        public override ItemDef ItemDef { get; } = VAPIAssets.LoadAsset<ItemDef>("Plus1Crit");
+        public override VAPIAssetRequest<ItemDef> GetAssetRequest() => VAPIAssets.LoadAssetAsync<ItemDef>("Plus1Crit");
 
         public override void Initialize()
         {
@@ -17,9 +18,14 @@ namespace VAPI.Items
             RecalculateStatsAPI.GetStatCoefficients += Add1Crit;
         }
 
+        public override bool IsAvailable(ContentPack contentPack)
+        {
+            return true;
+        }
+
         private void Add1Crit(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
-            args.critAdd += sender.GetItemCount(ItemDef);
+            args.critAdd += sender.GetItemCount(itemDef);
         }
     }
 }

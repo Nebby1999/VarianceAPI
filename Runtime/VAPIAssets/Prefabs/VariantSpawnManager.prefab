@@ -29,6 +29,7 @@ Transform:
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: -1.408042, y: -1.058876, z: 22.82624}
   m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 0
@@ -78,8 +79,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 46f90f50ab454484d9910c483e6c2692, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  defaultSpawnRateMultiplier: 1
-  varianceArtifact: {fileID: 11400000, guid: 2a46fba08bb7850458be28968471244b, type: 2}
+  _defaultSpawnRateMultiplier: 1
+  _varianceArtifact: {fileID: 11400000, guid: 2a46fba08bb7850458be28968471244b, type: 2}
 --- !u!114 &5235125077304693029
 MonoBehaviour:
   m_ObjectHideFlags: 0

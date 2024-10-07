@@ -26,22 +26,22 @@ namespace VAPI.Components
         /// </summary>
         public float aiUseDelay;
         public float aiUseDelayMax;
-        private bool aiCanUse = false;
+        private bool _aiCanUse = false;
 
         private void FixedUpdate()
         {
             aiUseDelay -= Time.fixedDeltaTime;
             if (aiUseDelay <= 0)
             {
-                aiCanUse = true;
+                _aiCanUse = true;
                 aiUseDelay = aiUseDelayMax;
             }
 
             if (body.equipmentSlot && body.equipmentSlot.stock > 0 && body.inputBank && !body.isPlayerControlled)
             {
-                if (aiCanUse)
+                if (_aiCanUse)
                 {
-                    aiCanUse = false;
+                    _aiCanUse = false;
 
                     EntityStateMachine[] stateMachines = body.gameObject.GetComponents<EntityStateMachine>();
                     foreach (EntityStateMachine stateMachine in stateMachines)

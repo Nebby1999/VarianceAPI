@@ -19,8 +19,8 @@ namespace VAPI
 
             foreach (BodyVariantDefProvider provider in BodyVariantDefProvider.instances)
             {
-                var bodyPrefab = BodyCatalog.GetBodyPrefab(provider.TiedIndex);
-                toLog.Add($"{bodyPrefab.name} (VariantDef count: {provider.TotalVariantCount})");
+                var bodyPrefab = BodyCatalog.GetBodyPrefab(provider.tiedIndex);
+                toLog.Add($"{bodyPrefab.name} (VariantDef count: {provider.totalVariantCount})");
             }
 
             Debug.Log(string.Join("\n", toLog));
@@ -36,8 +36,8 @@ namespace VAPI
                 return;
             }
 
-            string character = StringFinder.Instance.GetBodyName(args[0]);
-            if (character == null)
+            BodyIndex character = StringFinder.Instance.GetBodyFromPartial(args[0]);
+            if (character == BodyIndex.None)
             {
                 Debug.Log("No body could be found with that name. To get a list of bodies that have variants, use \"vapi_list_bodies\".");
                 return;
@@ -53,7 +53,7 @@ namespace VAPI
             List<string> toLog = new List<string>();
             toLog.Add($"{character}'s Variants");
             toLog.Add("-----------------------");
-            for (int i = 0; i < bodyVariantDefProvider.TotalVariantCount; i++)
+            for (int i = 0; i < bodyVariantDefProvider.totalVariantCount; i++)
             {
                 VariantDef def = bodyVariantDefProvider.GetVariantDef(i);
                 toLog.Add($"{i} - {def.name}");
@@ -78,14 +78,14 @@ namespace VAPI
                 return;
             }
 
-            string master = StringFinder.Instance.GetMasterName(args[0]);
-            if (master == null)
+            MasterCatalog.MasterIndex master = StringFinder.Instance.GetAiFromPartial(args[0]);
+            if (master == MasterCatalog.MasterIndex.none)
             {
                 Debug.Log("Could not find master.");
                 return;
             }
 
-            var masterPrefab = MasterCatalog.FindMasterPrefab(master);
+            var masterPrefab = MasterCatalog.GetMasterPrefab(master);
 
             string[] variantNames = Array.Empty<string>();
             for (int i = 1; i < args.Count; i++)
@@ -93,11 +93,13 @@ namespace VAPI
                 HG.ArrayUtils.ArrayAppend(ref variantNames, args[i]);
             }
             List<VariantDef> variants = new List<VariantDef>();
+            var provider = BodyVariantDefProvider.FindProvider(master);
+            var availableVariants = provider.GetAllVariants(false);
             foreach (string variantName in variantNames)
             {
-                for (int i = 0; i < VariantCatalog.registeredVariants.Length; i++)
+                for (int i = 0; i < availableVariants.Length; i++)
                 {
-                    var vd = VariantCatalog.registeredVariants[i];
+                    var vd = availableVariants[i];
                     if (vd.name.ToLowerInvariant().Contains(variantName.ToLowerInvariant()))
                     {
                         variants.Add(vd);
@@ -119,7 +121,7 @@ namespace VAPI
                 summonerBodyObject = null,
                 teamIndexOverride = masterPrefab.GetComponent<CharacterMaster>().teamIndex,
             };
-            summon.Perform();
+            summon.PerformSummon();
 
             List<string> toLog = new List<string>();
             toLog.Add($"Spawned a {masterPrefab.name} with the following VariantDefs");
@@ -141,14 +143,14 @@ namespace VAPI
                 return;
             }
 
-            string body = StringFinder.Instance.GetBodyName(args[0]);
-            if (body == null)
+            BodyIndex body = StringFinder.Instance.GetBodyFromPartial(args[0]);
+            if (body == BodyIndex.None)
             {
                 Debug.Log("No body could be found with that name");
                 return;
             }
 
-            GameObject newBody = BodyCatalog.FindBodyPrefab(body);
+            GameObject newBody = BodyCatalog.GetBodyPrefab(body);
 
             if (args.sender == null)
             {
@@ -170,11 +172,13 @@ namespace VAPI
                 HG.ArrayUtils.ArrayAppend(ref variantNames, args[i]);
             }
             List<VariantDef> variants = new List<VariantDef>();
+            var provider = BodyVariantDefProvider.FindProvider(body);
+            var availableVariants = provider.GetAllVariants(false);
             foreach (string variantName in variantNames)
             {
-                for (int i = 0; i < VariantCatalog.registeredVariants.Length; i++)
+                for (int i = 0; i < availableVariants.Length; i++)
                 {
-                    var vd = VariantCatalog.registeredVariants[i];
+                    var vd = availableVariants[i];
                     if (vd.name.ToLowerInvariant().Contains(variantName.ToLowerInvariant()))
                     {
                         variants.Add(vd);

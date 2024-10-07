@@ -1,15 +1,16 @@
-﻿using Moonstorm;
+﻿using MSU;
 using R2API;
 using RoR2;
+using RoR2.ContentManagement;
 
 namespace VAPI.Items
 {
     /// <summary>
     /// <inheritdoc cref="GlobalCDR"/>
     /// </summary>
-    public class PrimaryCDR : ItemBase
+    public class PrimaryCDR : VAPIItem
     {
-        public override ItemDef ItemDef { get; } = VAPIAssets.LoadAsset<ItemDef>("PrimaryCDR");
+        public override VAPIAssetRequest<ItemDef> GetAssetRequest() => VAPIAssets.LoadAssetAsync<ItemDef>("PrimaryCDR");
 
         public override void Initialize()
         {
@@ -17,9 +18,14 @@ namespace VAPI.Items
             RecalculateStatsAPI.GetStatCoefficients += ReduceCooldown;
         }
 
+        public override bool IsAvailable(ContentPack contentPack)
+        {
+            return true;
+        }
+
         private void ReduceCooldown(CharacterBody sender, RecalculateStatsAPI.StatHookEventArgs args)
         {
-            args.primaryCooldownMultAdd -= sender.GetItemCount(ItemDef) * 0.01f;
+            args.primaryCooldownMultAdd -= sender.GetItemCount(itemDef) * 0.01f;
         }
     }
 }

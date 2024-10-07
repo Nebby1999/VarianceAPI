@@ -1,6 +1,6 @@
 ﻿using ThunderKit.Integrations.Thunderstore;
 
-namespace VAPI.EditorUtils.Importers
+namespace VAPI.Editor.Importers
 {
     public class InstallDebugToolkit : ThunderstorePackageInstaller
     {

@@ -96,8 +96,8 @@ namespace VAPI
                 redChance = 0;
                 foreach (VariantTierDef tierDef in list)
                 {
-                    goldMultiplier += tierDef.GoldMultiplierMinus1;
-                    experienceMultiplier += tierDef.ExperienceMultiplierMinus1;
+                    goldMultiplier += tierDef.goldMultiplierMinus1;
+                    experienceMultiplier += tierDef.experienceMultiplierMinus1;
                     whiteChance += tierDef.whiteItemDropChance;
                     greenChance += tierDef.greenItemDropChance;
                     redChance += tierDef.redItemDropChance;
@@ -146,7 +146,7 @@ namespace VAPI
         protected virtual void CreateDroplet(PickupIndex dropletIndex, DamageReport report)
         {
             PickupDropletController.CreatePickupDroplet(dropletIndex,
-                VAPIConfig.itemRewardsSpawnOnPlayer ? report.attacker.transform.position : report.victim.transform.position,
+                VAPIConfig._itemRewardsSpawnOnPlayer ? report.attacker.transform.position : report.victim.transform.position,
                 (Vector3.up * 20) + (Vector3.right * Random.Range(1, 5) + (Vector3.forward * Random.Range(1, 5))));
         }
 

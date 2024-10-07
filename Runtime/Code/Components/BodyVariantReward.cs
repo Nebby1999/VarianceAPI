@@ -22,24 +22,24 @@ namespace VAPI.Components
         /// <summary>
         /// Wether this BodyVariantReward has applied the modifiers for rewards
         /// </summary>
-        public bool HasApplied { get; private set; } = false;
-        private List<VariantDef> variants = new List<VariantDef>();
-        private VariantRewardInfo reward;
-        private DeathRewards deathRewards;
-        private CharacterBody characterBody;
+        public bool hasApplied { get; private set; } = false;
+        private List<VariantDef> _variants = new List<VariantDef>();
+        private VariantRewardInfo _reward;
+        private DeathRewards _deathRewards;
+        private CharacterBody _characterBody;
 
         private void Awake()
         {
             if (!Run.instance)
                 Destroy(this);
 
-            deathRewards = GetComponent<DeathRewards>();
-            characterBody = GetComponent<CharacterBody>();
+            _deathRewards = GetComponent<DeathRewards>();
+            _characterBody = GetComponent<CharacterBody>();
         }
 
         private void Start()
         {
-            if (applyOnStart && !HasApplied)
+            if (applyOnStart && !hasApplied)
                 Apply();
         }
         /// <summary>
@@ -47,29 +47,29 @@ namespace VAPI.Components
         /// </summary>
         public void Apply()
         {
-            if (HasApplied)
+            if (hasApplied)
             {
                 VAPILog.Warning($"{this} has already been applied!");
                 return;
             }
 
-            HasApplied = true;
-            variantsInBody = new ReadOnlyCollection<VariantDef>(variants);
-            reward = new VariantRewardInfo();
-            reward.SetFromAverageOfTiers(variants.Select(vd => vd.VariantTierDef), Run.instance);
+            hasApplied = true;
+            variantsInBody = new ReadOnlyCollection<VariantDef>(_variants);
+            _reward = new VariantRewardInfo();
+            _reward.SetFromAverageOfTiers(_variants.Select(vd => vd.variantTierDef), Run.instance);
 
-            deathRewards.goldReward *= (uint)reward.goldMultiplier;
-            deathRewards.expReward *= (uint)reward.experienceMultiplier;
+            _deathRewards.goldReward *= (uint)_reward.goldMultiplier;
+            _deathRewards.expReward *= (uint)_reward.experienceMultiplier;
         }
 
         /// <summary>
         /// Adds a VariantDef to the BodyVariantReward's internal variants list
-        /// <para>Returns if <see cref="HasApplied"/> is true</para>
+        /// <para>Returns if <see cref="hasApplied"/> is true</para>
         /// </summary>
         /// <param name="variantDefs">The VariantDefs to add</param>
         public void AddVariants(IEnumerable<VariantDef> variantDefs)
         {
-            if (HasApplied)
+            if (hasApplied)
             {
                 VAPILog.Warning($"{this} has already been applied!");
                 return;
@@ -82,19 +82,19 @@ namespace VAPI.Components
 
         /// <summary>
         /// Adds a VariantDef to the BodyVariantReward's internal variants list.
-        /// <para>Returns if <see cref="HasApplied"/> is true</para>
+        /// <para>Returns if <see cref="hasApplied"/> is true</para>
         /// </summary>
         /// <param name="vd">The VariantDef to add</param>
         public void AddVariant(VariantDef vd)
         {
-            if (HasApplied)
+            if (hasApplied)
             {
                 VAPILog.Warning($"{this} has already been applied!");
                 return;
             }
             if(vd)
             {
-                variants.Add(vd);
+                _variants.Add(vd);
             }
         }
 
@@ -115,25 +115,25 @@ namespace VAPI.Components
             if (!damageReport.attackerMaster)
                 return;
 
-            if (reward == null)
+            if (_reward == null)
                 return;
 
             if (Run.instance.isRunStopwatchPaused)
             {
-                var chanceInRealm = VAPIConfig.hiddenRealmsItemRollChance.Value;
+                var chanceInRealm = VAPIConfig._hiddenRealmsItemRollChance.value;
                 if (chanceInRealm <= 0)
                     return;
 
-                if (Util.CheckRoll(chanceInRealm, VAPIConfig.luckAffectsItemRewards ? damageReport.attackerMaster.luck : 0))
+                if (Util.CheckRoll(chanceInRealm, VAPIConfig._luckAffectsItemRewards ? damageReport.attackerMaster.luck : 0))
                 {
-                    reward.TrySpawnDroplet(damageReport);
+                    _reward.TrySpawnDroplet(damageReport);
                 }
             }
-            reward.TrySpawnDroplet(damageReport);
+            _reward.TrySpawnDroplet(damageReport);
 
-            if (VariantSpawnManager.Instance)
+            if (VariantSpawnManager.instance)
             {
-                VariantSpawnManager.Instance.OnVariantKilled(variantsInBody, damageReport);
+                VariantSpawnManager.instance.OnVariantKilled(variantsInBody, damageReport);
             }
         }
     }

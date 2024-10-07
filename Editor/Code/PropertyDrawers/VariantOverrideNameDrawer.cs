@@ -5,7 +5,7 @@ using UnityEditor;
 using System;
 using RoR2;
 
-namespace VAPI.EditorUtils.PropertyDrawers
+namespace VAPI.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(VariantDef.VariantOverrideName))]
     public class VariantOverrideNameDrawer : PropertyDrawer

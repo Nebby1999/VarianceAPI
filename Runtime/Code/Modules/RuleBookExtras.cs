@@ -1,4 +1,4 @@
-using Moonstorm.AddressableAssets;
+
 using R2API;
 using R2API.AddressReferencedAssets;
 using RoR2;
@@ -7,40 +7,55 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 using UnityEngine;
-using Moonstorm;
+using MSU;
+using UnityEngine.Networking;
 
 namespace VAPI.RuleSystem
 {
     internal static class RuleBookExtras
     {
-        private static RuleChoiceDef varianceExpansionRuleChoice;
-        private static RuleCategoryDef variantPackCategory;
-        private static int variantPackCategoryIndex;
-        private static RuleCategoryDef variantCategory;
-        private static int variantCategoryIndex;
-        private static Dictionary<VariantIndex, VAPIRuleChoiceDef> variantIndexToRuleChoice = new Dictionary<VariantIndex, VAPIRuleChoiceDef>();
-        internal static RuleDef varianceArtifactRuleDef;
+        private static RuleChoiceDef _varianceExpansionRuleChoice;
+        private static RuleCategoryDef _variantPackCategory;
+        private static int _variantPackCategoryIndex;
+        private static RuleCategoryDef _variantCategory;
+        private static int _variantCategoryIndex;
+        private static Dictionary<VariantIndex, VAPIRuleChoiceDef> _variantIndexToRuleChoice = new Dictionary<VariantIndex, VAPIRuleChoiceDef>();
+        private static List<(VariantDef, VAPIRuleChoiceDef, VAPIRuleChoiceDef)> _choicesToReComputeNameWhenLanguageChanges = new List<(VariantDef, VAPIRuleChoiceDef, VAPIRuleChoiceDef)>();
+        internal static RuleDef _varianceArtifactRuleDef;
 
         [SystemInitializer(typeof(RuleCatalog), typeof(VariantCatalog))]
         private static void SystemInitializer()
         {
-            varianceExpansionRuleChoice = VAPIAssets.LoadAsset<ExpansionDef>("VarianceExpansion").enabledChoice;
+            _varianceExpansionRuleChoice = VAPIAssets.LoadAsset<ExpansionDef>("VarianceExpansion").enabledChoice;
             AddNewCategories();
             AddVariantPackRules();
             AddVariantRules();
-            varianceArtifactRuleDef = RuleCatalog.FindRuleDef("Artifacts.Variance");
+            _varianceArtifactRuleDef = RuleCatalog.FindRuleDef("Artifacts.Variance");
 
             AddressReferencedAsset.OnAddressReferencedAssetsLoaded += FinishRuleChoices;
+            RoR2.Language.onCurrentLanguageChanged += RecomputeTokenValues;
+        }
+
+        private static void RecomputeTokenValues()
+        {
+            foreach(var (variantDef, onChoice, offChoice) in _choicesToReComputeNameWhenLanguageChanges)
+            {
+                var variantName = GetNameFromOverrides(variantDef);
+                onChoice.tooltipNameToken = variantName;
+                offChoice.tooltipNameToken = variantName;
+            }
         }
 
         private static void FinishRuleChoices()
         {
-            foreach(var (variantIndex, ruleChoice) in variantIndexToRuleChoice)
+            foreach(var (variantIndex, ruleChoice) in _variantIndexToRuleChoice)
             {
                 VariantDef def = VariantCatalog.GetVariantDef(variantIndex);
 
+                var expansions = GetRequiredExpansionDefs(def);
                 ruleChoice.requiredUnlockables = GetRequiredUnlockableDefs(def);
                 ruleChoice.requiredExpansionDefs = GetRequiredExpansionDefs(def);
+                ruleChoice.requiredChoiceDefs.AddRange(expansions.Select(def => def.enabledChoice));
             }
         }
 
@@ -60,14 +75,14 @@ namespace VAPI.RuleSystem
             if (variantToCheck == VariantIndex.None)
                 return false;
 
-            var variantChoice = variantIndexToRuleChoice[variantToCheck];
+            var variantChoice = _variantIndexToRuleChoice[variantToCheck];
             var packEnabledChoice = variantChoice.tiedPackEnabledChoice;
             return runRulebook.IsChoiceActive(packEnabledChoice) && runRulebook.IsChoiceActive(variantChoice);
         }
 
         private static void AddNewCategories()
         {
-            variantPackCategory = new RuleCategoryDef
+            _variantPackCategory = new RuleCategoryDef
             {
                 displayToken = "VAPI_RULE_HEADER_VARIANTPACKS",
                 subtitleToken = "VAPI_RULE_HEADER_VARIANTPACKS_SUBTITLE",
@@ -77,9 +92,9 @@ namespace VAPI.RuleSystem
                 color = Color.cyan,
                 hiddenTest = VariantPackCategoryHiddenTest
             };
-            variantPackCategoryIndex = RuleCatalogExtras.AddCategory(variantPackCategory);
+            _variantPackCategoryIndex = RuleCatalogExtras.AddCategory(_variantPackCategory);
 
-            variantCategory = new RuleCategoryDef
+            _variantCategory = new RuleCategoryDef
             {
                 displayToken = "VAPI_RULE_HEADER_VARIANTS",
                 subtitleToken = "VAPI_RULE_HEADER_VARIANTS_SUBTITLE",
@@ -89,20 +104,20 @@ namespace VAPI.RuleSystem
                 color = Color.cyan,
                 hiddenTest = VariantCategoryHiddenTest,
             };
-            variantCategoryIndex = RuleCatalogExtras.AddCategory(variantCategory);
+            _variantCategoryIndex = RuleCatalogExtras.AddCategory(_variantCategory);
         }
 
         private static void AddVariantPackRules()
         {
-            for (int i = 0; i < VariantPackCatalog.registeredPacks.Length; i++)
+            for (int i = 0; i < VariantPackCatalog._registeredPacks.Length; i++)
             {
-                VariantPackDef pack = VariantPackCatalog.registeredPacks[i];
+                VariantPackDef pack = VariantPackCatalog._registeredPacks[i];
                 //Adding a rule for packs that dont have variants is pointless
                 if (pack.variants.Length <= 0)
                     continue;
 
                 RuleDef packRule = CreateRuleDefFromVariantPack(pack);
-                RuleCatalogExtras.AddRuleToCatalog(packRule, variantPackCategoryIndex);
+                RuleCatalogExtras.AddRuleToCatalog(packRule, _variantPackCategoryIndex);
             }
         }
 
@@ -115,9 +130,9 @@ namespace VAPI.RuleSystem
             onChoice.tooltipNameToken = variantPack.nameToken;
             onChoice.tooltipNameColor = Color.cyan;
             onChoice.tooltipBodyToken = variantPack.descriptionToken;
-            onChoice.variantPackIndex = variantPack.VariantPackIndex;
+            onChoice.variantPackIndex = variantPack.variantPackIndex;
             rule.MakeNewestChoiceDefault();
-            variantPack.EnabledChoice = onChoice;
+            variantPack.enabledChoice = onChoice;
 
             VAPIRuleChoiceDef offChoice = AddVAPIChoice(rule, "Off");
             offChoice.spritePath = "Textures/MiscIcons/texUnlockIcon";
@@ -132,14 +147,14 @@ namespace VAPI.RuleSystem
         {
             VAPILog.Info("Adding Variant Rules");
 #if DEBUG
-            VAPILog.Debug($"Registered Variants: {VariantCatalog.VariantCount}");
+            VAPILog.Debug($"Registered Variants: {VariantCatalog.variantCount}");
 #endif
-            for (int i = 0; i < VariantCatalog.registeredVariants.Length; i++)
+            for (int i = 0; i < VariantCatalog._registeredVariants.Length; i++)
             {
-                VariantDef def = VariantCatalog.registeredVariants[i];
+                VariantDef def = VariantCatalog._registeredVariants[i];
 
                 RuleDef variantRule = CreateRuleDefFromVariant(def);
-                RuleCatalogExtras.AddRuleToCatalog(variantRule, variantCategoryIndex);
+                RuleCatalogExtras.AddRuleToCatalog(variantRule, _variantCategoryIndex);
             }
         }
 
@@ -155,15 +170,13 @@ namespace VAPI.RuleSystem
             onChoice.tooltipNameToken = variantName;
             onChoice.tooltipNameColor = Color.cyan;
             onChoice.tooltipBodyToken = "VAPI_RULE_VARIANT_ON_DESCRIPTION";
-            onChoice.variantIndex = variantDef.VariantIndex;
+            onChoice.variantIndex = variantDef.variantIndex;
 
             onChoice.tiedPackEnabledChoice = GetVariantPackEnabledChoice(variantDef);
             onChoice.requiredChoiceDefs = GetRequiredChoiceDefs(variantDef);
-            /*onChoice.requiredExpansionDefs = GetRequiredExpansionDefs(variantDef);
-            onChoice.requiredUnlockables = GetRequiredUnlockableDefs(variantDef);*/
             rule.MakeNewestChoiceDefault();
 
-            variantIndexToRuleChoice.Add(variantDef.VariantIndex, onChoice);
+            _variantIndexToRuleChoice.Add(variantDef.variantIndex, onChoice);
 
 
             VAPIRuleChoiceDef offChoice = AddVAPIChoice(rule, "Off");
@@ -175,16 +188,21 @@ namespace VAPI.RuleSystem
             offChoice.requiredChoiceDefs = GetRequiredChoiceDefs(variantDef);
 
             var display = variantDef.spawnRate > 0;
-            rule.forceLobbyDisplay = display;
             onChoice.excludeByDefault = !display;
             offChoice.excludeByDefault = !display;
-            variantDef.spawnRateConfig.OnConfigChanged += f =>
+            variantDef._spawnRateConfig.onConfigChanged += f =>
             {
                 bool b = f > 0;
-                rule.forceLobbyDisplay = b;
                 onChoice.excludeByDefault = !b;
                 offChoice.excludeByDefault = !b;
+                if(NetworkServer.active && PreGameController.instance)
+                {
+                    PreGameController.instance.RecalculateModifierAvailability();
+                }
             };
+            variantDef._spawnRateConfig.DoConfigure();
+
+            _choicesToReComputeNameWhenLanguageChanges.Add((variantDef, onChoice, offChoice));
 
             return rule;
         }
@@ -225,12 +243,12 @@ namespace VAPI.RuleSystem
 
         private static List<RuleChoiceDef> GetRequiredChoiceDefs(VariantDef variantDef)
         {
-            return new List<RuleChoiceDef> { VariantPackCatalog.FindVariantPackDef(variantDef).EnabledChoice };
+            return new List<RuleChoiceDef> { VariantPackCatalog.FindVariantPackDef(variantDef).enabledChoice };
         }
 
         private static RuleChoiceDef GetVariantPackEnabledChoice(VariantDef variantDef)
         {
-            return VariantPackCatalog.FindVariantPackDef(variantDef).EnabledChoice;
+            return VariantPackCatalog.FindVariantPackDef(variantDef).enabledChoice;
         }
 
         private static List<ExpansionDef> GetRequiredExpansionDefs(VariantDef variantDef)
@@ -261,7 +279,7 @@ namespace VAPI.RuleSystem
             if (!preGameControllerExists)
                 return true;
 
-            bool isVAPIExpansionActive = PreGameController.instance.readOnlyRuleBook.IsChoiceActive(varianceExpansionRuleChoice);
+            bool isVAPIExpansionActive = PreGameController.instance.readOnlyRuleBook.IsChoiceActive(_varianceExpansionRuleChoice);
 
             if (isVAPIExpansionActive)
                 return false;
@@ -276,19 +294,19 @@ namespace VAPI.RuleSystem
                 return true;
 
 #if !DEBUG
-            if (!VAPIConfig.showVariantRuleCategory)
+            if (!VAPIConfig._showVariantRuleCategory)
             {
                 return true;
             }
 #endif
 
-            bool anyPackActive = VariantPackCatalog.registeredPacks.Where(x => x.EnabledChoice != null).Any(x => PreGameController.instance.readOnlyRuleBook.IsChoiceActive(x.EnabledChoice));
+            bool anyPackActive = VariantPackCatalog._registeredPacks.Where(x => x.enabledChoice != null).Any(x => PreGameController.instance.readOnlyRuleBook.IsChoiceActive(x.enabledChoice));
             if (!anyPackActive)
             {
                 return true;
             }
 
-            bool isVAPIExpansionActive = PreGameController.instance.readOnlyRuleBook.IsChoiceActive(varianceExpansionRuleChoice);
+            bool isVAPIExpansionActive = PreGameController.instance.readOnlyRuleBook.IsChoiceActive(_varianceExpansionRuleChoice);
             if (isVAPIExpansionActive)
                 return false;
 
