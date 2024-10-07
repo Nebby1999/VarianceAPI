@@ -1,15 +1,30 @@
-# Changelog
+# '2.2.0' - Variants of the Storm
 
-## '2.1.3' - Health Fix Thingy
+* Updated to unity 2021.3.33
+* Updated to Seekers of the Storm version of the game
+* Variant commands now get the variant defs directly from their providers
+* Overall reduced the item reward chance of all variant VariantTiers
+* VariantTiers now give Armor to bodies, the rarer the variant the more armor.
+	* this armor bonus stacks when variants are overlapping
+* Fixed inconsistencies with the RuleBook additions
+* Fixed Expansion Defs tied to VariantSpawnConditions not working properly
+* VariantDefs can now specify a BaseAI Vector Aim damp modifier.
+* Added a small API for handling Gup death states.
+
+# '2.1.3' - Health Fix Thingy
+
 * Fixes issue where certain mod interactions would cause monsters to gain the health boost, but not spawn with max health.
 
-## '2.1.2' - I think i'll just start meme-ing on these names unless i have a good name
+# '2.1.2' - I think i'll just start meme-ing on these names unless i have a good name
+
 * Fixed an issue where a spawn rate of 0 would cause a failure on filtering variants.
 
-## '2.1.1' - I LOVE READMES!!!
+# '2.1.1' - I LOVE READMES!!!
+
 * Fixed readme
 
-## '2.1.0' - I dont know what to write here this time
+# '2.1.0' - I dont know what to write here this time
+
 * Added a ``VariantDirectorSpawnRequest`` which can be used for spawning Variants the same way you'd spawn enemies using DirectorSpawnRequests.
 * Fixed an issue where disabling a VariantPack won't stop variants from said pack from spawning
 * Disabling a VariantPack hides all the Variants related to it in the lobby.
@@ -19,17 +34,19 @@
 * Variants which spawn rate is 0 won't show up in the lobby rules panel
 * Added back a config for enabling or disabling variant arrival messages
 
-## '2.0.2' - More Fixes
+# '2.0.2' - More Fixes
 
 * Fixed an issue where Variants wouldnt drop the correct amount of gold and experience
 * Setting a Skill Replacement's skill def to none sets the skill locator's skillDef to a special, "DoNothing" skill
 * Removed some redundant logging that are now behing building the mod in debug mode
 
-## '2.0.1' - Oops releases are my favorite kind of release
+# '2.0.1' - Oops releases are my favorite kind of release
+
 * Fixed some typos in Config descriptions and names
 * The api no longer hard crashes the game
 
-## '2.0.0' - Variants of the Void
+# '2.0.0' - Variants of the Void
+
 * Major rewrite to the codebase
 * This changelog is probably missing a LOT of changes, below are the most important ones
 * Removed the following classes:
@@ -53,17 +70,20 @@
 * Made VAPI dependant on MSU, as a lot of the systems VAPI had are also in MSU, and for using the AddressableAssets systems in said API
 
 
-## '1.1.2' - Not dead yet
+# '1.1.2' - Not dead yet
+
 * Fixed a bug where the "EnableVariantArrivalAnnouncements" configuration wouldnt actually disable variant announcements when set to false.
 * Fixed a bug where disabling the rewards system would cause the game to hang at startup.
 * Removed a dumb stupid debug.Log() that would run each time a variant spawned.
 * Removed an unused interface (IOnIncomingDamageOtherReciever) that was causing issues with MSU due to using an ILHook that pointed to the same stack.
 * Changed some of the debug log messages in Variantregister's methods. your console should be cleaner now.
 
-## '1.1.1' - Too tired
+# '1.1.1' - Too tired
+
 * Fixed a null ref exception caused by a mistake in the spawn handler.
 
-## '1.1.0' - Bugfixing Galore
+# '1.1.0' - Bugfixing Galore
+
 * Updated Website
 
 * VariantSpawnHandler:
@@ -83,7 +103,8 @@
 * VariantRegister
 	- Variant register now sends a message to the log when its material dictionary or registered variants dictionary is empty. saying that no changes will be made
 
-## '1.0.0' - First Complete Release
+# '1.0.0' - First Complete Release
+
 * Complete rewrite of the variants system.
 
 * Deprecated the following scriptable objects.
@@ -127,7 +148,7 @@
 * Added Console Commands
 * Prolly a lot of things I Forgot
 
-## '0.9.0'
+# '0.9.0'
 
 * Changes to VariantInfo & Variant Handler:
 	- VariantInfos with no VariantConfig assigned now properly register instead of crashing the mod
@@ -157,7 +178,7 @@
 * Added MeshType Enum, used on Mesh Replacements
 * Added Documentation on ScriptableObjects in the Github's Wiki.
 
-## '0.8.0'
+# '0.8.0'
 
 * Added Functionality to Legendary Variants (They'll announce their arrival in Chat.)
 * Fixed bug that caused Variants with no VariantInventory to not recieve their purple healthbar if the tier was greater than common.
@@ -168,7 +189,7 @@
 * VariantInfoHandler now has a failsafe when you attempt to add a Variant without the mod installed.
 * Removed completely ItemInfos
 
-## '0.7.1'
+# '0.7.1'
 * Changed how inventories work.
 	* Inventories are no longer an Array of ItemInfos, instead, inventories are stored in the VariantInventory scriptable object.
 		- a VariantInventory scriptable object consists of a itemStrings array, and an itemCount array.
@@ -178,7 +199,7 @@
 	* Due to this switch, ItemInfo[] is deprecated, but it will remain in VariantInfo so that people can switch to the VariantInventory scriptable Object.
 	* ItemInfo will be removed on the next major update (0.8.0)
 
-## '0.7.0'
+# '0.7.0'
 *  Added PrefabBase, a very simple prefab creation system used for creating Projectiles based off existing ones.
 * Added missing R2API Submodule dependencies.
 * Changes to the VariantInfo scriptable Object:
@@ -193,7 +214,7 @@
 * Changes to the EquipmentInfo scriptable object:
 	- Now requires an AnimationCurve which tells when to use the Equipment.
 
-## '0.6.0'
+# '0.6.0'
 * Added missing methods for Helpers.cs
 	- Added method for creating VariantOverrideNames
 	- Added methods for creating CustomVariantRewards
@@ -221,7 +242,7 @@
 
 * Uncommon Variants now use a Purple healthbar instead of a Red healthbar thanks to the new intrinsic items.
 
-## '0.5.0'
+# '0.5.0'
 * Added back the Artifact of Variance
 * Fixed issue in VariantHandler causing certain stat multipliers not applying
 * Added a PreventRecursion system. Variants may not recieve extra Dio's Best Friends when resurrecting.
@@ -239,7 +260,7 @@
 	- Proceeds to then compare the incomplete versions with complete ones made in code. if it matches one, it'll replace the material with the correct one.
 	- TL;DR: This class helps reduce bloated AssetBundle sizes by allowing the player to fetch ingame materials instead of copying them and placing them in their AssetBundle.
 
-## '0.4.0'
+# '0.4.0'
 * Changes to the OverrideName system
 	- Added a new enum which enables the OverrideName to completely override the variant's baseName.
 	- System now works with a switch
@@ -258,12 +279,12 @@
 * Added discord server to the ReadMe
 * Hopefully fixed broken icon.
 
-## '0.3.0'
+# '0.3.0'
 * All of VarianceAPI's ScriptableObjects have Headers and Tooltips, making it easier to create the objects in the UnityEditor
 * Complete Rewrite of the Variant Overridename feature. now supporting VariantOverlaps.
 * Did a Facelift of the Thunderstore page.
 
-## '0.2.0'
+# '0.2.0'
 * VariantInfo now contains VariantConfig scriptable object, VariantConfig is used to create the config entries for your Variants.
 	- VariantConfig allows you to:
 		- Set the spawn chance of a Variant.
@@ -273,19 +294,19 @@
 * Added VariantInfoHandler, use this now to register your variants, as it streamlines the process.
 * Added Helpers for creating VariantConfig Scriptable Objects in code, one for Vanilla entities and another one for Modded entities.
 
-## '0.1.1'
+# '0.1.1'
 * Forgot to call the method that makes the config, whoops.
 
-## '0.1.0'
+# '0.1.0'
 * Added the VariantRewardHandler Component, officially porting a good chunk of MonsterVariantPlus' Features.
 * Added VariantRegisterBase, a helper for easily register variants made in Thunderkit.
 * Added Config file with a lot of config entries for the VariantRewardHandler and global settings.
 * Started working on a helper for creating Variant's Spawn Chances via config
 * Determination++ After learning rob likes what i'm doing.
 
-## '0.0.2'
+# '0.0.2'
 * Added Github Link.
 * Made changes to the scriptable objects, now they can be made in Thunderkit instead of on RunTime.
 
-## '0.0.1'
+# '0.0.1'
 * Initial Release
