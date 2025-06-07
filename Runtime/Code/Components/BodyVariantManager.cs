@@ -48,6 +48,7 @@ namespace VAPI.Components
         private bool hasApplied = false;
         private EquipmentIndex storedEquip;
         private ItemDisplayRuleSet storedIDRS;
+        private bool modelSkinControllerFinished;
 
         #region Networking Related
         /// <summary>
@@ -83,6 +84,18 @@ namespace VAPI.Components
 
             if (characterBody.modelLocator && characterBody.modelLocator.modelTransform)
                 characterModel = characterBody.modelLocator.modelTransform.GetComponent<CharacterModel>();
+
+            if(characterModel.TryGetComponent<ModelSkinController>(out var mdlSkinController))
+            {
+                mdlSkinController.onSkinApplied += onSkinApplied;
+                return;
+            }
+            modelSkinControllerFinished = true;
+        }
+
+        private void onSkinApplied(int obj)
+        {
+            modelSkinControllerFinished = true;
         }
 
         private void Start()
@@ -194,6 +207,9 @@ namespace VAPI.Components
         private IEnumerator ApplyVisuals()
         {
             yield return new WaitForEndOfFrame();
+            while (!modelSkinControllerFinished)
+                yield return new WaitForEndOfFrame();
+
             foreach (VariantVisuals visuals in visualsForCoroutine)
             {
                 visuals.ApplyMaterials(characterModel);
