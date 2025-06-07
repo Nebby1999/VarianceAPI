@@ -77,8 +77,6 @@ namespace VAPI.Components
 
         private void Awake()
         {
-            variantIndices.Callback = OnListChanged;
-
             characterBody = GetComponent<CharacterBody>();
             characterDeathBehavior = GetComponent<CharacterDeathBehavior>();
 
@@ -88,9 +86,12 @@ namespace VAPI.Components
             if(characterModel.TryGetComponent<ModelSkinController>(out var mdlSkinController))
             {
                 mdlSkinController.onSkinApplied += onSkinApplied;
-                return;
             }
-            modelSkinControllerFinished = true;
+            else
+            {
+                modelSkinControllerFinished = true;
+            }
+            variantIndices.Callback = OnListChanged;
         }
 
         private void onSkinApplied(int obj)
