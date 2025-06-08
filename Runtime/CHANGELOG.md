@@ -1,3 +1,8 @@
+# '2.3.0' - Memory Optimization
+
+* Updated to game version 1.3.9
+* AssemblyDef for Runtime and Editor will no longer load if no game or MSU is installed in the project
+
 # '2.2.0' - Variants of the Storm
 
 * Updated to unity 2021.3.33

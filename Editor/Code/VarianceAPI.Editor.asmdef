@@ -19,7 +19,21 @@
         "Assembly-CSharp.dll"
     ],
     "autoReferenced": true,
-    "defineConstraints": [],
-    "versionDefines": [],
+    "defineConstraints": [
+        "VAPI_GAME_IMPORTED",
+        "VAPI_MSU_IN_PROJECT"
+    ],
+    "versionDefines": [
+        {
+            "name": "riskofrain2",
+            "expression": "0.0.1",
+            "define": "VAPI_GAME_IMPORTED"
+        },
+        {
+            "name": "teammoonstorm-moonstormsharedutils",
+            "expression": "2.3.0",
+            "define": "VAPI_MSU_IN_PROJECT"
+        }
+    ],
     "noEngineReferences": false
 }
