@@ -1,3 +1,7 @@
+# '2.3.1' - AC Update
+
+* Updated to game version 1.4.1
+
 # '2.3.0' - Memory Optimization
 
 * Updated to game version 1.3.9
