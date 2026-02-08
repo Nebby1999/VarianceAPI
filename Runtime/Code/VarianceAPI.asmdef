@@ -42,7 +42,8 @@
         "UnityEngine.UI.dll",
         "Unity.TextMeshPro.dll",
         "R2API.Prefab.dll",
-        "R2API.Addressables.dll"
+        "R2API.Addressables.dll",
+        "RoR2BepInExPack.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [

@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
+using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 
 namespace VAPI.Modules
 {
@@ -55,13 +56,13 @@ namespace VAPI.Modules
         {
             VAPILog.Info($"Initializing infinite tower support");
             _init = true;
-
-            var commonWaveCategoryRequest = Addressables.LoadAssetAsync<InfiniteTowerWaveCategory>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveCategories/CommonWaveCategory.asset");
-            var overlayEntryRequest = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerCurrentArtifactWispOnDeathUI.prefab");
+            
+            var commonWaveCategoryRequest = Addressables.LoadAssetAsync<InfiniteTowerWaveCategory>(RoR2_DLC1_GameModes_InfiniteTowerRun_ITAssets_ITWaveCategories.CommonWaveCategory_asset);
+            var overlayEntryRequest = Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_GameModes_InfiniteTowerRun_ITAssets.InfiniteTowerCurrentArtifactWispOnDeathUI_prefab);
             var assetCollectionRequest = VAPIAssets.LoadAssetAsync<AssetCollection>("acInfiniteTower");
-            var wispWave = Addressables.LoadAssetAsync<GameObject>("RoR2/DLC1/GameModes/InfiniteTowerRun/InfiniteTowerAssets/InfiniteTowerWaveArtifactWispOnDeath.prefab");
+            var wispWave = Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_GameModes_InfiniteTowerRun_ITAssets.InfiniteTowerWaveArtifactWispOnDeath_prefab);
 
-            ParallelCoroutine coroutine = new ParallelCoroutine();
+            var coroutine = new HG.Coroutines.ParallelCoroutine();
             coroutine.Add(commonWaveCategoryRequest);
             coroutine.Add(overlayEntryRequest);
             coroutine.Add(assetCollectionRequest);

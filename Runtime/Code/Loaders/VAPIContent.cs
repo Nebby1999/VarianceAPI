@@ -11,6 +11,8 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using VAPI.Modules;
+using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
+
 namespace VAPI
 {
     public class VAPIContent : IContentPackProvider
@@ -21,11 +23,11 @@ namespace VAPI
 
         internal static ContentPack contentPack { get; } = new ContentPack();
 
-        internal static ParallelCoroutine _parallelPreLoadDispatchers = new ParallelCoroutine();
+        internal static HG.Coroutines.ParallelCoroutine _parallelPreLoadDispatchers = new();
 
         private static Func<IEnumerator>[] _loadDispatchers;
 
-        internal static ParallelCoroutine _parallelPostLoadDispatchers = new ParallelCoroutine();
+        internal static HG.Coroutines.ParallelCoroutine _parallelPostLoadDispatchers = new();
 
         private static Action[] _fieldAssignDispatchers;
 
@@ -37,7 +39,7 @@ namespace VAPI
                 yield return null;
             }
 
-            while (!_parallelPreLoadDispatchers.isDone)
+            while (!_parallelPreLoadDispatchers.IsDone())
                 yield return null;
 
             for (int i = 0; i < _loadDispatchers.Length; i++)
@@ -48,7 +50,7 @@ namespace VAPI
                 while (enumerator?.MoveNext() ?? false) yield return null; //await
             }
 
-            while (!_parallelPostLoadDispatchers.isDone)
+            while (!_parallelPostLoadDispatchers.IsDone())
                 yield return null;
 
             for(int i = 0; i < _fieldAssignDispatchers.Length; i++)
@@ -100,11 +102,10 @@ namespace VAPI
 
             IEnumerator LoadLockedIconAndAssignToExpansionDef()
             {
-                ParallelCoroutine coroutine = new ParallelCoroutine();
-
                 var request = VAPIAssets.LoadAssetAsync<ExpansionDef>("VarianceExpansion");
-                var iconRequest = Addressables.LoadAssetAsync<Sprite>("RoR2/Base/Common/MiscIcons/texUnlockIcon.png");
+                var iconRequest = Addressables.LoadAssetAsync<Sprite>(RoR2_Base_Common_MiscIcons.texUnlockIcon_png);
 
+                var coroutine = new HG.Coroutines.ParallelCoroutine();
                 coroutine.Add(request);
                 coroutine.Add(iconRequest);
 
