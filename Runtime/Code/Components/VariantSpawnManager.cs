@@ -114,14 +114,15 @@ namespace VAPI.Components
 
         private VariantDef[] Roll(BodyVariantDefProvider provider)
         {
+            //alloyed collective changed how WeightedSelection works internally, now we must make sure we don't pass an empty array, as it'll cause an index out of bounds exception.
             VariantDef[] uniques = provider.GetUniqueVariants(true);
-            if (uniques != null && RollUniques(uniques, out VariantDef uniqueResult))
+            if (uniques != null && uniques.Length > 0 && RollUniques(uniques, out VariantDef uniqueResult))
             {
                 return new VariantDef[] { uniqueResult };
             }
 
             VariantDef[] notUniques = provider.GetVariants(true);
-            if (notUniques != null && RollNotUniques(notUniques, out VariantDef[] result))
+            if (notUniques != null && notUniques.Length > 0 && RollNotUniques(notUniques, out VariantDef[] result))
             {
                 return result;
             }
@@ -132,7 +133,7 @@ namespace VAPI.Components
         private bool RollUniques(VariantDef[] pool, out VariantDef result)
         {
             var uniqueRng = new WeightedSelection<int>();
-            float notUniqueChance = 0f;
+            float notUniqueChance = 0;
             var spawnRateMultiplier = RunArtifactManager.instance.IsArtifactEnabled(_varianceArtifact) ? artifactSpawnRateMultiplier + defaultSpawnRateMultiplier : defaultSpawnRateMultiplier;
             for (int i = 0; i < pool.Length; i++)
             {
