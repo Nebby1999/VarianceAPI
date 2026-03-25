@@ -31,7 +31,7 @@ namespace VAPI
         /// <summary>
         /// VAPI's Version
         /// </summary>
-        public const string VERSION = "2.3.0";
+        public const string VERSION = "2.3.1";
 
         /// <summary>
         /// The instancee class of the Main class

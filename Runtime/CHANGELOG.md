@@ -1,3 +1,8 @@
+# '2.3.1' - AC Update
+
+* Updated to game version 1.4.1
+* Fix issues where variants might roll when the variant def array is empty
+
 # '2.3.0' - Memory Optimization
 
 * Updated to game version 1.3.9
