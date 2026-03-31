@@ -1,4 +1,4 @@
-using IL.RoR2;
+#nullable enable
 using R2API.AddressReferencedAssets;
 using System;
 using UnityEngine;
@@ -19,7 +19,7 @@ namespace VAPI
         }
 
         public TargetType targetType;
-        public string key;
+        public string key = "";
         public bool keyIsFromCatalog = false;
     }
 }

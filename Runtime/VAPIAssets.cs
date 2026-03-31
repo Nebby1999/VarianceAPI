@@ -107,7 +107,7 @@ namespace VAPI
             {
                 internalCoroutine ??= LoadAsset();
 
-                return !internalCoroutine!.MoveNext();
+                return !internalCoroutine.MoveNext();
             }
         }
         private IEnumerator? internalCoroutine;

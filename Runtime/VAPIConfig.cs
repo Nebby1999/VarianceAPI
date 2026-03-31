@@ -1,3 +1,4 @@
+#nullable enable
 using BepInEx;
 using BepInEx.Configuration;
 using MSU.Config;
@@ -16,19 +17,19 @@ namespace VAPI
         public const string GENERAL = PREFIX + "General";
         public const string REWARDS = PREFIX + "Rewards";
 
-        public static ConfigFactory configFactory { get; private set; }
+        public static ConfigFactory? configFactory { get; private set; }
 
-        public static ConfigFile generalConfig { get; private set; }
+        public static ConfigFile? generalConfig { get; private set; }
         [AutoConfig]
-        internal static ConfiguredBool _showVariantRuleCategory, _enableArtifactOfVariance, _activateMeshReplacementSystem, _sendArrivalMessages, _modifyGupDeathStates;
+        internal static ConfiguredBool? _showVariantRuleCategory, _enableArtifactOfVariance, _activateMeshReplacementSystem, _sendArrivalMessages, _modifyGupDeathStates;
         [AutoConfig]
-        internal static ConfiguredColor _variantHealthBarColor;
+        internal static ConfiguredColor? _variantHealthBarColor;
 
-        public static ConfigFile rewardsConfig { get; private set; }
+        public static ConfigFile? rewardsConfig { get; private set; }
         [AutoConfig]
-        internal static ConfiguredBool _enableRewards, _luckAffectsItemRewards, _itemRewardsSpawnOnKiller;
+        internal static ConfiguredBool? _enableRewards, _luckAffectsItemRewards, _itemRewardsSpawnOnKiller;
         [AutoConfig]
-        internal static ConfiguredFloat _hiddenRealmsRollChance;
+        internal static ConfiguredFloat? _hiddenRealmsRollChance;
 
         private bool _initialized;
         internal IEnumerator InitializeAsync(BaseUnityPlugin bup)

@@ -14,22 +14,14 @@ namespace VAPI
     public interface IVariantSpawnCondition
     {
         public bool IsAvailable();
-    }
 
-    public class AlwaysAvailableSpawnCondition : IVariantSpawnCondition
-    {
-        [ReadOnly]
-        public string message = "This variant is Always Available";
-        public bool IsAvailable()
-        {
-            return true;
-        }
+        public void Validate();
     }
 
     [Serializable]
     public class BasicSpawnCondition : IVariantSpawnCondition
     {
-        public int minimumStagecompletions;
+        public int minimumStageCompletions;
         public DirectorAPI.Stage stages { get => _stages; set => _stages = value; }
         [SerializeField] private DirectorAPI.StageSerde _stages;
         public string[] customStages = Array.Empty<string>();
@@ -52,6 +44,14 @@ namespace VAPI
             bool allowedInStage = AreStageRequirementsMet();
 
             return expansionRequirementMet && unlockableRequirementMet && allowedInStage;
+        }
+
+        public virtual void Validate()
+        {
+            for(int i = 0; i < customStages.Length; i++)
+            {
+                customStages[i] = customStages[i].ToLowerInvariant();
+            }
         }
 
         protected bool AreExpansionRequirementsMet()
@@ -93,7 +93,8 @@ namespace VAPI
 
             if(stageInfo.stage == DirectorAPI.Stage.Custom)
             {
-                return customStages.Length > 0 ? customStages.Contains(stageInfo.CustomStageName.ToLowerInvariant()) : true;
+                //Return true if customStages is empty, otherwise, check if the current stage is in the custom stages array.
+                return customStages.Length == 0 || customStages.Contains(stageInfo.CustomStageName.ToLowerInvariant());
             }
 
             return stages.HasFlag(stageInfo.stage);

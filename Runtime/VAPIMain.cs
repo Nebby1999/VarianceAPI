@@ -1,3 +1,4 @@
+#nullable enable
 using BepInEx;
 using R2API.Utils;
 using System.Collections;
@@ -16,7 +17,7 @@ namespace VAPI
         public const string MOD_NAME = "VarianceAPI";
         public const string VERSION = "3.0.0";
 
-        public static VAPIMain instance { get; private set; }
+        public static VAPIMain? instance { get; private set; }
 
         private void Awake()
         {
