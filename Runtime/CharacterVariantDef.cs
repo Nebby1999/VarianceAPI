@@ -1,7 +1,11 @@
 #if UNITY_EDITOR
 using UnityEditor;
 #endif
+using System;
 using UnityEngine;
+using UnityEngine.UIElements;
+using EntityStates;
+#nullable enable
 
 namespace VAPI
 {
@@ -15,20 +19,35 @@ namespace VAPI
         public bool allowMerging;
         [Range(0, 100)]
         public float spawnRate;
+        public string arrivalToken = "";
 
-        [SerializeReference]
-        public IVariantSpawnCondition spawnCondition = new AlwaysAvailableSpawnCondition();
+        [Header("Spawn Conditions")]
+        [SerializeReference, SubclassSelector]
+        public IVariantSpawnCondition? spawnCondition = null;
 
-        [ContextMenu("Spawn Conditions/Basic Spawn Conditions")]
-        private void BasicSpawnCondition()
+        [Header("Master Related")]
+        //TODO: Variant Inventory Data
+        //TODO: AI modifier replacement, array so you can have Unstable and Force Sprint. Unstable lets you specify a "Desesperation" value. Add one for dampening
+
+        [Header("Body Related")]
+        [SerializeReference, SubclassSelector]
+        public IVariantNameProvider? variantNameProvider = null;
+        public SerializableEntityStateType deathStateOverride;
+        public VariantSkillReplacement[] skillReplacements = Array.Empty<VariantSkillReplacement>();
+        [SerializeReference, SubclassSelector]
+        public IVariantStatModifier? statModifier = null;
+        //TODO: Variant Visuals reimpl
+        //TODO: Variant Size modifier
+
+        [Header("Other")]
+        public string componentProvider; //TODO: Component providers
+
+        private void OnValidate()
         {
-            spawnCondition = new BasicSpawnCondition();
-        }
-
-        [ContextMenu("Spawn Conditions/Always Available")]
-        private void AlwaysAvailableSpawnCondition()
-        {
-            spawnCondition = new AlwaysAvailableSpawnCondition();
+            spawnCondition?.Validate();
+            variantNameProvider?.Validate();
+            statModifier?.Validate();
         }
     }
+
 }

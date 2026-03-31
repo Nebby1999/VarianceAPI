@@ -1,3 +1,4 @@
+#nullable enable
 using BepInEx.Logging;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -11,7 +12,7 @@ namespace VAPI
         private static LogLevel _breakableLevel = LogLevel.Fatal;
 #endif
 
-        private static ManualLogSource _log;
+        private static ManualLogSource? _log;
         public static void Message(object data, [CallerLineNumber] int i = 0, [CallerMemberName] string member = "") => Log(LogLevel.Message, data, i, member);
 
         public static void Info(object data, [CallerLineNumber] int i = 0, [CallerMemberName] string member = "") => Log(LogLevel.Info, data, i, member);
@@ -58,7 +59,7 @@ namespace VAPI
         {
             object data2 = (level.HasFlag(LogLevel.Warning) || level.HasFlag(LogLevel.Error) || level.HasFlag(LogLevel.Fatal)) ? Format(data, i, member) : data;
 
-            _log.Log(level, data2);
+            _log?.Log(level, data2);
 #if DEBUG
             if (_breakableLevel.HasFlag(level))
             {
