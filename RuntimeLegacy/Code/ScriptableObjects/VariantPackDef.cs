@@ -9,7 +9,6 @@ namespace VAPI
     /// <summary>
     /// A ScriptableObject used to represent a VariantPack
     /// </summary>
-    [CreateAssetMenu(fileName = "New VariantPackDef", menuName = "VarianceAPI/VariantPackDef")]
     public class VariantPackDef : ScriptableObject
     {
         /// <summary>

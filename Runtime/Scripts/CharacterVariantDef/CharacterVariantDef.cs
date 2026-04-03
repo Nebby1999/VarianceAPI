@@ -5,6 +5,8 @@ using System;
 using UnityEngine;
 using UnityEngine.UIElements;
 using EntityStates;
+using HG;
+using UnityEngine.Networking;
 #nullable enable
 
 namespace VAPI
@@ -12,11 +14,12 @@ namespace VAPI
     [CreateAssetMenu(fileName = "New CharacterVariantDef", menuName = "VarianceAPI/CharacterVariantDef")]
     public sealed class CharacterVariantDef : ScriptableObject
     {
+        public CharacterVariantIndex characterVariantIndex { get; internal set; }
         [Header("General Settings")]
         public VariantCharacterTarget targetCharacter = new VariantCharacterTarget();
         //TODO: Add VariantTierDefs
         //public VariantTierDef variantTierDef;
-        public bool allowMerging;
+        public bool isUnique;
         [Range(0, 100)]
         public float spawnRate;
         public string arrivalToken = "";
@@ -26,8 +29,9 @@ namespace VAPI
         public IVariantSpawnCondition? spawnCondition = null;
 
         [Header("Master Related")]
-        //TODO: Variant Inventory Data
-        //TODO: AI modifier replacement, array so you can have Unstable and Force Sprint. Unstable lets you specify a "Desesperation" value. Add one for dampening
+        [SerializeReference, SubclassSelector]
+        public IVariantMasterModifier?[] masterModifiers = Array.Empty<IVariantMasterModifier?>();
+        public VariantInventoryDefinition inventoryDefinition;
 
         [Header("Body Related")]
         [SerializeReference, SubclassSelector]
@@ -36,17 +40,32 @@ namespace VAPI
         public VariantSkillReplacement[] skillReplacements = Array.Empty<VariantSkillReplacement>();
         [SerializeReference, SubclassSelector]
         public IVariantStatModifier? statModifier = null;
-        //TODO: Variant Visuals reimpl
-        //TODO: Variant Size modifier
+        public VariantVisualModifier? visualModifier = null;
+        public float scaleMultiplier = 1f;
 
         [Header("Other")]
-        public string componentProvider; //TODO: Component providers
+        [SerializableSystemType.RequiredBaseType(typeof(VariantComponent))]
+        public SerializableSystemType[] additionalComponents = Array.Empty<SerializableSystemType>();
 
         private void OnValidate()
         {
             spawnCondition?.Validate();
             variantNameProvider?.Validate();
             statModifier?.Validate();
+            foreach(var masterModifier in masterModifiers)
+            {
+                masterModifier?.Validate();
+            }
+        }
+
+        public bool IsAvailable()
+        {
+            if (spawnRate == 0)
+                return false;
+
+            //TODO: Check for rulebook
+
+            return spawnCondition?.IsAvailable() ?? true;
         }
     }
 

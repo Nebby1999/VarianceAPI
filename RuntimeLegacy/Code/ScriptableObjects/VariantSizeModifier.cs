@@ -6,7 +6,6 @@ namespace VAPI
     /// <summary>
     /// A ScriptableObject used to represent a Size Modifier
     /// </summary>
-    [CreateAssetMenu(fileName = "VariantSizeModifier", menuName = "VarianceAPI/VariantSizeModifier")]
     public class VariantSizeModifier : ScriptableObject
     {
         [Header("Variant Size Modifier")]

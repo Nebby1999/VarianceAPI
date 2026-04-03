@@ -4,14 +4,13 @@ using System;
 
 namespace VAPI
 {
-    public interface IVariantNameProvider
+    public interface IVariantNameProvider : IValidatable
     {
         public string GetVariantName(string input);
-        public void Validate();
     }
 
     [Serializable]
-    public class VariantNameFormatter : IVariantNameProvider
+    public struct VariantNameFormatter : IVariantNameProvider
     {
         public string? nameToken;
 
@@ -29,7 +28,7 @@ namespace VAPI
     }
 
     [Serializable]
-    public class VariantNamePrefix : IVariantNameProvider
+    public struct VariantNamePrefix : IVariantNameProvider
     {
         public string? prefixToken;
 
@@ -45,7 +44,7 @@ namespace VAPI
     }
 
     [Serializable]
-    public class VariantNameSuffix : IVariantNameProvider
+    public struct VariantNameSuffix : IVariantNameProvider
     {
         public string? suffixToken;
 
@@ -62,7 +61,7 @@ namespace VAPI
     }
 
     [Serializable]
-    public class VariantNameOverride : IVariantNameProvider
+    public struct VariantNameOverride : IVariantNameProvider
     {
         public string? overrideToken;
         public string GetVariantName(string input)

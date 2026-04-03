@@ -13,7 +13,6 @@ namespace VAPI
     /// <summary>
     /// A ScriptableObject used to represent unique SpawnConditions for a variant
     /// </summary>
-    [CreateAssetMenu(fileName = "New VariantSpawnCondition", menuName = "VarianceAPI/VariantSpawnCondition")]
     public class VariantSpawnCondition : ScriptableObject
     {
         [Tooltip("The amount of stages that need to be completed before the variant can spawn")]

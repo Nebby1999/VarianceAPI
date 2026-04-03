@@ -7,11 +7,9 @@ using UnityEngine;
 
 namespace VAPI
 {
-    public interface IVariantStatModifier
+    public interface IVariantStatModifier : IValidatable
     {
         public void ApplyStatModifiers(R2API.RecalculateStatsAPI.StatHookEventArgs args, CharacterBody targetBody);
-
-        public void Validate();
     }
 
     [Serializable]
