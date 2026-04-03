@@ -12,7 +12,6 @@ namespace VAPI
     /// <summary>
     /// A ScriptableObject used to represent a variant's Tier
     /// </summary>
-    [CreateAssetMenu(fileName = "New VariantTierDef", menuName = "VarianceAPI/VariantTierDef")]
     public class VariantTierDef : ScriptableObject
     {
         [Tooltip("The VariantTier's internal index, set this to AssignedAtRuntime for custom tiers")]

@@ -11,7 +11,6 @@ namespace VAPI
     /// <summary>
     /// A ScriptableObject that represents an Inventory of items, equipments and buffs to add to a variant
     /// </summary>
-    [CreateAssetMenu(fileName = "New VariantInventory", menuName = "VarianceAPI/VariantInventory")]
     public class VariantInventory : ScriptableObject
     {
         /// <summary>

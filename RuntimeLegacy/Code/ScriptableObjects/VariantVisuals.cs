@@ -7,7 +7,6 @@ namespace VAPI
     /// <summary>
     /// A ScriptableObject used to create a variant's Visuals
     /// </summary>
-    [CreateAssetMenu(fileName = "New VariantVisuals", menuName = "VarianceAPI/VariantVisuals")]
     public class VariantVisuals : ScriptableObject
     {
         /// <summary>

@@ -11,11 +11,9 @@ using UnityEngine;
 
 namespace VAPI
 {
-    public interface IVariantSpawnCondition
+    public interface IVariantSpawnCondition : IValidatable
     {
         public bool IsAvailable();
-
-        public void Validate();
     }
 
     [Serializable]
