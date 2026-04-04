@@ -26,9 +26,10 @@
         "RoR2BepInExPack.dll",
         "Unity.Addressables.dll",
         "Unity.ResourceManager.dll",
-        "",
         "RiskOfOptions.dll",
-        "R2API.Director.dll"
+        "R2API.Director.dll",
+        "DebugToolkit.dll",
+        "MonoMod.Utils.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [

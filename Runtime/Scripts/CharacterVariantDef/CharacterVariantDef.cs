@@ -7,18 +7,26 @@ using UnityEngine.UIElements;
 using EntityStates;
 using HG;
 using UnityEngine.Networking;
+using R2API.AddressReferencedAssets;
 #nullable enable
 
 namespace VAPI
 {
+    [Serializable]
+    public struct VariantBuffInfo
+    {
+        public AddressReferencedBuffDef? buffDef;
+        public int count;
+        public float timer;
+    }
+
     [CreateAssetMenu(fileName = "New CharacterVariantDef", menuName = "VarianceAPI/CharacterVariantDef")]
     public sealed class CharacterVariantDef : ScriptableObject
     {
         public CharacterVariantIndex characterVariantIndex { get; internal set; }
         [Header("General Settings")]
         public VariantCharacterTarget targetCharacter = new VariantCharacterTarget();
-        //TODO: Add VariantTierDefs
-        //public VariantTierDef variantTierDef;
+        public VariantTierDef? variantTier = null;
         public bool isUnique;
         [Range(0, 100)]
         public float spawnRate;
@@ -31,7 +39,7 @@ namespace VAPI
         [Header("Master Related")]
         [SerializeReference, SubclassSelector]
         public IVariantMasterModifier?[] masterModifiers = Array.Empty<IVariantMasterModifier?>();
-        public VariantInventoryDefinition inventoryDefinition;
+        public VariantInventoryDefinition inventoryDefinition = new VariantInventoryDefinition();
 
         [Header("Body Related")]
         [SerializeReference, SubclassSelector]
@@ -40,6 +48,7 @@ namespace VAPI
         public VariantSkillReplacement[] skillReplacements = Array.Empty<VariantSkillReplacement>();
         [SerializeReference, SubclassSelector]
         public IVariantStatModifier? statModifier = null;
+        public VariantBuffInfo[] buffInfos = Array.Empty<VariantBuffInfo>();
         public VariantVisualModifier? visualModifier = null;
         public float scaleMultiplier = 1f;
 

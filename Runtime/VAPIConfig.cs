@@ -102,7 +102,7 @@ namespace VAPI
             .WithConfigChange(b =>
             {
                 //TODO: Reimplement the GupVariantHelper
-                /*
+                
                 if(b)
                 {
                     IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate -= GupVariantHelper.HandleDeathState;
@@ -111,7 +111,7 @@ namespace VAPI
                 else
                 {
                     IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate -= GupVariantHelper.HandleDeathState;
-                }*/
+                }
             });
 
             _variantHealthBarColor = new ConfiguredColor(new Color32(0, 255, 144, byte.MaxValue))

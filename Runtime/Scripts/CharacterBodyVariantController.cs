@@ -9,8 +9,8 @@ namespace VAPI
     public class CharacterBodyVariantController : NetworkBehaviour
     {
         public const uint fallbackVariantsDirtyBit = (1 << 0);
-        public const uint cannotBeVariantDirtyBit = (1 << 1);
-        public const uint allDirtyBits = fallbackVariantsDirtyBit | cannotBeVariantDirtyBit;
+        public const uint doNotRollForVariantsDirtyBit = (1 << 1);
+        public const uint allDirtyBits = fallbackVariantsDirtyBit | doNotRollForVariantsDirtyBit;
 
         //So, VAPI 3.0 has the ability to store the variants on a master, however, we want to allow the ability for masterless variants to be a thing.
         //As a result, the main variants for the body _are_ the ones found on the master, if said master storage is not found then it must utilize it's internal storage.
@@ -31,20 +31,22 @@ namespace VAPI
         public CharacterMasterVariantStorage? characterMasterVariantStorage { get; private set; }
         public CharacterBody characterBody { get; private set; }
 
-        public bool cannotBeVariant
+        public bool doNotRollForVariants
         {
-            get => _cannotBeVariant;
+            get => _doNotRollForVariants;
             [Server]
             set
             {
-                if (_cannotBeVariant != value)
+                if (_doNotRollForVariants != value)
                 {
-                    _cannotBeVariant = value;
-                    SetDirtyBit(cannotBeVariantDirtyBit);
+                    _doNotRollForVariants = value;
+                    SetDirtyBit(doNotRollForVariantsDirtyBit);
                 }
             }
         }
-        public bool _cannotBeVariant;
+        private bool _doNotRollForVariants;
+
+        public event Action<NetworkedVariantCollection>? onBecameVariantGlobal;
 
         private void Awake()
         {
@@ -54,6 +56,20 @@ namespace VAPI
         private void Start()
         {
             TryLinkCharacterMasterVariantStorage();
+            Apply();
+        }
+
+        private bool _hasApplied;
+        public void Apply()
+        {
+            if(_hasApplied)
+            {
+                VAPILog.Warning($"Cannot apply variants to a CharacterBody twice.");
+                return;
+            }
+
+            _hasApplied = true;
+            onBecameVariantGlobal?.Invoke(variantsForBody);
         }
 
         public bool TryLinkCharacterMasterVariantStorage()
@@ -74,12 +90,12 @@ namespace VAPI
                 return false;
             }
 
-            if(masterVariantStorage.cannotBeVariant)
+            if(masterVariantStorage.doNotRollForVariants)
             {
                 //Should "cannotBeVariant" be inherited from the master's variant storage?...
                 if(NetworkServer.active)
                 {
-                    cannotBeVariant = masterVariantStorage.cannotBeVariant;
+                    doNotRollForVariants = masterVariantStorage.doNotRollForVariants;
                 }
                 return false;
             }
@@ -112,7 +128,7 @@ namespace VAPI
             }
 
             bool writeFallbackVariants = (dirtyBits & fallbackVariantsDirtyBit) != 0;
-            bool writeCannotBeVariant = (dirtyBits & cannotBeVariantDirtyBit) != 0;
+            bool writeDoNotRollForVariants = (dirtyBits & doNotRollForVariantsDirtyBit) != 0;
 
             writer.Write((byte)dirtyBits);
 
@@ -121,9 +137,9 @@ namespace VAPI
                 _fallbackVariantStorage.Serialize(writer);
             }
 
-            if (writeCannotBeVariant)
+            if (writeDoNotRollForVariants)
             {
-                writer.Write(cannotBeVariant);
+                writer.Write(doNotRollForVariants);
             }
 
             return ((!initialState) && dirtyBits != 0u);
@@ -134,16 +150,16 @@ namespace VAPI
             byte mainMask = reader.ReadByte();
 
             bool readFallbackVariants = (mainMask & fallbackVariantsDirtyBit) != 0;
-            bool readCannotBeVariant = (mainMask & cannotBeVariantDirtyBit) != 0;
+            bool readDoNotRollForVariants = (mainMask & doNotRollForVariantsDirtyBit) != 0;
 
             if (readFallbackVariants)
             {
                 _fallbackVariantStorage.Deserialize(reader);
             }
 
-            if (readCannotBeVariant)
+            if (readDoNotRollForVariants)
             {
-                _cannotBeVariant = reader.ReadBoolean();
+                _doNotRollForVariants = reader.ReadBoolean();
             }
         }
     }
