@@ -34,11 +34,18 @@ namespace VAPI
         public static VariantSpawnManager? instance => _instance;
         private static VariantSpawnManager? _instance;
 
-        private Xoroshiro128Plus _spawnRNG;
+        public Xoroshiro128Plus? variantRng { get; private set; }
+        public Xoroshiro128Plus? variantSpawnRng { get; private set; }
+        public Xoroshiro128Plus? variantRewardRng { get; private set; }
 
         private void Start()
         {
-            _spawnRNG = new Xoroshiro128Plus(Run.instance.runRNG.nextUlong);
+            if(NetworkServer.active)
+            {
+                variantRng = new Xoroshiro128Plus(Run.instance.seed);
+                variantSpawnRng = new Xoroshiro128Plus(variantRng.nextUlong);
+                variantRewardRng = new Xoroshiro128Plus(variantRng.nextUlong);
+            }
         }
 
         private void OnEnable()
@@ -68,7 +75,7 @@ namespace VAPI
                 return;
             }
 
-            if(!characterBodyVariantController.cannotBeVariant)
+            if(!characterBodyVariantController.doNotRollForVariants)
             {
                 return;
             }
@@ -80,7 +87,7 @@ namespace VAPI
             }
 
             //Character has no master, but the variant provider exists, proceed to roll the fallback variants.
-            CharacterVariantDef[]? fallbackVariantDefs = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = _spawnRNG, spawnChanceMultiplier = 1f });
+            CharacterVariantDef[]? fallbackVariantDefs = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng, spawnChanceMultiplier = 1f });
 
             if(fallbackVariantDefs == null || fallbackVariantDefs.Length == 0)
             {
@@ -106,7 +113,7 @@ namespace VAPI
             }
 
             //Do not turn into a variant if it's forbidden for this character.
-            if(masterVariantStorage.cannotBeVariant)
+            if(masterVariantStorage.doNotRollForVariants)
             {
                 return;
             }
@@ -118,7 +125,7 @@ namespace VAPI
             }
 
             //TODO: Impl variance artifact effect
-            CharacterVariantDef[]? variantDefsForMaster = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = _spawnRNG, spawnChanceMultiplier = 1f});
+            CharacterVariantDef[]? variantDefsForMaster = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng, spawnChanceMultiplier = 1f});
 
             if(variantDefsForMaster == null || variantDefsForMaster.Length == 0)
             {

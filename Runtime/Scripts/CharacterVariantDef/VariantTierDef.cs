@@ -4,7 +4,6 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using VAPI.AddressableAssets;
 
 namespace VAPI
 {
@@ -18,16 +17,25 @@ namespace VAPI
         public AddressReferencedBuffDef tierBuffDef = new AddressReferencedBuffDef();
 
         [Header("Reward")]
-        public float expMultiplier;
-        public float goldMultiplier;
+        [Min(1)]
+        public float experienceRewardCoefficient;
+        [Min(1)]
+        public float goldRewardCoefficient;
 
-        public TierRewardInfo[] rewardInfo = Array.Empty<TierRewardInfo>();
-    }
+        public bool canDropCommon => !Mathf.Approximately(commonItemRewardChance, 0f);
+        [Min(0)]
+        public float commonItemRewardChance;
 
-    [Serializable]
-    public struct TierRewardInfo
-    {
-        public AddressReferencedItemTierDef? itemTier;
-        public float chance;
+        public bool canDropUncommon => !Mathf.Approximately(uncommonItemRewardChance, 0f);
+        [Min(0)]
+        public float uncommonItemRewardChance;
+
+        public bool canDropLegendary => !Mathf.Approximately(legendaryItemRewardChance, 0f);
+        [Min(0)]
+        public float legendaryItemRewardChance;
+
+        public bool canDropBoss => !Mathf.Approximately(bossItemRewardChance, 0f);
+        [Min(0)]
+        public float bossItemRewardChance;
     }
 }

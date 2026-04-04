@@ -3,6 +3,7 @@ using HG;
 using RoR2;
 using System;
 using System.Collections.Generic;
+using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -147,6 +148,11 @@ namespace VAPI
 
                 CharacterBody characterBody = BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
                 characterBody.gameObject.AddComponent<CharacterBodyVariantController>();
+
+                if(VAPIConfig._enableRewards)
+                {
+                    characterBody.gameObject.AddComponent<VariantDeathRewards>();
+                }
             }
 
             foreach(var (masterIndex, variantDefs) in masterToVariants)
@@ -160,6 +166,10 @@ namespace VAPI
                 {
                     //Ensure the component, we don't want to call Add because there's a chance that the previous foreach added the component.
                     characterMaster.bodyPrefab.EnsureComponent<CharacterBodyVariantController>();
+                    if(VAPIConfig._enableRewards)
+                    {
+                        characterMaster.bodyPrefab.EnsureComponent<VariantDeathRewards>();
+                    }
                 }
             }
 
@@ -198,6 +208,133 @@ namespace VAPI
                 throw new InvalidOperationException("Cannot access CharacterVariantManager when it's not available, consider subscribing to the managerAvailability.");
             }
         }
+
+        #region Commands
+        [ConCommand(commandName = "vapi_list_bodies", flags = ConVarFlags.None, helpText = "Lists all the bodies that have VariantDefs")]
+        private static void CCvapiListBodies(ConCommandArgs args)
+        {
+            ThrowIfUnavailable();
+
+            StringBuilder stringBuilder = HG.StringBuilderPool.RentStringBuilder();
+            stringBuilder.AppendLine("Bodies with Variants:");
+            stringBuilder.AppendLine("---------------------");
+
+            foreach(CharacterVariantProvider characterVariantProvider in _characterVariantProviders!)
+            {
+                if(characterVariantProvider.associatedBodyIndex == BodyIndex.None)
+                {
+                    continue;
+                }
+
+                GameObject bodyPrefab = BodyCatalog.GetBodyPrefab(characterVariantProvider.associatedBodyIndex);
+                stringBuilder.AppendLine($"{bodyPrefab.name} (Variant Count: {characterVariantProvider.totalVariantCount}).");
+            }
+
+            Debug.Log(stringBuilder.ToString());
+            HG.StringBuilderPool.ReturnStringBuilder(stringBuilder);
+        }
+
+        [ConCommand(commandName = "vapi_list_masters", flags = ConVarFlags.None, helpText = "Lists all the Masters that have VariantDefs")]
+        private static void CCvapiListMasters(ConCommandArgs args)
+        {
+            ThrowIfUnavailable();
+
+            StringBuilder stringBuilder = HG.StringBuilderPool.RentStringBuilder();
+            stringBuilder.AppendLine("Masters with Variants:");
+            stringBuilder.AppendLine("----------------------");
+
+            foreach (CharacterVariantProvider characterVariantProvider in _characterVariantProviders!)
+            {
+                if (characterVariantProvider.associatedMasterIndex == MasterCatalog.MasterIndex.none)
+                {
+                    continue;
+                }
+
+                GameObject masterPrefab = MasterCatalog.GetMasterPrefab(characterVariantProvider.associatedMasterIndex);
+                stringBuilder.AppendLine($"{masterPrefab.name} (Variant Count: {characterVariantProvider.totalVariantCount}).");
+            }
+
+            Debug.Log(stringBuilder.ToString());
+            HG.StringBuilderPool.ReturnStringBuilder(stringBuilder);
+        }
+
+        [ConCommand(commandName = "vapi_list_body_variants", helpText = "Lists all the VariantDefs associated to a body.")]
+        private static void CCvapi_ListBodyVariants(ConCommandArgs args)
+        {
+            ThrowIfUnavailable();
+
+            if(args.Count == 0)
+            {
+                Debug.Log("No arguments given.");
+                return;
+            }
+
+            string bodyName = args[0];
+            BodyIndex bodyIndex = VAPIUtils.GetBodyIndex(bodyName);
+            if(bodyIndex == BodyIndex.None)
+            {
+                Debug.Log($"No body could be found with the name {bodyName}. To get a list of bodies that have variants use \"vapi_list_bodies\".");
+                return;
+            }
+
+            CharacterVariantProvider? provider = FindCharacterVariantProvider(bodyIndex);
+            if(provider == null)
+            {
+                Debug.Log($"The provided body does not have a CharacterVariantProvider. To get a list of bodies that have variants use \"vapi_list_bodies\".");
+                return;
+            }
+
+            StringBuilder stringBuilder = HG.StringBuilderPool.RentStringBuilder();
+            stringBuilder.AppendLine($"{BodyCatalog.GetBodyPrefab(bodyIndex).name}'s Variants");
+            stringBuilder.AppendLine("-------------------------------------------------------");
+            for(int i = 0; i < provider.totalVariantCount; i++)
+            {
+                CharacterVariantDef variantDef = provider.allVariants[i];
+                stringBuilder.AppendLine($"[{i}] = {variantDef.name}");
+            }
+            Debug.Log(stringBuilder.ToString());
+            HG.StringBuilderPool.ReturnStringBuilder(stringBuilder);
+        }
+
+
+        [ConCommand(commandName = "vapi_list_master_variants", helpText = "Lists all the VariantDefs associated to a Master.")]
+        private static void CCvapi_ListMasterVariants(ConCommandArgs args)
+        {
+            ThrowIfUnavailable();
+
+            if (args.Count == 0)
+            {
+                Debug.Log("No arguments given.");
+                return;
+            }
+
+            string masterName = args[0];
+            MasterCatalog.MasterIndex masterIndex = VAPIUtils.GetMasterIndex(masterName);
+            if (masterIndex == MasterCatalog.MasterIndex.none)
+            {
+                Debug.Log($"No Master could be found with the name {masterName}. To get a list of masters that have variants use \"vapi_list_masters\".");
+                return;
+            }
+
+            CharacterVariantProvider? provider = FindCharacterVariantProvider(masterIndex);
+            if (provider == null)
+            {
+                Debug.Log($"The provided master does not have a CharacterVariantProvider. To get a list of masters that have variants use \"vapi_list_masters\".");
+                return;
+            }
+
+            StringBuilder stringBuilder = HG.StringBuilderPool.RentStringBuilder();
+            stringBuilder.AppendLine($"{MasterCatalog.GetMasterPrefab(masterIndex).name}'s Variants");
+            stringBuilder.AppendLine("-------------------------------------------------------");
+            for (int i = 0; i < provider.totalVariantCount; i++)
+            {
+                CharacterVariantDef variantDef = provider.allVariants[i];
+                stringBuilder.AppendLine($"[{i}] = {variantDef.name}");
+            }
+            Debug.Log(stringBuilder.ToString());
+            HG.StringBuilderPool.ReturnStringBuilder(stringBuilder);
+        }
+        #endregion
     }
 
     public static partial class Extensions
