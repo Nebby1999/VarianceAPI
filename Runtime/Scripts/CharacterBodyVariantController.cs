@@ -8,26 +8,24 @@ namespace VAPI
 {
     public class CharacterBodyVariantController : NetworkBehaviour
     {
-        public const uint fallbackVariantsDirtyBit = (1 << 0);
-        public const uint doNotRollForVariantsDirtyBit = (1 << 1);
-        public const uint allDirtyBits = fallbackVariantsDirtyBit | doNotRollForVariantsDirtyBit;
 
         //So, VAPI 3.0 has the ability to store the variants on a master, however, we want to allow the ability for masterless variants to be a thing.
         //As a result, the main variants for the body _are_ the ones found on the master, if said master storage is not found then it must utilize it's internal storage.
         //In terms of networking, the "Source of Truth" is the Master, if no master, then its this component.
-        public NetworkedVariantCollection variantsForBody
+        public ReadOnlyArray<CharacterVariantDef> characterVariantDefs
         {
             get
             {
                 if(characterMasterVariantStorage)
                 {
-                    //return characterMasterVariantStorage!.variantsForCharacter;
+                    return characterMasterVariantStorage!.characterVariantDefs;
                 }
 
-                return _fallbackVariantStorage;
+                return _fallbackCharacterVariantDefs;
             }
         }
-        private NetworkedVariantCollection _fallbackVariantStorage = new NetworkedVariantCollection();
+        private CharacterVariantDef[] _fallbackCharacterVariantDefs = Array.Empty<CharacterVariantDef>();
+        private SyncListCharacterVariantIndex _fallbackCharacterVariantIndices = new SyncListCharacterVariantIndex();
         public CharacterMasterVariantStorage? characterMasterVariantStorage { get; private set; }
         public CharacterBody characterBody { get; private set; }
 
@@ -40,17 +38,24 @@ namespace VAPI
                 if (_doNotRollForVariants != value)
                 {
                     _doNotRollForVariants = value;
-                    SetDirtyBit(doNotRollForVariantsDirtyBit);
                 }
             }
         }
+        [SyncVar]
         private bool _doNotRollForVariants;
 
-        public event Action<NetworkedVariantCollection>? onBecameVariantGlobal;
+        private VariantComponentStorage? _bodyComponentStorage = null;
+        private VariantComponentStorage? _mdlComponentStorage = null;
 
         private void Awake()
         {
             characterBody = GetComponent<CharacterBody>();
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            _fallbackCharacterVariantIndices.Callback = SyncListCallback;
         }
 
         private void Start()
@@ -69,7 +74,6 @@ namespace VAPI
             }
 
             _hasApplied = true;
-            onBecameVariantGlobal?.Invoke(variantsForBody);
         }
 
         public bool TryLinkCharacterMasterVariantStorage()
@@ -105,62 +109,57 @@ namespace VAPI
             return true;
         }
 
+        //Callback is only called if the server is a client. So i _think_ a dedicated server will never get this callback, which isnt good.
+        //Because of that, we will use this callback as a "Client only" callback.
+        //From HLAPI source code:
+        //
+        //if (m_Behaviour.isServer && m_Behaviour.isClient && m_Callback != null)
+        //{
+        //  m_Callback.Invoke(op, itemIndex);
+        //}
+        private void SyncListCallback(SyncList<NetworkCharacterVariantIndex>.Operation op, int itemIndex)
+        {
+            //GTFO if server.
+            if (NetworkServer.active)
+                return;
+
+            OnSyncListDirty();
+        }
+
+        private void OnSyncListDirty()
+        {
+            //First, unapply the body modifications.
+            //UnapplyBodyModifications(characterVariantDefs);
+
+            //Second, create new array and populate
+            _fallbackCharacterVariantDefs = new CharacterVariantDef[_fallbackCharacterVariantIndices.Count];
+            for (int i = 0; i < _fallbackCharacterVariantIndices.Count; i++)
+            {
+                _fallbackCharacterVariantDefs[i] = CharacterVariantManager.GetCharacterVariantDef(_fallbackCharacterVariantIndices[i])!;
+            }
+
+            //Thirdy, apply body modifications
+            //ApplyBodyModifications(characterVariants);
+        }
+
         [Server]
-        public void SetFallbackVariants(CharacterVariantDef[] fallbackVariants)
+        public void SetFallbackCharacterVariantDefs(CharacterVariantDef[] characterVariantDefs)
         {
             if(characterMasterVariantStorage)
             {
-                //TODO: Log this situation, which shouldn't happen.
+                //TODO: Log here, you shan't set fallback variant defs if the master storage exists.
                 return;
             }
-
-            _fallbackVariantStorage.SetVariantServer(fallbackVariants);
-            SetDirtyBit(fallbackVariantsDirtyBit);
-        }
-
-        public override bool OnSerialize(NetworkWriter writer, bool initialState)
-        {
-            uint dirtyBits = syncVarDirtyBits;
-
-            if (initialState)
+            //First, clear the syncList;
+            _fallbackCharacterVariantIndices.Clear();
+            //Then, add the indices to the sync list.
+            for (int i = 0; i < characterVariantDefs.Length; i++)
             {
-                dirtyBits = allDirtyBits;
+                _fallbackCharacterVariantIndices.Add(characterVariantDefs[i].characterVariantIndex);
             }
 
-            bool writeFallbackVariants = (dirtyBits & fallbackVariantsDirtyBit) != 0;
-            bool writeDoNotRollForVariants = (dirtyBits & doNotRollForVariantsDirtyBit) != 0;
-
-            writer.Write((byte)dirtyBits);
-
-            if (writeFallbackVariants)
-            {
-                _fallbackVariantStorage.Serialize(writer);
-            }
-
-            if (writeDoNotRollForVariants)
-            {
-                writer.Write(doNotRollForVariants);
-            }
-
-            return ((!initialState) && dirtyBits != 0u);
-        }
-
-        public override void OnDeserialize(NetworkReader reader, bool initialState)
-        {
-            byte mainMask = reader.ReadByte();
-
-            bool readFallbackVariants = (mainMask & fallbackVariantsDirtyBit) != 0;
-            bool readDoNotRollForVariants = (mainMask & doNotRollForVariantsDirtyBit) != 0;
-
-            if (readFallbackVariants)
-            {
-                _fallbackVariantStorage.Deserialize(reader);
-            }
-
-            if (readDoNotRollForVariants)
-            {
-                _doNotRollForVariants = reader.ReadBoolean();
-            }
+            //Call the OnSyncListDirty(), which will properly update our variants.
+            OnSyncListDirty();
         }
     }
 }

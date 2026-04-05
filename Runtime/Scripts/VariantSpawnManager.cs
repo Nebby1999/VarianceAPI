@@ -21,7 +21,7 @@ namespace VAPI
             sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
             sliderConfig = new SliderConfig
             {
-                formatString = "{0:0.0}",
+                FormatString = "{0:0.0}",
                 min = 0,
                 max = 100,
                 checkIfDisabled = () => !VAPIConfig._enableArtifactOfVariance
@@ -87,14 +87,14 @@ namespace VAPI
             }
 
             //Character has no master, but the variant provider exists, proceed to roll the fallback variants.
-            CharacterVariantDef[]? fallbackVariantDefs = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng, spawnChanceMultiplier = 1f });
+            CharacterVariantDef[]? fallbackVariantDefs = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = 1f });
 
             if(fallbackVariantDefs == null || fallbackVariantDefs.Length == 0)
             {
                 return;
             }
 
-            characterBodyVariantController.SetFallbackVariants(fallbackVariantDefs);
+            characterBodyVariantController.SetFallbackCharacterVariantDefs(fallbackVariantDefs);
 
             //TODO: Impl event for master picking variants?
         }
@@ -125,7 +125,7 @@ namespace VAPI
             }
 
             //TODO: Impl variance artifact effect
-            CharacterVariantDef[]? variantDefsForMaster = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng, spawnChanceMultiplier = 1f});
+            CharacterVariantDef[]? variantDefsForMaster = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = 1f});
 
             if(variantDefsForMaster == null || variantDefsForMaster.Length == 0)
             {

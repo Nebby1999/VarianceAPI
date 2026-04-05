@@ -1,6 +1,7 @@
 #nullable enable
 using BepInEx;
 using R2API.Utils;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -27,6 +28,14 @@ namespace VAPI
             new VAPILog(Logger);
 
             new VAPIContent();
+        }
+
+        public static void ThrowIfUninitialized()
+        {
+            if(!instance)
+            {
+                throw new InvalidOperationException("Do not interact with VarianceAPI before it's BaseUnityPlugin's Awake!!!");
+            }
         }
     }
 }

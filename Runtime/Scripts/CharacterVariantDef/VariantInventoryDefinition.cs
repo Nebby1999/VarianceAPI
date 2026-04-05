@@ -45,7 +45,7 @@ namespace VAPI
                 if (!item)
                     continue;
 
-                inventory.RemoveItemChanneled(item.itemIndex, itemToGrant.count);
+                inventory.GiveItemChanneled(item.itemIndex, itemToGrant.count);
             }
 
             if(equipmentInfo.equipmentDef == null)
@@ -89,7 +89,7 @@ namespace VAPI
                 if (!item)
                     continue;
 
-                inventory.GiveItemChanneled(item.itemIndex, itemToGrant.count);
+                inventory.RemoveItemChanneled(item.itemIndex, itemToGrant.count);
             }
 
             if (equipmentInfo.equipmentDef == null)

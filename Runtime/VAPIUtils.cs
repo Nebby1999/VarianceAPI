@@ -69,19 +69,19 @@ namespace VAPI
 
             if(body.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController) && !variantStorage)
             {
-                bodyVariantController.SetFallbackVariants(variantDefs);
+                bodyVariantController.SetFallbackCharacterVariantDefs(variantDefs);
                 bodyVariantController.doNotRollForVariants = true;
             }
         }
     }
     public static partial class Extensions
     {
-        public static bool CheckRoll0To1(this Xoroshiro128Plus rng, float zeroToOnceChance, float luck = 0f, CharacterMaster effectOriginMaster = null)
+        public static bool CheckRoll0To1(this Xoroshiro128Plus rng, float zeroToOnceChance, float luck = 0f, CharacterMaster? effectOriginMaster = null)
         {
             return CheckRoll(rng, zeroToOnceChance * 100f, luck, effectOriginMaster);
         }
 
-        public static bool CheckRoll(this Xoroshiro128Plus rng, float percentchance, float luck = 0f, CharacterMaster effectOriginMaster = null)
+        public static bool CheckRoll(this Xoroshiro128Plus rng, float percentchance, float luck = 0f, CharacterMaster? effectOriginMaster = null)
         {
             if(rng == null)
             {

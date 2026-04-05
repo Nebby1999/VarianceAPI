@@ -1,9 +1,81 @@
 #nullable enable
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
 using RoR2;
 using System;
 
 namespace VAPI
 {
+    internal static class VariantNameProviderHooks
+    {
+        [SystemInitializer]
+        private static void Init()
+        {
+            IL.RoR2.Util.GetBestBodyName += GetBestBodyVariantName;
+        }
+
+        /*
+         * We want to modify the name of the variant without directly overriding the character name string, so we're hooking GetBestBodyName.
+         * 
+         * Target is to put the cursor right after we call "GetUserName", and store it's value on the local variable.
+         * 
+         * characterBody = bodyObject.GetComponent<CharacterBody>();
+		 * if ((bool)characterBody)
+		 * {
+		 *      text = characterBody.GetUserName();
+		 *      <---- ILHook goes here
+		 * }
+		 * 
+		 * I think a better polace would be _after_ we get the text, and check if the body exists. That's where stuff like elite buffs, gummy clone and drone upgrade tiers are computed. But i have no ide ahow to match against that.
+		 * string text2 = text;
+	     * if ((bool)characterBody)
+	     * {
+	     * <---- ILHook goes here
+		 *    if (characterBody.isElite)
+		 *    {
+		 *       BuffIndex[] eliteBuffIndices = BuffCatalog.eliteBuffIndices;
+	     *       foreach (BuffIndex buffIndex in eliteBuffIndices)
+		 *       {
+		 *   	    if (characterBody.HasBuff(buffIndex))
+		 *		    {
+		 *              text2 = Language.GetStringFormatted(BuffCatalog.GetBuffDef(buffIndex).eliteDef.modifierToken, text2);
+		 *          }
+		 *       }
+		 *    }
+         */
+        private static void GetBestBodyVariantName(MonoMod.Cil.ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            var success = cursor.TryGotoNext(x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.GetUserName)),
+                x => x.MatchStloc(0));
+
+            if (!success)
+            {
+                VAPILog.Fatal("Failed to hook RoR2.Util.GetBestBodyName! VariantNameProviders will not work!");
+                return;
+            }
+
+            cursor.Emit(OpCodes.Ldloc_0);
+            cursor.Emit(OpCodes.Ldloc_1);
+            cursor.EmitDelegate<Func<CharacterBody, string, string>>(FormatVariantName);
+            cursor.Emit(OpCodes.Stloc_1);
+        }
+
+        private static string FormatVariantName(CharacterBody body, string bodyName)
+        {
+            if(body.TryGetComponent<CharacterBodyVariantController>(out var characterBodyVariantController))
+            {
+                for(int i = 0; i < characterBodyVariantController.characterVariantDefs.Length; i++)
+                {
+                    CharacterVariantDef variantDef = characterBodyVariantController.characterVariantDefs[i];
+                    bodyName = variantDef.variantNameProvider?.GetVariantName(bodyName) ?? bodyName;
+                }
+            }
+
+            return bodyName;
+        }
+    }
     public interface IVariantNameProvider : IValidatable
     {
         public string GetVariantName(string input);

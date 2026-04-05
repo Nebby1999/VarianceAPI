@@ -22,19 +22,19 @@ namespace VAPI
         [Min(1)]
         public float goldRewardCoefficient;
 
-        public bool canDropCommon => !Mathf.Approximately(commonItemRewardChance, 0f);
+        public bool canDropCommon => commonItemRewardChance > 0;
         [Min(0)]
         public float commonItemRewardChance;
 
-        public bool canDropUncommon => !Mathf.Approximately(uncommonItemRewardChance, 0f);
+        public bool canDropUncommon => uncommonItemRewardChance > 0;
         [Min(0)]
         public float uncommonItemRewardChance;
 
-        public bool canDropLegendary => !Mathf.Approximately(legendaryItemRewardChance, 0f);
+        public bool canDropLegendary => legendaryItemRewardChance > 0;
         [Min(0)]
         public float legendaryItemRewardChance;
 
-        public bool canDropBoss => !Mathf.Approximately(bossItemRewardChance, 0f);
+        public bool canDropBoss => bossItemRewardChance > 0;
         [Min(0)]
         public float bossItemRewardChance;
     }

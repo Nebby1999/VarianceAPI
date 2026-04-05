@@ -14,7 +14,15 @@ namespace VAPI
         private const string ASSET_BUNDLE_NAME = "vapiassets";
         private const string ASSET_BUNDLE_FOLDER_NAME = "assetbundles";
 
-        private static string assetBundleFolderPath => Path.Combine(Path.GetDirectoryName(VAPIMain.instance.Info.Location), ASSET_BUNDLE_FOLDER_NAME);
+        private static string assetBundleFolderPath
+        {
+            get
+            {
+                VAPIMain.ThrowIfUninitialized();
+                return Path.Combine(Path.GetDirectoryName(VAPIMain.instance!.Info.Location), ASSET_BUNDLE_FOLDER_NAME);
+            }
+        }
+        
 
         public static ResourceAvailability assetsAvailability;
 
