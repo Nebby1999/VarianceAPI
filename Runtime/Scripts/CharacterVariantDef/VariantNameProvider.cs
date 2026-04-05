@@ -47,19 +47,34 @@ namespace VAPI
         {
             var cursor = new ILCursor(il);
 
-            var success = cursor.TryGotoNext(x => x.MatchCallOrCallvirt<CharacterBody>(nameof(CharacterBody.GetUserName)),
-                x => x.MatchStloc(0));
+            int text2LocIndex = -1;
+            int characterBodyLocIndex = -1;
+            //Get stloc for "text2" in ilspy
+            var text2AndCharacterBodyLocIndicesObtained = cursor.TryGotoNext(x => x.MatchStloc(out text2LocIndex),
+                x => x.MatchLdloc(out characterBodyLocIndex));
 
-            if (!success)
+            if(!text2AndCharacterBodyLocIndicesObtained || text2LocIndex == -1 || characterBodyLocIndex == -1)
+            {
+                return;
+            }
+
+            var movedCursorRightBeforeIsElite = cursor.TryGotoNext(x => x.MatchCallOrCallvirt<CharacterBody>($"get_{nameof(CharacterBody.isElite)}"));
+
+            if (!movedCursorRightBeforeIsElite)
             {
                 VAPILog.Fatal("Failed to hook RoR2.Util.GetBestBodyName! VariantNameProviders will not work!");
                 return;
             }
 
-            cursor.Emit(OpCodes.Ldloc_0);
-            cursor.Emit(OpCodes.Ldloc_1);
+            //Emit CharacterBody and Text2 values.
+            cursor.Emit(OpCodes.Ldloc, characterBodyLocIndex);
+            cursor.Emit(OpCodes.Ldloc, text2LocIndex);
+
+            //Emit delegate
             cursor.EmitDelegate<Func<CharacterBody, string, string>>(FormatVariantName);
-            cursor.Emit(OpCodes.Stloc_1);
+
+            //Store new text in text2
+            cursor.Emit(OpCodes.Stloc, text2LocIndex);
         }
 
         private static string FormatVariantName(CharacterBody body, string bodyName)
