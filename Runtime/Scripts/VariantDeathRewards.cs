@@ -1,4 +1,5 @@
 #nullable enable
+using HG;
 using RoR2;
 using System.Collections.Generic;
 using UnityEngine;
@@ -52,18 +53,16 @@ namespace VAPI
 
         private void OnEnable()
         {
-            characterBodyVariantController.onBecameVariantGlobal += OnBecameVariant;
         }
 
         private void OnDisable()
         {
-            characterBodyVariantController.onBecameVariantGlobal -= OnBecameVariant;
         }
 
         private bool _rewardsApplied = false;
 
-
-        private void OnBecameVariant(NetworkedVariantCollection variants)
+        //TODO: Impl call sites for this shit
+        private void OnBecameVariant(ReadOnlyArray<CharacterVariantDef> variants)
         {
             if (_rewardsApplied)
             {
@@ -222,7 +221,7 @@ namespace VAPI
                     return;
                 }
 
-                bool canDropItemOnHiddenRealm = VariantSpawnManager.instance!.variantRewardRng.CheckRoll(chanceInRealm, luck, attackerMaster);
+                bool canDropItemOnHiddenRealm = VariantSpawnManager.instance!.variantRewardRng!.CheckRoll(chanceInRealm, luck, attackerMaster);
                 if (!canDropItemOnHiddenRealm)
                 {
                     return;
@@ -230,7 +229,7 @@ namespace VAPI
             }
 
             //If this check roll doesnt pass, then return, no reward for u
-            if (!VariantSpawnManager.instance!.variantRewardRng.CheckRoll(_pickupRewardChance, luck, attackerMaster))
+            if (!VariantSpawnManager.instance!.variantRewardRng!.CheckRoll(_pickupRewardChance, luck, attackerMaster))
             {
                 return;
             }

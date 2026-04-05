@@ -30,7 +30,8 @@
         "R2API.Director.dll",
         "DebugToolkit.dll",
         "MonoMod.Utils.dll",
-        "KinematicCharacterController.dll"
+        "KinematicCharacterController.dll",
+        "Mono.Cecil.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [

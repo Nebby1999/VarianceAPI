@@ -9,9 +9,41 @@ using UnityEngine.Networking;
 
 namespace VAPI
 {
-    public enum CharacterVariantIndex
+    public struct CharacterVariantIndex : IEquatable<CharacterVariantIndex>
     {
-        None = -1,
+        public CharacterVariantIndex(int i)
+        {
+            this.i = i;
+        }
+        private readonly int i;
+        public bool isValid => i >= 0;
+
+        public static readonly CharacterVariantIndex none = new CharacterVariantIndex(-1);
+
+        public static explicit operator int(CharacterVariantIndex masterIndex) => masterIndex.i;
+        public static explicit operator CharacterVariantIndex(int value) => new CharacterVariantIndex(value);
+        public bool Equals(CharacterVariantIndex other) => i == other.i;
+        public override bool Equals(object obj) => obj is CharacterVariantIndex other && Equals(other);
+        public override int GetHashCode() => i;
+        public static bool operator ==(CharacterVariantIndex a, CharacterVariantIndex b) => a.i == b.i;
+        public static bool operator !=(CharacterVariantIndex a, CharacterVariantIndex b) => a.i != b.i;
+    }
+
+    [Serializable]
+    public struct NetworkCharacterVariantIndex : IEquatable<NetworkCharacterVariantIndex>
+    {
+        public uint i;
+        public static implicit operator NetworkCharacterVariantIndex(CharacterVariantIndex masterIndex)
+        {
+            return new NetworkCharacterVariantIndex { i = (uint)((int)masterIndex + 1) };
+        }
+        public static implicit operator CharacterVariantIndex(NetworkCharacterVariantIndex networkMasterIndex)
+        {
+            return new CharacterVariantIndex(((int)networkMasterIndex.i) - 1);
+        }
+        public bool Equals(NetworkCharacterVariantIndex other) => i == other.i;
+        public override bool Equals(object obj) => obj is CharacterVariantIndex other && Equals(other);
+        public override int GetHashCode() => (int)i;
     }
 
     public static class CharacterVariantManager
@@ -37,7 +69,7 @@ namespace VAPI
             {
                 return index;
             }
-            return CharacterVariantIndex.None;
+            return CharacterVariantIndex.none;
         }
 
         public static CharacterVariantProvider? FindCharacterVariantProvider(BodyIndex bodyIndex)

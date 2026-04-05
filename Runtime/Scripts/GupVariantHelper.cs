@@ -1,5 +1,6 @@
 using EntityStates.Gup;
-using IL.RoR2.Items;
+using HG;
+using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
 using System;
@@ -28,6 +29,25 @@ namespace VAPI
 
         internal static void HandleDeathState(ILContext il)
         {
+            //TODO: analyze health of this ILHook
+            var cursor = new ILCursor(il);
+
+            var success = cursor.TryGotoNext(x => x.MatchDup(),
+                x => x.MatchLdarg(0),
+                x => x.MatchLdfld<BaseSplitDeath>(nameof(BaseSplitDeath.moneyMultiplier)),
+                x => x.MatchStfld<BodySplitter>(nameof(BodySplitter.moneyMultiplier)));
+
+            if (!success)
+            {
+                VAPILog.Fatal("Failed to reach specific destination for handling Gup's death states!");
+                IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate -= HandleDeathState;
+                return;
+            }
+
+            cursor.Emit(OpCodes.Dup);
+            cursor.Emit(OpCodes.Ldarg_0);
+            cursor.EmitDelegate<Action<BodySplitter, BaseSplitDeath>>(HandleDeath);
+
             void HandleDeath(BodySplitter splitter, BaseSplitDeath baseSplitDeath)
             {
                 if (!baseSplitDeath.characterBody)
@@ -40,13 +60,13 @@ namespace VAPI
                 {
                     deathRewardsCoefficient = 0.3f,
                     summonerDeathRewards = baseSplitDeath.characterBody.GetComponent<DeathRewards>(),
-                    variantDefs = GetVariantDefs(bodyVariantController.variantsForBody, splitter.masterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex)
+                    variantDefs = GetVariantDefs(bodyVariantController.characterVariantDefs, splitter.masterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex)
                 };
             }
         }
 
         private static List<CharacterVariantDef> _getVariantDefsBuffer = new List<CharacterVariantDef>();
-        private static CharacterVariantDef[] GetVariantDefs(NetworkedVariantCollection splittingBodyVariantCollection, GameObject masterPrefabToSplitTo, BodyIndex splittingBodyIndex)
+        private static CharacterVariantDef[] GetVariantDefs(ReadOnlyArray<CharacterVariantDef> splittingBodyVariantDefs, GameObject masterPrefabToSplitTo, BodyIndex splittingBodyIndex)
         {
             _getVariantDefsBuffer.Clear();
 
@@ -58,7 +78,7 @@ namespace VAPI
                 splittingResultBodyIndex = bodyToSplitTo.bodyIndex;
             }
 
-            foreach(var variantDef in splittingBodyVariantCollection)
+            foreach(var variantDef in splittingBodyVariantDefs)
             {
                 //Do not pass this VariantDef
                 if (_blacklistedVariants.Contains(variantDef))

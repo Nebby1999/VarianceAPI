@@ -14,6 +14,7 @@ namespace VAPI
         private List<Component> _addedComponents = new List<Component>();
         private List<Type> _componentsToAdd = new List<Type>();
         private GameObject? _targetObject;
+        private bool _applied;
 
         public void Dispose()
         {
@@ -29,11 +30,12 @@ namespace VAPI
             _targetObject = null;
         }
 
-        private void ApplyComponents()
+        public void ApplyComponents()
         {
-            if (!_targetObject)
+            if (!_targetObject || _applied)
                 return;
 
+            _applied = true;
             for(int i = 0; i < _componentsToAdd.Count; i++)
             {
                 _targetObject!.AddComponent(_componentsToAdd[i]);
@@ -44,21 +46,18 @@ namespace VAPI
         {
             _targetObject = body.gameObject;
             FilterAndAddComponentsWithTarget(_componentsToAdd, characterVariantDefs, VariantComponent.TargetComponentObjectAttribute.TargetObject.CharacterBody);
-            ApplyComponents();
         }
 
         public VariantComponentStorage(CharacterMaster master, ReadOnlyArray<CharacterVariantDef> characterVariantDefs)
         {
             _targetObject = master.gameObject;
             FilterAndAddComponentsWithTarget(_componentsToAdd, characterVariantDefs, VariantComponent.TargetComponentObjectAttribute.TargetObject.CharacterMaster);
-            ApplyComponents();
         }
 
         public VariantComponentStorage(CharacterModel model, ReadOnlyArray<CharacterVariantDef> characterVariantDefs)
         {
             _targetObject = model.gameObject;
             FilterAndAddComponentsWithTarget(_componentsToAdd, characterVariantDefs, VariantComponent.TargetComponentObjectAttribute.TargetObject.CharacterModel);
-            ApplyComponents();
         }
 
         private void FilterAndAddComponentsWithTarget(List<Type> target, ReadOnlyArray<CharacterVariantDef> variantDefs, VariantComponent.TargetComponentObjectAttribute.TargetObject targetObject)

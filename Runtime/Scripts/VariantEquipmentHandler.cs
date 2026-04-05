@@ -70,7 +70,7 @@ namespace VAPI
 
         private void FixedUpdate()
         {
-            if (!characterMaster || !characterMaster.GetBody())
+            if (!characterMaster || !characterMaster!.GetBody())
             {
                 return;
             }

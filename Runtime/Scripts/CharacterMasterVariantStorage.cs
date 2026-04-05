@@ -10,15 +10,7 @@ namespace VAPI
     //Stores the CharacterVariantDefs for this master, the CharacterBodyVariantController will attempt to link itself to this, if the link is successful, then this is the single source of truth for which variants to use
     public class CharacterMasterVariantStorage : NetworkBehaviour
     {
-        public const uint variantsDirtyBit = (1 << 0);
-        public const uint doNotRollForVariantsDirtyBit = (1 << 1);
-        public const uint allDirtyBits = variantsDirtyBit | doNotRollForVariantsDirtyBit;
-
         public CharacterMaster characterMaster { get; private set; }
-        public NetworkedVariantCollection variantsForCharacter { get; private set; } = new NetworkedVariantCollection();
-
-        public List<ItemCountPair> _channeledItemCountPair = new List<ItemCountPair>();
-
         public bool doNotRollForVariants
         {
             get => _doNotRollForVariants;
@@ -28,26 +20,74 @@ namespace VAPI
                 if(_doNotRollForVariants != value)
                 {
                     _doNotRollForVariants = value;
-                    SetDirtyBit(doNotRollForVariantsDirtyBit);
                 }
             }
         }
+        [SyncVar]
         private bool _doNotRollForVariants;
+
+        public ReadOnlyArray<CharacterVariantDef> characterVariantDefs => _characterVariants;
+        private CharacterVariantDef[] _characterVariants = Array.Empty<CharacterVariantDef>();
+
+        private SyncListCharacterVariantIndex _characterVariantIndicesSync = new SyncListCharacterVariantIndex();
 
         private void Awake()
         {
             characterMaster = GetComponent<CharacterMaster>();
         }
 
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+            _characterVariantIndicesSync.Callback = SyncListCallback;
+        }
+
+        //Callback is only called if the server is a client. So i _think_ a dedicated server will never get this callback, which isnt good.
+        //Because of that, we will use this callback as a "Client only" callback.
+        //From HLAPI source code:
+        //
+        //if (m_Behaviour.isServer && m_Behaviour.isClient && m_Callback != null)
+        //{
+        //  m_Callback.Invoke(op, itemIndex);
+        //}
+        private void SyncListCallback(SyncList<NetworkCharacterVariantIndex>.Operation op, int itemIndex)
+        {
+            //GTFO if server.
+            if (NetworkServer.active)
+                return;
+
+            OnSyncListDirty();
+        }
+
+        private void OnSyncListDirty()
+        {
+            //First, unapply the master modifications.
+            UnapplyMasterModifications(characterVariantDefs);
+
+            //Second, create new array and populate
+            _characterVariants = new CharacterVariantDef[_characterVariantIndicesSync.Count];
+            for(int i = 0; i < _characterVariantIndicesSync.Count; i++)
+            {
+                _characterVariants[i] = CharacterVariantManager.GetCharacterVariantDef(_characterVariantIndicesSync[i])!;
+            }
+
+            //Thirdy, apply master modifications
+            ApplyMasterModifications(characterVariantDefs);
+        }
+
         [Server]
         public void SetVariantDefsForCharacter(CharacterVariantDef[] characterVariantDefs)
         {
-            UnapplyMasterModifications(variantsForCharacter.characterVariantDefs);
+            //First, clear the syncList;
+            _characterVariantIndicesSync.Clear();
+            //Then, add the indices to the sync list.
+            for(int i = 0; i < characterVariantDefs.Length; i++)
+            {
+                _characterVariantIndicesSync.Add(characterVariantDefs[i].characterVariantIndex);
+            }
 
-            variantsForCharacter.SetVariantServer(characterVariantDefs);
-            SetDirtyBit(variantsDirtyBit);
-
-            ApplyMasterModifications(variantsForCharacter.characterVariantDefs);
+            //Call the OnSyncListDirty(), which will properly update our variants.
+            OnSyncListDirty();
         }
 
         private VariantComponentStorage? _componentStorage;
@@ -90,51 +130,6 @@ namespace VAPI
             }
 
             _componentStorage = new VariantComponentStorage(characterMaster!, variantDefs);
-        }
-
-        public override bool OnSerialize(NetworkWriter writer, bool initialState)
-        {
-            uint dirtyBits = syncVarDirtyBits;
-
-            if(initialState)
-            {
-                dirtyBits = allDirtyBits;
-            }
-
-            bool writeVariantArray = (dirtyBits & variantsDirtyBit) != 0;
-            bool writeDoNotRollForVariants = (dirtyBits & doNotRollForVariantsDirtyBit) != 0;
-
-            writer.Write((byte)dirtyBits);
-
-            if(writeVariantArray)
-            {
-                variantsForCharacter.Serialize(writer);
-            }
-
-            if(writeDoNotRollForVariants)
-            {
-                writer.Write(doNotRollForVariants);
-            }
-
-            return ((!initialState) && dirtyBits != 0u);
-        }
-
-        public override void OnDeserialize(NetworkReader reader, bool initialState)
-        {
-            byte mainMask = reader.ReadByte();
-
-            bool readVariantArray = (mainMask & variantsDirtyBit) != 0;
-            bool readDoNotRollForVariants = (mainMask & doNotRollForVariantsDirtyBit) != 0;
-
-            if(readVariantArray)
-            {
-                variantsForCharacter.Deserialize(reader);
-            }
-
-            if(readDoNotRollForVariants)
-            {
-                _doNotRollForVariants = reader.ReadBoolean();
-            }
         }
     }
 }

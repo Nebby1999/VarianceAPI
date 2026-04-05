@@ -56,7 +56,7 @@ namespace VAPI
                 return new CharacterVariantDef[] { uniqueResult! };
             }
 
-            if(filteredNonUniqueVariants.Count > 0 && RollNonUniques(args.rng, args.spawnChanceMultiplier ?? 1f, out CharacterVariantDef[] results))
+            if(filteredNonUniqueVariants.Count > 0 && RollNonUniques(args.rng, args.spawnChanceMultiplier ?? 1f, out CharacterVariantDef[]? results))
             {
                 return results!;
             }
