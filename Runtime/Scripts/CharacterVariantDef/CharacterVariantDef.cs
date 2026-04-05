@@ -8,6 +8,8 @@ using EntityStates;
 using HG;
 using UnityEngine.Networking;
 using R2API.AddressReferencedAssets;
+using RoR2;
+using MSU;
 #nullable enable
 
 namespace VAPI
@@ -15,9 +17,51 @@ namespace VAPI
     [Serializable]
     public struct VariantBuffInfo
     {
+        private readonly struct DisposableVariantBuff : IDisposable
+        {
+            public readonly CharacterBody targetBody;
+            public readonly BuffDef buffDef;
+            public readonly int buffCount;
+
+            public DisposableVariantBuff(CharacterBody targetBody, BuffDef buffDef, int buffCount)
+            {
+                this.targetBody = targetBody;
+                this.buffDef = buffDef;
+                this.buffCount = buffCount;
+            }
+
+            public void Dispose()
+            {
+                if(!targetBody)
+                {
+                    return;
+                }
+
+                for(int i = 0; i < buffCount; i++)
+                {
+                    targetBody.RemoveBuff(buffDef);
+                }
+            }
+        }
         public AddressReferencedBuffDef? buffDef;
         public int count;
-        public float timer;
+
+        public IDisposable? ApplyBuff(CharacterBody targetBody)
+        {
+            if (buffDef == null || !targetBody)
+                return null;
+
+            BuffDef buff = buffDef.LoadAssetNow();
+            if (!buff)
+                return null;
+
+            DisposableVariantBuff disposableVariantBuff = new DisposableVariantBuff(targetBody, buff, count);
+            for (int i = 0; i < count; i++)
+            {
+                targetBody.AddBuff(buff);
+            }
+            return disposableVariantBuff;
+        }
     }
 
     [CreateAssetMenu(fileName = "New CharacterVariantDef", menuName = "VarianceAPI/CharacterVariantDef")]
@@ -50,6 +94,7 @@ namespace VAPI
         public IVariantStatModifier? statModifier = null;
         public VariantBuffInfo[] buffInfos = Array.Empty<VariantBuffInfo>();
         public VariantVisualModifier? visualModifier = null;
+        [Min(1)]
         public float scaleMultiplier = 1f;
 
         [Header("Other")]

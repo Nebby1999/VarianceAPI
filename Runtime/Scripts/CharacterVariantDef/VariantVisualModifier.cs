@@ -30,6 +30,7 @@ namespace VAPI
         public struct LightReplacement
         {
             private Light? _dummy;
+            [TransformPath(nameof(vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), siblingPropertyComponentTypeRequirement = nameof(_dummy))]
             public string? transformPath;
             public int lightIndex;
 
@@ -65,5 +66,10 @@ namespace VAPI
         public RendererTargetedReplacement<Mesh>[] meshReplacements = Array.Empty<RendererTargetedReplacement<Mesh>>();
         public LightReplacement[] lightReplacements = Array.Empty<LightReplacement>();
         public PrefabInstantiationData[] prefabInstantiationDatas = Array.Empty<PrefabInstantiationData>();
+
+        public void ApplyVisualModifiers(CharacterModel targetModel)
+        {
+
+        }
     }
 }

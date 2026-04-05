@@ -21,7 +21,7 @@ namespace VAPI
             {
                 if(characterMasterVariantStorage)
                 {
-                    return characterMasterVariantStorage!.variantsForCharacter;
+                    //return characterMasterVariantStorage!.variantsForCharacter;
                 }
 
                 return _fallbackVariantStorage;
