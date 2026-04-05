@@ -29,7 +29,8 @@
         "RiskOfOptions.dll",
         "R2API.Director.dll",
         "DebugToolkit.dll",
-        "MonoMod.Utils.dll"
+        "MonoMod.Utils.dll",
+        "KinematicCharacterController.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [

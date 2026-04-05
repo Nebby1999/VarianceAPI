@@ -36,16 +36,12 @@ namespace VAPI
                 if (!baseSplitDeath.characterBody.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
                     return;
 
-                var originalMasterSummon = splitter.masterSummon;
-                var newSummon = new VariantSummon
+                VariantMasterSummon wrapper = new VariantMasterSummon(splitter.masterSummon)
                 {
-                    masterPrefab = originalMasterSummon.masterPrefab,
-                    ignoreTeamMemberLimit = false,
-                    useAmbientLevel = null,
-                    teamIndexOverride = null,
-                    variantDefs = GetVariantDefs(bodyVariantController.variantsForBody, originalMasterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex)
+                    deathRewardsCoefficient = 0.3f,
+                    summonerDeathRewards = baseSplitDeath.characterBody.GetComponent<DeathRewards>(),
+                    variantDefs = GetVariantDefs(bodyVariantController.variantsForBody, splitter.masterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex)
                 };
-                splitter.masterSummon = originalMasterSummon;
             }
         }
 

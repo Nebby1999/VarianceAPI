@@ -88,7 +88,7 @@ namespace VAPI
                 return false;
             }
 
-            CharacterBody characterBody = effectOriginMaster.AsValidOrNull()?.GetBody();
+            CharacterBody? characterBody = effectOriginMaster.AsValidOrNull()?.GetBody();
             if (percentchance <= 0f)
             {
                 return false;
@@ -107,10 +107,25 @@ namespace VAPI
             if(randomValue <= percentchance)
             {
                 wasLucky = firstRollValue > percentchance;
-                characterBody.wasLucky = wasLucky;
+                if(characterBody)
+                {
+                    characterBody!.wasLucky = wasLucky;
+                }
                 return true;
             }
             return false;
+        }
+
+        public static GenericSkill? GetOrFindSkill(this SkillLocator locator, SkillSlot slot, string fallbackSkillName)
+        {
+            if(slot == SkillSlot.None)
+            {
+                return locator.FindSkill(fallbackSkillName);
+            }
+            else
+            {
+                return locator.GetSkill(slot);
+            }
         }
     }
 }

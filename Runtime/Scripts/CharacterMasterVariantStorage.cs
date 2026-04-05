@@ -50,7 +50,8 @@ namespace VAPI
             ApplyMasterModifications(variantsForCharacter.characterVariantDefs);
         }
 
-        private List<IUndoable?> undoableModifications = new List<IUndoable>();
+        private VariantComponentStorage? _componentStorage;
+        private List<IDisposable?> _disposableModifications = new List<IDisposable?>();
         private void UnapplyMasterModifications(ReadOnlyArray<CharacterVariantDef> variantDefs)
         {
             for (int i = variantDefs.Length - 1; i >= 0; i--)
@@ -60,11 +61,14 @@ namespace VAPI
             }
 
             //Undo modifiers
-            for(int i = undoableModifications.Count - 1; i >= 0; i--)
+            for(int i = _disposableModifications.Count - 1; i >= 0; i--)
             {
-                undoableModifications[i]?.Undo();
+                _disposableModifications[i]?.Dispose();
             }
-            undoableModifications.Clear();
+            _disposableModifications.Clear();
+
+            _componentStorage?.Dispose();
+            _componentStorage = null;
         }
 
         private void ApplyMasterModifications(ReadOnlyArray<CharacterVariantDef> variantDefs)
@@ -77,9 +81,15 @@ namespace VAPI
                 //Apply modifiers
                 for (int j = 0; j < variantDefs[i].masterModifiers.Length; j++)
                 {
-                    undoableModifications.Add(variantDefs[i].masterModifiers[j]?.ModifyMaster(characterMaster));
+                    IVariantMasterModifier? modifier = variantDefs[i].masterModifiers[j];
+                    if (modifier == null)
+                        continue;
+
+                    _disposableModifications.Add(modifier.ModifyMaster(characterMaster));
                 }
             }
+
+            _componentStorage = new VariantComponentStorage(characterMaster!, variantDefs);
         }
 
         public override bool OnSerialize(NetworkWriter writer, bool initialState)

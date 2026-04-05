@@ -7,6 +7,10 @@ using UnityEngine.Networking;
 
 namespace VAPI
 {
+    public sealed class SyncListCharacterVariantIndex : SyncListStruct<NetworkCharacterVariantIndex>
+    {
+
+    }
     public sealed class NetworkedVariantCollection : IEnumerable<CharacterVariantDef>
     {
         private struct Enumerator : IEnumerator<CharacterVariantDef>

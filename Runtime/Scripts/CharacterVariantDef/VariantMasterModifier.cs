@@ -7,19 +7,15 @@ using UnityEngine;
 
 namespace VAPI
 {
-    public interface IUndoable
-    {
-        public void Undo();
-    }
     public interface IVariantMasterModifier : IValidatable
     {
-        public IUndoable? ModifyMaster(CharacterMaster master);
+        public IDisposable? ModifyMaster(CharacterMaster master);
     }
 
     [Serializable]
     public sealed class UnstableAIModifier : IVariantMasterModifier
     {
-        private struct UnstableAIModifierResult : IUndoable
+        private struct UnstableAIModifierResult : IDisposable
         {
             private struct SkillDriverWithOriginalFractionOverrides
             {
@@ -30,7 +26,7 @@ namespace VAPI
                 public float maxUserHealthFractionOriginal;
             }
 
-            private List<SkillDriverWithOriginalFractionOverrides> undoData;
+            private List<SkillDriverWithOriginalFractionOverrides>? undoData;
 
             public void AddModification(AISkillDriver skillDriver, float minTargetFractionModifier, float maxTargetFractionModifier, float minUserFractionModifier, float maxUserFractionModifier)
             {
@@ -45,7 +41,7 @@ namespace VAPI
                 });
             }
 
-            public void Undo()
+            public void Dispose()
             {
                 if (undoData == null)
                     return;
@@ -58,6 +54,7 @@ namespace VAPI
                     skillDriver.minUserHealthFraction = undoData[i].minUserHealthFractionOriginal;
                     skillDriver.maxUserHealthFraction = undoData[i].maxUserHealthFractionOriginal;
                 }
+                undoData.Clear();
             }
         }
         public float minTargetHealthFractionOverride = Mathf.NegativeInfinity;
@@ -65,7 +62,7 @@ namespace VAPI
         public float minUserHealthFractionOverride = Mathf.NegativeInfinity;
         public float maxUserHealthFractionOverride = Mathf.Infinity;
 
-        public IUndoable? ModifyMaster(CharacterMaster master)
+        public IDisposable? ModifyMaster(CharacterMaster master)
         {
             if (master.aiComponents == null)
             {
@@ -112,18 +109,59 @@ namespace VAPI
         }
 
         public void Validate() { }
+
+        public override int GetHashCode()
+        {
+            HashCode hasher = new HashCode();
+            hasher.Add(nameof(UnstableAIModifier));
+            hasher.Add(minTargetHealthFractionOverride);
+            hasher.Add(maxTargetHealthFractionOverride);
+            hasher.Add(minUserHealthFractionOverride);
+            hasher.Add(maxUserHealthFractionOverride);
+
+            return hasher.ToHashCode();
+        }
     }
 
     [Serializable]
     public struct AlwaysSprintAIModifier : IVariantMasterModifier
     {
-        public void ModifyMaster(CharacterMaster master)
+        public struct AlwaysSprintAIModifierResult : IDisposable
+        {
+            private struct SkillDriverSprint
+            {
+                public AISkillDriver skillDriver;
+                public bool shouldSprintOriginal;
+            }
+
+            private List<SkillDriverSprint>? _skillDriverSprint;
+
+            public void AddModification(AISkillDriver skillDriver, bool shouldSprintOriginal)
+            {
+                _skillDriverSprint ??= new List<SkillDriverSprint>();
+                _skillDriverSprint.Add(new SkillDriverSprint { skillDriver = skillDriver, shouldSprintOriginal = shouldSprintOriginal });
+            }
+
+            public void Dispose()
+            {
+                if (_skillDriverSprint == null)
+                    return;
+
+                for (int i = _skillDriverSprint.Count - 1; i >= 0; i--)
+                {
+                    _skillDriverSprint[i].skillDriver.shouldSprint = _skillDriverSprint[i].shouldSprintOriginal;
+                }
+                _skillDriverSprint.Clear();
+            }
+        }
+        public IDisposable? ModifyMaster(CharacterMaster master)
         {
             if (master.aiComponents == null)
             {
-                return;
+                return null;
             }
 
+            AlwaysSprintAIModifierResult result = new AlwaysSprintAIModifierResult();
             foreach (BaseAI? baseAI in master.AiComponents)
             {
                 if (!baseAI)
@@ -134,11 +172,12 @@ namespace VAPI
                 if (baseAI.skillDrivers == null)
                     continue;
 
-                ForceSprint(baseAI.skillDrivers);
+                ForceSprint(baseAI.skillDrivers, ref result);
             }
+            return result;
         }
 
-        private void ForceSprint(AISkillDriver[] drivers)
+        private void ForceSprint(AISkillDriver[] drivers, ref AlwaysSprintAIModifierResult result)
         {
             foreach (AISkillDriver? skillDriver in drivers)
             {
@@ -146,24 +185,64 @@ namespace VAPI
                 {
                     continue;
                 }
+                result.AddModification(skillDriver, skillDriver.shouldSprint);
 
                 skillDriver.shouldSprint = true;
             }
         }
 
         public void Validate() { }
+
+        public override int GetHashCode()
+        {
+            return nameof(AlwaysSprintAIModifier).GetHashCode();
+        }
     }
 
     [Serializable]
     public sealed class BaseAIDampModifier : IVariantMasterModifier
     {
+        private struct BaseAIDampModifierResult : IDisposable
+        {
+            private float? baseAIDampBonus;
+            private float? baseAIDampMultiplier;
+            private List<BaseAI>? _aiComponents;
+
+            public void Dispose()
+            {
+                if (_aiComponents == null)
+                    return;
+
+                for (int i = _aiComponents.Count - 1; i >= 0; i--)
+                {
+                    _aiComponents[i].aimVectorDampTime -= baseAIDampBonus ?? 0;
+                    _aiComponents[i].aimVectorMaxSpeed /= baseAIDampMultiplier ?? 1;
+                }
+                _aiComponents.Clear();
+            }
+
+            public void AddBaseAI(BaseAI ai)
+            {
+                _aiComponents ??= new List<BaseAI>();
+                _aiComponents.Add(ai);
+            }
+
+            public BaseAIDampModifierResult(float baseAIDampBonus, float baseAIDampMultiplier)
+            {
+                _aiComponents = new List<BaseAI>();
+                this.baseAIDampBonus = baseAIDampBonus;
+                this.baseAIDampMultiplier = baseAIDampMultiplier;
+            }
+        }
         public float baseAIDampBonus = 0;
         [Min(0)]
         public float baseAIDampMultiplier = 1;
-        public void ModifyMaster(CharacterMaster master)
+        public IDisposable? ModifyMaster(CharacterMaster master)
         {
             if (master.AiComponents == null)
-                return;
+                return null;
+
+            var result = new BaseAIDampModifierResult(baseAIDampBonus, baseAIDampMultiplier);
 
             foreach(BaseAI? baseAI in master.AiComponents)
             {
@@ -172,11 +251,23 @@ namespace VAPI
                     continue;
                 }
 
+                result.AddBaseAI(baseAI);
+
                 baseAI.aimVectorDampTime += baseAIDampBonus;
                 baseAI.aimVectorMaxSpeed *= baseAIDampMultiplier;
             }
+            return result;
         }
 
         public void Validate() { }
+
+        public override int GetHashCode()
+        {
+            HashCode hasher = new HashCode();
+            hasher.Add(nameof(BaseAIDampModifier));
+            hasher.Add(baseAIDampBonus);
+            hasher.Add(baseAIDampMultiplier);
+            return hasher.ToHashCode();
+        }
     }
 }
