@@ -27,42 +27,49 @@ namespace VAPI
             _geepToGipVariantRelation.TryAdd(geepVariant, gipVariant);
         }
 
+        /*
+         * We want to wrap the BodySplitter's MasterSummon inside a VariantMasterSummon to ensure Gup variants are passed into it's children.
+         * 
+         * We will do this by putting our cursor right before the Perform call, and then creating a VariantMasterSummon wrapper.
+         * 
+         *  bodySplitter.moneyMultiplier = moneyMultiplier;
+         *  <---- ILHook cursor goes here.
+		 *  bodySplitter.Perform();
+         */
         internal static void HandleDeathState(ILContext il)
         {
-            //TODO: analyze health of this ILHook
             var cursor = new ILCursor(il);
 
-            var success = cursor.TryGotoNext(x => x.MatchDup(),
-                x => x.MatchLdarg(0),
-                x => x.MatchLdfld<BaseSplitDeath>(nameof(BaseSplitDeath.moneyMultiplier)),
-                x => x.MatchStfld<BodySplitter>(nameof(BodySplitter.moneyMultiplier)));
+            //First we'll get our cursor right before BodySplitter perform.
+            bool matchBeforeBodySplitterPerform = cursor.TryGotoNext(x => x.MatchCallOrCallvirt<BodySplitter>(nameof(BodySplitter.Perform)));
 
-            if (!success)
+            if(!matchBeforeBodySplitterPerform)
             {
-                VAPILog.Fatal("Failed to reach specific destination for handling Gup's death states!");
-                IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate -= HandleDeathState;
                 return;
             }
 
-            cursor.Emit(OpCodes.Dup);
+            //Emit the BaseSplitDeath instance
             cursor.Emit(OpCodes.Ldarg_0);
-            cursor.EmitDelegate<Action<BodySplitter, BaseSplitDeath>>(HandleDeath);
 
-            void HandleDeath(BodySplitter splitter, BaseSplitDeath baseSplitDeath)
+            //Emit the delegate, which will put the BodySplitter back in the stack... The original method expects it to be there for the perform call, so this should work just fine i think.
+            cursor.EmitDelegate<Func<BodySplitter, BaseSplitDeath, BodySplitter>>(MakeBodySplitterIntoAVariantSummon);
+        }
+
+        private static BodySplitter MakeBodySplitterIntoAVariantSummon(BodySplitter toReturn, BaseSplitDeath baseSplitDeath)
+        {
+            if (!baseSplitDeath.characterBody)
+                return toReturn;
+
+            if (!baseSplitDeath.characterBody.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
+                return toReturn;
+
+            VariantMasterSummon wrapper = new VariantMasterSummon(toReturn.masterSummon)
             {
-                if (!baseSplitDeath.characterBody)
-                    return;
-
-                if (!baseSplitDeath.characterBody.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
-                    return;
-
-                VariantMasterSummon wrapper = new VariantMasterSummon(splitter.masterSummon)
-                {
-                    deathRewardsCoefficient = 0.3f,
-                    summonerDeathRewards = baseSplitDeath.characterBody.GetComponent<DeathRewards>(),
-                    variantDefs = GetVariantDefs(bodyVariantController.characterVariantDefs, splitter.masterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex)
-                };
-            }
+                deathRewardsCoefficient = 0.3f,
+                summonerDeathRewards = baseSplitDeath.characterBody.GetComponent<DeathRewards>(),
+                variantDefs = GetVariantDefs(bodyVariantController.characterVariantDefs, toReturn.masterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex)
+            };
+            return toReturn;
         }
 
         private static List<CharacterVariantDef> _getVariantDefsBuffer = new List<CharacterVariantDef>();

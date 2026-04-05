@@ -18,8 +18,8 @@ namespace VAPI
 
             public TargetObject targetObject { get; set; }
 
-            public bool forServer { get; set; }
-            public bool forClient { get; set; }
+            public bool useOnServer { get; set; }
+            public bool useOnClient { get; set; }
 
             public TargetComponentObjectAttribute(TargetObject targetObject)
             {

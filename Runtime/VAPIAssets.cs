@@ -105,10 +105,10 @@ namespace VAPI
         }
     }
 
-    public abstract class VAPIAssetRequest
+    public abstract class VAPIAssetRequest : IEnumerator
     {
         public abstract UObject? boxedAsset { get; }
-        public abstract IEnumerable<UObject>? boxedAssets { get; }
+        public abstract UObject[]? boxedAssets { get; }
         public bool IsComplete
         {
             get
@@ -118,9 +118,22 @@ namespace VAPI
                 return !internalCoroutine.MoveNext();
             }
         }
+
+        object? IEnumerator.Current => internalCoroutine?.Current;
+
         private IEnumerator? internalCoroutine;
 
         protected abstract IEnumerator LoadAsset();
+
+        bool IEnumerator.MoveNext()
+        {
+            return internalCoroutine?.MoveNext() ?? false;
+        }
+
+        void IEnumerator.Reset()
+        {
+            throw new NotImplementedException();
+        }
     }
 
     public class VAPIAssetRequest<TAsset> : VAPIAssetRequest where TAsset : UObject
@@ -129,8 +142,8 @@ namespace VAPI
         public TAsset? asset => _asset;
         private TAsset? _asset;
 
-        public override IEnumerable<UObject>? boxedAssets => assets;
-        public IEnumerable<TAsset>? assets => _assets;
+        public override UObject[]? boxedAssets => assets;
+        public TAsset[]? assets => _assets;
         private TAsset[]? _assets;
 
         private bool isSingleAssetLoad => !string.IsNullOrWhiteSpace(_assetName);
