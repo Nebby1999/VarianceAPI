@@ -28,9 +28,6 @@ namespace VAPI
             }
         };
 
-        public delegate void OnVariantKilled(DamageReport killingDamageReport, CharacterVariantDef[] variantDefs);
-        public static event OnVariantKilled? onVariantKilled;
-
         public static VariantSpawnManager? instance => _instance;
         private static VariantSpawnManager? _instance;
 
@@ -54,6 +51,18 @@ namespace VAPI
             CharacterBody.onBodyStartGlobal += OnBodyStart;
 
             SingletonHelper.Assign(ref _instance, this);
+        }
+        private void OnDisable()
+        {
+            CharacterMaster.onStartGlobal -= OnMasterStart;
+            CharacterBody.onBodyStartGlobal -= OnBodyStart;
+
+            SingletonHelper.Unassign(ref _instance, this);
+        }
+
+        private float GetSpawnRateMultiplier()
+        {
+            return RunArtifactManager.instance.IsArtifactEnabled(VAPIContent.Artifacts.Variance) ? artifactSpawnRateMultiplier : 1f;
         }
 
         private void OnBodyStart(CharacterBody body)
@@ -87,7 +96,7 @@ namespace VAPI
             }
 
             //Character has no master, but the variant provider exists, proceed to roll the fallback variants.
-            CharacterVariantDef[]? fallbackVariantDefs = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = 1f });
+            CharacterVariantDef[]? fallbackVariantDefs = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
 
             if(fallbackVariantDefs == null || fallbackVariantDefs.Length == 0)
             {
@@ -125,7 +134,7 @@ namespace VAPI
             }
 
             //TODO: Impl variance artifact effect
-            CharacterVariantDef[]? variantDefsForMaster = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = 1f});
+            CharacterVariantDef[]? variantDefsForMaster = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
 
             if(variantDefsForMaster == null || variantDefsForMaster.Length == 0)
             {
@@ -137,12 +146,5 @@ namespace VAPI
             //TODO: Impl event for master picking variants?
         }
 
-        private void OnDisable()
-        {
-            CharacterMaster.onStartGlobal -= OnMasterStart;
-            CharacterBody.onBodyStartGlobal -= OnBodyStart;
-
-            SingletonHelper.Unassign(ref _instance, this);
-        }
     }
 }

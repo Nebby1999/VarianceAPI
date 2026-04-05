@@ -1,12 +1,14 @@
 #nullable enable
 using HG;
+using MSU;
+using R2API;
 using RoR2;
 using System;
 using UnityEngine.Networking;
 
 namespace VAPI
 {
-    public class CharacterBodyVariantController : NetworkBehaviour
+    public class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
     {
 
         //So, VAPI 3.0 has the ability to store the variants on a master, however, we want to allow the ability for masterless variants to be a thing.
@@ -43,9 +45,6 @@ namespace VAPI
         }
         [SyncVar]
         private bool _doNotRollForVariants;
-
-        private VariantComponentStorage? _bodyComponentStorage = null;
-        private VariantComponentStorage? _mdlComponentStorage = null;
 
         private void Awake()
         {
@@ -160,6 +159,28 @@ namespace VAPI
 
             //Call the OnSyncListDirty(), which will properly update our variants.
             OnSyncListDirty();
+        }
+
+        private DisposableCollectionHelper disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
+        private void ApplyBodyModifications(ReadOnlyArray<CharacterVariantDef> characterVariants)
+        {
+
+        }
+
+        private void UnapplyBodyModifications(ReadOnlyArray<CharacterVariantDef> characterVariantDefs)
+        {
+
+        }
+
+        public void ModifyStatArguments(RecalculateStatsAPI.StatHookEventArgs args)
+        {
+            for(int i = 0; i < characterVariantDefs.Length; i++)
+            {
+                var characterVariantDef = characterVariantDefs[i];
+                characterVariantDef.statModifier?.ApplyStatModifiers(args, characterBody);
+            }
+
+
         }
     }
 }

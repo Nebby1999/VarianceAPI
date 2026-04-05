@@ -98,8 +98,7 @@ namespace VAPI
         public float scaleMultiplier = 1f;
 
         [Header("Other")]
-        [SerializableSystemType.RequiredBaseType(typeof(VariantComponent))]
-        public SerializableSystemType[] additionalComponents = Array.Empty<SerializableSystemType>();
+        public VariantComponentCollection additionalVariantComponents = new VariantComponentCollection();
 
         private void OnValidate()
         {

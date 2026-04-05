@@ -50,10 +50,10 @@ namespace VAPI
                 if (equipmentDatas[i].requiredIndex == index)
                 {
                     equipmentDatas.RemoveAt(i);
+                    currentDataIndex = -1;
                     return;
                 }
             }
-            currentDataIndex = -1;
         }
 
         private void Awake()

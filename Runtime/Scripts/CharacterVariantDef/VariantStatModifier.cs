@@ -56,6 +56,6 @@ namespace VAPI
             args.armorTotalMult += armorMultiplier; 
         }
 
-        public void Validate() { }
+        public virtual void Validate() { }
     }
 }

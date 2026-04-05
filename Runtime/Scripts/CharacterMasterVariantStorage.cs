@@ -90,46 +90,38 @@ namespace VAPI
             OnSyncListDirty();
         }
 
-        private VariantComponentStorage? _componentStorage;
-        private List<IDisposable?> _disposableModifications = new List<IDisposable?>();
-        private void UnapplyMasterModifications(ReadOnlyArray<CharacterVariantDef> variantDefs)
-        {
-            for (int i = variantDefs.Length - 1; i >= 0; i--)
-            {
-                //Apply channeled items && equipment info
-                variantDefs[i].inventoryDefinition.UnapplyToInventory(characterMaster.inventory);
-            }
-
-            //Undo modifiers
-            for(int i = _disposableModifications.Count - 1; i >= 0; i--)
-            {
-                _disposableModifications[i]?.Dispose();
-            }
-            _disposableModifications.Clear();
-
-            _componentStorage?.Dispose();
-            _componentStorage = null;
-        }
-
+        private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
         private void ApplyMasterModifications(ReadOnlyArray<CharacterVariantDef> variantDefs)
         {
             for (int i = 0; i < variantDefs.Length; i++)
             {
+                CharacterVariantDef variantDef = variantDefs[i];
+
+                //Apply Tier data.
+                if (variantDef.variantTier)
+                {
+                    _disposableCollectionHelper.AddDisposable(variantDef.variantTier!.ModifyMaster(characterMaster));
+                }
+
                 //Apply channeled items && equipment info
-                variantDefs[i].inventoryDefinition.ApplyToInventory(characterMaster.inventory);
+                _disposableCollectionHelper.AddDisposable(variantDef.inventoryDefinition.ApplyToInventory(characterMaster.inventory));
 
                 //Apply modifiers
                 for (int j = 0; j < variantDefs[i].masterModifiers.Length; j++)
                 {
                     IVariantMasterModifier? modifier = variantDefs[i].masterModifiers[j];
-                    if (modifier == null)
-                        continue;
-
-                    _disposableModifications.Add(modifier.ModifyMaster(characterMaster));
+                    _disposableCollectionHelper.AddDisposable(variantDef.masterModifiers[j]?.ModifyMaster(characterMaster));
                 }
-            }
 
-            _componentStorage = new VariantComponentStorage(characterMaster!, variantDefs);
+                //Apply components
+                _disposableCollectionHelper.AddDisposable(variantDef.additionalVariantComponents.ApplyComponents(characterMaster));
+            }
+        }
+        
+        private void UnapplyMasterModifications(ReadOnlyArray<CharacterVariantDef> variantDefs)
+        {
+            //Dispose Tier Data, modifiers, item inventory, equipment and components.
+            _disposableCollectionHelper.Dispose();
         }
     }
 }

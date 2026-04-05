@@ -17,17 +17,7 @@ namespace VAPI
         /*
          * We want to modify the name of the variant without directly overriding the character name string, so we're hooking GetBestBodyName.
          * 
-         * Target is to put the cursor right after we call "GetUserName", and store it's value on the local variable.
-         * 
-         * characterBody = bodyObject.GetComponent<CharacterBody>();
-		 * if ((bool)characterBody)
-		 * {
-		 *      text = characterBody.GetUserName();
-		 *      <---- ILHook goes here
-		 * }
-		 * 
-		 * I think a better polace would be _after_ we get the text, and check if the body exists. That's where stuff like elite buffs, gummy clone and drone upgrade tiers are computed. But i have no ide ahow to match against that.
-		 * string text2 = text;
+         * Target is to put the cursor before the characterBody.isElite statement.
 	     * if ((bool)characterBody)
 	     * {
 	     * <---- ILHook goes here
@@ -47,22 +37,25 @@ namespace VAPI
         {
             var cursor = new ILCursor(il);
 
+            //We first deduce the text2 variable from the code.
+            //text2 = Language.GetStringFormatted(...);
             int text2LocIndex = -1;
-            int characterBodyLocIndex = -1;
-            //Get stloc for "text2" in ilspy
-            var text2AndCharacterBodyLocIndicesObtained = cursor.TryGotoNext(x => x.MatchStloc(out text2LocIndex),
-                x => x.MatchLdloc(out characterBodyLocIndex));
-
-            if(!text2AndCharacterBodyLocIndicesObtained || text2LocIndex == -1 || characterBodyLocIndex == -1)
+            bool text2LocIndexObtained = cursor.TryGotoNext(x => x.MatchCallOrCallvirt<Language>(nameof(Language.GetStringFormatted))) &&
+                cursor.TryGotoNext(x => x.MatchStloc(out text2LocIndex));
+            if (!text2LocIndexObtained)
             {
+                VAPILog.Fatal($"Failed to ILHook RoR2.Util.GetBestBodyName()! Unable to deduce \"text2\" local variable index. VariantNameProviders will not work!");
                 return;
             }
 
-            var movedCursorRightBeforeIsElite = cursor.TryGotoNext(x => x.MatchCallOrCallvirt<CharacterBody>($"get_{nameof(CharacterBody.isElite)}"));
-
-            if (!movedCursorRightBeforeIsElite)
+            //The we go to `if(characterBody.isElite)` to deduce the body variable, if we match, proceed with the rest of the hook.
+            int characterBodyLocIndex = -1;
+            cursor.Index = 0;
+            bool characterBodyLocIndexObtained = cursor.TryGotoNext(x => x.MatchLdloc(out characterBodyLocIndex),
+                x => x.MatchCallOrCallvirt<CharacterBody>($"get_{nameof(CharacterBody.isElite)}"));
+            if (!characterBodyLocIndexObtained)
             {
-                VAPILog.Fatal("Failed to hook RoR2.Util.GetBestBodyName! VariantNameProviders will not work!");
+                VAPILog.Fatal("Failed to hook RoR2.Util.GetBestBodyName()! Unable to deduce \"characterBody\" local variable index. VariantNameProviders will not work!");
                 return;
             }
 

@@ -1,7 +1,12 @@
 #nullable enable
+using EntityStates;
+using MSU;
 using RoR2;
 using RoR2.ContentManagement;
+using RoR2.Skills;
 using System.Collections;
+using UnityEngine;
+using UnityEngine.Networking;
 
 namespace VAPI
 {
@@ -24,6 +29,7 @@ namespace VAPI
         public static class Buffs
         {
             public static BuffDef? Variant;
+            public static BuffDef? LinearArmorBonus;
         }
 
         public static class Items
@@ -54,6 +60,39 @@ namespace VAPI
             while(enumerator.MoveNext())
             {
                 yield return null;
+            }
+
+            HG.Coroutines.ParallelCoroutine parallelLoadCoroutine = new HG.Coroutines.ParallelCoroutine();
+
+            var artifactLoad = VAPIAssets.LoadAssetsAsync<ArtifactDef>();
+            var buffLoad = VAPIAssets.LoadAssetsAsync<BuffDef>();
+            var itemLoad = VAPIAssets.LoadAssetsAsync<ItemDef>();
+            var prefabLoad = VAPIAssets.LoadAssetsAsync<GameObject>();
+            var skillDefLoad = VAPIAssets.LoadAssetsAsync<SkillDef>();
+
+            parallelLoadCoroutine.Add(artifactLoad);
+            parallelLoadCoroutine.Add(buffLoad);
+            parallelLoadCoroutine.Add(itemLoad);
+            parallelLoadCoroutine.Add(prefabLoad);
+            parallelLoadCoroutine.Add(skillDefLoad);
+
+            while(parallelLoadCoroutine.MoveNext())
+            {
+                yield return null;
+            }
+
+            contentPack.artifactDefs.Add(artifactLoad.assets);
+            contentPack.buffDefs.Add(buffLoad.assets);
+            contentPack.itemDefs.Add(itemLoad.assets);
+            contentPack.skillDefs.Add(skillDefLoad.assets);
+            contentPack.entityStateTypes.AddSingle(typeof(GoToMain));
+
+            for(int i = 0; i < prefabLoad.assets!.Length; i++)
+            {
+                if (prefabLoad.assets[i].TryGetComponent<NetworkIdentity>(out var netPrefab))
+                {
+                    contentPack.networkedObjectPrefabs.AddSingle(prefabLoad.assets[i]);
+                }
             }
         }
 
