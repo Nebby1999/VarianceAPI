@@ -54,6 +54,27 @@ namespace VAPI
             public Vector3 localRotation;
             public Vector3 localScale;
         }
+
+        private struct DisposableVariantVisualModifier : IDisposable
+        {
+            private CharacterBodyVariantController _variantController;
+            private ModelSkinController _mdlSkinController;
+
+            //Thank fuck model skin controller is basically a requirement now huh... :clueless:
+            public DisposableVariantVisualModifier(CharacterBodyVariantController characterBodyVariantController, ModelSkinController skinController)
+            {
+                _mdlSkinController = skinController;
+                _variantController = characterBodyVariantController;
+            }
+
+            public void Dispose()
+            {
+                if(_mdlSkinController && _variantController)
+                {
+                    _variantController.StartModelSkinControllerApplySkinCoroutine(_mdlSkinController.ApplySkinAsync(_mdlSkinController.currentSkinIndex, RoR2.ContentManagement.AsyncReferenceHandleUnloadType.OnSceneUnload));
+                }
+            }
+        }
         #endregion
 
         /// <summary>
@@ -67,9 +88,9 @@ namespace VAPI
         public LightReplacement[] lightReplacements = Array.Empty<LightReplacement>();
         public PrefabInstantiationData[] prefabInstantiationDatas = Array.Empty<PrefabInstantiationData>();
 
-        public void ApplyVisualModifiers(CharacterModel targetModel)
+        /*public IDisposable ApplyVisualModifiers(CharacterModel targetModel, ModelSkinController mdlSkinController)
         {
 
-        }
+        }*/
     }
 }
