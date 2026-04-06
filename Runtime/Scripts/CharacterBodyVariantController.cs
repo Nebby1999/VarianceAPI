@@ -4,6 +4,8 @@ using MSU;
 using R2API;
 using RoR2;
 using System;
+using System.Collections;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace VAPI
@@ -30,6 +32,7 @@ namespace VAPI
         private SyncListCharacterVariantIndex _fallbackCharacterVariantIndices = new SyncListCharacterVariantIndex();
         public CharacterMasterVariantStorage? characterMasterVariantStorage { get; private set; }
         public CharacterBody characterBody { get; private set; }
+        public CharacterModel? characterModel { get; private set; }
 
         public bool doNotRollForVariants
         {
@@ -49,6 +52,26 @@ namespace VAPI
         private void Awake()
         {
             characterBody = GetComponent<CharacterBody>();
+
+            if(characterBody.modelLocator && characterBody.modelLocator.modelTransform)
+            {
+                characterModel = characterBody.modelLocator.modelTransform.GetComponent<CharacterModel>();
+            }
+
+            if(characterModel && characterModel.TryGetComponent<ModelSkinController>(out var mdlSkinController))
+            {
+                mdlSkinController.onSkinApplied += OnSkinApplied;
+            }
+            else
+            {
+                _skinHasBeenApplied = true;
+            }
+        }
+
+        private bool _skinHasBeenApplied = false;
+        private void OnSkinApplied(int obj)
+        {
+            _skinHasBeenApplied = true;
         }
 
         public override void OnStartClient()
@@ -161,15 +184,34 @@ namespace VAPI
             OnSyncListDirty();
         }
 
-        private DisposableCollectionHelper disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
+        private bool _announcedArrival;
+        private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
+
         private void ApplyBodyModifications(ReadOnlyArray<CharacterVariantDef> characterVariants)
         {
+            for(int i = 0; i < characterVariants.Length; i++)
+            {
+                CharacterVariantDef characterVariantDef = characterVariants[i];
 
+                //Apply tier
+                if(characterVariantDef.variantTier)
+                {
+                    VariantTierDef tierDef = characterVariantDef.variantTier!;
+
+                    if(tierDef.announceArrivalInChat && _announcedArrival == false && VAPIConfig._sendArrivalMessages)
+                    {
+                        _announcedArrival = true;
+                        //AnnounceArrival(characterVariantDef, tierDef);
+                    }
+
+                    _disposableCollectionHelper.AddDisposable(tierDef.ModifyBody(characterBody));
+                }
+            }
         }
 
         private void UnapplyBodyModifications(ReadOnlyArray<CharacterVariantDef> characterVariantDefs)
         {
-
+            _disposableCollectionHelper.Dispose();
         }
 
         public void ModifyStatArguments(RecalculateStatsAPI.StatHookEventArgs args)
@@ -181,6 +223,27 @@ namespace VAPI
             }
 
 
+        }
+
+        private IEnumerator? _mdlSkinControllerApplySkinCoroutine;
+        internal void StartModelSkinControllerApplySkinCoroutine(IEnumerator subroutine)
+        {
+            IEnumerator InternalCoroutine(IEnumerator applySkinCoroutine)
+            {
+                var waitForEndOfFrame = new WaitForEndOfFrame();
+                while(applySkinCoroutine.MoveNext())
+                {
+                    yield return waitForEndOfFrame;
+                }
+                _mdlSkinControllerApplySkinCoroutine = null;
+                yield break;
+            }
+
+            if(_mdlSkinControllerApplySkinCoroutine == null)
+            {
+                _mdlSkinControllerApplySkinCoroutine = InternalCoroutine(subroutine);
+                StartCoroutine(_mdlSkinControllerApplySkinCoroutine);
+            }
         }
     }
 }
