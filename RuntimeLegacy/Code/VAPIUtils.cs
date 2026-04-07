@@ -1,6 +1,6 @@
 ﻿using UnityEngine.Networking;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// Utility and extension class from VAPI
@@ -9,12 +9,12 @@ namespace VAPI
     {
         public static Xoroshiro128Plus GetVariantRNG()
         {
-            if(!VAPI.Components.VariantSpawnManager.instance)
+            if(!VAPI.Legacy.Components.VariantSpawnManager.instance)
             {
                 throw new System.NullReferenceException("Cannot get variant RNG when there's no Variant Spawn Manager.");
             }
 
-            return VAPI.Components.VariantSpawnManager.instance.variantRNG;
+            return VAPI.Legacy.Components.VariantSpawnManager.instance.variantRNG;
         }
 
         /// <summary>

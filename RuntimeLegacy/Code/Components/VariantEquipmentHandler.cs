@@ -2,7 +2,7 @@
 using RoR2.CharacterAI;
 using UnityEngine;
 
-namespace VAPI.Components
+namespace VAPI.Legacy.Components
 {
     /// <summary>
     /// A Component that allows a variant to use an Equipment, the arguments are taken from the VariantDef's <see cref="VariantDef.variantInventory"/>'s <see cref="VariantInventory.equipmentInfo"/>

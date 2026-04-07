@@ -4,7 +4,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// Represents a Reward from a Variant

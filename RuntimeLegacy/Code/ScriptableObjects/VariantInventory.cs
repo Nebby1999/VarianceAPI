@@ -4,9 +4,9 @@ using RoR2;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
-using VAPI.Components;
+using VAPI.Legacy.Components;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// A ScriptableObject that represents an Inventory of items, equipments and buffs to add to a variant

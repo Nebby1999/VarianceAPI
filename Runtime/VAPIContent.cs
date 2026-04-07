@@ -20,10 +20,10 @@ namespace VAPI
 
         public static class VariantTierDefs
         {
-            public static readonly LazyLoader<VariantTierDef> Common = new LazyLoader<VariantTierDef>(nameof(Common));
-            public static readonly LazyLoader<VariantTierDef> Uncommon = new LazyLoader<VariantTierDef>(nameof(Uncommon));
-            public static readonly LazyLoader<VariantTierDef> Rare = new LazyLoader<VariantTierDef>(nameof(Rare));
-            public static readonly LazyLoader<VariantTierDef> Legendary = new LazyLoader<VariantTierDef>(nameof(Legendary));
+            public static readonly LazyLoader<CharacterVariantTierDef> Common = new LazyLoader<CharacterVariantTierDef>(nameof(Common));
+            public static readonly LazyLoader<CharacterVariantTierDef> Uncommon = new LazyLoader<CharacterVariantTierDef>(nameof(Uncommon));
+            public static readonly LazyLoader<CharacterVariantTierDef> Rare = new LazyLoader<CharacterVariantTierDef>(nameof(Rare));
+            public static readonly LazyLoader<CharacterVariantTierDef> Legendary = new LazyLoader<CharacterVariantTierDef>(nameof(Legendary));
         }
 
         public static class Buffs

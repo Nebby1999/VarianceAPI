@@ -8,7 +8,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using RiskOfOptions.OptionConfigs;
 
-namespace VAPI.Components
+namespace VAPI.Legacy.Components
 {
     /// <summary>
     /// A Singleton monobehaviour that takes care of spawning Variants for a run, this behaviour is instanciated with the Run gameObject when the VarianceAPI expansion is enabled

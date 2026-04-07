@@ -7,7 +7,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     public static class VAPIAssets
     {

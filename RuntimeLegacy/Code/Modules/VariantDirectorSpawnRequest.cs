@@ -4,9 +4,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using VAPI.Components;
+using VAPI.Legacy.Components;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// An extended version of the game's <see cref="DirectorSpawnRequest"/>, which can allow you to request a specific variant spawn using the game's Director system

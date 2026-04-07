@@ -5,6 +5,7 @@ using R2API;
 using RoR2;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -32,6 +33,7 @@ namespace VAPI
         private SyncListCharacterVariantIndex _fallbackCharacterVariantIndices = new SyncListCharacterVariantIndex();
         public CharacterMasterVariantStorage? characterMasterVariantStorage { get; private set; }
         public CharacterBody characterBody { get; private set; }
+        public CharacterDeathBehavior? characterDeathBehavior { get; private set; }
         public CharacterModel? characterModel { get; private set; }
 
         public bool doNotRollForVariants
@@ -58,7 +60,12 @@ namespace VAPI
                 characterModel = characterBody.modelLocator.modelTransform.GetComponent<CharacterModel>();
             }
 
-            if(characterModel && characterModel.TryGetComponent<ModelSkinController>(out var mdlSkinController))
+            if(characterBody.TryGetComponent<CharacterDeathBehavior>(out var deathBehavior))
+            {
+                characterDeathBehavior = deathBehavior;
+            }
+
+            if(characterModel && characterModel!.TryGetComponent<ModelSkinController>(out var mdlSkinController))
             {
                 mdlSkinController.onSkinApplied += OnSkinApplied;
             }
@@ -83,19 +90,6 @@ namespace VAPI
         private void Start()
         {
             TryLinkCharacterMasterVariantStorage();
-            Apply();
-        }
-
-        private bool _hasApplied;
-        public void Apply()
-        {
-            if(_hasApplied)
-            {
-                VAPILog.Warning($"Cannot apply variants to a CharacterBody twice.");
-                return;
-            }
-
-            _hasApplied = true;
         }
 
         public bool TryLinkCharacterMasterVariantStorage()
@@ -128,6 +122,10 @@ namespace VAPI
 
             //We've obtained our master's storage, so assign it here.
             characterMasterVariantStorage = masterVariantStorage;
+
+            //Make it so we apply and unapply modifications whenever the master applies/unapplies modifications
+            characterMasterVariantStorage.onCharacterMasterVariantStorageApply += ApplyBodyModifications;
+            characterMasterVariantStorage.onCharacterMasterVariantStorageUnapply += UnapplyBodyModifications;
             return true;
         }
 
@@ -151,7 +149,7 @@ namespace VAPI
         private void OnSyncListDirty()
         {
             //First, unapply the body modifications.
-            //UnapplyBodyModifications(characterVariantDefs);
+            UnapplyBodyModifications(characterVariantDefs);
 
             //Second, create new array and populate
             _fallbackCharacterVariantDefs = new CharacterVariantDef[_fallbackCharacterVariantIndices.Count];
@@ -161,7 +159,7 @@ namespace VAPI
             }
 
             //Thirdy, apply body modifications
-            //ApplyBodyModifications(characterVariants);
+            ApplyBodyModifications(characterVariantDefs);
         }
 
         [Server]
@@ -184,34 +182,84 @@ namespace VAPI
             OnSyncListDirty();
         }
 
-        private bool _announcedArrival;
         private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
-
         private void ApplyBodyModifications(ReadOnlyArray<CharacterVariantDef> characterVariants)
         {
+            List<VariantVisualModifier> visualModifiers = new List<VariantVisualModifier>();
+            /*
+             * TODO:
+             * 2. Apply the Scale Mutliplier
+             */
             for(int i = 0; i < characterVariants.Length; i++)
             {
                 CharacterVariantDef characterVariantDef = characterVariants[i];
 
-                //Apply tier
+                //Apply tier body modifiers
                 if(characterVariantDef.variantTier)
                 {
-                    VariantTierDef tierDef = characterVariantDef.variantTier!;
-
-                    if(tierDef.announceArrivalInChat && _announcedArrival == false && VAPIConfig._sendArrivalMessages)
-                    {
-                        _announcedArrival = true;
-                        //AnnounceArrival(characterVariantDef, tierDef);
-                    }
-
-                    _disposableCollectionHelper.AddDisposable(tierDef.ModifyBody(characterBody));
+                    CharacterVariantTierDef variantTierDef = characterVariantDef.variantTier!;
+                    _disposableCollectionHelper.AddDisposable(variantTierDef.ModifyBody(characterBody));
                 }
+
+                //Apply buffs
+                _disposableCollectionHelper.AddDisposable(characterVariantDef.variantBuffs.ApplyBuffs(characterBody));
+
+                //Apply skills
+                if(characterBody.skillLocator)
+                {
+                    foreach(var skillReplacement in characterVariantDef.skillReplacements)
+                    {
+                        _disposableCollectionHelper.AddDisposable(skillReplacement.ApplySkillReplacement(characterBody.skillLocator));
+                    }
+                }
+
+                //Apply death state override
+                if(characterDeathBehavior)
+                {
+                    _disposableCollectionHelper.AddDisposable(characterVariantDef.deathStateOverride.ApplyDeathStateOverride(characterDeathBehavior));
+                }
+
+                //Add Body Components
+                _disposableCollectionHelper.AddDisposable(characterVariantDef.additionalVariantComponents.ApplyComponents(characterBody));
+
+                if(characterModel)
+                {
+                    //Add CharacterModel Components
+                    _disposableCollectionHelper.AddDisposable(characterVariantDef.additionalVariantComponents.ApplyComponents(characterModel!));
+
+                    //Store visual modifiers in the list, we will apply these in a coroutine since we need to await for the Skin to be applied.
+                    if(characterVariantDef.visualModifier)
+                    {
+                        visualModifiers.Add(characterVariantDef.visualModifier!);
+                    }
+                }
+            }
+
+            //Apply scale modifiers
+            var scaleModifier = new VariantSizeModifierApplicator(characterBody, characterVariantDefs);
+            scaleModifier.Apply();
+            _disposableCollectionHelper.AddDisposable(scaleModifier);
+
+            if (visualModifiers.Count > 0)
+            {
+                _applyVisualModifiersAfterSkinCoroutine = ApplyVisualModifiersAfterSkin(visualModifiers);
+                StartCoroutine(_applyVisualModifiersAfterSkinCoroutine);
             }
         }
 
         private void UnapplyBodyModifications(ReadOnlyArray<CharacterVariantDef> characterVariantDefs)
         {
             _disposableCollectionHelper.Dispose();
+            _skinHasBeenApplied = false;
+
+            if(_applyVisualModifiersAfterSkinCoroutine != null)
+            {
+                StopCoroutine(_applyVisualModifiersAfterSkinCoroutine);
+            }
+            if(_mdlSkinControllerApplySkinCoroutine != null)
+            {
+                StopCoroutine(_mdlSkinControllerApplySkinCoroutine);
+            }
         }
 
         public void ModifyStatArguments(RecalculateStatsAPI.StatHookEventArgs args)
@@ -221,8 +269,22 @@ namespace VAPI
                 var characterVariantDef = characterVariantDefs[i];
                 characterVariantDef.statModifier?.ApplyStatModifiers(args, characterBody);
             }
+        }
 
+        private IEnumerator? _applyVisualModifiersAfterSkinCoroutine;
+        private IEnumerator ApplyVisualModifiersAfterSkin(List<VariantVisualModifier> visualModifiers)
+        {
+            var waitForEndOfFrame = new WaitForEndOfFrame();
+            while(_skinHasBeenApplied == false)
+            {
+                yield return waitForEndOfFrame;
+            }
 
+            foreach(var visualModifier in visualModifiers)
+            {
+                _disposableCollectionHelper.AddDisposable(visualModifier.ApplyVisualModifiers(characterModel!, this));
+            }
+            _applyVisualModifiersAfterSkinCoroutine = null;
         }
 
         private IEnumerator? _mdlSkinControllerApplySkinCoroutine;

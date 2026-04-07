@@ -10,7 +10,7 @@ using UnityEngine;
 using MSU;
 using UnityEngine.Networking;
 
-namespace VAPI.RuleSystem
+namespace VAPI.Legacy.RuleSystem
 {
     internal static class RuleBookExtras
     {

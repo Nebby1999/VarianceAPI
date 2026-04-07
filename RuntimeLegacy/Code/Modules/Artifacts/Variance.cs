@@ -4,7 +4,7 @@ using RoR2;
 using RoR2.ContentManagement;
 using System.Collections;
 
-namespace VAPI.Artifacts
+namespace VAPI.Legacy.Artifacts
 {
     public class Variance : IArtifactContentPiece
     {

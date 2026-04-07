@@ -135,7 +135,12 @@ namespace VAPI
         {
             if(HG.ListUtils.IsInBounds(equipmentDatas, currentDataIndex))
             {
-                return equipmentDatas[currentDataIndex].timeUntilEquipmentSwitch;
+                var data = equipmentDatas[currentDataIndex];
+                if(Mathf.Approximately(data.timeUntilEquipmentSwitch, 0f))
+                {
+                    return float.PositiveInfinity;
+                }
+                return data.timeUntilEquipmentSwitch;
             }
             return 0;
         }

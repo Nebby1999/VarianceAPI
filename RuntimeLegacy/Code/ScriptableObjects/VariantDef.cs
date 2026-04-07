@@ -9,10 +9,10 @@ using System;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
-using VAPI.Components;
-using VAPI.RuleSystem;
+using VAPI.Legacy.Components;
+using VAPI.Legacy.RuleSystem;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// A ScriptableObject that represents a new Variant

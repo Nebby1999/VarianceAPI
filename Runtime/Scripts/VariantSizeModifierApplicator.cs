@@ -1,4 +1,5 @@
 #nullable enable
+using HG;
 using KinematicCharacterController;
 using RoR2;
 using System;
@@ -6,7 +7,7 @@ using UnityEngine;
 
 namespace VAPI
 {
-    public sealed class VariantSizeModifier : IDisposable
+    public sealed class VariantSizeModifierApplicator : IDisposable
     {
         private struct MotorCapsuleModifier : IDisposable
         {
@@ -57,7 +58,7 @@ namespace VAPI
             }
         }
 
-        private void Apply()
+        public void Apply()
         {
             if (!_characterBody)
             {
@@ -94,7 +95,7 @@ namespace VAPI
             return modelTransform;
         }
 
-        public VariantSizeModifier(CharacterBody targetBody, CharacterVariantDef[] variantDefs)
+        public VariantSizeModifierApplicator(CharacterBody targetBody, ReadOnlyArray<CharacterVariantDef> variantDefs)
         {
             _characterBody = targetBody;
             float highestSizeModifier = float.NegativeInfinity;
@@ -119,8 +120,6 @@ namespace VAPI
 
                 _computedSizeModifier = highestSizeModifier + summedSizeModifier;
             }
-
-            Apply();
         }
     }
 }

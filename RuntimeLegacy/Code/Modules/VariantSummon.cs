@@ -1,8 +1,8 @@
 ﻿using RoR2;
 using System;
-using VAPI.Components;
+using VAPI.Legacy.Components;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// An extended version of the game's <see cref="MasterSummon"/>, which can allow you to summon or spawn a specific variant

@@ -1,6 +1,6 @@
 using System.Collections.Generic;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     public class VariantDefIndexComparer : IEqualityComparer<VariantDef>
     {

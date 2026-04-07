@@ -26,6 +26,8 @@ namespace VAPI
         [SyncVar]
         private bool _doNotRollForVariants;
 
+        public event Action<ReadOnlyArray<CharacterVariantDef>>? onCharacterMasterVariantStorageUnapply;
+        public event Action<ReadOnlyArray<CharacterVariantDef>>? onCharacterMasterVariantStorageApply;
         public ReadOnlyArray<CharacterVariantDef> characterVariantDefs => _characterVariants;
         private CharacterVariantDef[] _characterVariants = Array.Empty<CharacterVariantDef>();
 
@@ -63,6 +65,7 @@ namespace VAPI
         {
             //First, unapply the master modifications.
             UnapplyMasterModifications(characterVariantDefs);
+            onCharacterMasterVariantStorageUnapply?.Invoke(characterVariantDefs);
 
             //Second, create new array and populate
             _characterVariants = new CharacterVariantDef[_characterVariantIndicesSync.Count];
@@ -73,6 +76,7 @@ namespace VAPI
 
             //Thirdy, apply master modifications
             ApplyMasterModifications(characterVariantDefs);
+            onCharacterMasterVariantStorageApply?.Invoke(characterVariantDefs);
         }
 
         [Server]

@@ -6,9 +6,9 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using VAPI.Components;
+using VAPI.Legacy.Components;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// VarianceAPI's VariantCatalog

@@ -4,11 +4,11 @@ using Mono.Cecil.Cil;
 using MonoMod.Cil;
 using RoR2;
 using System;
-using VAPI.Components;
+using VAPI.Legacy.Components;
 using System.Collections.ObjectModel;
 using UnityEngine;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     public static class GupVariantHelper
     {

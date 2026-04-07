@@ -3,7 +3,7 @@ using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using UDebug = UnityEngine.Debug;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     internal class VAPILog
     {

@@ -88,7 +88,7 @@ namespace VAPI
                     continue;
                 }
 
-                VariantTierDef tierDef = variant.variantTier!;
+                CharacterVariantTierDef tierDef = variant.variantTier!;
 
                 if (tierDef.goldRewardCoefficient > highestGoldMultiplier)
                 {

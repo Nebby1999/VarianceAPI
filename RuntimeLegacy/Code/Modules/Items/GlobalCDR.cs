@@ -3,7 +3,7 @@ using R2API;
 using RoR2;
 using RoR2.ContentManagement;
 
-namespace VAPI.Items
+namespace VAPI.Legacy.Items
 {
     /// <summary>
     /// An intrinsic variant item
