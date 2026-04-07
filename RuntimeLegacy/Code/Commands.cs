@@ -4,9 +4,9 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using VAPI.Components;
+using VAPI.Legacy.Components;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     internal static class Commands
     {

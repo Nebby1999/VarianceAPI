@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-namespace VAPI.Components
+namespace VAPI.Legacy.Components
 {
     /// <summary>
     /// Bodies that spawn with this component cannot become variants

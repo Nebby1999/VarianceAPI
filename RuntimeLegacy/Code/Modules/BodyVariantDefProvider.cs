@@ -6,7 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// Represents a collection of VariantDefs for a specific body.

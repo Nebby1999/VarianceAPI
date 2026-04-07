@@ -2,14 +2,14 @@
 using BepInEx.Configuration;
 using MSU.Config;
 using RiskOfOptions.OptionConfigs;
-using VAPI.RuleSystem;
+using VAPI.Legacy.RuleSystem;
 using UnityEngine;
-using VAPI.Modules;
+using VAPI.Legacy.Modules;
 using static MSU.Config.ConfiguredVariable;
 using RoR2;
 using UnityEngine.Networking;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     public class VAPIConfig
     {

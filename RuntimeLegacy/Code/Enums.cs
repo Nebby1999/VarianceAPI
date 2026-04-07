@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// An index that represents a VariantDef, do not set this value yourself.

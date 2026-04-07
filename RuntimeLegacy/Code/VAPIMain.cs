@@ -3,12 +3,12 @@ using MSU;
 using MSU.Config;
 using R2API.Utils;
 using RoR2;
-using VAPI.RuleSystem;
+using VAPI.Legacy.RuleSystem;
 using RiskOfOptions;
 using UnityEngine;
-using VAPI.Modules;
+using VAPI.Legacy.Modules;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// VarianceAPI's Main class

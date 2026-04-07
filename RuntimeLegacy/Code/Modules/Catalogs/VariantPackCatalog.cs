@@ -10,7 +10,7 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// VarianceAPI's VariantPackCatalog

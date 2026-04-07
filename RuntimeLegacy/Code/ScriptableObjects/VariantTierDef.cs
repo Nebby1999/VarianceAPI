@@ -7,7 +7,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// A ScriptableObject used to represent a variant's Tier

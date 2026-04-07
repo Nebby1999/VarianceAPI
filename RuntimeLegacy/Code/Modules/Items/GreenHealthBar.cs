@@ -3,7 +3,7 @@ using RoR2;
 using RoR2.ContentManagement;
 using UnityEngine;
 
-namespace VAPI.Items
+namespace VAPI.Legacy.Items
 {
     /// <summary>
     /// <inheritdoc cref="GlobalCDR"/>

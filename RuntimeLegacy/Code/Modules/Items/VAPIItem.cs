@@ -5,7 +5,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace VAPI.Items
+namespace VAPI.Legacy.Items
 {
     public abstract class VAPIItem : IItemContentPiece
     {

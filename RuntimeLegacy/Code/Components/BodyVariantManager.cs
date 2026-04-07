@@ -9,7 +9,7 @@ using System.Linq;
 using UnityEngine;
 using UnityEngine.Networking;
 
-namespace VAPI.Components
+namespace VAPI.Legacy.Components
 {
     /// <summary>
     /// The NetworkBehaviour that transforms a regular body into a variant
@@ -133,12 +133,14 @@ namespace VAPI.Components
 #endif
                 try
                 {
+                    //Announce arrival
                     VariantTierDef tier = current.variantTierDef;
                     if (!announcedArrival && VAPIConfig._sendArrivalMesssages)
                         announcedArrival = AnnounceArrival(current, tier);
 
                     VariantInventory inventory = current.variantInventory;
 
+                    //apply buffs
                     if (inventory)
                     {
                         inventory.AddBuffs(characterBody);

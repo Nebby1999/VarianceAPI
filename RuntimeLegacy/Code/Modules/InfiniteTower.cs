@@ -12,7 +12,7 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
 using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 
-namespace VAPI.Modules
+namespace VAPI.Legacy.Modules
 {
     internal static class InfiniteTower
     {

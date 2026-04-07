@@ -2,11 +2,11 @@
     "name": "VarianceAPI.Editor",
     "rootNamespace": "",
     "references": [
-        "GUID:3b7558f028476234ca45bc3509fe75f1",
-        "GUID:48abf88f565f4bb4fb35fbe2385f0894",
-        "GUID:280569ac301428d4d950fdf647900922",
         "GUID:fb6ca6d7e9e2b7b44bc5ad0e375b6669",
-        "GUID:60983344ee8157d4ab97c25513f789c4"
+        "GUID:60983344ee8157d4ab97c25513f789c4",
+        "GUID:779b989f917744f47872d220097e3a3e",
+        "GUID:9bbc8568e233b0d41b769e135a975fc4",
+        "GUID:478a2357cc57436488a56e564b08d223"
     ],
     "includePlatforms": [
         "Editor"
@@ -16,23 +16,23 @@
     "overrideReferences": true,
     "precompiledReferences": [
         "RoR2.dll",
-        "Assembly-CSharp.dll"
+        "Assembly-CSharp.dll",
+        "R2API.Director.dll",
+        "R2API.Addressables.dll",
+        "Unity.Addressables.dll",
+        "Unity.ResourceManager.dll",
+        "HGCSharpUtils.dll",
+        "HGUnityUtils.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [
-        "VAPI_GAME_IMPORTED",
-        "VAPI_MSU_IN_PROJECT"
+        "VAPI_GAME_IMPORTED"
     ],
     "versionDefines": [
         {
             "name": "riskofrain2",
             "expression": "0.0.1",
             "define": "VAPI_GAME_IMPORTED"
-        },
-        {
-            "name": "teammoonstorm-moonstormsharedutils",
-            "expression": "2.3.0",
-            "define": "VAPI_MSU_IN_PROJECT"
         }
     ],
     "noEngineReferences": false

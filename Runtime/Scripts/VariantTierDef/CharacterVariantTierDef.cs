@@ -9,15 +9,15 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     [CreateAssetMenu(fileName = "New VariantTierDef", menuName = "VarianceAPI/VariantTierDef")]
-    public class VariantTierDef : ScriptableObject
+    public class CharacterVariantTierDef : ScriptableObject
     {
         private struct DisposableVariantTierBodyModifier : IDisposable
         {
             private CharacterBody _affectedBody;
-            private BuffDef _buffDefToRemove;
+            private BuffDef? _buffDefToRemove;
             private int _armorCountToRemove;
 
-            public DisposableVariantTierBodyModifier(CharacterBody affectedBody, BuffDef buffDefToRemove, int armorBonusToRemove)
+            public DisposableVariantTierBodyModifier(CharacterBody affectedBody, BuffDef? buffDefToRemove, int armorBonusToRemove)
             {
                 _affectedBody = affectedBody;
                 _buffDefToRemove = buffDefToRemove;
@@ -29,7 +29,8 @@ namespace VAPI
                 if (!_affectedBody)
                     return;
 
-                _affectedBody.RemoveBuff(_buffDefToRemove);
+                if(_buffDefToRemove)
+                    _affectedBody.RemoveBuff(_buffDefToRemove);
 
                 for(int i = 0; i < _armorCountToRemove; i++)
                 {
@@ -74,7 +75,7 @@ namespace VAPI
                 return null;
             }
 
-            BuffDef buffDef = tierBuffDef.LoadAssetNow();
+            BuffDef? buffDef = tierBuffDef.LoadAssetNow();
             if(buffDef)
             {
                 characterBody.AddBuff(buffDef);

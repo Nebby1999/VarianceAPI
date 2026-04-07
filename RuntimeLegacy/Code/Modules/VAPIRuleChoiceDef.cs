@@ -1,7 +1,7 @@
 ﻿using R2API;
 using RoR2;
 
-namespace VAPI.RuleSystem
+namespace VAPI.Legacy.RuleSystem
 {
     /// <summary>
     /// <inheritdoc cref="ExtendedRuleChoiceDef"/>

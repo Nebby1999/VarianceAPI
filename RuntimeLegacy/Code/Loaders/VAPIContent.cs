@@ -10,10 +10,10 @@ using System.Collections;
 using System.Linq;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using VAPI.Modules;
+using VAPI.Legacy.Modules;
 using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     public class VAPIContent : IContentPackProvider
     {

@@ -2,7 +2,7 @@
 using System;
 using UnityEngine;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// A ScriptableObject used to create a variant's Visuals

@@ -20,7 +20,7 @@ namespace VAPI
         public CharacterVariantIndex characterVariantIndex { get; internal set; }
         [Header("General Settings")]
         public VariantCharacterTarget targetCharacter = new VariantCharacterTarget();
-        public VariantTierDef? variantTier = null;
+        public CharacterVariantTierDef? variantTier = null;
         public bool isUnique;
         [Range(0, 100)]
         public float spawnRate;
@@ -38,7 +38,7 @@ namespace VAPI
         [Header("Body Related")]
         [SerializeReference, SubclassSelector]
         public IVariantNameProvider? variantNameProvider = null;
-        public SerializableEntityStateType deathStateOverride;
+        public VariantDeathStateOverride deathStateOverride = new VariantDeathStateOverride();
         public VariantSkillReplacement[] skillReplacements = Array.Empty<VariantSkillReplacement>();
         [SerializeReference, SubclassSelector]
         public IVariantStatModifier? statModifier = null;

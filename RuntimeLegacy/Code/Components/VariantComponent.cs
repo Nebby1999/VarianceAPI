@@ -2,7 +2,7 @@
 using System.Collections.ObjectModel;
 using UnityEngine;
 
-namespace VAPI.Components
+namespace VAPI.Legacy.Components
 {
     /// <summary>
     /// The base for VariantComponents

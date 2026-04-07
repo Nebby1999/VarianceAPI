@@ -4,7 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using UnityEngine;
 
-namespace VAPI.Components
+namespace VAPI.Legacy.Components
 {
     /// <summary>
     /// The behaviour that handles VariantRewards

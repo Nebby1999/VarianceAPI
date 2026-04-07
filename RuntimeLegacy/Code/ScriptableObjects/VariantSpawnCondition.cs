@@ -8,7 +8,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-namespace VAPI
+namespace VAPI.Legacy
 {
     /// <summary>
     /// A ScriptableObject used to represent unique SpawnConditions for a variant

@@ -13,6 +13,19 @@ namespace VAPI
         public void ApplyAsTimedBuff(CharacterBody characterBody, BuffCountPair buffCountPair);
     }
 
+    [Serializable]
+    public struct LegacyTimedBuffApplication : IVariantBuffInfoTimedApplication
+    {
+        public float totalTimeForBuffs;
+        public void ApplyAsTimedBuff(CharacterBody characterBody, BuffCountPair buffCountPair)
+        {
+            for (int i = 0; i < buffCountPair.buffCount; i++)
+            {
+                characterBody.AddTimedBuff(buffCountPair.buffDef, totalTimeForBuffs);
+            }
+        }
+    }
+
     public struct BuffCountPair
     {
         public BuffDef buffDef;

@@ -1,7 +1,9 @@
 #nullable enable
+using HG;
 using MSU;
 using R2API.AddressReferencedAssets;
 using RoR2;
+using RoR2.ContentManagement;
 using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -12,6 +14,30 @@ namespace VAPI
     public class VariantVisualModifier : ScriptableObject
     {
         #region Subclasses
+        //Memopt made it mandatory for characters to have ModelSkinControllers and Skins. Since our visual modifiers utilize material, mesh, light and GameObjectActivations we can just dispose of the changes by reapplying the skin.
+        //This is done via calling the "StartModelSkinControllerApplySkinCoroutine" method on the VariantController, which will save the first instance of the ModelSkinController's ApplySkinAsync method and execute it until completion.
+        //As a result, once any visual modifier is disposed, the character should return back to normal.
+        private struct ReapplySkinOnDisposed : IDisposable
+        {
+            private CharacterBodyVariantController _variantController;
+            private ModelSkinController _skinController;
+
+            public ReapplySkinOnDisposed(CharacterBodyVariantController variantController, ModelSkinController skinController)
+            {
+                _variantController = variantController;
+                _skinController = skinController;
+            }
+
+            public void Dispose()
+            {
+                if(_skinController)
+                {
+                    bool isPlayerControlled = _skinController.characterModel && _skinController.characterModel.body && _skinController.characterModel.body.isPlayerControlled;
+
+                    _variantController.StartModelSkinControllerApplySkinCoroutine(_skinController.ApplySkinAsync(_skinController.currentSkinIndex, isPlayerControlled && Run.instance ? AsyncReferenceHandleUnloadType.OnRunEnd : AsyncReferenceHandleUnloadType.AtWill));
+                }
+            }
+        }
         [Serializable]
         public struct RendererTargetedReplacement<T> where T : UnityEngine.Object
         {
@@ -24,6 +50,20 @@ namespace VAPI
             public bool useIndex;
 
             public T? replacement;
+
+            public bool TryGetRenderer(CharacterModel characterModel, out Renderer? renderer)
+            {
+                renderer = null;
+                if (string.IsNullOrWhiteSpace(transformPath))
+                    return false;
+
+                var characterModelTransform = characterModel.transform;
+                var child = characterModelTransform.Find(transformPath);
+                if (!child)
+                    return false;
+
+                return child.TryGetComponent<Renderer>(out renderer);
+            }
         }
 
         [Serializable]
@@ -36,7 +76,21 @@ namespace VAPI
 
             public bool useIndex;
 
-            public Color? lightColor;
+            public Color lightColor;
+
+            public bool TryGetLight(CharacterModel characterModel, out Light? light)
+            {
+                light = null;
+                if (string.IsNullOrWhiteSpace(transformPath))
+                    return false;
+
+                var characterModelTransform = characterModel.transform;
+                var child = characterModelTransform.Find(transformPath);
+                if (!child)
+                    return false;
+
+                return child.TryGetComponent<Light>(out light);
+            }
         }
 
         [Serializable]
@@ -53,26 +107,31 @@ namespace VAPI
             public Vector3 localPosition;
             public Vector3 localRotation;
             public Vector3 localScale;
-        }
 
-        private struct DisposableVariantVisualModifier : IDisposable
-        {
-            private CharacterBodyVariantController _variantController;
-            private ModelSkinController _mdlSkinController;
-
-            //Thank fuck model skin controller is basically a requirement now huh... :clueless:
-            public DisposableVariantVisualModifier(CharacterBodyVariantController characterBodyVariantController, ModelSkinController skinController)
+            internal bool TryGetChildLocatorTransform(CharacterModel characterModel, out Transform? resultTransform)
             {
-                _mdlSkinController = skinController;
-                _variantController = characterBodyVariantController;
+                resultTransform = null;
+                if(!string.IsNullOrWhiteSpace(childLocatorEntry) && characterModel.childLocator && characterModel.childLocator.TryFindChild(childLocatorEntry, out resultTransform))
+                {
+                    return true;
+                }
+
+                return true;
             }
 
-            public void Dispose()
+            internal bool TryGetTransformFromPath(CharacterModel characterModel, out Transform? resultTransform)
             {
-                if(_mdlSkinController && _variantController)
-                {
-                    _variantController.StartModelSkinControllerApplySkinCoroutine(_mdlSkinController.ApplySkinAsync(_mdlSkinController.currentSkinIndex, RoR2.ContentManagement.AsyncReferenceHandleUnloadType.OnSceneUnload));
-                }
+                resultTransform = null;
+                if (string.IsNullOrWhiteSpace(transformPath))
+                    return false;
+
+                var characterModelTransform = characterModel.transform;
+                var child = characterModelTransform.Find(transformPath);
+                if (!child)
+                    return false;
+
+                resultTransform = child;
+                return true;
             }
         }
         #endregion
@@ -88,9 +147,131 @@ namespace VAPI
         public LightReplacement[] lightReplacements = Array.Empty<LightReplacement>();
         public PrefabInstantiationData[] prefabInstantiationDatas = Array.Empty<PrefabInstantiationData>();
 
-        /*public IDisposable ApplyVisualModifiers(CharacterModel targetModel, ModelSkinController mdlSkinController)
+        public IDisposable ApplyVisualModifiers(CharacterModel characterModel, CharacterBodyVariantController characterBodyVariantController)
         {
+            if(!characterModel.TryGetComponent<ModelSkinController>(out var mdlSkinController))
+            {
+                //Log warning abt the lack of mdlskincontroller
+            }
 
-        }*/
+            for(int i = 0; i < materialReplacements.Length; i++)
+            {
+                RendererTargetedReplacement<Material> rendererTargetedReplacement = materialReplacements[i];
+
+                if(!rendererTargetedReplacement.replacement)
+                {
+                    //Log error, continue;
+                    continue;
+                }
+                if(rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
+                {
+                    ref var rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
+                    rendererInfo.defaultMaterial = rendererTargetedReplacement.replacement!;
+                }
+                else if(rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
+                {
+                    renderer!.sharedMaterial = rendererTargetedReplacement.replacement;
+                }
+                else
+                {
+                    //Log error here
+                }
+            }
+
+            for(int i = 0; i < meshReplacements.Length; i++)
+            {
+                RendererTargetedReplacement<Mesh> rendererTargetedReplacement = meshReplacements[i];
+                if(!rendererTargetedReplacement.replacement)
+                {
+                    //Log error, continue;
+                    continue;
+                }
+
+                if(rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
+                {
+                    ref var rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
+                    SetMesh(rendererInfo.renderer, rendererTargetedReplacement.replacement!);
+                }
+                else if(rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
+                {
+                    SetMesh(renderer!, rendererTargetedReplacement.replacement!);
+                }
+                else
+                {
+                    //Log error here
+                }
+            }
+
+            for(int i = 0; i < lightReplacements.Length; i++)
+            {
+                LightReplacement lightReplacement = lightReplacements[i];
+
+                if(lightReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseLightInfos, lightReplacement.lightIndex))
+                {
+                    ref var lightInfo = ref characterModel.baseLightInfos[lightReplacement.lightIndex];
+                    lightInfo.defaultColor = lightReplacement.lightColor;
+                }
+                else if(lightReplacement.TryGetLight(characterModel, out var lightComponent))
+                {
+                    lightComponent!.color = lightReplacement.lightColor;
+                }
+                else
+                {
+                    //Log error here.
+                }
+            }
+
+            for(int i = 0; i < prefabInstantiationDatas.Length; i++)
+            {
+                var prefabInstantiationData = prefabInstantiationDatas[i];
+
+                if(!prefabInstantiationData.prefab)
+                {
+                    //Log error, continue.
+                    continue;
+                }
+
+                Transform? parentTransform = null;
+                if(prefabInstantiationData.TryGetChildLocatorTransform(characterModel, out parentTransform))
+                {
+                    characterModel.customGameObjectActivationTransforms.Add(InstantiatePrefabOnTransform(prefabInstantiationData.prefab!, parentTransform!, prefabInstantiationData.localPosition, prefabInstantiationData.localRotation, prefabInstantiationData.localScale).transform);
+                }
+                else if(prefabInstantiationData.TryGetTransformFromPath(characterModel, out parentTransform))
+                {
+                    characterModel.customGameObjectActivationTransforms.Add(InstantiatePrefabOnTransform(prefabInstantiationData.prefab!, parentTransform!, prefabInstantiationData.localPosition, prefabInstantiationData.localRotation, prefabInstantiationData.localScale).transform);
+                }
+                else
+                {
+                    //Log error
+                }
+            }
+
+            return new ReapplySkinOnDisposed(characterBodyVariantController, mdlSkinController);
+        }
+
+        private void SetMesh(Renderer renderer, Mesh mesh)
+        {
+            if (renderer.TryGetComponent<MeshFilter>(out var meshFilter))
+            {
+                meshFilter.sharedMesh = mesh;
+            }
+            else if(renderer is SkinnedMeshRenderer skinnedMeshRenderer)
+            {
+                skinnedMeshRenderer.sharedMesh = mesh;
+            }
+            else
+            {
+                //Log warning
+            }
+        }
+
+        private GameObject InstantiatePrefabOnTransform(GameObject prefab, Transform parentTransform, Vector3 localPos, Vector3 localRot, Vector3 localScale)
+        {
+            var instance = Instantiate(prefab, parentTransform);
+            var instanceTransform = instance.transform;
+            instanceTransform.SetLocalPositionAndRotation(localPos, Quaternion.Euler(localRot));
+            instanceTransform.localScale = localScale;
+            return instance;
+        }
     }
 }
