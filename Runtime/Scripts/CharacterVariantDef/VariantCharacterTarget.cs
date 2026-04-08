@@ -1,10 +1,12 @@
 #nullable enable
+using HG;
 using MSU;
 using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using VAPI.Addressables;
 
 namespace VAPI
 {
@@ -14,66 +16,59 @@ namespace VAPI
     [Serializable]
     public class VariantCharacterTarget
     {
-        public enum TargetType
+        public VariantCharacterTarget(string key, bool isBody)
         {
-            CharacterBody,
-            CharacterMaster
+            if(isBody)
+            {
+                characterBodyRef.Address = key;
+            }
+            else
+            {
+                characterMasterRef.Address = key;
+            }
         }
 
-        public TargetType targetType;
-        public string key = "";
-        public bool keyIsFromCatalog = false;
+        public VariantCharacterTarget(Either<AddressReferencedCharacterMaster, AddressReferencedCharacterBody> masterOrBody)
+        {
+            if(masterOrBody.isA)
+            {
+                characterMasterRef.Asset = masterOrBody.a;
+            }
+            else if(masterOrBody.isB)
+            {
+                characterBodyRef = masterOrBody.b;
+            }
+        }
+
+        public VariantCharacterTarget(GameObject prefab, bool isBody)
+        {
+            if(isBody)
+            {
+                characterBodyRef.Asset = prefab;
+            }
+            else
+            {
+                characterMasterRef.Asset = prefab;
+            }
+        }
+        public VariantCharacterTarget() { }
+        public AddressReferencedCharacterBody characterBodyRef = new AddressReferencedCharacterBody();
+        public AddressReferencedCharacterMaster characterMasterRef = new AddressReferencedCharacterMaster();
 
         public Component? LoadCharacterComponent()
         {
-            switch (targetType)
-            {
-                case TargetType.CharacterBody:
-                    return LoadBodyComponent();
-                case TargetType.CharacterMaster:
-                    return LoadMasterComponent();
-            }
+            Component? body = LoadComponent<CharacterBody>(characterBodyRef);
+            return body ?? LoadComponent<CharacterMaster>(characterMasterRef);
+        }
 
+        private T? LoadComponent<T>(AddressReferencedPrefab prefabReference) where T : Component
+        {
+            var prefab = prefabReference.LoadAssetNow();
+            if(prefab && prefab.TryGetComponent<T>(out var t))
+            {
+                return t;
+            }
             return null;
-        }
-
-        private Component? LoadBodyComponent()
-        {
-            if(keyIsFromCatalog)
-            {
-                BodyIndex bodyIndex = BodyCatalog.FindBodyIndexCaseInsensitive(key);
-                if (bodyIndex == BodyIndex.None)
-                    return null;
-
-                return BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
-            }
-            else
-            {
-                var prefab = Addressables.LoadAssetAsync<GameObject>(key).WaitForCompletion();
-                if (!prefab || !prefab.TryGetComponent<CharacterBody>(out var characterBody))
-                    return null;
-
-                return characterBody;
-            }
-        }
-        private Component? LoadMasterComponent()
-        {
-            if (keyIsFromCatalog)
-            {
-                MasterCatalog.MasterIndex masterIndex = MasterCatalog.FindMasterIndex(key);
-                if (masterIndex == MasterCatalog.MasterIndex.none)
-                    return null;
-
-                return MasterCatalog.GetMasterPrefab(masterIndex).GetComponent<CharacterMaster>();
-            }
-            else
-            {
-                var prefab = Addressables.LoadAssetAsync<GameObject>(key).WaitForCompletion();
-                if (!prefab || !prefab.TryGetComponent<CharacterMaster>(out var characterMaster))
-                    return null;
-
-                return characterMaster;
-            }
         }
     }
 }

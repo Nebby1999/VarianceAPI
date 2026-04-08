@@ -151,9 +151,7 @@ namespace VAPI.Editor
             CharacterVariantDef result = ScriptableObject.CreateInstance<CharacterVariantDef>();
 
             //Upgrade from bodyName to target class.
-            result.targetCharacter.targetType = VariantCharacterTarget.TargetType.CharacterBody;
-            result.targetCharacter.keyIsFromCatalog = true;
-            result.targetCharacter.key = variantDef.bodyName;
+            result.targetCharacter.characterBodyRef = new Addressables.AddressReferencedCharacterBody(variantDef.bodyName);
 
             //Upgrade from Legacy VariantTier to Runtime VariantTier
             if(variantDef._variantTierDef && _legacyTierDefToRuntimeTierDef.TryGetValue(variantDef._variantTierDef, out CharacterVariantTierDef runtimeTierDef))
@@ -270,11 +268,7 @@ namespace VAPI.Editor
             //If the BaseAIDamp Bonus or Multiplier are not approximately the default values, create the damp modifier.
             if((!Mathf.Approximately(variantDef.baseAIDampBonus, 0)) || (!Mathf.Approximately(variantDef.baseAIDampMultiplier, 1)))
             {
-                createdModifiers.Add(new BaseAIDampModifier
-                {
-                    baseAIDampBonus = variantDef.baseAIDampBonus,
-                    baseAIDampMultiplier = variantDef.baseAIDampMultiplier,
-                });
+                createdModifiers.Add(new BaseAIDampModifier(variantDef.baseAIDampBonus, variantDef.baseAIDampMultiplier));
             }
             return createdModifiers.ToArray();
         }

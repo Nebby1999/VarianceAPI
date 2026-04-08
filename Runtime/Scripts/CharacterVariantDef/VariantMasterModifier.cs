@@ -109,18 +109,6 @@ namespace VAPI
         }
 
         public void Validate() { }
-
-        public override int GetHashCode()
-        {
-            HashCode hasher = new HashCode();
-            hasher.Add(nameof(UnstableAIModifier));
-            hasher.Add(minTargetHealthFractionOverride);
-            hasher.Add(maxTargetHealthFractionOverride);
-            hasher.Add(minUserHealthFractionOverride);
-            hasher.Add(maxUserHealthFractionOverride);
-
-            return hasher.ToHashCode();
-        }
     }
 
     [Serializable]
@@ -192,11 +180,6 @@ namespace VAPI
         }
 
         public void Validate() { }
-
-        public override int GetHashCode()
-        {
-            return nameof(AlwaysSprintAIModifier).GetHashCode();
-        }
     }
 
     [Serializable]
@@ -235,7 +218,7 @@ namespace VAPI
             }
         }
         public float baseAIDampBonus = 0;
-        [Min(0)]
+        [Min(0 + float.Epsilon)]
         public float baseAIDampMultiplier = 1;
         public IDisposable? ModifyMaster(CharacterMaster master)
         {
@@ -261,13 +244,10 @@ namespace VAPI
 
         public void Validate() { }
 
-        public override int GetHashCode()
+        public BaseAIDampModifier(float _baseAIDampBonus, float _baseAIDampMultiplier)
         {
-            HashCode hasher = new HashCode();
-            hasher.Add(nameof(BaseAIDampModifier));
-            hasher.Add(baseAIDampBonus);
-            hasher.Add(baseAIDampMultiplier);
-            return hasher.ToHashCode();
+            baseAIDampBonus = _baseAIDampBonus;
+            baseAIDampMultiplier = Mathf.Max(0, _baseAIDampMultiplier);
         }
     }
 }

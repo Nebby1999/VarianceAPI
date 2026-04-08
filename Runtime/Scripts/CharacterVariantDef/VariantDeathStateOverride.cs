@@ -42,5 +42,19 @@ namespace VAPI
             characterDeathBehaviour.deathState = deathStateOverride;
             return result;
         }
+
+        public VariantDeathStateOverride(SerializableEntityStateType stateType)
+        {
+            deathStateOverride = stateType;
+        }
+        public VariantDeathStateOverride(string typeName)
+        {
+            deathStateOverride = new SerializableEntityStateType(typeName);
+        }
+        public VariantDeathStateOverride(Type stateType)
+        {
+            deathStateOverride = new SerializableEntityStateType(stateType);
+        }
+        public VariantDeathStateOverride() { }
     }
 }
