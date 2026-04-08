@@ -161,5 +161,11 @@ namespace VAPI
 
             throw new InvalidOperationException("Neither server nor client is running.");
         }
+
+        public VariantComponentCollection(SerializableSystemType[] variantComponentTypes)
+        {
+            variantComponents = variantComponentTypes;
+        }
+        public VariantComponentCollection() { }
     }
 }

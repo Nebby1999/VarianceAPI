@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using HG;
 using MSU;
 using R2API;
 using R2API.AddressReferencedAssets;
@@ -19,6 +20,45 @@ namespace VAPI
     [Serializable]
     public class BasicSpawnCondition : IVariantSpawnCondition
     {
+        public BasicSpawnCondition(int? _minimumStageCompletions, DirectorAPI.Stage? _stages, string[]? _customStages, Either<AddressReferencedUnlockableDef, UnlockableDef>? _requiredUnlock, Either<AddressReferencedUnlockableDef, UnlockableDef>? _forbiddenUnlock, Either<AddressReferencedExpansionDef[], ExpansionDef[]>? _requiredExpansions)
+        {
+            if(_minimumStageCompletions.HasValue)
+            {
+                minimumStageCompletions = _minimumStageCompletions.Value;
+            }
+            if(_stages.HasValue)
+            {
+                stages = _stages.Value;
+            }
+            if(_customStages != null)
+            {
+                customStages = _customStages;
+            }
+            if(_requiredUnlock.HasValue)
+            {
+                requiredUnlock = _requiredUnlock.Value.a ?? _requiredUnlock.Value.b;
+            }
+            if(_forbiddenUnlock.HasValue)
+            {
+                forbiddenUnlock = _forbiddenUnlock.Value.a ?? _forbiddenUnlock.Value.b;
+            }
+            if(_requiredExpansions.HasValue)
+            {
+                if(_requiredExpansions.Value.isA)
+                {
+                    requiredExpansionDefs = _requiredExpansions.Value.a;
+                }
+                else if(_requiredExpansions.Value.isB)
+                {
+                    requiredExpansionDefs = new AddressReferencedExpansionDef[_requiredExpansions.Value.b.Length];
+                    for(int i = 0; i < requiredExpansionDefs.Length; i++)
+                    {
+                        requiredExpansionDefs[i] = _requiredExpansions.Value.b[i];
+                    }
+                }
+            }
+        }
+        public BasicSpawnCondition() { }
         public int minimumStageCompletions;
         public DirectorAPI.Stage stages { get => _stages; set => _stages = value; }
         [SerializeField] private DirectorAPI.StageSerde _stages;

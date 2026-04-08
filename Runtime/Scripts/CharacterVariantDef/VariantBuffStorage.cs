@@ -118,5 +118,10 @@ namespace VAPI
             return new DisposableVariantBuffModifier(characterBody, _appliedBuffCountPairs.ToArray());
         }
 
+        public VariantBuffStorage(VariantBuffInfo[] _buffInfos)
+        {
+            buffInfos = _buffInfos;
+        }
+        public VariantBuffStorage() { }
     }
 }

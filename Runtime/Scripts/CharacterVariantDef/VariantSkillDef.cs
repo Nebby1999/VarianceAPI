@@ -30,6 +30,7 @@ namespace VAPI
                 targetGenericSkill.UnsetSkillOverride(source, overrideSkillDef, priority);
             }
         }
+
         public SkillDef? skillDef;
         public SkillSlot slot = SkillSlot.None;
         public string slotName = "";
@@ -63,5 +64,18 @@ namespace VAPI
             }
             return (SkillDef)goToMainSkillDef!;
         }
+
+        public VariantSkillReplacement(SkillDef? _skillDef, SkillSlot _slot)
+        {
+            skillDef = _skillDef;
+            slot = _slot;
+        }
+        public VariantSkillReplacement(SkillDef? _skillDef, string _slotName)
+        {
+            skillDef = _skillDef;
+            slotName = _slotName;
+            slot = SkillSlot.None;
+        }
+        public VariantSkillReplacement() { }
     }
 }
