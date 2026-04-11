@@ -11,8 +11,9 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     [RequireComponent(typeof(NetworkParent))]
-    public class VariantSpawnManager : MonoBehaviour
+    public sealed class VariantSpawnManager : MonoBehaviour
     {
+
         public static ConfiguredFloat artifactSpawnRateMultiplier = new ConfiguredFloat(2)
         {
             section = "General",
@@ -62,7 +63,7 @@ namespace VAPI
 
         private float GetSpawnRateMultiplier()
         {
-            return RunArtifactManager.instance.IsArtifactEnabled(VAPIContent.Artifacts.Variance) ? artifactSpawnRateMultiplier : 1f;
+            return RunArtifactManager.instance.IsArtifactEnabled(VAPIContent.Artifacts.Variance.asset) ? artifactSpawnRateMultiplier : 1f;
         }
 
         private void OnBodyStart(CharacterBody body)
@@ -89,7 +90,7 @@ namespace VAPI
                 return;
             }
 
-            CharacterVariantProvider? provider = CharacterVariantManager.FindCharacterVariantProvider(body.bodyIndex);
+            CharacterVariantProvider? provider = CharacterVariantCatalog.FindCharacterVariantProvider(body.bodyIndex);
             if(provider == null)
             {
                 return;
@@ -127,7 +128,7 @@ namespace VAPI
                 return;
             }
 
-            CharacterVariantProvider? provider = CharacterVariantManager.FindCharacterVariantProvider(master.masterIndex);
+            CharacterVariantProvider? provider = CharacterVariantCatalog.FindCharacterVariantProvider(master.masterIndex);
             if(provider == null)
             {
                 return;

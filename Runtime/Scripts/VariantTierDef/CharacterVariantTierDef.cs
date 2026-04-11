@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     [CreateAssetMenu(fileName = "New VariantTierDef", menuName = "VarianceAPI/VariantTierDef")]
-    public class CharacterVariantTierDef : ScriptableObject
+    public sealed class CharacterVariantTierDef : CachedNameScriptableObject
     {
         private struct DisposableVariantTierBodyModifier : IDisposable
         {
@@ -34,7 +34,7 @@ namespace VAPI
 
                 for(int i = 0; i < _armorCountToRemove; i++)
                 {
-                    _affectedBody.RemoveBuff(VAPIContent.Buffs.LinearArmorBonus!);
+                    _affectedBody.RemoveBuff(VAPIContent.Buffs.LinearArmorBonus.asset);
                 }
             }
         }
@@ -68,52 +68,10 @@ namespace VAPI
         public AddressReferencedBuffDef tierBuffDef = new AddressReferencedBuffDef();
         public float bonusArmor;
 
-        public IDisposable? ModifyBody(CharacterBody characterBody)
-        {
-            if(!characterBody && !NetworkServer.active)
-            {
-                return null;
-            }
-
-            BuffDef? buffDef = tierBuffDef.LoadAssetNow();
-            if(buffDef)
-            {
-                characterBody.AddBuff(buffDef);
-            }
-
-            int bonusArmorCount = Mathf.CeilToInt(bonusArmor);
-            for(int i = 0; i < bonusArmorCount; i++)
-            {
-                characterBody.AddBuff(VAPIContent.Buffs.LinearArmorBonus);
-            }
-
-            return new DisposableVariantTierBodyModifier(characterBody, buffDef, bonusArmorCount);
-        }
-
-        public IDisposable? ModifyMaster(CharacterMaster master)
-        {
-            if(!master || !master.inventory || !NetworkServer.active)
-            {
-                return null;
-            }
-
-            List<ItemCountPair> items = new List<ItemCountPair>();
-            for(int i = 0; i < tierItems.Length; i++)
-            {
-                if (tierItems[i].TryGetItemCountPair(out var itemCountPair))
-                {
-                    items.Add(itemCountPair);
-                    master.inventory.GiveItemChanneled(itemCountPair.itemDef.itemIndex, itemCountPair.count);
-                }
-            }
-
-            return new DisposableVariantTierMasterModifier(master, items.ToArray());
-        }
-
         [Header("Reward")]
-        [Min(1)]
+        [Min(0 + float.Epsilon)]
         public float experienceRewardCoefficient;
-        [Min(1)]
+        [Min(0 + float.Epsilon)]
         public float goldRewardCoefficient;
 
         public bool canDropCommon => commonItemRewardChance > 0;
@@ -131,5 +89,170 @@ namespace VAPI
         public bool canDropBoss => bossItemRewardChance > 0;
         [Min(0)]
         public float bossItemRewardChance;
+
+        public IDisposable? ModifyBody(CharacterBody characterBody)
+        {
+            if (!characterBody && !NetworkServer.active)
+            {
+                return null;
+            }
+
+            BuffDef? buffDef = tierBuffDef.LoadAssetNow();
+            if (buffDef)
+            {
+                characterBody.AddBuff(buffDef);
+            }
+
+            int bonusArmorCount = Mathf.CeilToInt(bonusArmor);
+            for (int i = 0; i < bonusArmorCount; i++)
+            {
+                characterBody.AddBuff(VAPIContent.Buffs.LinearArmorBonus.asset);
+            }
+
+            return new DisposableVariantTierBodyModifier(characterBody, buffDef, bonusArmorCount);
+        }
+
+        public IDisposable? ModifyMaster(CharacterMaster master)
+        {
+            if (!master || !master.inventory || !NetworkServer.active)
+            {
+                return null;
+            }
+
+            List<ItemCountPair> items = new List<ItemCountPair>();
+            for (int i = 0; i < tierItems.Length; i++)
+            {
+                if (tierItems[i].TryGetItemCountPair(out var itemCountPair))
+                {
+                    items.Add(itemCountPair);
+                    master.inventory.GiveItemChanneled(itemCountPair.itemDef.itemIndex, itemCountPair.count);
+                }
+            }
+
+            return new DisposableVariantTierMasterModifier(master, items.ToArray());
+        }
+
+        public struct CreateInstanceArgs
+        {
+            public string name;
+            public bool? announceArrivalInChat;
+            public List<AddressableItemCountPair>? tierItems;
+            public AddressReferencedBuffDef? tierBuffDef;
+            public float? bonusArmor;
+
+            public float? expRewardCoefficient;
+            public float? goldRewardCoefficient;
+
+            public float? commonItemRewardChance;
+            public float? uncommonItemRewardChance;
+            public float? legendaryItemRewardChance;
+            public float? bossItemRewardChance;
+
+            public CreateInstanceArgs SetName(string _name)
+            {
+                name = _name ?? throw new ArgumentNullException(nameof(_name));
+                return this;
+            }
+
+            public CreateInstanceArgs SetAnnounceArrivalInChat(bool _announceArrivalInChat)
+            {
+                announceArrivalInChat = _announceArrivalInChat;
+                return this;
+            }
+
+            public CreateInstanceArgs AddTierItem(AddressableItemCountPair item)
+            {
+                tierItems ??= new List<AddressableItemCountPair>();
+                tierItems.Add(item);
+                return this;
+            }
+
+            public CreateInstanceArgs SetTierBuff(AddressReferencedBuffDef _tierBuffDef)
+            {
+                tierBuffDef = _tierBuffDef;
+                return this;
+            }
+
+            public CreateInstanceArgs SetBonusArmor(float _bonusArmor)
+            {
+                bonusArmor = _bonusArmor;
+                return this;
+            }
+
+            public CreateInstanceArgs SetExpRewardCoefficient(float _expRewardCoefficient)
+            {
+                expRewardCoefficient = _expRewardCoefficient;
+                return this;
+            }
+
+            public CreateInstanceArgs SetGoldRewardCoefficient(float _goldRewardCoefficient)
+            {
+                goldRewardCoefficient = _goldRewardCoefficient;
+                return this;
+            }
+
+            public CreateInstanceArgs SetCommonItemRewardChance(float _commonItemRewardChance)
+            {
+                commonItemRewardChance = _commonItemRewardChance;
+                return this;
+            }
+
+            public CreateInstanceArgs SetUncommonItemRewardChance(float _uncommonItemRewardChance)
+            {
+                uncommonItemRewardChance = _uncommonItemRewardChance;
+                return this;
+            }
+
+            public CreateInstanceArgs SetLegendaryItemRewardChance(float _legendaryItemRewardChance)
+            {
+                legendaryItemRewardChance = _legendaryItemRewardChance;
+                return this;
+            }
+
+            public CreateInstanceArgs SetBossItemRewardChance(float _bossItemRewardChance)
+            {
+                bossItemRewardChance = _bossItemRewardChance;
+                return this;
+            }
+        }
+        public static CharacterVariantTierDef CreateInstance(CreateInstanceArgs args)
+        {
+            CharacterVariantTierDef tierDef = CreateInstance<CharacterVariantTierDef>();
+            tierDef.cachedName = args.name;
+            tierDef.announceArrivalInChat = args.announceArrivalInChat ?? false;
+            tierDef.tierItems = args.tierItems?.ToArray() ?? tierDef.tierItems;
+            tierDef.tierBuffDef = args.tierBuffDef ?? tierDef.tierBuffDef;
+            tierDef.bonusArmor = args.bonusArmor ?? 0;
+            tierDef.experienceRewardCoefficient = args.expRewardCoefficient ?? 0 + float.Epsilon;
+            tierDef.goldRewardCoefficient = args.goldRewardCoefficient ?? 0 + float.Epsilon;
+            tierDef.commonItemRewardChance = args.commonItemRewardChance ?? 0;
+            tierDef.uncommonItemRewardChance = args.uncommonItemRewardChance ?? 0;
+            tierDef.legendaryItemRewardChance = args.legendaryItemRewardChance ?? 0;
+            tierDef.bossItemRewardChance = args.bossItemRewardChance ?? 0;
+            return tierDef;
+        }
+
+        public static CharacterVariantTierDef CreateInstance(CharacterVariantTierDef other, string name)
+        {
+            CreateInstanceArgs args = new CreateInstanceArgs
+            {
+                name = name,
+                announceArrivalInChat = other.announceArrivalInChat,
+                bonusArmor = other.bonusArmor,
+                bossItemRewardChance = other.bossItemRewardChance,
+                commonItemRewardChance = other.commonItemRewardChance,
+                expRewardCoefficient = other.experienceRewardCoefficient,
+                goldRewardCoefficient = other.goldRewardCoefficient,
+                legendaryItemRewardChance = other.legendaryItemRewardChance,
+                uncommonItemRewardChance = other.uncommonItemRewardChance,
+            };
+            args.SetTierBuff(VAPIUtils.CloneAddressReferencedAsset<AddressReferencedBuffDef, BuffDef>(other.tierBuffDef));
+            for(int i = 0; i < other.tierItems.Length; i++)
+            {
+                args.AddTierItem((AddressableItemCountPair)other.tierItems[i].Clone());
+            }
+
+            return CreateInstance(args);
+        }
     }
 }

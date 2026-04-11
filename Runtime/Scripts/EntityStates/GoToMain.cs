@@ -1,6 +1,6 @@
 namespace EntityStates
 {
-    public class GoToMain : EntityState
+    public sealed class GoToMain : EntityState
     {
         public override void FixedUpdate()
         {

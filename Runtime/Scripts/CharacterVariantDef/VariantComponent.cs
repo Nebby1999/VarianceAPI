@@ -7,7 +7,7 @@ namespace VAPI
     public abstract class VariantComponent : MonoBehaviour
     {
         [AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = true)]
-        public class TargetComponentObjectAttribute : Attribute
+        public sealed class TargetComponentObjectAttribute : Attribute
         {
             public enum TargetObject
             {

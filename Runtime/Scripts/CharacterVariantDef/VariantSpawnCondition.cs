@@ -12,7 +12,7 @@ using UnityEngine;
 
 namespace VAPI
 {
-    public interface IVariantSpawnCondition : IValidatable
+    public interface IVariantSpawnCondition : IValidatable, ICloneable
     {
         public bool IsAvailable();
     }
@@ -136,6 +136,24 @@ namespace VAPI
             }
 
             return stages.HasFlag(stageInfo.stage);
+        }
+
+        public object Clone()
+        {
+            var result = new BasicSpawnCondition()
+            {
+                minimumStageCompletions = minimumStageCompletions,
+                _stages = _stages
+            };
+            HG.ArrayUtils.CloneTo(customStages, ref result.customStages);
+            result.forbiddenUnlock = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedUnlockableDef, UnlockableDef>(forbiddenUnlock);
+            result.requiredUnlock = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedUnlockableDef, UnlockableDef>(requiredUnlock);
+            HG.ArrayUtils.EnsureCapacity(ref result.requiredExpansionDefs, requiredExpansionDefs.Length);
+            for(int i = 0; i < result.requiredExpansionDefs.Length; i++)
+            {
+                result.requiredExpansionDefs[i] = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedExpansionDef, ExpansionDef>(requiredExpansionDefs[i]);
+            }
+            return result;
         }
     }
 }

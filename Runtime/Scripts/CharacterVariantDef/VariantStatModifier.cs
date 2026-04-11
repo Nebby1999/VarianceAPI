@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VAPI
 {
-    public interface IVariantStatModifier : IValidatable
+    public interface IVariantStatModifier : IValidatable, ICloneable
     {
         public void ApplyStatModifiers(R2API.RecalculateStatsAPI.StatHookEventArgs args, CharacterBody targetBody);
     }
@@ -54,6 +54,23 @@ namespace VAPI
             args.damageMultAdd += damageMultiplier;
             args.armorAdd += armorBonus;
             args.armorTotalMult += armorMultiplier; 
+        }
+
+        public object Clone()
+        {
+            return new BasicStatModifier
+            {
+                healthMultiplier = healthMultiplier,
+                armorBonus = armorBonus,
+                armorMultiplier = armorMultiplier,
+                attackSpeedMultiplier = attackSpeedMultiplier,
+                damageMultiplier = damageMultiplier,
+                moveSpeedMultiplier = moveSpeedMultiplier,
+                regenBonus = regenBonus,
+                regenMultiplier = regenMultiplier,
+                shieldBonus = shieldBonus,
+                shieldMultiplier = shieldMultiplier,
+            };
         }
 
         public virtual void Validate() { }

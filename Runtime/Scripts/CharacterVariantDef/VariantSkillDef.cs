@@ -6,7 +6,7 @@ using System;
 namespace VAPI
 {
     [Serializable]
-    public sealed class VariantSkillReplacement
+    public sealed class VariantSkillReplacement : ICloneable
     {
         private readonly struct DisposableSkillOverride : IDisposable
         {
@@ -63,6 +63,18 @@ namespace VAPI
                 return skillDef!;
             }
             return (SkillDef)goToMainSkillDef!;
+        }
+
+        public object Clone()
+        {
+            if(slot == SkillSlot.None)
+            {
+                return new VariantSkillReplacement(skillDef, slotName);
+            }
+            else
+            {
+                return new VariantSkillReplacement(skillDef, slot);
+            }
         }
 
         public VariantSkillReplacement(SkillDef? _skillDef, SkillSlot _slot)

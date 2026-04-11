@@ -7,7 +7,7 @@ using UnityEngine.Networking;
 
 namespace VAPI
 {
-    public class SyncListCharacterVariantIndex : SyncListStruct<NetworkCharacterVariantIndex>
+    public sealed class SyncListCharacterVariantIndex : SyncListStruct<NetworkCharacterVariantIndex>
     {
 
     }

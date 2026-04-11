@@ -9,7 +9,7 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     [Serializable]
-    public struct AddressableItemCountPair
+    public struct AddressableItemCountPair : ICloneable
     {
         public AddressReferencedItemDef? itemDef;
         public int count;
@@ -29,10 +29,19 @@ namespace VAPI
             asItemCountPair = new ItemCountPair { itemDef = item, count = count };
             return true;
         }
+
+        public object Clone()
+        {
+            return new AddressableItemCountPair
+            {
+                count = count,
+                itemDef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedItemDef, ItemDef>(itemDef)
+            };
+        }
     }
 
     [Serializable]
-    public sealed class VariantInventoryDefinition
+    public sealed class VariantInventoryDefinition : ICloneable
     {
         private struct DisposableVariantInventoryDefintionModification : IDisposable
         {
@@ -68,7 +77,7 @@ namespace VAPI
             }
         }
         [Serializable]
-        public struct AddressableEquipmentInfo
+        public struct AddressableEquipmentInfo : ICloneable
         {
             public AddressReferencedEquipmentDef? equipmentDef;
 
@@ -76,6 +85,18 @@ namespace VAPI
             public float aiMaxUseHealthFraction;
             public float aiMaxUseDistance;
             public float timeBetweenEquipmentSwitches;
+
+            public object Clone()
+            {
+                return new AddressableEquipmentInfo
+                {
+                    aiMaxUseDistance = aiMaxUseDistance,
+                    aiMaxUseHealthFraction = aiMaxUseHealthFraction,
+                    canTriggerEquipment = canTriggerEquipment,
+                    timeBetweenEquipmentSwitches = timeBetweenEquipmentSwitches,
+                    equipmentDef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedEquipmentDef, EquipmentDef>(equipmentDef)
+                };
+            }
         }
 
         public AddressableItemCountPair[] itemsToGrant = Array.Empty<AddressableItemCountPair>();
@@ -125,6 +146,18 @@ namespace VAPI
             }
 
             return new DisposableVariantInventoryDefintionModification(targetInventory, _itemCountPairBuilder.ToArray(), equipmentDef);
+        }
+
+        public object Clone()
+        {
+            VariantInventoryDefinition result = new VariantInventoryDefinition();
+            HG.ArrayUtils.EnsureCapacity(ref result.itemsToGrant, itemsToGrant.Length);
+            for(int i = 0; i < result.itemsToGrant.Length; i++)
+            {
+                result.itemsToGrant[i] = (AddressableItemCountPair)itemsToGrant[i].Clone();
+            }
+            result.equipmentInfo = (AddressableEquipmentInfo)equipmentInfo.Clone();
+            return result;
         }
     }
 }

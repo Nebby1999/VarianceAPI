@@ -10,12 +10,13 @@ using UnityEngine.Networking;
 using R2API.AddressReferencedAssets;
 using RoR2;
 using MSU;
+using System.Collections.Generic;
 #nullable enable
 
 namespace VAPI
 {
     [CreateAssetMenu(fileName = "New CharacterVariantDef", menuName = "VarianceAPI/CharacterVariantDef")]
-    public sealed class CharacterVariantDef : ScriptableObject
+    public sealed class CharacterVariantDef : CachedNameScriptableObject
     {
         public CharacterVariantIndex characterVariantIndex { get; internal set; }
         [Header("General Settings")]
@@ -43,14 +44,14 @@ namespace VAPI
         [SerializeReference, SubclassSelector]
         public IVariantStatModifier? statModifier = null;
         public VariantBuffStorage variantBuffs = new VariantBuffStorage();
-        public VariantVisualModifier? visualModifier = null;
+        public CharacterVariantVisualModifier? visualModifier = null;
         [Min(1)]
         public float scaleMultiplier = 1f;
 
         [Header("Other")]
         public VariantComponentCollection additionalVariantComponents = new VariantComponentCollection();
 
-        private void OnValidate()
+        protected override void OnValidate()
         {
             spawnCondition?.Validate();
             variantNameProvider?.Validate();
@@ -70,6 +71,56 @@ namespace VAPI
 
             return spawnCondition?.IsAvailable() ?? true;
         }
-    }
 
+        public static CharacterVariantDef CreateInstance(CharacterVariantDef other, string newName)
+        {
+            CharacterVariantDef variantDef = CreateInstance<CharacterVariantDef>();
+            variantDef.cachedName = newName;
+            variantDef.targetCharacter = (VariantCharacterTarget)other.targetCharacter.Clone();
+            variantDef.variantTier = other.variantTier;
+            variantDef.isUnique = other.isUnique;
+            variantDef.spawnRate = other.spawnRate;
+            variantDef.arrivalToken = other.arrivalToken;
+
+            if(other.spawnCondition != null)
+            {
+                variantDef.spawnCondition = (IVariantSpawnCondition?)other.spawnCondition.Clone();
+            }
+
+            List<IVariantMasterModifier> masterModifiers = new List<IVariantMasterModifier>();
+            foreach(var otherMasterModifier in other.masterModifiers)
+            {
+                if(otherMasterModifier != null)
+                {
+                    masterModifiers.Add((IVariantMasterModifier)otherMasterModifier.Clone());
+                }
+            }
+            variantDef.masterModifiers = masterModifiers.ToArray();
+            variantDef.inventoryDefinition = (VariantInventoryDefinition)other.inventoryDefinition.Clone();
+
+            if(other.variantNameProvider != null)
+            {
+                variantDef.variantNameProvider = (IVariantNameProvider?)other.variantNameProvider.Clone();
+            }
+            variantDef.deathStateOverride = (VariantDeathStateOverride)other.deathStateOverride.Clone();
+            List<VariantSkillReplacement> skillReplacements = new List<VariantSkillReplacement>();
+            foreach(var otherSkillReplacement in other.skillReplacements)
+            {
+                if(otherSkillReplacement != null)
+                {
+                    skillReplacements.Add((VariantSkillReplacement)otherSkillReplacement.Clone());
+                }
+            }
+            variantDef.skillReplacements = skillReplacements.ToArray();
+            if(other.statModifier != null)
+            {
+                variantDef.statModifier = (IVariantStatModifier?)other.statModifier.Clone();
+            }
+            variantDef.variantBuffs = (VariantBuffStorage)other.variantBuffs.Clone();
+            variantDef.scaleMultiplier = other.scaleMultiplier;
+
+            variantDef.additionalVariantComponents = (VariantComponentCollection)other.additionalVariantComponents.Clone();
+            return variantDef;
+        }
+    }
 }

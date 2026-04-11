@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VAPI
 {
-    public class VariantEquipmentHandler : MonoBehaviour
+    public sealed class VariantEquipmentHandler : MonoBehaviour
     {
         public const float TIME_BETWEEN_ATTEMPTS = 0.25f;
         public struct EquipmentData

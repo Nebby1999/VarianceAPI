@@ -11,7 +11,7 @@ using AutoConfig = MSU.Config.ConfiguredVariable.AutoConfigAttribute;
 
 namespace VAPI
 {
-    public class VAPIConfig
+    public sealed class VAPIConfig
     {
         public const string PREFIX = "VAPI.";
         public const string GENERAL = PREFIX + "General";

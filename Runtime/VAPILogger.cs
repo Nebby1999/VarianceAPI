@@ -7,7 +7,7 @@ using UDebug = UnityEngine.Debug;
 
 namespace VAPI
 {
-    internal class VAPILog
+    internal sealed class VAPILog
     {
 #if DEBUG
         private static LogLevel _breakableLevel = LogLevel.Fatal;

@@ -11,7 +11,7 @@ using UnityEngine.Networking;
 
 namespace VAPI
 {
-    public class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
+    public sealed class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
     {
 
         //So, VAPI 3.0 has the ability to store the variants on a master, however, we want to allow the ability for masterless variants to be a thing.
@@ -155,7 +155,7 @@ namespace VAPI
             _fallbackCharacterVariantDefs = new CharacterVariantDef[_fallbackCharacterVariantIndices.Count];
             for (int i = 0; i < _fallbackCharacterVariantIndices.Count; i++)
             {
-                _fallbackCharacterVariantDefs[i] = CharacterVariantManager.GetCharacterVariantDef(_fallbackCharacterVariantIndices[i])!;
+                _fallbackCharacterVariantDefs[i] = CharacterVariantCatalog.GetCharacterVariantDef(_fallbackCharacterVariantIndices[i])!;
             }
 
             //Thirdy, apply body modifications
@@ -185,7 +185,7 @@ namespace VAPI
         private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
         private void ApplyBodyModifications(ReadOnlyArray<CharacterVariantDef> characterVariants)
         {
-            List<VariantVisualModifier> visualModifiers = new List<VariantVisualModifier>();
+            List<CharacterVariantVisualModifier> visualModifiers = new List<CharacterVariantVisualModifier>();
             /*
              * TODO:
              * 2. Apply the Scale Mutliplier
@@ -272,7 +272,7 @@ namespace VAPI
         }
 
         private IEnumerator? _applyVisualModifiersAfterSkinCoroutine;
-        private IEnumerator ApplyVisualModifiersAfterSkin(List<VariantVisualModifier> visualModifiers)
+        private IEnumerator ApplyVisualModifiersAfterSkin(List<CharacterVariantVisualModifier> visualModifiers)
         {
             var waitForEndOfFrame = new WaitForEndOfFrame();
             while(_skinHasBeenApplied == false)

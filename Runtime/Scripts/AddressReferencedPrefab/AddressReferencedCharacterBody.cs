@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace VAPI.Addressables
 {
-    public class AddressReferencedCharacterBody : AddressReferencedPrefab
+    public sealed class AddressReferencedCharacterBody : AddressReferencedPrefab
     {
         public override bool CanLoadFromCatalog { get => _canLoadFromCatalog; protected set => _canLoadFromCatalog = value; }
 
