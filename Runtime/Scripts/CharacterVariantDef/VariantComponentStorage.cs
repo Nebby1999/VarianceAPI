@@ -10,7 +10,7 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     [Serializable]
-    public sealed class VariantComponentCollection
+    public sealed class VariantComponentCollection : ICloneable
     {
         private struct DisposableVariantComponentCollectionModification : IDisposable
         {
@@ -160,6 +160,13 @@ namespace VAPI
             }
 
             throw new InvalidOperationException("Neither server nor client is running.");
+        }
+
+        public object Clone()
+        {
+            var result = new VariantComponentCollection();
+            HG.ArrayUtils.CloneTo(variantComponents, ref result.variantComponents);
+            return result;
         }
 
         public VariantComponentCollection(SerializableSystemType[] variantComponentTypes)

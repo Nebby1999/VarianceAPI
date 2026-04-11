@@ -1,6 +1,8 @@
 #nullable enable
 using HG;
+using R2API.AddressReferencedAssets;
 using RoR2;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -17,6 +19,7 @@ namespace VAPI
             return BodyCatalog.FindBodyIndex(bodyName);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static BodyIndex GetBodyIndexDT(string bodyName)
         {
             return DebugToolkit.StringFinder.Instance.GetBodyFromPartial(bodyName);
@@ -31,9 +34,30 @@ namespace VAPI
             return MasterCatalog.FindMasterIndex(masterName);
         }
 
+        [MethodImpl(MethodImplOptions.NoInlining | MethodImplOptions.NoOptimization)]
         private static MasterCatalog.MasterIndex GetMasterIndexDT(string masterName)
         {
             return DebugToolkit.StringFinder.Instance.GetAiFromPartial(masterName);
+        }
+
+        public static T1 CloneAddressReferencedAsset<T1, T2>(T1? other) where T1 : AddressReferencedAsset<T2>, new() where T2 : UnityEngine.Object
+        {
+            var copy = new T1();
+            if (other == null)
+                return copy;
+
+            var address = other.Address;
+            if(!string.IsNullOrWhiteSpace(address))
+            {
+                copy.Address = address;
+                return copy;
+            }
+            if(other.AssetExists)
+            {
+                copy.Asset = other.Asset;
+                return copy;
+            }
+            return copy;
         }
 
         public static void ModifyMasterToBecomeVariant(GameObject masterObject, CharacterVariantDef[] variantDefs, DeathRewards? baseDeathRewards = null, float deathRewardsCoefficient = 1f)

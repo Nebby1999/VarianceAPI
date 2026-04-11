@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 
 namespace VAPI
 {
-    public interface IVariantBuffInfoTimedApplication
+    public interface IVariantBuffInfoTimedApplication : ICloneable
     {
         public void ApplyAsTimedBuff(CharacterBody characterBody, BuffCountPair buffCountPair);
     }
@@ -24,6 +24,11 @@ namespace VAPI
                 characterBody.AddTimedBuff(buffCountPair.buffDef, totalTimeForBuffs);
             }
         }
+
+        public object Clone()
+        {
+            return this;
+        }
     }
 
     public struct BuffCountPair
@@ -33,7 +38,7 @@ namespace VAPI
     }
 
     [Serializable]
-    public struct VariantBuffInfo
+    public struct VariantBuffInfo : ICloneable
     {
         public AddressReferencedBuffDef? buffDef;
         public int count;
@@ -53,9 +58,24 @@ namespace VAPI
             asBuffCountPair = new BuffCountPair { buffDef = buff, buffCount = count };
             return true;
         }
+
+        public object Clone()
+        {
+            var result = new VariantBuffInfo
+            {
+                count = count,
+            };
+            if(timedApplicationImpl != null)
+            {
+                result.timedApplicationImpl = (IVariantBuffInfoTimedApplication)timedApplicationImpl.Clone();
+            }
+            result.buffDef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedBuffDef, BuffDef>(buffDef);
+            return result;
+        }
     }
 
-    public sealed class VariantBuffStorage
+    [Serializable]
+    public sealed class VariantBuffStorage : ICloneable
     {
         private readonly struct DisposableVariantBuffModifier : IDisposable
         {
@@ -116,6 +136,16 @@ namespace VAPI
             }
 
             return new DisposableVariantBuffModifier(characterBody, _appliedBuffCountPairs.ToArray());
+        }
+
+        public object Clone()
+        {
+            var result = new VariantBuffStorage(new VariantBuffInfo[buffInfos.Length]);
+            for(int i = 0; i < result.buffInfos.Length; i++)
+            {
+                result.buffInfos[i] = (VariantBuffInfo)buffInfos[i].Clone();
+            }
+            return result;
         }
 
         public VariantBuffStorage(VariantBuffInfo[] _buffInfos)

@@ -99,7 +99,7 @@ namespace VAPI.Editor
                 {
                     CharacterVariantTierDef runtimeTierdef = AssetDatabaseUtil.LoadAssetFromGUID<CharacterVariantTierDef>(characterVariantTierDefGUID);
 
-                    string matchString = runtimeTierdef.name + "_LEGACY";
+                    string matchString = runtimeTierdef.cachedName + "_LEGACY";
                     if(matchString.Equals(legacyTierDef.name, StringComparison.OrdinalIgnoreCase))
                     {
                         if(!_legacyTierDefToRuntimeTierDef.TryAdd(legacyTierDef, runtimeTierdef))
@@ -419,7 +419,7 @@ namespace VAPI.Editor
         }
 
         //TODO: do this
-        private static VariantVisualModifier CreateVisualModifier(VariantDef variantDef)
+        private static CharacterVariantVisualModifier CreateVisualModifier(VariantDef variantDef)
         {
             throw new NotImplementedException();
         }

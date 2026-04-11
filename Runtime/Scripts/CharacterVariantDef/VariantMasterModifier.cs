@@ -7,7 +7,7 @@ using UnityEngine;
 
 namespace VAPI
 {
-    public interface IVariantMasterModifier : IValidatable
+    public interface IVariantMasterModifier : IValidatable, ICloneable
     {
         public IDisposable? ModifyMaster(CharacterMaster master);
     }
@@ -109,6 +109,17 @@ namespace VAPI
         }
 
         public void Validate() { }
+
+        public object Clone()
+        {
+            return new UnstableAIModifier
+            {
+                minTargetHealthFractionOverride = minTargetHealthFractionOverride,
+                minUserHealthFractionOverride = minUserHealthFractionOverride,
+                maxTargetHealthFractionOverride = maxTargetHealthFractionOverride,
+                maxUserHealthFractionOverride = maxUserHealthFractionOverride
+            };
+        }
     }
 
     [Serializable]
@@ -180,6 +191,11 @@ namespace VAPI
         }
 
         public void Validate() { }
+
+        public object Clone()
+        {
+            return this;
+        }
     }
 
     [Serializable]
@@ -243,6 +259,11 @@ namespace VAPI
         }
 
         public void Validate() { }
+
+        public object Clone()
+        {
+            return new BaseAIDampModifier(baseAIDampBonus, baseAIDampMultiplier);
+        }
 
         public BaseAIDampModifier(float _baseAIDampBonus, float _baseAIDampMultiplier)
         {

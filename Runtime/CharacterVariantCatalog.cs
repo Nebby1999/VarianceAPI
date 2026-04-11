@@ -1,6 +1,8 @@
 #nullable enable
 using HG;
+using R2API.Utils;
 using RoR2;
+using RoR2.CharacterAI;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -46,30 +48,26 @@ namespace VAPI
         public override int GetHashCode() => (int)i;
     }
 
-    public static class CharacterVariantManager
+    public static class CharacterVariantCatalog
     {
-        public static int variantCount => _variantDefs?.Length ?? -1;
-        private static CharacterVariantDef[]? _variantDefs;
+        public static int characterVariantCount => _characterVariantDefs?.Length ?? -1;
+        private static CharacterVariantDef[]? _characterVariantDefs;
         private static Dictionary<string, CharacterVariantIndex> _characterVariantNameToIndex = new Dictionary<string, CharacterVariantIndex>(StringComparer.OrdinalIgnoreCase);
 
         private static CharacterVariantProvider[]? _characterVariantProviders;
 
-        public static ResourceAvailability managerAvailability;
+        public static ResourceAvailability catalogAvailability;
 
         public static CharacterVariantDef? GetCharacterVariantDef(CharacterVariantIndex index)
         {
             ThrowIfUnavailable();
-            return HG.ArrayUtils.GetSafe(_variantDefs!, (int)index);
+            return HG.ArrayUtils.GetSafe(_characterVariantDefs!, (int)index);
         }
 
         public static CharacterVariantIndex FindCharacterVariantIndex(string characterVariantDefName)
         {
             ThrowIfUnavailable();
-            if (_characterVariantNameToIndex.TryGetValue(characterVariantDefName, out var index))
-            {
-                return index;
-            }
-            return CharacterVariantIndex.none;
+            return _characterVariantNameToIndex.GetValueOrDefault(characterVariantDefName, CharacterVariantIndex.none);
         }
 
         public static CharacterVariantProvider? FindCharacterVariantProvider(BodyIndex bodyIndex)
@@ -115,7 +113,7 @@ namespace VAPI
             List<BodyIndex> bodyIndicesAssociatedWithVariant = new List<BodyIndex>();
             List<MasterCatalog.MasterIndex> masterIndicesAssociatedWithVariant = new List<MasterCatalog.MasterIndex>();
 
-            Array.Sort(inputVariantDefs, (a, b) => string.CompareOrdinal(a.name, b.name));
+            Array.Sort(inputVariantDefs, (a, b) => string.CompareOrdinal(a.cachedName, b.cachedName));
             
             foreach(var variantDef in inputVariantDefs)
             {
@@ -166,13 +164,13 @@ namespace VAPI
 
                 //Assign index, add to dictionary, add to list, increment indexer
                 variantDef.characterVariantIndex = (CharacterVariantIndex)variantIndex;
-                _characterVariantNameToIndex.Add(variantDef.name, variantDef.characterVariantIndex);
+                _characterVariantNameToIndex.Add(variantDef.cachedName, variantDef.characterVariantIndex);
                 validVariantDefs.Add(variantDef);
                 variantIndex++;
             }
 
             //Finalize initialization
-            _variantDefs = validVariantDefs.ToArray();
+            _characterVariantDefs = validVariantDefs.ToArray();
             List<CharacterVariantProvider> characterVariantProviders = new List<CharacterVariantProvider>();
             foreach (var (bodyIndex, variantDefs) in bodyToVariants)
             {
@@ -205,24 +203,20 @@ namespace VAPI
                 }
             }
 
-            managerAvailability.MakeAvailable();
+            Stage.onStageStartGlobal += FilterCharacterVariantProviders;
+            catalogAvailability.MakeAvailable();
         }
 
         private static void AddAssociatedMasterIndices(CharacterBody body, in List<MasterCatalog.MasterIndex> output)
         {
-            for(int i = 0; i < MasterCatalog.masterPrefabMasterComponents.Length; i++)
+            for (int i = 0; i < MasterCatalog.masterPrefabMasterComponents.Length; i++)
             {
                 CharacterMaster characterMaster = MasterCatalog.masterPrefabMasterComponents[i];
-                if(characterMaster.bodyPrefab && characterMaster.bodyPrefab == body.gameObject)
+                if (characterMaster.bodyPrefab && characterMaster.bodyPrefab == body.gameObject)
                 {
                     ListUtils.AddIfUnique(output, characterMaster.masterIndex);
                 }
             }
-        }
-
-        private static void Hook()
-        {
-            Stage.onStageStartGlobal += FilterCharacterVariantProviders;
         }
 
         private static void FilterCharacterVariantProviders(Stage obj)
@@ -235,15 +229,15 @@ namespace VAPI
 
         private static void ThrowIfUnavailable()
         {
-            if(!managerAvailability.available)
+            if(!catalogAvailability.available)
             {
-                throw new InvalidOperationException("Cannot access CharacterVariantManager when it's not available, consider subscribing to the managerAvailability.");
+                throw new InvalidOperationException("Cannot access CharacterVariantCatalog when it's not available, consider subscribing to the catalogAvailability.");
             }
         }
 
         #region Commands
         [ConCommand(commandName = "vapi_list_bodies", flags = ConVarFlags.None, helpText = "Lists all the bodies that have VariantDefs")]
-        private static void CCvapiListBodies(ConCommandArgs args)
+        private static void CCVapiListBodies(ConCommandArgs args)
         {
             ThrowIfUnavailable();
 
@@ -267,7 +261,7 @@ namespace VAPI
         }
 
         [ConCommand(commandName = "vapi_list_masters", flags = ConVarFlags.None, helpText = "Lists all the Masters that have VariantDefs")]
-        private static void CCvapiListMasters(ConCommandArgs args)
+        private static void CCVapiListMasters(ConCommandArgs args)
         {
             ThrowIfUnavailable();
 
@@ -291,7 +285,7 @@ namespace VAPI
         }
 
         [ConCommand(commandName = "vapi_list_body_variants", helpText = "Lists all the VariantDefs associated to a body.")]
-        private static void CCvapi_ListBodyVariants(ConCommandArgs args)
+        private static void CCVapiListBodyVariants(ConCommandArgs args)
         {
             ThrowIfUnavailable();
 
@@ -322,7 +316,7 @@ namespace VAPI
             for(int i = 0; i < provider.totalVariantCount; i++)
             {
                 CharacterVariantDef variantDef = provider.allVariants[i];
-                stringBuilder.AppendLine($"[{i}] = {variantDef.name}");
+                stringBuilder.AppendLine($"[{i}] = {variantDef.cachedName}");
             }
             Debug.Log(stringBuilder.ToString());
             HG.StringBuilderPool.ReturnStringBuilder(stringBuilder);
@@ -330,7 +324,7 @@ namespace VAPI
 
 
         [ConCommand(commandName = "vapi_list_master_variants", helpText = "Lists all the VariantDefs associated to a Master.")]
-        private static void CCvapi_ListMasterVariants(ConCommandArgs args)
+        private static void CCVapiListMasterVariants(ConCommandArgs args)
         {
             ThrowIfUnavailable();
 
@@ -361,24 +355,201 @@ namespace VAPI
             for (int i = 0; i < provider.totalVariantCount; i++)
             {
                 CharacterVariantDef variantDef = provider.allVariants[i];
-                stringBuilder.AppendLine($"[{i}] = {variantDef.name}");
+                stringBuilder.AppendLine($"[{i}] = {variantDef.cachedName}");
             }
             Debug.Log(stringBuilder.ToString());
             HG.StringBuilderPool.ReturnStringBuilder(stringBuilder);
+        }
+
+        [ConCommand(commandName = "vapi_spawn_ai", flags= ConVarFlags.ExecuteOnServer, helpText = "Spawns a specific master with a specific set of variant defs.\n" +
+            "Mandatory Arguments:\n" +
+            "[0] = masterName\n" +
+            "[1] = CharacterVariantDef name list. (Encapsulate in \"\". Separate by \",\". Spaces are allowed.)\n" +
+            "Optional Arguments (Must be after CharacterVariantDef names):" +
+            "\"count:\" Amount of characters to spawn (count:1)\n" +
+            "\"equipment:\" Equipment name for the character (equipment:none)\n" +
+            "\"noai:\" Wether the Variant has AI or not (noai:false)\n" +
+            "\"team:\" Which team is the variant in (team:monster)")]
+        private static void CCVapiSpawnAI(ConCommandArgs args)
+        {
+            if(args.Count == 0)
+            {
+                Debug.Log("No Arguments Given.");
+                return;
+            }
+
+            MasterCatalog.MasterIndex masterIndex = VAPIUtils.GetMasterIndex(args[0]);
+            if(masterIndex == MasterCatalog.MasterIndex.none)
+            {
+                Debug.Log("Could not find master.");
+                return;
+            }
+            var masterPrefab = MasterCatalog.GetMasterPrefab(masterIndex);
+
+            var provider = FindCharacterVariantProvider(masterIndex);
+            if(provider == null)
+            {
+                Debug.Log($"CharacterMaster with name {args[0]} does not have a CharacterVariantProvider");
+                return;
+            }
+
+            var variantDefNamesAsListString = args[1];
+            string[] variantDefNames = variantDefNamesAsListString.Replace(" ", "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+            List<CharacterVariantDef> variantDefs = new List<CharacterVariantDef>();
+            var availableVariants = provider.allVariants;
+            foreach(string variantName in variantDefNames)
+            {
+                foreach(var variantDef in variantDefs)
+                {
+                    if(variantDef.cachedName.Contains(variantName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        variantDefs.Add(variantDef);
+                        break;
+                    }
+                }
+            }
+
+            Vector3 location = args.sender.master.GetBody().transform.position;
+
+            int aiCount = args.TryGetOptionalInt("count:") ?? 1;
+            EquipmentIndex equipmentIndex = args.TryGetOptionalEquipmentIndex("equipment:") ?? EquipmentIndex.None;
+            bool noAI = args.TryGetOptionalBool("noai:") ?? false;
+            TeamIndex teamIndex = args.TryGetOptionalEnum<TeamIndex>("team:") ?? TeamIndex.Monster;
+
+            MasterSummon masterSummon = new MasterSummon()
+            {
+                masterPrefab = masterPrefab,
+                ignoreTeamMemberLimit = true,
+                useAmbientLevel = false,
+                position = location,
+                rotation = Quaternion.identity,
+                summonerBodyObject = null,
+                teamIndexOverride = teamIndex,
+            };
+            VariantMasterSummon variantMasterSummon = new VariantMasterSummon(masterSummon)
+            {
+                variantDefs = variantDefs.ToArray(),
+            };
+            variantMasterSummon.onSummonPerformed += (report) =>
+            {
+                var master = report.masterSummonReport.summonMasterInstance;
+                if(equipmentIndex != EquipmentIndex.None)
+                {
+                    master.inventory.SetEquipmentIndex(equipmentIndex, false);
+                    EliteDef eliteDef = EliteCatalog.GetEliteDefFromEquipmentIndex(equipmentIndex);
+                    if(eliteDef)
+                    {
+                        master.inventory.GiveItemPermanent(RoR2Content.Items.BoostHp, Mathf.RoundToInt((eliteDef.healthBoostCoefficient - 1) * 10));
+                        master.inventory.GiveItemPermanent(RoR2Content.Items.BoostDamage, Mathf.RoundToInt(eliteDef.damageBoostCoefficient - 1) * 10);
+                    }
+                }
+                if(noAI)
+                {
+                    foreach(var ai in master.aiComponents)
+                    {
+                        UnityEngine.Object.Destroy(ai);
+                    }
+                    master.aiComponents = Array.Empty<BaseAI>();
+                }
+            };
+
+            for(int i = 0; i < aiCount; i++)
+            {
+                variantMasterSummon.Perform();
+            }
+        }
+
+        [ConCommand(commandName = "vapi_spawn_as", flags = ConVarFlags.ExecuteOnServer, helpText = "Respawns you as the specified body prefab with the specified VariantDefs.\n" +
+            "Mandatory Arguments:\n" +
+            "[0] = bodyName\n" +
+            "[1] = CharacterVariantDef name list. (Encapsulate in \"\". Separate by \",\". Spaces are allowed.)")]
+        private static void CCVapiSpawnAs(ConCommandArgs args)
+        {
+            if(args.Count == 0)
+            {
+                Debug.Log("No arguments Given");
+                return;
+            }
+
+            BodyIndex body = VAPIUtils.GetBodyIndex(args[0]);
+            if(body == BodyIndex.None)
+            {
+                Debug.Log("No body could be found with that name");
+                return;
+            }
+
+            GameObject bodyPrefab = BodyCatalog.GetBodyPrefab(body);
+
+            var provider = FindCharacterVariantProvider(body);
+            if (provider == null)
+            {
+                Debug.Log($"CharacterBody with name {args[0]} does not have a CharacterVariantProvider");
+                return;
+            }
+
+            if(!args.sender)
+            {
+                Debug.Log("Sender does not exist.");
+                return;
+            }
+
+            CharacterMaster senderMaster = args.senderMaster;
+            if(!senderMaster)
+            {
+                Debug.Log("Sender Master does not exist.");
+                return;
+            }
+
+            var variantDefNamesAsListString = args[1];
+            string[] variantDefNames = variantDefNamesAsListString.Replace(" ", "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+            List<CharacterVariantDef> variantDefs = new List<CharacterVariantDef>();
+            var availableVariants = provider.allVariants;
+            foreach (string variantName in variantDefNames)
+            {
+                foreach (var variantDef in variantDefs)
+                {
+                    if (variantDef.cachedName.Contains(variantName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        variantDefs.Add(variantDef);
+                        break;
+                    }
+                }
+            }
+
+            senderMaster.bodyPrefab = bodyPrefab;
+
+            RoR2.ConVar.BoolConVar stage1pod = ((RoR2.ConVar.BoolConVar)(typeof(Stage)).GetFieldCached("stage1PodConVar").GetValue(null));
+            bool oldVal = stage1pod.value;
+            stage1pod.SetBool(false);
+
+            var characterBody = senderMaster.Respawn(senderMaster.GetBody().footPosition, senderMaster.GetBody().transform.rotation, false);
+            if(characterBody)
+            {
+            }
         }
         #endregion
     }
 
     public static partial class Extensions
     {
+        public static void Write(this NetworkWriter writer, NetworkCharacterVariantIndex index)
+        {
+            writer.WritePackedUInt32(index.i);
+        }
+
+        public static NetworkCharacterVariantIndex ReadNetworkCharacterVariantIndex(this NetworkReader reader)
+        {
+            return new NetworkCharacterVariantIndex() { i = reader.ReadPackedUInt32() };
+        }
+
         public static void Write(this NetworkWriter writer, CharacterVariantIndex index)
         {
-            writer.WritePackedIndex32((int)index);
+            writer.Write((NetworkCharacterVariantIndex)index);
         }
 
         public static CharacterVariantIndex ReadCharacterVariantIndex(this NetworkReader reader)
         {
-            return (CharacterVariantIndex)reader.ReadPackedIndex32();
+            return (CharacterVariantIndex)reader.ReadNetworkCharacterVariantIndex();
         }
     }
 }

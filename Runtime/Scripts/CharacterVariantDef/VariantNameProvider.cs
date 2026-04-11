@@ -84,7 +84,7 @@ namespace VAPI
             return bodyName;
         }
     }
-    public interface IVariantNameProvider : IValidatable
+    public interface IVariantNameProvider : IValidatable, ICloneable
     {
         public string GetVariantName(string input);
     }
@@ -93,6 +93,14 @@ namespace VAPI
     public struct VariantNameFormatter : IVariantNameProvider
     {
         public string? nameToken;
+
+        public object Clone()
+        {
+            return new VariantNameFormatter
+            {
+                nameToken = new string(nameToken)
+            };
+        }
 
         public string GetVariantName(string input)
         {
@@ -112,6 +120,14 @@ namespace VAPI
     {
         public string? prefixToken;
 
+        public object Clone()
+        {
+            return new VariantNamePrefix
+            {
+                prefixToken = new string(prefixToken)
+            };
+        }
+
         public string GetVariantName(string input)
         {
             if(string.IsNullOrWhiteSpace(prefixToken))
@@ -127,6 +143,14 @@ namespace VAPI
     public struct VariantNameSuffix : IVariantNameProvider
     {
         public string? suffixToken;
+
+        public object Clone()
+        {
+            return new VariantNameSuffix
+            {
+                suffixToken = new string(suffixToken)
+            };
+        }
 
         public string GetVariantName(string input)
         {
@@ -144,6 +168,15 @@ namespace VAPI
     public struct VariantNameOverride : IVariantNameProvider
     {
         public string? overrideToken;
+
+        public object Clone()
+        {
+            return new VariantNameOverride
+            {
+                overrideToken = new string(overrideToken)
+            };
+        }
+
         public string GetVariantName(string input)
         {
             if(string.IsNullOrWhiteSpace(overrideToken))

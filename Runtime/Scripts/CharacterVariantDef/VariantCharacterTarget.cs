@@ -14,7 +14,7 @@ namespace VAPI
     /// Serializable class that represents a the "Target Character" for a CharacterVariantDef
     /// </summary>
     [Serializable]
-    public class VariantCharacterTarget
+    public sealed class VariantCharacterTarget : ICloneable
     {
         public VariantCharacterTarget(string key, bool isBody)
         {
@@ -52,7 +52,9 @@ namespace VAPI
             }
         }
         public VariantCharacterTarget() { }
+        [AddressableComponentRequirement(typeof(CharacterBody), searchInChildren = false)]
         public AddressReferencedCharacterBody characterBodyRef = new AddressReferencedCharacterBody();
+        [AddressableComponentRequirement(typeof(CharacterMaster), searchInChildren = false)]
         public AddressReferencedCharacterMaster characterMasterRef = new AddressReferencedCharacterMaster();
 
         public Component? LoadCharacterComponent()
@@ -69,6 +71,14 @@ namespace VAPI
                 return t;
             }
             return null;
+        }
+
+        public object Clone()
+        {
+            VariantCharacterTarget clone = new VariantCharacterTarget();
+            clone.characterBodyRef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedCharacterBody, GameObject>(this.characterBodyRef);
+            clone.characterMasterRef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedCharacterMaster, GameObject>(this.characterMasterRef);
+            return clone;
         }
     }
 }

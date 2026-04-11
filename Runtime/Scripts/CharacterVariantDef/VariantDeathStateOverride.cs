@@ -5,7 +5,7 @@ using System;
 namespace VAPI
 {
     [Serializable]
-    public sealed class VariantDeathStateOverride
+    public struct VariantDeathStateOverride : ICloneable
     {
         private struct DisposableVariantDeathStateOverride : IDisposable
         {
@@ -43,6 +43,14 @@ namespace VAPI
             return result;
         }
 
+        public object Clone()
+        {
+            return new VariantDeathStateOverride
+            {
+                deathStateOverride = new SerializableEntityStateType(deathStateOverride.typeName)
+            };
+        }
+
         public VariantDeathStateOverride(SerializableEntityStateType stateType)
         {
             deathStateOverride = stateType;
@@ -55,6 +63,5 @@ namespace VAPI
         {
             deathStateOverride = new SerializableEntityStateType(stateType);
         }
-        public VariantDeathStateOverride() { }
     }
 }

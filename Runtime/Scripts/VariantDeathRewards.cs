@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace VAPI
 {
-    public class VariantDeathRewards : MonoBehaviour, IOnKilledServerReceiver
+    public sealed class VariantDeathRewards : MonoBehaviour, IOnKilledServerReceiver
     {
         private sealed class ChanceWithCount
         {

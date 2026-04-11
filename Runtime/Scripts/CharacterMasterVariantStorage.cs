@@ -8,7 +8,7 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     //Stores the CharacterVariantDefs for this master, the CharacterBodyVariantController will attempt to link itself to this, if the link is successful, then this is the single source of truth for which variants to use
-    public class CharacterMasterVariantStorage : NetworkBehaviour
+    public sealed class CharacterMasterVariantStorage : NetworkBehaviour
     {
         public CharacterMaster characterMaster { get; private set; }
         public bool doNotRollForVariants
@@ -31,6 +31,7 @@ namespace VAPI
         public ReadOnlyArray<CharacterVariantDef> characterVariantDefs => _characterVariants;
         private CharacterVariantDef[] _characterVariants = Array.Empty<CharacterVariantDef>();
 
+        private BodyIndex _currentBodyIndex;
         private SyncListCharacterVariantIndex _characterVariantIndicesSync = new SyncListCharacterVariantIndex();
 
         private void Awake()
@@ -71,7 +72,7 @@ namespace VAPI
             _characterVariants = new CharacterVariantDef[_characterVariantIndicesSync.Count];
             for(int i = 0; i < _characterVariantIndicesSync.Count; i++)
             {
-                _characterVariants[i] = CharacterVariantManager.GetCharacterVariantDef(_characterVariantIndicesSync[i])!;
+                _characterVariants[i] = CharacterVariantCatalog.GetCharacterVariantDef(_characterVariantIndicesSync[i])!;
             }
 
             //Thirdy, apply master modifications
@@ -126,6 +127,12 @@ namespace VAPI
         {
             //Dispose Tier Data, modifiers, item inventory, equipment and components.
             _disposableCollectionHelper.Dispose();
+        }
+
+        public void ClearVariantDefsForCharacterServer()
+        {
+            _characterVariantIndicesSync.Clear();
+            OnSyncListDirty();
         }
     }
 }

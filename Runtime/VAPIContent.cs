@@ -11,11 +11,11 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     //TODO: create VariantPackProvider
-    public class VAPIContent : IContentPackProvider//, IVariantPackProvider
+    public sealed class VAPIContent : IContentPackProvider//, IVariantPackProvider
     {
         public static class Artifacts
         {
-            public static ArtifactDef? Variance;
+            public static readonly LazyLoader<ArtifactDef> Variance = new LazyLoader<ArtifactDef>(nameof(Variance));
         }
 
         public static class VariantTierDefs
@@ -28,30 +28,31 @@ namespace VAPI
 
         public static class Buffs
         {
-            public static BuffDef? Variant;
-            public static BuffDef? LinearArmorBonus;
+            public static LazyLoader<BuffDef> Variant = new LazyLoader<BuffDef>("bd" + nameof(Variant));
+            public static LazyLoader<BuffDef> LinearArmorBonus = new LazyLoader<BuffDef>("bd" + nameof(LinearArmorBonus));
         }
 
         public static class Items
-        {
-            public static ItemDef? ExtraPrimary;
-            public static ItemDef? ExtraSecondary;
-            public static ItemDef? ExtraSpecial;
-            public static ItemDef? ExtraUtility;
-            public static ItemDef? GlobalCDR;
-            public static ItemDef? GreenHealthbar;
-            public static ItemDef? Plus1Crit;
-            public static ItemDef? PrimaryCDR;
-            public static ItemDef? SecondaryCDR;
-            public static ItemDef? SpecialCDR;
-            public static ItemDef? UtilityCDR;
+        { 
+            public static LazyLoader<ItemDef> GreenHealthbar = new LazyLoader<ItemDef>(nameof(GreenHealthbar));
+            public static LazyLoader<ItemDef> Plus1Crit = new LazyLoader<ItemDef>(nameof(Plus1Crit));
+            public static LazyLoader<ItemDef> ExtraPrimary = new LazyLoader<ItemDef>(nameof(ExtraPrimary));
+            public static LazyLoader<ItemDef> ExtraSecondary = new LazyLoader<ItemDef>(nameof(ExtraSecondary));
+            public static LazyLoader<ItemDef> ExtraUtility = new LazyLoader<ItemDef>(nameof(ExtraUtility));
+            public static LazyLoader<ItemDef> ExtraSpecial = new LazyLoader<ItemDef>(nameof(ExtraSpecial));
+            public static LazyLoader<ItemDef> GlobalCDR = new LazyLoader<ItemDef>(nameof(GlobalCDR));
+            public static LazyLoader<ItemDef> PrimaryCDR = new LazyLoader<ItemDef>(nameof(PrimaryCDR));
+            public static LazyLoader<ItemDef> SecondaryCDR = new LazyLoader<ItemDef>(nameof(SecondaryCDR));
+            public static LazyLoader<ItemDef> UtilityCDR = new LazyLoader<ItemDef>(nameof(UtilityCDR));
+            public static LazyLoader<ItemDef> SpecialCDR = new LazyLoader<ItemDef>(nameof(SpecialCDR));
         }
 
         public string identifier => VAPIMain.GUID;
 
         public static ReadOnlyContentPack readOnlyContentPack => new ReadOnlyContentPack(contentPack);
-
+        public static ReadOnlyVariantPack readOnlyVariantPack => variantPack != null ? new ReadOnlyVariantPack(variantPack) : default;
         private static ContentPack contentPack { get; } = new ContentPack();
+        private static VariantPack? variantPack { get; set; }
 
         public IEnumerator LoadStaticContentAsync(LoadStaticContentAsyncArgs args)
         {

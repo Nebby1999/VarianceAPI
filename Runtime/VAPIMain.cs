@@ -13,7 +13,7 @@ namespace VAPI
     [BepInDependency(DebugToolkit.DebugToolkit.GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(GUID, MOD_NAME, VERSION)]
-    public class VAPIMain : BaseUnityPlugin
+    public sealed class VAPIMain : BaseUnityPlugin
     {
         public const string GUID = "com.Nebby.VAPI";
         public const string MOD_NAME = "VarianceAPI";
