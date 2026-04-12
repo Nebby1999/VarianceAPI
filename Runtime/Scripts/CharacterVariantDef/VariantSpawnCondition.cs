@@ -1,5 +1,6 @@
 #nullable enable
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using HG;
@@ -12,8 +13,34 @@ using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Interface for implementing a custom Spawn Condition for a Variant.
+    /// <br></br>
+    /// If <see cref="IsAvailable"/> resolves to true, then the Variant can spawn. This is called each time the Stage changes in the run.
+    /// <br></br>
+    /// Must support cloning via the <see cref="ICloneable"/> implementation
+    /// <para></para>
+    /// <b>Built in spawn conditions:</b>
+    /// <list type="bullet">
+    /// <item><see cref="BasicSpawnCondition"/>: The Reimplementation of VAPI2.0's VariantSpawnCondition. Implements conditions via minimum stage completions, Stage requirements, unlockable and expansion requirements.</item>
+    /// </list>
+    /// </summary>
     public interface IVariantSpawnCondition : IValidatable, ICloneable
     {
+        /// <summary>
+        /// The required unlockable for this variant, this can return null and it's utilized to determine wether a Variant requires an UnlockableDef to be accessible from the In-Lobby RuleBook
+        /// </summary>
+        public UnlockableDef requiredUnlock { get; }
+
+        /// <summary>
+        /// The required expansion defs for this variant, this can return null and it's utilized to determine wether a Variant requires the Expansions in this Enumerable to be accessible from the In-Lobby RuleBook
+        /// </summary>
+        public IEnumerable<ExpansionDef> requiredExpansionDefs { get; }
+
+        /// <summary>
+        /// Wether this variant is Available or not
+        /// </summary>
+        /// <returns>True if the variant is available, otherwise false.</returns>
         public bool IsAvailable();
     }
 
@@ -22,6 +49,23 @@ namespace VAPI
     {
         public int minimumStageCompletions = -1;
         public DirectorAPI.Stage stages { get => _stages; set => _stages = value; }
+
+        UnlockableDef IVariantSpawnCondition.requiredUnlock => requiredUnlock.LoadAssetNow();
+        IEnumerable<ExpansionDef> IVariantSpawnCondition.requiredExpansionDefs
+        {
+            get
+            {
+                List<ExpansionDef> expansionDefs = new List<ExpansionDef>();
+                foreach(var expansion in requiredExpansionDefs)
+                {
+                    var exp = expansion.LoadAssetNow();
+                    if(exp)
+                        expansionDefs.Add(exp);
+                }
+                return expansionDefs;
+            }
+        }
+
         [SerializeField] private DirectorAPI.StageSerde _stages;
         public string[] customStages = Array.Empty<string>();
 

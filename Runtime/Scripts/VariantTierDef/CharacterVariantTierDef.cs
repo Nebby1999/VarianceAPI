@@ -1,4 +1,6 @@
 #nullable enable
+using BepInEx;
+using BepInEx.Configuration;
 using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
@@ -89,6 +91,17 @@ namespace VAPI
         public bool canDropBoss => bossItemRewardChance > 0;
         [Min(0)]
         public float bossItemRewardChance;
+        internal CharacterVariantTierIndex characterVariantTierIndex;
+
+        /// <summary>
+        /// The config file used to configure this variant tier. Set by the VariantPackManager
+        /// </summary>
+        public ConfigFile? associatedConfigFile { get; internal set; }
+
+        /// <summary>
+        /// The mod that added this Variant Tier. Set by the VariantPackManager.
+        /// </summary>
+        public BepInPlugin? ownerPlugin { get; internal set; }
 
         public IDisposable? ModifyBody(CharacterBody characterBody)
         {

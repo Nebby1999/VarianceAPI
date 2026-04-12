@@ -1,5 +1,6 @@
 #nullable enable
 using HG;
+using MSU.Config;
 using R2API.Utils;
 using RoR2;
 using RoR2.CharacterAI;
@@ -50,6 +51,7 @@ namespace VAPI
 
     public static class CharacterVariantCatalog
     {
+        public static ReadOnlyArray<CharacterVariantDef> registeredCharacterVariantDefs => _characterVariantDefs;
         public static int characterVariantCount => _characterVariantDefs?.Length ?? -1;
         private static CharacterVariantDef[]? _characterVariantDefs;
         private static Dictionary<string, CharacterVariantIndex> _characterVariantNameToIndex = new Dictionary<string, CharacterVariantIndex>(StringComparer.OrdinalIgnoreCase);
@@ -96,48 +98,78 @@ namespace VAPI
             return null;
         }
 
-        [SystemInitializer(typeof(BodyCatalog), typeof(MasterCatalog))]
+        [SystemInitializer(typeof(BodyCatalog), typeof(MasterCatalog), typeof(VariantPackManager))]
         private static void Initialize()
         {
-            CharacterVariantDef[] inputVariantDefs = Array.Empty<CharacterVariantDef>();
+            _characterVariantNameToIndex.Clear();
 
-            //The actual value for the VariantIndex
-            int variantIndex = 0;
+            _characterVariantDefs = RegisterVariantDefs(VariantPackManager.characterVariantDefs);
+
+            Stage.onStageStartGlobal += FilterCharacterVariantProviders;
+
+            VAPILog.Info($"CharacterVariantCatalog Initialized.");
+            catalogAvailability.MakeAvailable();
+        }
+
+        private static CharacterVariantDef[]? RegisterVariantDefs(ReadOnlyArray<CharacterVariantDef> readOnlyVariantDefs)
+        {
+            void AddToCatalog(CharacterVariantDef variantDef, CharacterVariantIndex index)
+            {
+                //Only configure variants with providers.
+                if(variantDef.associatedConfigFile != null && variantDef.hasProvider)
+                {
+                    ConfigureVariant(variantDef);
+                }
+                variantDef.characterVariantIndex = index;
+                _characterVariantNameToIndex.Add(variantDef.cachedName, variantDef.characterVariantIndex);
+            }
+            CharacterVariantDef[] sortedVariants = new CharacterVariantDef[readOnlyVariantDefs.Length];
+            readOnlyVariantDefs.CopyTo(sortedVariants, 0);
+
+            Array.Sort(sortedVariants, (a, b) => string.CompareOrdinal(a.cachedName, b.cachedName));
+
             //Dictionaries to create the VariantProviders
             Dictionary<BodyIndex, List<CharacterVariantDef>> bodyToVariants = new Dictionary<BodyIndex, List<CharacterVariantDef>>();
             Dictionary<MasterCatalog.MasterIndex, List<CharacterVariantDef>> masterToVariants = new Dictionary<MasterCatalog.MasterIndex, List<CharacterVariantDef>>();
-            //VariantDefs that passes the filtering, IE: TargetCharacter has valid component value.
-            List<CharacterVariantDef> validVariantDefs = new List<CharacterVariantDef>();
 
             //Helpers for filling the bodyToVariants and masterToVariants
             List<BodyIndex> bodyIndicesAssociatedWithVariant = new List<BodyIndex>();
             List<MasterCatalog.MasterIndex> masterIndicesAssociatedWithVariant = new List<MasterCatalog.MasterIndex>();
 
-            Array.Sort(inputVariantDefs, (a, b) => string.CompareOrdinal(a.cachedName, b.cachedName));
-            
-            foreach(var variantDef in inputVariantDefs)
+            //A list of variants without providers, these are caused by invalid TargetCharacters.
+            List<CharacterVariantDef> providerlessVariants = new List<CharacterVariantDef>();
+
+            CharacterVariantIndex index = CharacterVariantIndex.none;
+            for(int i = 0; i < sortedVariants.Length; i++)
             {
+                index = (CharacterVariantIndex)i;
+                CharacterVariantDef variantDef = sortedVariants[i];
+
                 bodyIndicesAssociatedWithVariant.Clear();
                 masterIndicesAssociatedWithVariant.Clear();
 
-                Component? characterComponent = variantDef.targetCharacter.LoadCharacterComponent();
-
-                if(characterComponent == null)
+                if(!variantDef.targetCharacter.AnyAddressReferencedAssetValid())
                 {
+                    providerlessVariants.Add(variantDef);
+                    AddToCatalog(variantDef, index);
                     continue;
                 }
 
-                //If the component is a body, we will add the VariantDef to ANY master that uses this body prefab
+                if(!variantDef.targetCharacter.TryLoadCharacterComponent(out Component? characterComponent))
+                {
+                    providerlessVariants.Add(variantDef);
+                    AddToCatalog(variantDef, index);
+                    continue;
+                }
+
                 if(characterComponent is CharacterBody body)
                 {
                     AddAssociatedMasterIndices(body, masterIndicesAssociatedWithVariant);
                     ListUtils.AddIfUnique(bodyIndicesAssociatedWithVariant, body.bodyIndex);
-                    bodyIndicesAssociatedWithVariant.Add(body.bodyIndex);
                 }
-                //If the component is a master, we will add the VariantDef to EXCLUSIVELY said master and it's body.
                 else if(characterComponent is CharacterMaster master)
                 {
-                    masterIndicesAssociatedWithVariant.Add(master.masterIndex);
+                    ListUtils.AddIfUnique(masterIndicesAssociatedWithVariant, master.masterIndex);
                     if(master.bodyPrefab && master.bodyPrefab.TryGetComponent<CharacterBody>(out var masterBody))
                     {
                         ListUtils.AddIfUnique(bodyIndicesAssociatedWithVariant, masterBody.bodyIndex);
@@ -145,66 +177,73 @@ namespace VAPI
                 }
                 else
                 {
+                    providerlessVariants.Add(variantDef);
+                    AddToCatalog(variantDef, index);
                     continue;
                 }
 
-                //Add the variantDef to the list associated with the body indices
-                foreach(var bodyIndexAssociatedWithVariant in bodyIndicesAssociatedWithVariant)
+                foreach (var bodyIndexAssociatedWithVariant in bodyIndicesAssociatedWithVariant)
                 {
                     bodyToVariants.TryAdd(bodyIndexAssociatedWithVariant, new List<CharacterVariantDef>());
                     bodyToVariants[bodyIndexAssociatedWithVariant].Add(variantDef);
                 }
 
-                //Add the variantDef to the list associated with master indices
                 foreach(var masterIndexAssociatedWithVariant in masterIndicesAssociatedWithVariant)
                 {
                     masterToVariants.TryAdd(masterIndexAssociatedWithVariant, new List<CharacterVariantDef>());
                     masterToVariants[masterIndexAssociatedWithVariant].Add(variantDef);
                 }
 
-                //Assign index, add to dictionary, add to list, increment indexer
-                variantDef.characterVariantIndex = (CharacterVariantIndex)variantIndex;
-                _characterVariantNameToIndex.Add(variantDef.cachedName, variantDef.characterVariantIndex);
-                validVariantDefs.Add(variantDef);
-                variantIndex++;
+                variantDef.hasProvider = true;
+                AddToCatalog(variantDef, index);
             }
 
             //Finalize initialization
-            _characterVariantDefs = validVariantDefs.ToArray();
             List<CharacterVariantProvider> characterVariantProviders = new List<CharacterVariantProvider>();
             foreach (var (bodyIndex, variantDefs) in bodyToVariants)
             {
                 characterVariantProviders.Add(new CharacterVariantProvider(variantDefs.ToArray(), bodyIndex, null));
 
                 CharacterBody characterBody = BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
-                characterBody.gameObject.AddComponent<CharacterBodyVariantController>();
+                characterBody.gameObject.EnsureComponent<CharacterBodyVariantController>();
 
-                if(VAPIConfig._enableRewards)
+                if (VAPIConfig._enableRewards)
                 {
-                    characterBody.gameObject.AddComponent<VariantDeathRewards>();
+                    characterBody.gameObject.EnsureComponent<VariantDeathRewards>();
                 }
             }
 
-            foreach(var (masterIndex, variantDefs) in masterToVariants)
+            foreach (var (masterIndex, variantDefs) in masterToVariants)
             {
                 characterVariantProviders.Add(new CharacterVariantProvider(variantDefs.ToArray(), null, masterIndex));
 
                 CharacterMaster characterMaster = MasterCatalog.GetMasterPrefab(masterIndex).GetComponent<CharacterMaster>();
-                characterMaster.gameObject.AddComponent<CharacterMasterVariantStorage>();
+                characterMaster.gameObject.EnsureComponent<CharacterMasterVariantStorage>();
 
-                if(characterMaster.bodyPrefab)
+                if (characterMaster.bodyPrefab)
                 {
                     //Ensure the component, we don't want to call Add because there's a chance that the previous foreach added the component.
                     characterMaster.bodyPrefab.EnsureComponent<CharacterBodyVariantController>();
-                    if(VAPIConfig._enableRewards)
+                    if (VAPIConfig._enableRewards)
                     {
                         characterMaster.bodyPrefab.EnsureComponent<VariantDeathRewards>();
                     }
                 }
             }
 
-            Stage.onStageStartGlobal += FilterCharacterVariantProviders;
-            catalogAvailability.MakeAvailable();
+            _characterVariantProviders = characterVariantProviders.ToArray();
+            if(providerlessVariants.Count > 0)
+            {
+                StringBuilder sb = HG.StringBuilderPool.RentStringBuilder();
+                sb.AppendLine($"The following variants did not resolve a valid CharacterMaster or CharacterBody, and as a result, have no CharacterVariantProviders. They're still added to the catalog but they won't be spawned by the built in systems. If they're meant to be for a vanilla character, consider validating the AddressReferencedCharacterBody/Master you're using. If it's for a modded character, consider adding the VariantDef only if the mod is present, and checking that the catalog key for AddressReferencedCharacterBody/Master is typed correctly:");
+                foreach(var variant in providerlessVariants)
+                {
+                    sb.AppendLine(variant.ToString());
+                }
+                VAPILog.Message(sb.ToString());
+                HG.StringBuilderPool.ReturnStringBuilder(sb);
+            }
+            return sortedVariants;
         }
 
         private static void AddAssociatedMasterIndices(CharacterBody body, in List<MasterCatalog.MasterIndex> output)
@@ -224,6 +263,51 @@ namespace VAPI
             for (int i = 0; i < _characterVariantProviders!.Length; i++)
             {
                 _characterVariantProviders[i].FilterVariants();
+            }
+        }
+
+        private static void ConfigureVariant(CharacterVariantDef variantDef)
+        {
+            try
+            {
+                variantDef.spawnRate = new ConfiguredFloat(variantDef.spawnRate)
+                {
+                    //Only variants with providers are configured, and to be in a provider, you need to have valid targetCharacter reference.
+                    section = $"{variantDef.targetCharacter.LoadCharacterComponent()!.name} Variants",
+                    key = $"{variantDef.cachedName} Spawn Rate",
+                    description = $"Chance for the {variantDef.cachedName} variant to spawn. (Percentage, 0-100)",
+                    configFile = variantDef.associatedConfigFile,
+                    modGUID = variantDef.ownerPlugin!.GUID,
+                    modName = variantDef.ownerPlugin!.Name,
+                    sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
+                    sliderConfig = new RiskOfOptions.OptionConfigs.SliderConfig
+                    {
+                        min = 0,
+                        max = 100
+                    }
+                }
+                .WithConfigChange(f =>
+                {
+                    variantDef.spawnRate = f;
+                    //VAPIRuleBook.OnVariantDefSpawnRateChanged(variantDef);
+                }).DoConfigure();
+
+                variantDef.isUnique = new ConfiguredBool(variantDef.isUnique)
+                {
+                    section = $"{variantDef.targetCharacter.LoadCharacterComponent()!.name} Variants",
+                    key = $"{variantDef.cachedName} Uniqueness",
+                    description = $"Wether or not {variantDef.cachedName} is Unique. Unique variants cannot merge with other ones.",
+                    configFile = variantDef.associatedConfigFile,
+                    modGUID = variantDef.ownerPlugin!.GUID,
+                    modName = variantDef.ownerPlugin!.Name,
+                }.WithConfigChange(b =>
+                {
+                    variantDef.isUnique = b;
+                }).DoConfigure();
+            }
+            catch(Exception e)
+            {
+                VAPILog.Error($"Error Configuring Variant {variantDef}: {e}");
             }
         }
 

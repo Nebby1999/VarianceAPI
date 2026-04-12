@@ -1,5 +1,3 @@
-//TODO: is this needed?
-//Yes, cuz you can disable variants by disabling the expansion def.
 #nullable enable
 using MSU.Config;
 using RiskOfOptions.OptionConfigs;

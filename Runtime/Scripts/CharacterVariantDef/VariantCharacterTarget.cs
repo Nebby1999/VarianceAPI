@@ -21,6 +21,15 @@ namespace VAPI
         [AddressableComponentRequirement(typeof(CharacterMaster), searchInChildren = false)]
         public AddressReferencedCharacterMaster characterMasterRef = new AddressReferencedCharacterMaster();
 
+        public bool TryLoadCharacterComponent(out Component? characterComponent)
+        {
+            characterComponent = LoadComponent<CharacterBody>(characterBodyRef);
+            if (characterComponent)
+                return true;
+
+            characterComponent = LoadComponent<CharacterMaster>(characterMasterRef);
+            return characterComponent;
+        }
         public Component? LoadCharacterComponent()
         {
             Component? body = LoadComponent<CharacterBody>(characterBodyRef);

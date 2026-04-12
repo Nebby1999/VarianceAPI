@@ -2,6 +2,7 @@
 using BepInEx;
 using BepInEx.Configuration;
 using MSU.Config;
+using RiskOfOptions;
 using RiskOfOptions.OptionConfigs;
 using RoR2;
 using System.Collections;
@@ -32,6 +33,7 @@ namespace VAPI
         internal static ConfiguredFloat? _hiddenRealmsRollChance;
 
         private bool _initialized;
+
         internal IEnumerator InitializeAsync(BaseUnityPlugin bup)
         {
             if (_initialized)
@@ -43,11 +45,14 @@ namespace VAPI
             generalConfig = configFactory.CreateConfigFile(GENERAL, false);
             rewardsConfig = configFactory.CreateConfigFile(REWARDS, false);
 
-            //TODO: RiskOfOptions, requires VAPIAssets first
-            while(false)
+            var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texVAPIIcon");
+            while(!iconRequest.IsComplete)
             {
                 yield return null;
             }
+
+            ModSettingsManager.SetModIcon(iconRequest.asset!, bup.Info.Metadata.GUID, bup.Info.Metadata.Name);
+            ModSettingsManager.SetModDescription("General configuration for VarianceAPI.", bup.Info.Metadata.GUID, bup.Info.Metadata.Name);
 
             SetConfigs();
         }
@@ -70,7 +75,11 @@ namespace VAPI
                 configFile = generalConfig
             }.WithConfigChange(b =>
             {
-                //TODO: Implement rulebook change, remove or add infinite tower modifier if necessary, ALSO: ensure that the server has a final say wether this is shown or hidden regardless of the client's choice.
+                var ruleDef = VAPIRuleBook._varianceArtifactRuleDef;
+                ruleDef.FindChoice("On").excludeByDefault = !b;
+                ruleDef.FindChoice("Off").excludeByDefault = !b;
+
+                //TODO: remove or add infinite tower modifier if necessary.
 
                 if (PreGameController.instance && NetworkServer.active)
                     PreGameController.instance.RecalculateModifierAvailability();
@@ -100,9 +109,7 @@ namespace VAPI
                 configFile = generalConfig,
             }
             .WithConfigChange(b =>
-            {
-                //TODO: Reimplement the GupVariantHelper
-                
+            {   
                 if(b)
                 {
                     IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate -= GupVariantHelper.HandleDeathState;
@@ -134,7 +141,6 @@ namespace VAPI
                 }
             };
 
-            //TODO: config to force rewards to be temporary?
 
             _luckAffectsItemRewards = new ConfiguredBool(false)
             {
