@@ -169,10 +169,18 @@ namespace VAPI
             return result;
         }
 
+        #region Constructors
         public VariantComponentCollection(SerializableSystemType[] variantComponentTypes)
         {
             variantComponents = variantComponentTypes;
         }
+
+        public VariantComponentCollection(SerializableSystemType variantComponentType)
+        {
+            variantComponents = new SerializableSystemType[1] { variantComponentType };
+        }
+
         public VariantComponentCollection() { }
+        #endregion
     }
 }

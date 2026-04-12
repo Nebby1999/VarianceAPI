@@ -159,5 +159,31 @@ namespace VAPI
             result.equipmentInfo = (AddressableEquipmentInfo)equipmentInfo.Clone();
             return result;
         }
+
+        #region Constructors
+        public VariantInventoryDefinition(AddressableItemCountPair[] itemsToGrant, AddressableEquipmentInfo equipmentInfo)
+        {
+            this.equipmentInfo = equipmentInfo;
+            this.itemsToGrant = itemsToGrant;
+        }
+        public VariantInventoryDefinition(AddressableItemCountPair[] itemsToGrant)
+        {
+            this.itemsToGrant = itemsToGrant;
+        }
+        public VariantInventoryDefinition(AddressableItemCountPair singleItem, AddressableEquipmentInfo equipmentInfo)
+        {
+            this.equipmentInfo = equipmentInfo;
+            this.itemsToGrant = new AddressableItemCountPair[1] { singleItem };
+        }
+        public VariantInventoryDefinition(AddressableItemCountPair singleItem)
+        {
+            this.itemsToGrant = new AddressableItemCountPair[1] { singleItem };
+        }
+        public VariantInventoryDefinition(AddressableEquipmentInfo equipmentInfo)
+        {
+            this.equipmentInfo = equipmentInfo;
+        }
+        public VariantInventoryDefinition() { }
+        #endregion
     }
 }

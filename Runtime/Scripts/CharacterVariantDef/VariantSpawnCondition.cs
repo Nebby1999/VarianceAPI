@@ -20,46 +20,7 @@ namespace VAPI
     [Serializable]
     public class BasicSpawnCondition : IVariantSpawnCondition
     {
-        public BasicSpawnCondition(int? _minimumStageCompletions, DirectorAPI.Stage? _stages, string[]? _customStages, Either<AddressReferencedUnlockableDef, UnlockableDef>? _requiredUnlock, Either<AddressReferencedUnlockableDef, UnlockableDef>? _forbiddenUnlock, Either<AddressReferencedExpansionDef[], ExpansionDef[]>? _requiredExpansions)
-        {
-            if(_minimumStageCompletions.HasValue)
-            {
-                minimumStageCompletions = _minimumStageCompletions.Value;
-            }
-            if(_stages.HasValue)
-            {
-                stages = _stages.Value;
-            }
-            if(_customStages != null)
-            {
-                customStages = _customStages;
-            }
-            if(_requiredUnlock.HasValue)
-            {
-                requiredUnlock = _requiredUnlock.Value.a ?? _requiredUnlock.Value.b;
-            }
-            if(_forbiddenUnlock.HasValue)
-            {
-                forbiddenUnlock = _forbiddenUnlock.Value.a ?? _forbiddenUnlock.Value.b;
-            }
-            if(_requiredExpansions.HasValue)
-            {
-                if(_requiredExpansions.Value.isA)
-                {
-                    requiredExpansionDefs = _requiredExpansions.Value.a;
-                }
-                else if(_requiredExpansions.Value.isB)
-                {
-                    requiredExpansionDefs = new AddressReferencedExpansionDef[_requiredExpansions.Value.b.Length];
-                    for(int i = 0; i < requiredExpansionDefs.Length; i++)
-                    {
-                        requiredExpansionDefs[i] = _requiredExpansions.Value.b[i];
-                    }
-                }
-            }
-        }
-        public BasicSpawnCondition() { }
-        public int minimumStageCompletions;
+        public int minimumStageCompletions = -1;
         public DirectorAPI.Stage stages { get => _stages; set => _stages = value; }
         [SerializeField] private DirectorAPI.StageSerde _stages;
         public string[] customStages = Array.Empty<string>();
@@ -80,6 +41,7 @@ namespace VAPI
             bool expansionRequirementMet = AreExpansionRequirementsMet();
             bool unlockableRequirementMet = AreUnlockableRequirementsMet();
             bool allowedInStage = AreStageRequirementsMet();
+            bool stageCompletionRequirementReached = IsStageCountGreaterThanMinimum();
 
             return expansionRequirementMet && unlockableRequirementMet && allowedInStage;
         }
@@ -90,6 +52,11 @@ namespace VAPI
             {
                 customStages[i] = customStages[i].ToLowerInvariant();
             }
+        }
+
+        protected bool IsStageCountGreaterThanMinimum()
+        {
+            return Run.instance.stageClearCount >= minimumStageCompletions;
         }
 
         protected bool AreExpansionRequirementsMet()
@@ -135,6 +102,10 @@ namespace VAPI
                 return customStages.Length == 0 || customStages.Contains(stageInfo.CustomStageName.ToLowerInvariant());
             }
 
+            if(stages == 0L)
+            {
+                return true;
+            }
             return stages.HasFlag(stageInfo.stage);
         }
 
@@ -155,5 +126,69 @@ namespace VAPI
             }
             return result;
         }
+
+        #region Constructors
+        public BasicSpawnCondition(int? minimumStageCompletions, DirectorAPI.Stage? stages, string[]? customStages, Either<string, UnlockableDef>? forbiddenUnlockableKeyOrReference = null, Either<string, UnlockableDef>? requiredUnlockableKeyOrReference = null, Either<string, ExpansionDef>[]? requiredExpansionKeyOrReferences = null)
+        {
+            this.minimumStageCompletions = minimumStageCompletions ?? -1;
+            this.stages = stages ?? ((DirectorAPI.Stage)0L);
+            this.customStages = customStages ?? Array.Empty<string>();
+
+            if(forbiddenUnlockableKeyOrReference.HasValue)
+            {
+
+                if(forbiddenUnlockableKeyOrReference.Value.isA)
+                {
+                    forbiddenUnlock.Address = forbiddenUnlockableKeyOrReference.Value.a;
+                }
+                else if(forbiddenUnlockableKeyOrReference.Value.isB)
+                {
+                    forbiddenUnlock.Asset = forbiddenUnlockableKeyOrReference.Value.b;
+                }
+            }
+            else
+            {
+                forbiddenUnlock = new AddressReferencedUnlockableDef();
+            }
+
+            if (requiredUnlockableKeyOrReference.HasValue)
+            {
+                if (requiredUnlockableKeyOrReference.Value.isA)
+                {
+                    requiredUnlock.Address = requiredUnlockableKeyOrReference.Value.a;
+                }
+                else if (requiredUnlockableKeyOrReference.Value.isB)
+                {
+                    requiredUnlock.Asset = requiredUnlockableKeyOrReference.Value.b;
+                }
+            }
+            else
+            {
+                requiredUnlock = new AddressReferencedUnlockableDef();
+            }
+
+            if (requiredExpansionKeyOrReferences != null)
+            {
+
+                requiredExpansionDefs = new AddressReferencedExpansionDef[requiredExpansionKeyOrReferences.Length];
+                for (int i = 0; i < requiredExpansionDefs.Length; i++)
+                {
+                    if (requiredExpansionKeyOrReferences[i].isA)
+                    {
+                        requiredExpansionDefs[i] = new AddressReferencedExpansionDef(requiredExpansionKeyOrReferences[i].a);
+                    }
+                    else if (requiredExpansionKeyOrReferences[i].isB)
+                    {
+                        requiredExpansionDefs[i] = new AddressReferencedExpansionDef(requiredExpansionKeyOrReferences[i].b);
+                    }
+                }
+            }
+            else
+            {
+                requiredExpansionDefs = Array.Empty<AddressReferencedExpansionDef>();
+            }
+        }
+        public BasicSpawnCondition() { }
+        #endregion
     }
 }

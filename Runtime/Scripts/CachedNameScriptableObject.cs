@@ -36,5 +36,12 @@ namespace VAPI
         {
             _cachedName = base.name;
         }
+
+        public static T CreateInstance<T>(string name) where T : CachedNameScriptableObject
+        {
+            T instance = ScriptableObject.CreateInstance<T>();
+            instance.cachedName = name;
+            return instance;
+        }
     }
 }
