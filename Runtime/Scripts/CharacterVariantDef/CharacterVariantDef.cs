@@ -11,6 +11,8 @@ using R2API.AddressReferencedAssets;
 using RoR2;
 using MSU;
 using System.Collections.Generic;
+using BepInEx.Configuration;
+using BepInEx;
 #nullable enable
 
 namespace VAPI
@@ -51,6 +53,24 @@ namespace VAPI
         [Header("Other")]
         public VariantComponentCollection additionalVariantComponents = new VariantComponentCollection();
 
+        /// <summary>
+        /// The config file used to configure this variant. Set by the VariantPackManager
+        /// </summary>
+        public ConfigFile? associatedConfigFile { get; internal set; }
+
+
+        /// <summary>
+        /// The mod that added this Variant. Set by the VariantPackManager.
+        /// </summary>
+        public BepInPlugin? ownerPlugin { get; internal set; }
+
+        /// <summary>
+        /// True if this <see cref="CharacterVariantDef"/> has at least one <see cref="CharacterVariantProvider"/> in the <see cref="CharacterVariantCatalog"/>.
+        /// <br></br>
+        /// This is usually false when the variant is added to a VariantPack, but the <see cref="targetCharacter"/> resolves to an invalid CharacterBody or CharacterMaster component.
+        /// </summary>
+        public bool hasProvider { get; internal set; }
+
         protected override void OnValidate()
         {
             spawnCondition?.Validate();
@@ -67,7 +87,12 @@ namespace VAPI
             if (spawnRate == 0)
                 return false;
 
-            //TODO: Check for rulebook
+            if (!hasProvider)
+                return false;
+
+            //Unavailable if no run or if the rule is not enabled.
+            if (!Run.instance || !VAPIRuleBook.IsVariantRuleEnabled(this, Run.instance.ruleBook))
+                return false;
 
             return spawnCondition?.IsAvailable() ?? true;
         }

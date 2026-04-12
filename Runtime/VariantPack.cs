@@ -1,6 +1,7 @@
 #nullable enable
 using BepInEx;
 using BepInEx.Configuration;
+using RoR2;
 using RoR2.ContentManagement;
 using System;
 using UnityEngine;
@@ -9,7 +10,8 @@ namespace VAPI
 {
     public readonly struct ReadOnlyVariantPack
     {
-        private readonly VariantPack src;
+        //Access only to us.
+        internal readonly VariantPack src;
         public bool isValid => src != null;
         public BepInPlugin ownerPlugin => src.ownerPlugin;
         public ConfigFile? tierConfig => src.tierConfig;
@@ -19,6 +21,7 @@ namespace VAPI
         public string tooltipToken => src.tooltipToken;
         public string descriptionToken => src.descriptionToken;
         public Sprite packIcon => src.packIcon;
+        public RuleChoiceDef packEnabledChoice => src.packEnabledChoice;
 
         public ReadOnlyNamedAssetCollection<CharacterVariantTierDef> characterVariantTierDefs => src.characterVariantTierDefs;
         public ReadOnlyNamedAssetCollection<CharacterVariantDef> characterVariantDefs => src.characterVariantDefs;
@@ -49,6 +52,9 @@ namespace VAPI
 
         internal readonly bool _isHidden;
         public VariantPackIndex variantPackIndex => _packIndex;
+
+        public RuleChoiceDef packEnabledChoice { get; internal set; }
+
         internal VariantPackIndex _packIndex;
 
         /// <summary>

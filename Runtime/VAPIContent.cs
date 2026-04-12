@@ -3,6 +3,7 @@ using EntityStates;
 using MSU;
 using RoR2;
 using RoR2.ContentManagement;
+using RoR2.ExpansionManagement;
 using RoR2.Skills;
 using System.Collections;
 using UnityEngine;
@@ -10,9 +11,9 @@ using UnityEngine.Networking;
 
 namespace VAPI
 {
-    //TODO: create VariantPackProvider
-    public sealed class VAPIContent : IContentPackProvider//, IVariantPackProvider
+    public sealed class VAPIContent : IContentPackProvider
     {
+        public static readonly LazyLoader<ExpansionDef> VAPIExpansion = new LazyLoader<ExpansionDef>(nameof(VAPIExpansion));
         public static class Artifacts
         {
             public static readonly LazyLoader<ArtifactDef> Variance = new LazyLoader<ArtifactDef>(nameof(Variance));
@@ -56,15 +57,53 @@ namespace VAPI
 
         public IEnumerator LoadStaticContentAsync(LoadStaticContentAsyncArgs args)
         {
-            //Initialize assets
-            var enumerator = VAPIAssets.Initialize();
-            while(enumerator.MoveNext())
+            contentPack.identifier = identifier;
+
+            //Initialize Assets, then Config
+            IEnumerator initialization = InitializeAssetsAndConfig();
+            while(initialization.MoveNext())
             {
                 yield return null;
             }
 
-            HG.Coroutines.ParallelCoroutine parallelLoadCoroutine = new HG.Coroutines.ParallelCoroutine();
+            //Populate VAPI Content Pack
+            var packPopulation = PopulateContentPack();
+            while(packPopulation.MoveNext())
+            {
+                yield return null;
+            }
 
+            //Populate Base VariantPack
+            var variantPackPopulation = PopulateVariantPack();
+            while(variantPackPopulation.MoveNext())
+            {
+                yield return null;
+            }
+
+            VariantPackManager.AddVariantPack(variantPack);
+        }
+
+        private IEnumerator InitializeAssetsAndConfig()
+        {
+            var assetsInit = VAPIAssets.Initialize();
+            while(assetsInit.MoveNext())
+            {
+                yield return null;
+            }
+
+            var parallelProgressCoroutine = new HG.Coroutines.ParallelCoroutine();
+            parallelProgressCoroutine.Add(new VAPIConfig().InitializeAsync(VAPIMain.instance));
+            parallelProgressCoroutine.Add(LanguageFileLoader.AddLanguageFilesFromModAsync(VAPIMain.instance, "lang"));
+        
+            while(parallelProgressCoroutine.MoveNext())
+            {
+                yield return null;
+            }
+        }
+
+        private IEnumerator PopulateContentPack()
+        {
+            HG.Coroutines.ParallelCoroutine parallelLoadCoroutine = new HG.Coroutines.ParallelCoroutine();
             var artifactLoad = VAPIAssets.LoadAssetsAsync<ArtifactDef>();
             var buffLoad = VAPIAssets.LoadAssetsAsync<BuffDef>();
             var itemLoad = VAPIAssets.LoadAssetsAsync<ItemDef>();
@@ -77,7 +116,7 @@ namespace VAPI
             parallelLoadCoroutine.Add(prefabLoad);
             parallelLoadCoroutine.Add(skillDefLoad);
 
-            while(parallelLoadCoroutine.MoveNext())
+            while (parallelLoadCoroutine.MoveNext())
             {
                 yield return null;
             }
@@ -88,13 +127,29 @@ namespace VAPI
             contentPack.skillDefs.Add(skillDefLoad.assets);
             contentPack.entityStateTypes.AddSingle(typeof(GoToMain));
 
-            for(int i = 0; i < prefabLoad.assets!.Length; i++)
+            for (int i = 0; i < prefabLoad.assets!.Length; i++)
             {
                 if (prefabLoad.assets[i].TryGetComponent<NetworkIdentity>(out var netPrefab))
                 {
                     contentPack.networkedObjectPrefabs.AddSingle(prefabLoad.assets[i]);
                 }
             }
+        }
+
+        private IEnumerator PopulateVariantPack()
+        {
+            var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texVAPIIcon");
+            var variantTierDefRequest = VAPIAssets.LoadAssetsAsync<CharacterVariantTierDef>();
+
+            var parallelCoroutine = new HG.Coroutines.ParallelCoroutine();
+            parallelCoroutine.Add(iconRequest);
+            parallelCoroutine.Add(variantTierDefRequest);
+
+            while (parallelCoroutine.MoveNext())
+                yield return null;
+
+            variantPack = new VariantPack(identifier, iconRequest.asset!, VAPIConfig.rewardsConfig!, VAPIMain.instance!.Info.Metadata);
+            variantPack.characterVariantTierDefs.Add(variantTierDefRequest.assets!);
         }
 
         public IEnumerator GenerateContentPackAsync(GetContentPackAsyncArgs args)
@@ -116,7 +171,6 @@ namespace VAPI
 
         internal VAPIContent()
         {
-            //TODO: do language load
             ContentManager.collectContentPackProviders += AddSelf;
         }
     }
