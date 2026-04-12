@@ -33,7 +33,7 @@ namespace VAPI
 
         [Header("Master Related")]
         [SerializeReference, SubclassSelector]
-        public IVariantMasterModifier?[] masterModifiers = Array.Empty<IVariantMasterModifier?>();
+        public IVariantMasterModifier[] masterModifiers = Array.Empty<IVariantMasterModifier>();
         public VariantInventoryDefinition inventoryDefinition = new VariantInventoryDefinition();
 
         [Header("Body Related")]
@@ -45,7 +45,7 @@ namespace VAPI
         public IVariantStatModifier? statModifier = null;
         public VariantBuffStorage variantBuffs = new VariantBuffStorage();
         public CharacterVariantVisualModifier? visualModifier = null;
-        [Min(1)]
+        [Min(0 + float.Epsilon)]
         public float scaleMultiplier = 1f;
 
         [Header("Other")]

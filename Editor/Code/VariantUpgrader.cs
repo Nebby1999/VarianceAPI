@@ -376,15 +376,15 @@ namespace VAPI.Editor
             return new BasicStatModifier
             {
                 armorBonus = variantDef.armorBonus,
-                armorMultiplier = variantDef.armorMultiplier,
-                attackSpeedMultiplier = variantDef.attackSpeedMultiplier,
-                damageMultiplier = variantDef.damageMultiplier,
-                healthMultiplier = variantDef.healthMultiplier,
-                moveSpeedMultiplier = variantDef.moveSpeedMultiplier,
+                _armorMultiplier = variantDef.armorMultiplier,
+                _attackSpeedMultiplier = variantDef.attackSpeedMultiplier,
+                _damageMultiplier = variantDef.damageMultiplier,
+                _healthMultiplier = variantDef.healthMultiplier,
+                _moveSpeedMultiplier = variantDef.moveSpeedMultiplier,
                 regenBonus = variantDef.regenBonus,
-                regenMultiplier = variantDef.regenMultiplier,
+                _regenMultiplier = variantDef.regenMultiplier,
                 shieldBonus = variantDef.shieldBonus,
-                shieldMultiplier = variantDef.shieldMultiplier,
+                _shieldMultiplier = variantDef.shieldMultiplier,
             };
         }
 

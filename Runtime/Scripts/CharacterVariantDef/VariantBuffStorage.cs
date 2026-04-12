@@ -148,10 +148,18 @@ namespace VAPI
             return result;
         }
 
+        #region Constructors
         public VariantBuffStorage(VariantBuffInfo[] _buffInfos)
         {
             buffInfos = _buffInfos;
         }
+
+        public VariantBuffStorage(VariantBuffInfo buffInfo)
+        {
+            buffInfos = new VariantBuffInfo[1] { buffInfo };
+        }
+
         public VariantBuffStorage() { }
+        #endregion
     }
 }

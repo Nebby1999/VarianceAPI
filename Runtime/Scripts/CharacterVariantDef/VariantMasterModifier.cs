@@ -112,14 +112,18 @@ namespace VAPI
 
         public object Clone()
         {
-            return new UnstableAIModifier
-            {
-                minTargetHealthFractionOverride = minTargetHealthFractionOverride,
-                minUserHealthFractionOverride = minUserHealthFractionOverride,
-                maxTargetHealthFractionOverride = maxTargetHealthFractionOverride,
-                maxUserHealthFractionOverride = maxUserHealthFractionOverride
-            };
+            return new UnstableAIModifier(minTargetHealthFractionOverride, maxTargetHealthFractionOverride, minUserHealthFractionOverride, maxUserHealthFractionOverride);
         }
+
+        public UnstableAIModifier(float minTargetHealthFractionOverride = Mathf.NegativeInfinity, float maxTargetHealthFractionOverride = Mathf.Infinity, float minUserHealthFractionOverride = Mathf.NegativeInfinity, float maxUserHealthFractionOverride = Mathf.Infinity)
+        {
+            this.minTargetHealthFractionOverride = minTargetHealthFractionOverride;
+            this.maxTargetHealthFractionOverride = maxTargetHealthFractionOverride;
+            this.minUserHealthFractionOverride = minUserHealthFractionOverride;
+            this.maxUserHealthFractionOverride = maxUserHealthFractionOverride;
+        }
+
+        public UnstableAIModifier() { }
     }
 
     [Serializable]
@@ -234,14 +238,15 @@ namespace VAPI
             }
         }
         public float baseAIDampBonus = 0;
-        [Min(0 + float.Epsilon)]
-        public float baseAIDampMultiplier = 1;
+        public float baseAIDampMultiplier { get => _baseAIDampMultiplier; set => _baseAIDampMultiplier = Mathf.Max(0 + float.Epsilon, value); }
+        [SerializeField, Min(0 + float.Epsilon)]
+        private float _baseAIDampMultiplier = 1;
         public IDisposable? ModifyMaster(CharacterMaster master)
         {
             if (master.AiComponents == null)
                 return null;
 
-            var result = new BaseAIDampModifierResult(baseAIDampBonus, baseAIDampMultiplier);
+            var result = new BaseAIDampModifierResult(baseAIDampBonus, _baseAIDampMultiplier);
 
             foreach(BaseAI? baseAI in master.AiComponents)
             {
@@ -253,7 +258,7 @@ namespace VAPI
                 result.AddBaseAI(baseAI);
 
                 baseAI.aimVectorDampTime += baseAIDampBonus;
-                baseAI.aimVectorMaxSpeed *= baseAIDampMultiplier;
+                baseAI.aimVectorMaxSpeed *= _baseAIDampMultiplier;
             }
             return result;
         }
@@ -262,13 +267,18 @@ namespace VAPI
 
         public object Clone()
         {
-            return new BaseAIDampModifier(baseAIDampBonus, baseAIDampMultiplier);
+            return new BaseAIDampModifier(baseAIDampBonus, _baseAIDampMultiplier);
         }
 
         public BaseAIDampModifier(float _baseAIDampBonus, float _baseAIDampMultiplier)
         {
             baseAIDampBonus = _baseAIDampBonus;
-            baseAIDampMultiplier = Mathf.Max(0, _baseAIDampMultiplier);
+            baseAIDampMultiplier = _baseAIDampMultiplier;
+        }
+
+        public BaseAIDampModifier()
+        {
+
         }
     }
 }

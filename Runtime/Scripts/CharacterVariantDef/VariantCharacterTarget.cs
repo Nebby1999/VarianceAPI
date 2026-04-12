@@ -16,42 +16,6 @@ namespace VAPI
     [Serializable]
     public sealed class VariantCharacterTarget : ICloneable
     {
-        public VariantCharacterTarget(string key, bool isBody)
-        {
-            if(isBody)
-            {
-                characterBodyRef.Address = key;
-            }
-            else
-            {
-                characterMasterRef.Address = key;
-            }
-        }
-
-        public VariantCharacterTarget(Either<AddressReferencedCharacterMaster, AddressReferencedCharacterBody> masterOrBody)
-        {
-            if(masterOrBody.isA)
-            {
-                characterMasterRef.Asset = masterOrBody.a;
-            }
-            else if(masterOrBody.isB)
-            {
-                characterBodyRef = masterOrBody.b;
-            }
-        }
-
-        public VariantCharacterTarget(GameObject prefab, bool isBody)
-        {
-            if(isBody)
-            {
-                characterBodyRef.Asset = prefab;
-            }
-            else
-            {
-                characterMasterRef.Asset = prefab;
-            }
-        }
-        public VariantCharacterTarget() { }
         [AddressableComponentRequirement(typeof(CharacterBody), searchInChildren = false)]
         public AddressReferencedCharacterBody characterBodyRef = new AddressReferencedCharacterBody();
         [AddressableComponentRequirement(typeof(CharacterMaster), searchInChildren = false)]
@@ -73,6 +37,13 @@ namespace VAPI
             return null;
         }
 
+        public bool AnyAddressReferencedAssetValid()
+        {
+            bool characterBodyRefHasValidValue = characterBodyRef.AssetExists || !string.IsNullOrWhiteSpace(characterBodyRef.Address);
+            bool characterMasterRefHasValidValue = characterMasterRef.AssetExists || !string.IsNullOrWhiteSpace(characterMasterRef.Address);
+            return characterBodyRefHasValidValue || characterMasterRefHasValidValue;
+        }
+
         public object Clone()
         {
             VariantCharacterTarget clone = new VariantCharacterTarget();
@@ -80,5 +51,31 @@ namespace VAPI
             clone.characterMasterRef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedCharacterMaster, GameObject>(this.characterMasterRef);
             return clone;
         }
+
+        #region Constructors
+        public VariantCharacterTarget(GameObject directObjectReference, bool isForBody)
+        {
+            if(isForBody)
+            {
+                characterBodyRef.Asset = directObjectReference;
+            }
+            else
+            {
+                characterMasterRef.Asset = directObjectReference;
+            }
+        }
+        public VariantCharacterTarget(string keyOrCatalogEntry, bool isForBody)
+        {
+            if(isForBody)
+            {
+                characterBodyRef.Address = keyOrCatalogEntry;
+            }
+            else
+            {
+                characterMasterRef.Address = keyOrCatalogEntry;
+            }
+        }
+        public VariantCharacterTarget() { }
+        #endregion
     }
 }
