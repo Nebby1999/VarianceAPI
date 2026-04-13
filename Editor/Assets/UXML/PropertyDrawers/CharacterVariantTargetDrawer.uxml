@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement name="Root" style="flex-direction: row;">
+        <ui:TextField picking-mode="Ignore" name="Key" label="Target Character:" class="unity-base-field__aligned unity-base-field__inspector-field" style="flex-grow: 1;" />
+        <uie:EnumField value="CharacterBody" name="TargetType" style="min-width: 120px;" />
+    </ui:VisualElement>
+</ui:UXML>

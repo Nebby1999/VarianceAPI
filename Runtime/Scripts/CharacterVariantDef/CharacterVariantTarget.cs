@@ -6,7 +6,6 @@ using RoR2;
 using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using VAPI.Addressables;
 
 namespace VAPI
 {
@@ -14,26 +13,34 @@ namespace VAPI
     /// Serializable class that represents a the "Target Character" for a CharacterVariantDef
     /// </summary>
     [Serializable]
-    public sealed class VariantCharacterTarget : ICloneable
+    public sealed class CharacterVariantTarget : ICloneable
     {
-        [AddressableComponentRequirement(typeof(CharacterBody), searchInChildren = false)]
-        public AddressReferencedCharacterBody characterBodyRef = new AddressReferencedCharacterBody();
-        [AddressableComponentRequirement(typeof(CharacterMaster), searchInChildren = false)]
-        public AddressReferencedCharacterMaster characterMasterRef = new AddressReferencedCharacterMaster();
+        public enum TargetType
+        {
+            CharacterBody,
+            CharacterMaster
+        }
+
+        public string key = "";
+        public TargetType type;
 
         public bool TryLoadCharacterComponent(out Component? characterComponent)
         {
-            characterComponent = LoadComponent<CharacterBody>(characterBodyRef);
+            characterComponent = null;
+            return false;
+
+            /*characterComponent = LoadComponent<CharacterBody>(characterBodyRef);
             if (characterComponent)
                 return true;
 
             characterComponent = LoadComponent<CharacterMaster>(characterMasterRef);
-            return characterComponent;
+            return characterComponent;*/
         }
         public Component? LoadCharacterComponent()
         {
-            Component? body = LoadComponent<CharacterBody>(characterBodyRef);
-            return body ?? LoadComponent<CharacterMaster>(characterMasterRef);
+            return null;
+            /*Component? body = LoadComponent<CharacterBody>(characterBodyRef);
+            return body ?? LoadComponent<CharacterMaster>(characterMasterRef);*/
         }
 
         private T? LoadComponent<T>(AddressReferencedPrefab prefabReference) where T : Component
@@ -48,21 +55,23 @@ namespace VAPI
 
         public bool AnyAddressReferencedAssetValid()
         {
-            bool characterBodyRefHasValidValue = characterBodyRef.AssetExists || !string.IsNullOrWhiteSpace(characterBodyRef.Address);
+            return false;
+            /*bool characterBodyRefHasValidValue = characterBodyRef.AssetExists || !string.IsNullOrWhiteSpace(characterBodyRef.Address);
             bool characterMasterRefHasValidValue = characterMasterRef.AssetExists || !string.IsNullOrWhiteSpace(characterMasterRef.Address);
-            return characterBodyRefHasValidValue || characterMasterRefHasValidValue;
+            return characterBodyRefHasValidValue || characterMasterRefHasValidValue;*/
         }
 
         public object Clone()
         {
-            VariantCharacterTarget clone = new VariantCharacterTarget();
+            return null;
+            /*CharacterVariantTarget clone = new CharacterVariantTarget();
             clone.characterBodyRef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedCharacterBody, GameObject>(this.characterBodyRef);
             clone.characterMasterRef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedCharacterMaster, GameObject>(this.characterMasterRef);
-            return clone;
+            return clone;*/
         }
 
         #region Constructors
-        public VariantCharacterTarget(GameObject directObjectReference, bool isForBody)
+        /*public CharacterVariantTarget(GameObject directObjectReference, bool isForBody)
         {
             if(isForBody)
             {
@@ -73,7 +82,7 @@ namespace VAPI
                 characterMasterRef.Asset = directObjectReference;
             }
         }
-        public VariantCharacterTarget(string keyOrCatalogEntry, bool isForBody)
+        public CharacterVariantTarget(string keyOrCatalogEntry, bool isForBody)
         {
             if(isForBody)
             {
@@ -83,8 +92,8 @@ namespace VAPI
             {
                 characterMasterRef.Address = keyOrCatalogEntry;
             }
-        }
-        public VariantCharacterTarget() { }
+        }*/
+        public CharacterVariantTarget() { }
         #endregion
     }
 }
