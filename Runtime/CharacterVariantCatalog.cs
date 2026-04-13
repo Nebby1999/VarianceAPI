@@ -148,7 +148,7 @@ namespace VAPI
                 bodyIndicesAssociatedWithVariant.Clear();
                 masterIndicesAssociatedWithVariant.Clear();
 
-                if(!variantDef.targetCharacter.AnyAddressReferencedAssetValid())
+                if(!variantDef.targetCharacter.IsKeyValid())
                 {
                     providerlessVariants.Add(variantDef);
                     AddToCatalog(variantDef, index);

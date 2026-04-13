@@ -26,73 +26,49 @@ namespace VAPI
 
         public bool TryLoadCharacterComponent(out Component? characterComponent)
         {
-            characterComponent = null;
-            return false;
-
-            /*characterComponent = LoadComponent<CharacterBody>(characterBodyRef);
-            if (characterComponent)
-                return true;
-
-            characterComponent = LoadComponent<CharacterMaster>(characterMasterRef);
-            return characterComponent;*/
+            characterComponent = LoadCharacterComponent();
+            return characterComponent;
         }
+
         public Component? LoadCharacterComponent()
         {
-            return null;
-            /*Component? body = LoadComponent<CharacterBody>(characterBodyRef);
-            return body ?? LoadComponent<CharacterMaster>(characterMasterRef);*/
-        }
-
-        private T? LoadComponent<T>(AddressReferencedPrefab prefabReference) where T : Component
-        {
-            var prefab = prefabReference.LoadAssetNow();
-            if(prefab && prefab.TryGetComponent<T>(out var t))
+            switch(type)
             {
-                return t;
+                case TargetType.CharacterBody:
+                    {
+                        var bodyIndex = BodyCatalog.FindBodyIndex(key);
+                        return BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
+                    }
+                case TargetType.CharacterMaster:
+                    {
+                        var masterIndex = MasterCatalog.FindMasterIndex(key);
+                        GameObject masterPrefab = MasterCatalog.GetMasterPrefab(masterIndex);
+                        if(masterPrefab && masterPrefab.TryGetComponent<CharacterMaster>(out var master))
+                        {
+                            return master;
+                        }
+                        return null;
+                    }
             }
             return null;
         }
 
-        public bool AnyAddressReferencedAssetValid()
+        public bool IsKeyValid()
         {
-            return false;
-            /*bool characterBodyRefHasValidValue = characterBodyRef.AssetExists || !string.IsNullOrWhiteSpace(characterBodyRef.Address);
-            bool characterMasterRefHasValidValue = characterMasterRef.AssetExists || !string.IsNullOrWhiteSpace(characterMasterRef.Address);
-            return characterBodyRefHasValidValue || characterMasterRefHasValidValue;*/
+            return !string.IsNullOrWhiteSpace(key);
         }
 
         public object Clone()
         {
-            return null;
-            /*CharacterVariantTarget clone = new CharacterVariantTarget();
-            clone.characterBodyRef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedCharacterBody, GameObject>(this.characterBodyRef);
-            clone.characterMasterRef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedCharacterMaster, GameObject>(this.characterMasterRef);
-            return clone;*/
+            return new CharacterVariantTarget(key, type);
         }
 
         #region Constructors
-        /*public CharacterVariantTarget(GameObject directObjectReference, bool isForBody)
+        public CharacterVariantTarget(string catalogName, TargetType targetType)
         {
-            if(isForBody)
-            {
-                characterBodyRef.Asset = directObjectReference;
-            }
-            else
-            {
-                characterMasterRef.Asset = directObjectReference;
-            }
+            key = catalogName;
+            type = targetType;
         }
-        public CharacterVariantTarget(string keyOrCatalogEntry, bool isForBody)
-        {
-            if(isForBody)
-            {
-                characterBodyRef.Address = keyOrCatalogEntry;
-            }
-            else
-            {
-                characterMasterRef.Address = keyOrCatalogEntry;
-            }
-        }*/
         public CharacterVariantTarget() { }
         #endregion
     }
