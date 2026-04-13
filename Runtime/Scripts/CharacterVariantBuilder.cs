@@ -28,7 +28,7 @@ namespace VAPI
             }
         }
         private string _characterVariantDefName = "";
-        public VariantCharacterTarget characterTarget = new VariantCharacterTarget();
+        public CharacterVariantTarget characterTarget = new CharacterVariantTarget();
         public CharacterVariantTierDef? characterVariantTier = null;
         public bool isUnique = false;
         private float spawnRate
@@ -76,7 +76,7 @@ namespace VAPI
             return this;
         }
 
-        public CharacterVariantDefBuilder SetCharacterTarget(VariantCharacterTarget target)
+        public CharacterVariantDefBuilder SetCharacterTarget(CharacterVariantTarget target)
         {
             characterTarget = target;
             return this;
@@ -207,7 +207,7 @@ namespace VAPI
             {
                 CharacterVariantDef result = CharacterVariantDef.CreateInstance<CharacterVariantDef>(characterVariantDefName);
 
-                result.targetCharacter = (VariantCharacterTarget)characterTarget.Clone();
+                result.targetCharacter = (CharacterVariantTarget)characterTarget.Clone();
                 result.variantTier = characterVariantTier;
                 result.isUnique = isUnique;
                 result.spawnRate = spawnRate;

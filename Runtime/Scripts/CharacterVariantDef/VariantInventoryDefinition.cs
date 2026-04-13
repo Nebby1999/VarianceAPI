@@ -4,6 +4,7 @@ using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
 using System.Collections.Generic;
+using UnityEngine;
 using UnityEngine.Networking;
 
 namespace VAPI
@@ -12,6 +13,7 @@ namespace VAPI
     public struct AddressableItemCountPair : ICloneable
     {
         public AddressReferencedItemDef? itemDef;
+        [Min(0)]
         public int count;
 
         public bool TryGetItemCountPair(out ItemCountPair asItemCountPair)

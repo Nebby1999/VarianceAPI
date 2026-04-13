@@ -251,7 +251,7 @@ namespace VAPI
             return runRuleBook.IsChoiceActive(onChoice) && runRuleBook.IsChoiceActive(onChoice.tiedPackEnabledChoice);
         }
 
-        private static Sprite GetTargetCharacterSprite(VariantCharacterTarget target)
+        private static Sprite GetTargetCharacterSprite(CharacterVariantTarget target)
         {
             Sprite CreateFromIcon(Texture2D icon) => Sprite.Create(icon, new Rect(0f, 0f, icon.width, icon.height), new Vector2(0.5f, 0.5f), 100);
             Component c = target.LoadCharacterComponent();

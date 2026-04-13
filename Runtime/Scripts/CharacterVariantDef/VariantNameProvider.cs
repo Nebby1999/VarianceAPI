@@ -92,24 +92,24 @@ namespace VAPI
     [Serializable]
     public struct VariantNameFormatter : IVariantNameProvider
     {
-        public string? nameToken;
+        public string? formatToken;
 
         public object Clone()
         {
             return new VariantNameFormatter
             {
-                nameToken = new string(nameToken)
+                formatToken = new string(formatToken)
             };
         }
 
         public string GetVariantName(string input)
         {
-            if(string.IsNullOrWhiteSpace(nameToken))
+            if(string.IsNullOrWhiteSpace(formatToken))
             {
                 return input;
             }
 
-            return Language.GetStringFormatted(nameToken, input);
+            return Language.GetStringFormatted(formatToken, input);
         }
 
         public void Validate() { }

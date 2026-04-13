@@ -22,7 +22,7 @@ namespace VAPI
     {
         public CharacterVariantIndex characterVariantIndex { get; internal set; }
         [Header("General Settings")]
-        public VariantCharacterTarget targetCharacter = new VariantCharacterTarget();
+        public CharacterVariantTarget targetCharacter = new CharacterVariantTarget();
         public CharacterVariantTierDef? variantTier = null;
         public bool isUnique;
         [Range(0, 100)]
@@ -101,7 +101,7 @@ namespace VAPI
         {
             CharacterVariantDef variantDef = CreateInstance<CharacterVariantDef>();
             variantDef.cachedName = newName;
-            variantDef.targetCharacter = (VariantCharacterTarget)other.targetCharacter.Clone();
+            variantDef.targetCharacter = (CharacterVariantTarget)other.targetCharacter.Clone();
             variantDef.variantTier = other.variantTier;
             variantDef.isUnique = other.isUnique;
             variantDef.spawnRate = other.spawnRate;
