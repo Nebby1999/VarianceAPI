@@ -249,7 +249,7 @@ namespace VAPI
             if(string.IsNullOrWhiteSpace(characterVariantDefName))
                 throw new CharacterVariantDefBuilderException("characterVariantDefName may not be null, empty or whitespace");
 
-            if (!characterTarget.AnyAddressReferencedAssetValid())
+            if (!characterTarget.IsKeyValid())
                 throw new CharacterVariantDefBuilderException("The characterTarget needs to have a valid reference to a Body or a Master. These may be an Address, Prefab Name for Catalog Querying, or Direct Reference.");
 
             if(!float.IsNormal(spawnRate))

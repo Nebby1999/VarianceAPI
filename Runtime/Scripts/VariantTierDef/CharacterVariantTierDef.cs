@@ -71,9 +71,9 @@ namespace VAPI
         public float bonusArmor;
 
         [Header("Reward")]
-        [Min(0 + float.Epsilon)]
+        [Min(0)]
         public float experienceRewardCoefficient;
-        [Min(0 + float.Epsilon)]
+        [Min(0)]
         public float goldRewardCoefficient;
 
         public bool canDropCommon => commonItemRewardChance > 0;
