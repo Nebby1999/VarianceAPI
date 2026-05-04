@@ -230,8 +230,7 @@ namespace VAPI
         }
         public static CharacterVariantTierDef CreateInstance(CreateInstanceArgs args)
         {
-            CharacterVariantTierDef tierDef = CreateInstance<CharacterVariantTierDef>();
-            tierDef.cachedName = args.name;
+            CharacterVariantTierDef tierDef = CreateInstance<CharacterVariantTierDef>(args.name);
             tierDef.announceArrivalInChat = args.announceArrivalInChat ?? false;
             tierDef.tierItems = args.tierItems?.ToArray() ?? tierDef.tierItems;
             tierDef.tierBuffDef = args.tierBuffDef ?? tierDef.tierBuffDef;
