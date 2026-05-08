@@ -7,14 +7,28 @@ using VAPI.Legacy;
 using System;
 using System.Linq.Expressions;
 using UnityEngine;
+using HG;
+using RoR2;
+using UnityEngine.AddressableAssets;
+using RoR2.Modding;
 
 namespace VAPI.Editor.Windows
 {
-    public class VariantPackScriptableObjectMigrationWizard : EditorWizardWindow
+    public class VariantPackScriptableObjectMigrationWizard : EditorWizardWindow, IProgress<float>
     {
         [MenuItem("Tools/VAPI/VariantPack ScriptableObject Migration Wizard")]
         public static void Open() => GetWindow<VariantPackScriptableObjectMigrationWizard>();
 
+        [MenuItem("test/test")]
+        public static void Test()
+        {
+            new AddressablesPathDictionary.EntryLookup()
+                .WithComponentRequirement(typeof(CharacterBody), false)
+                .WithTypeRestriction(typeof(GameObject))
+                .WithFilter("Body")
+                .WithLookupType(AddressablesPathDictionary.EntryType.Path)
+                .PerformLookup();
+        }
         protected override string GetHelpTooltip()
         {
             return 
@@ -27,6 +41,8 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
         private List<(VariantTierDef, CharacterVariantTierDef)> _createdRuntimeTiersWithLegacyCounterpartPairs = new List<(VariantTierDef, CharacterVariantTierDef)>();
         private List<(VariantDef, CharacterVariantDef)> _createdRuntimeVariantsWithLegacyCounterpartPairs = new List<(VariantDef, CharacterVariantDef)>();
+        private List<(VariantVisuals, CharacterVariantVisualModifier)> _createdRuntimeVisualsWithLegacyCounterpartPairs = new List<(VariantVisuals, CharacterVariantVisualModifier)>();
+        private Dictionary<VariantDef, CharacterBody> _legacyVariantToTargetBody = new Dictionary<VariantDef, CharacterBody>();
 
         protected override void OnIMGUIContainerAdded()
         {
@@ -34,7 +50,10 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
         }
         protected override void OnIMGUI()
         {
+            serializedObject.Update();
             EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(variantDefs)));
+            EditorGUILayout.PropertyField(serializedObject.FindProperty(nameof(variantTierDefs)));
+            serializedObject.ApplyModifiedProperties();
         }
 
         private IEnumerator FindAllVariantDefs()
@@ -71,8 +90,18 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
             if(variantDefs.Length > 0)
             {
-                helper.AddStep(MigrateVisualModifiers(), "Migrating Visual Modifiers");
+                bool anyVariantHasVisualModifiers = variantDefs.Any(vd => vd.visualModifier);
+                if(anyVariantHasVisualModifiers)
+                {
+                    helper.AddStep(LoadAddressableBodies(helper), "Loading Addressable Bodies, this may take a bit.");
+                    helper.AddStep(MigrateVisualModifiers(), "Migrating Visual Modifiers");
+                }
                 helper.AddStep(MigrateVariantDefs(), "Migrating VariantDefs");
+                if(anyVariantHasVisualModifiers)
+                {
+                    helper.AddStep(CreateCharacterVariantVisualModifierAssets(), "Creating CharacterVariantVisualModifier Assets");
+                    helper.AddStep(SaveAssets(), "Saving Assets");
+                }
                 helper.AddStep(CreateCharacterVairantDefAssets(), "Creating VariantCharacterDef Assets");
                 helper.AddStep(SaveAssets(), "Saving Assets");
             }
@@ -88,6 +117,11 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                 _createdRuntimeTiersWithLegacyCounterpartPairs.Clear();
                 _createdRuntimeVariantsWithLegacyCounterpartPairs.Clear();
             }
+        }
+
+        public void Report(float progress)
+        {
+            UpdateProgress(progress);
         }
 
         private IEnumerator SaveAssets()
@@ -171,9 +205,152 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
         }
 
         #region VariantMigration Coroutines
+        private IEnumerator LoadAddressableBodies(IProgress<float> progress)
+        {
+            yield return 0;
+
+            for (int i = 0; i < variantDefs.Length; i++)
+            {
+                VariantDef legacyVariant = variantDefs[i];
+                yield return R2EKMath.Remap(i, 0, variantDefs.Length, 0, 1);
+
+                VariantVisuals legacyVisuals = legacyVariant.visualModifier;
+                if (!legacyVisuals)
+                    continue;
+
+                using (var entryLookup = new AddressablesPathDictionary.EntryLookup())
+                {
+                    entryLookup.WithComponentRequirement(typeof(CharacterBody), false)
+                        .WithLookupType(AddressablesPathDictionary.EntryType.Path)
+                        .WithFilter(legacyVariant.bodyName)
+                        .WithTypeRestriction(typeof(GameObject))
+                        .WithProgressReport(progress);
+
+                    var subroutine = entryLookup.PerformLookupAsync();
+                    while(subroutine.MoveNext())
+                    {
+                        yield return null;
+                    }
+
+                    string result = entryLookup.results.FirstOrDefault();
+                    GameObject prefab = Addressables.LoadAssetAsync<GameObject>(result).WaitForCompletion();
+                    if(prefab)
+                    {
+                        _legacyVariantToTargetBody.Add(legacyVariant, prefab.GetComponent<CharacterBody>());
+                    }
+                }
+            }
+        }
         private IEnumerator MigrateVisualModifiers()
         {
-            throw new NotImplementedException();
+            yield return 0;
+            for(int i = 0; i < variantDefs.Length; i++)
+            {
+                VariantDef legacyVariant = variantDefs[i];
+                yield return R2EKMath.Remap(i, 0, variantDefs.Length, 0, 1);
+
+                if (_legacyVariantToTargetBody.TryGetValue(legacyVariant, out CharacterBody body))
+                    continue;
+
+                VariantVisuals legacyVisuals = legacyVariant.visualModifier;
+                if(!legacyVisuals)
+                {
+                    continue;
+                }
+
+                SkinDefParams skinDefParams = null;
+                GameObject mdlObject = null;
+                if(body.modelLocator && body.modelLocator.modelTransform)
+                {
+                    mdlObject = body.modelLocator.modelTransform.gameObject;
+                    if(mdlObject.TryGetComponent<ModelSkinController>(out var mdlSkinController) && HG.ArrayUtils.IsInBounds(mdlSkinController.skins, 0))
+                    {
+                        var skinDef = mdlSkinController.skins[0];
+                        if(skinDef.skinDefParams)
+                        {
+                            skinDefParams = skinDef.skinDefParams;
+                        }
+                        else if(skinDef.skinDefParamsAddress.RuntimeKeyIsValid())
+                        {
+                            skinDefParams = Addressables.LoadAssetAsync<SkinDefParams>(skinDef.skinDefParamsAddress.RuntimeKey).WaitForCompletion();
+                        }
+                    }
+                }
+
+                bool useTransformPath = skinDefParams && mdlObject;
+
+                List<CharacterVariantVisualModifier.RendererTargetedReplacement<Material>> materialReplacements = new List<CharacterVariantVisualModifier.RendererTargetedReplacement<Material>>();
+
+                foreach(var legacyMatReplacement in legacyVisuals.materialReplacements)
+                {
+                    int legacyRendererIndex = legacyMatReplacement.rendererIndex;
+                    CharacterVariantVisualModifier.RendererTargetedReplacement<Material> runtimeMatReplacement = new CharacterVariantVisualModifier.RendererTargetedReplacement<Material>();
+                    runtimeMatReplacement.replacement = legacyMatReplacement.material;
+
+                    if(useTransformPath && HG.ArrayUtils.IsInBounds(skinDefParams.rendererInfos, legacyRendererIndex) && skinDefParams.rendererInfos[legacyRendererIndex].renderer)
+                    {
+                        runtimeMatReplacement.transformPath = Util.BuildPrefabTransformPath(mdlObject.transform, skinDefParams.rendererInfos[legacyRendererIndex].renderer.transform, false, false);
+                    }
+                    else
+                    {
+                        runtimeMatReplacement.rendererIndex = legacyRendererIndex;
+                        runtimeMatReplacement.useIndex = true;
+                    }
+
+                    materialReplacements.Add(runtimeMatReplacement);
+                }
+
+                List<CharacterVariantVisualModifier.RendererTargetedReplacement<Mesh>> meshReplacements = new List<CharacterVariantVisualModifier.RendererTargetedReplacement<Mesh>>();
+                foreach(var legacyMeshReplacement in legacyVisuals.meshReplacements)
+                {
+                    int legacyRendererIndex = legacyMeshReplacement.rendererIndex;
+                    CharacterVariantVisualModifier.RendererTargetedReplacement<Mesh> runtimeMeshReplacement = new CharacterVariantVisualModifier.RendererTargetedReplacement<Mesh>();
+                    runtimeMeshReplacement.replacement = legacyMeshReplacement.mesh;
+
+                    if(useTransformPath && HG.ArrayUtils.IsInBounds(skinDefParams.rendererInfos, legacyRendererIndex) && skinDefParams.rendererInfos[legacyRendererIndex].renderer)
+                    {
+                        runtimeMeshReplacement.transformPath = Util.BuildPrefabTransformPath(mdlObject.transform, skinDefParams.rendererInfos[legacyRendererIndex].renderer.transform, false, false);
+                    }
+                    else
+                    {
+                        runtimeMeshReplacement.rendererIndex = legacyRendererIndex;
+                        runtimeMeshReplacement.useIndex = true;
+                    }
+
+                    meshReplacements.Add(runtimeMeshReplacement);
+                }
+
+                List<CharacterVariantVisualModifier.LightReplacement> lightReplacements = new List<CharacterVariantVisualModifier.LightReplacement>();
+                foreach(var legacyLightReplacement in legacyVisuals.lightReplacements)
+                {
+                    int legacyLightIndex = legacyLightReplacement.rendererIndex;
+                    CharacterVariantVisualModifier.LightReplacement runtimeLightReplacement = new CharacterVariantVisualModifier.LightReplacement();
+                    runtimeLightReplacement.lightColor = legacyLightReplacement.color;
+
+                    runtimeLightReplacement.useIndex = useTransformPath == false;
+
+                    if(useTransformPath && HG.ArrayUtils.IsInBounds(skinDefParams.lightReplacements, legacyLightIndex) && skinDefParams.lightReplacements[legacyLightIndex].light)
+                    {
+                        runtimeLightReplacement.transformPath = Util.BuildPrefabTransformPath(mdlObject.transform, skinDefParams.lightReplacements[legacyLightIndex].light.transform, false, false);
+                    }
+                    else
+                    {
+                        runtimeLightReplacement.lightIndex = legacyLightIndex;
+                        runtimeLightReplacement.useIndex = true;
+                    }
+
+                    lightReplacements.Add(runtimeLightReplacement);
+                }
+
+                CharacterVariantVisualModifier.CreateInstanceArgs args = new CharacterVariantVisualModifier.CreateInstanceArgs()
+                    .SetName(legacyVisuals.name)
+                    .AddLightReplacement(lightReplacements)
+                    .AddMeshReplacement(meshReplacements)
+                    .AddMaterialReplacement(materialReplacements);
+
+                var runtimeVisuals = CharacterVariantVisualModifier.CreateInstance(args);
+                _createdRuntimeVisualsWithLegacyCounterpartPairs.Add((legacyVisuals, runtimeVisuals));
+            }
         }
 
         private IEnumerator MigrateVariantDefs()
@@ -208,6 +385,57 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                 result.additionalVariantComponents = GetVariantComponentsFromLegacy(legacyVariant);
 
                 _createdRuntimeVariantsWithLegacyCounterpartPairs.Add((legacyVariant, result));
+            }
+            yield return 1;
+        }
+
+        private IEnumerator CreateCharacterVariantVisualModifierAssets()
+        {
+            yield return 0;
+            for (int i = 0; i < _createdRuntimeVisualsWithLegacyCounterpartPairs.Count; i++)
+            {
+                CharacterVariantVisualModifier newVisuals = _createdRuntimeVisualsWithLegacyCounterpartPairs[i].Item2;
+                VariantVisuals oldVisuals = _createdRuntimeVisualsWithLegacyCounterpartPairs[i].Item1;
+
+                yield return R2EKMath.Remap(i, 0, _createdRuntimeVisualsWithLegacyCounterpartPairs.Count, 0, 1);
+
+                //Get old visuals path
+                string oldVisualsPath = AssetDatabase.GetAssetPath(oldVisuals);
+
+                //Rename old visuals, put "_Legacy" as the suffix
+                AssetDatabase.RenameAsset(oldVisualsPath, string.Format("{0}_Legacy", oldVisuals.name));
+
+                //Create new visuals asset
+                AssetDatabase.CreateAsset(newVisuals, oldVisualsPath);
+
+                //Import asset
+                AssetDatabase.ImportAsset(oldVisualsPath);
+            }
+            yield return 1;
+        }
+
+        private IEnumerator CreateCharacterVairantDefAssets()
+        {
+            yield return 0;
+
+            for (int i = 0; i < _createdRuntimeVariantsWithLegacyCounterpartPairs.Count; i++)
+            {
+                CharacterVariantDef newVariant = _createdRuntimeVariantsWithLegacyCounterpartPairs[i].Item2;
+                VariantDef oldVariant = _createdRuntimeVariantsWithLegacyCounterpartPairs[i].Item1;
+
+                yield return R2EKMath.Remap(i, 0, _createdRuntimeTiersWithLegacyCounterpartPairs.Count, 0, 1);
+
+                //Get old variant path
+                string oldVariantPath = AssetDatabase.GetAssetPath(oldVariant);
+
+                //Rename old variant, put "_Legacy" as the suffix.
+                AssetDatabase.RenameAsset(oldVariantPath, string.Format("{0}_Legacy", oldVariant.name));
+
+                //Create new variant asset
+                AssetDatabase.CreateAsset(newVariant, oldVariantPath);
+
+                //Import Asset
+                AssetDatabase.ImportAsset(oldVariantPath);
             }
             yield return 1;
         }
@@ -379,42 +607,37 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
             return new VariantBuffStorage(runtimeBuffInfos.ToArray());
         }
 
-        //TODO: Impl this
         private CharacterVariantVisualModifier GetVisualModifierFromLegacyOrNull(VariantDef legacyVariant)
         {
-            throw new NotImplementedException();
+            if(!legacyVariant.visualModifier)
+            {
+                return null;
+            }
+
+            for(int i = 0; i < _createdRuntimeVisualsWithLegacyCounterpartPairs.Count; i++)
+            {
+                if (_createdRuntimeVisualsWithLegacyCounterpartPairs[i].Item1 == legacyVariant.visualModifier)
+                {
+                    return _createdRuntimeVisualsWithLegacyCounterpartPairs[i].Item2;
+                }
+            }
+
+            return null;
         }
 
-        //TODO: Impl this
         private VariantComponentCollection GetVariantComponentsFromLegacy(VariantDef legacyVariant)
         {
-            throw new NotImplementedException();
-        }
-
-        private IEnumerator CreateCharacterVairantDefAssets()
-        {
-            yield return 0;
-
-            for (int i = 0; i < _createdRuntimeVariantsWithLegacyCounterpartPairs.Count; i++)
+            if(legacyVariant.componentProviders.Length == 0)
             {
-                CharacterVariantDef newVariant = _createdRuntimeVariantsWithLegacyCounterpartPairs[i].Item2;
-                VariantDef oldVariant = _createdRuntimeVariantsWithLegacyCounterpartPairs[i].Item1;
-
-                yield return R2EKMath.Remap(i, 0, _createdRuntimeTiersWithLegacyCounterpartPairs.Count, 0, 1);
-
-                //Get old variant path
-                string oldVariantPath = AssetDatabase.GetAssetPath(oldVariant);
-
-                //Rename old variant, put "_Legacy" as the suffix.
-                AssetDatabase.RenameAsset(oldVariantPath, string.Format("{0}_Legacy", oldVariant.name));
-
-                //Create new variant asset
-                AssetDatabase.CreateAsset(newVariant, oldVariantPath);
-
-                //Import Asset
-                AssetDatabase.ImportAsset(oldVariantPath);
+                return new VariantComponentCollection();
             }
-            yield return 1;
+
+            List<SerializableSystemType> variantComponents = new List<SerializableSystemType>();
+            for(int i = 0; i < legacyVariant.componentProviders.Length;)
+            {
+                variantComponents.Add(legacyVariant.componentProviders[i].componentToAdd);
+            }
+            return new VariantComponentCollection(variantComponents.ToArray());
         }
         #endregion
 

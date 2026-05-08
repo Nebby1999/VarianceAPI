@@ -7,6 +7,7 @@ namespace VAPI.Legacy
     /// <summary>
     /// A ScriptableObject used to create a variant's Visuals
     /// </summary>
+    [CreateAssetMenu(fileName = "AssDick", menuName = "VAPI/AssDick")]
     public class VariantVisuals : ScriptableObject
     {
         /// <summary>

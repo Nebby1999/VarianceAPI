@@ -9,9 +9,7 @@ namespace VAPI
 {
     internal sealed class VAPILog
     {
-#if DEBUG
         private static LogLevel _breakableLevel = LogLevel.Fatal;
-#endif
 
         private static ManualLogSource? _log;
         public static void Message(object data, [CallerLineNumber] int i = 0, [CallerMemberName] string member = "") => Log(LogLevel.Message, data, i, member);
@@ -64,7 +62,7 @@ namespace VAPI
 #if DEBUG
             if (_breakableLevel.HasFlag(level))
             {
-                TryBreak();
+                Break();
             }
 #endif
         }
@@ -79,17 +77,17 @@ namespace VAPI
         }
 
 #if DEBUG
-        private static void TryBreak()
+        public static void Break()
         {
             if (Debugger.IsAttached)
                 Debugger.Break();
         }
 
-        private static void BreakWhen(bool condition)
+        public static void BreakWhen(bool condition)
         {
             if(condition)
             {
-                TryBreak();
+                Break();
             }
         }
 #endif
