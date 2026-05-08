@@ -311,10 +311,24 @@ namespace VAPI
                 return this;
             }
 
+            public CreateInstanceArgs AddMaterialReplacement(IEnumerable<RendererTargetedReplacement<Material>> replacements)
+            {
+                materialReplacements ??= new List<RendererTargetedReplacement<Material>>();
+                materialReplacements.AddRange(replacements);
+                return this;
+            }
+
             public CreateInstanceArgs AddMeshReplacement(RendererTargetedReplacement<Mesh> replacement)
             {
                 meshReplacements ??= new List<RendererTargetedReplacement<Mesh>>();
                 meshReplacements.Add(replacement);
+                return this;
+            }
+
+            public CreateInstanceArgs AddMeshReplacement(IEnumerable<RendererTargetedReplacement<Mesh>> replacements)
+            {
+                meshReplacements ??= new List<RendererTargetedReplacement<Mesh>>();
+                meshReplacements.AddRange(replacements);
                 return this;
             }
 
@@ -325,10 +339,24 @@ namespace VAPI
                 return this;
             }
 
+            public CreateInstanceArgs AddLightReplacement(IEnumerable<LightReplacement> replacements)
+            {
+                lightReplacements ??= new List<LightReplacement>();
+                lightReplacements.AddRange(replacements);
+                return this;
+            }
+
             public CreateInstanceArgs AddPrefabInstantiationData(PrefabInstantiationData data)
             {
                 prefabInstantiationDatas ??= new List<PrefabInstantiationData>();
                 prefabInstantiationDatas.Add(data);
+                return this;
+            }
+
+            public CreateInstanceArgs AddPrefabInstantiationData(IEnumerable<PrefabInstantiationData> datas)
+            {
+                prefabInstantiationDatas ??= new List<PrefabInstantiationData>();
+                prefabInstantiationDatas.AddRange(datas);
                 return this;
             }
         }

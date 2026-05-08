@@ -17,6 +17,7 @@ namespace VAPI.Legacy
     /// <summary>
     /// A ScriptableObject that represents a new Variant
     /// </summary>
+    [CreateAssetMenu(fileName = "AssCunt", menuName = "VAPI/AssCunt")]
     public class VariantDef : ScriptableObject
     {
         /// <summary>
