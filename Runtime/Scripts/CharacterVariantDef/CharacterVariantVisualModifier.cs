@@ -45,7 +45,7 @@ namespace VAPI
             //TODO: TransformPath can only infer the required component via a sibling property, not ideal, fix later in MSU.
             [SerializeField, HideInInspector]
             private Renderer _dummy;
-            [TransformPath(nameof(vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), siblingPropertyComponentTypeRequirement = nameof(_dummy))]
+            [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), siblingPropertyComponentTypeRequirement = nameof(_dummy))]
             public string? transformPath;
             public int rendererIndex;
             public bool useIndex;
@@ -76,7 +76,7 @@ namespace VAPI
         public struct LightReplacement : ICloneable
         {
             private Light? _dummy;
-            [TransformPath(nameof(vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), siblingPropertyComponentTypeRequirement = nameof(_dummy))]
+            [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), siblingPropertyComponentTypeRequirement = nameof(_dummy))]
             public string? transformPath;
             public int lightIndex;
 
@@ -109,7 +109,7 @@ namespace VAPI
         {
             public GameObject? prefab;
 
-            [TransformPath(nameof(vanillaTargetObject), allowSelectingRoot = true, rootComponentType = typeof(CharacterModel))]
+            [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = true, rootComponentType = typeof(CharacterModel))]
             public string? transformPath;
             public string? childLocatorEntry;
 
@@ -156,7 +156,7 @@ namespace VAPI
         /// The vanilla target object, this is utilized exclusively for editor time and it's not used in runtime. If you're creating variants at runtime do not fill this field.
         /// </summary>
         [SerializeField, AddressableComponentRequirement(typeof(ModelSkinController), searchInChildren = true)]
-        private AssetReferenceGameObject vanillaTargetObject = new AssetReferenceGameObject("");
+        internal AssetReferenceGameObject _vanillaTargetObject = new AssetReferenceGameObject("");
 
         public RendererTargetedReplacement<Material>[] materialReplacements = Array.Empty<RendererTargetedReplacement<Material>>();
         public RendererTargetedReplacement<Mesh>[] meshReplacements = Array.Empty<RendererTargetedReplacement<Mesh>>();

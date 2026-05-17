@@ -9,20 +9,20 @@ MonoBehaviour:
   m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 55336325dde534545b95b5d59763055b, type: 3}
-  m_Name: Common
+  m_Script: {fileID: 11500000, guid: 69b9bf6c91891724ead8a06bd262dc4f, type: 3}
+  m_Name: Common_Legacy
   m_EditorClassIdentifier: 
-  announceArrivalInChat: 0
-  tierItems: []
+  _tier: 0
+  announcesArrival: 0
+  soundEvent: {fileID: 0}
+  tierItemDefs: []
   tierBuffDef:
     _asset: {fileID: 11400000, guid: 90986a7ed35921c498b9ef9b25264d9a, type: 2}
     _address: 
     _useDirectReference: 1
-    _canLoadFromCatalog: 1
-  bonusArmor: 0
-  experienceRewardCoefficient: 1.3
-  goldRewardCoefficient: 1.3
-  commonItemRewardChance: 1
-  uncommonItemRewardChance: 0
-  legendaryItemRewardChance: 0
-  bossItemRewardChance: 0
+  experienceMultiplier: 1.3
+  goldMultiplier: 1.3
+  whiteItemDropChance: 1
+  greenItemDropChance: 0
+  redItemDropChance: 0
+  armorBonus: 0
