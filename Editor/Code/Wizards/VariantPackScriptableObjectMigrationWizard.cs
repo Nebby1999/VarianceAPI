@@ -37,7 +37,7 @@ namespace VAPI.Editor.Windows
         }
         protected override string GetHelpTooltip()
         {
-            return 
+            return
 @"The VariantPack ScriptableObject Migration Wizard upgrades your VAPI.Legacy ScriptableObjects into their VAPI.Runtime counterparts.
 Overall you should see a decrease in the total amount of ScriptableObjects due to VAPI.Runtime utilizing only 3 ScriptableObjects.";
         }
@@ -95,7 +95,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
             int stepCount = 0;
             Log("Began Migration Wizard");
-            if(variantTierDefs.Length > 0)
+            if (variantTierDefs.Length > 0)
             {
                 Log("Tiers detected, adding 3 steps.", true);
                 stepCount += 3;
@@ -105,14 +105,14 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                 helper.AddStep(SaveAssets(), "Saving Assets");
             }
 
-            if(variantDefs.Length > 0)
+            if (variantDefs.Length > 0)
             {
                 Log("Variants detected, Adding 4 steps.", true);
                 stepCount += 4;
 
                 helper.AddStep(CreateTierDictionary(), "Creating Tier Dictionary");
                 bool anyVariantHasVisualModifiers = variantDefs.Any(vd => vd.visualModifier);
-                if(anyVariantHasVisualModifiers)
+                if (anyVariantHasVisualModifiers)
                 {
                     Log("A variant has visual modifiers, adding 4 steps.", true);
                     stepCount += 4;
@@ -121,7 +121,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                     helper.AddStep(MigrateVisualModifiers(), "Migrating Visual Modifiers");
                 }
                 helper.AddStep(MigrateVariantDefs(), "Migrating VariantDefs");
-                if(anyVariantHasVisualModifiers)
+                if (anyVariantHasVisualModifiers)
                 {
                     helper.AddStep(CreateCharacterVariantVisualModifierAssets(), "Creating CharacterVariantVisualModifier Assets");
                     helper.AddStep(SaveAssets(), "Saving Assets");
@@ -136,7 +136,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
         protected override void Cleanup(string coroutineName)
         {
             base.Cleanup(coroutineName);
-            if(coroutineName == "Run")
+            if (coroutineName == "Run")
             {
                 _createdRuntimeTiersWithLegacyCounterpartPairs.Clear();
                 _createdRuntimeVariantsWithLegacyCounterpartPairs.Clear();
@@ -169,12 +169,12 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
             Log($"Migrating a total of {variantTierDefs.Length} VariantTiers");
             int migratedCount = 0;
             int skippedCount = 0;
-            for(int i = 0; i < variantTierDefs.Length; i++)
+            for (int i = 0; i < variantTierDefs.Length; i++)
             {
                 VariantTierDef legacyTierDef = variantTierDefs[i];
                 yield return R2EKMath.Remap(i, 0, variantTierDefs.Length, 0, 1);
-                
-                if(legacyTierDef.name.Contains("_Legacy"))
+
+                if (legacyTierDef.name.Contains("_Legacy"))
                 {
                     Log($"Skipping {legacyTierDef} as it has the _Legacy suffix.", true);
                     skippedCount++;
@@ -197,7 +197,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                 };
 
                 //Add tiers with count of 1
-                foreach(var thing in legacyTierDef.tierItemDefs)
+                foreach (var thing in legacyTierDef.tierItemDefs)
                 {
                     args.AddTierItem(new AddressableItemCountPair { itemDef = thing, count = 1 });
                 }
@@ -218,7 +218,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
             yield return 0;
 
             Log($"Creating CharacterVariantTierDef Assets.");
-            for(int i = 0; i < _createdRuntimeTiersWithLegacyCounterpartPairs.Count; i++)
+            for (int i = 0; i < _createdRuntimeTiersWithLegacyCounterpartPairs.Count; i++)
             {
                 CharacterVariantTierDef newTierDef = _createdRuntimeTiersWithLegacyCounterpartPairs[i].Item2;
                 VariantTierDef oldTierDef = _createdRuntimeTiersWithLegacyCounterpartPairs[i].Item1;
@@ -258,7 +258,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
             VariantTierDef[] legacyTiers = new VariantTierDef[legacyTierGUIDS.Length];
             CharacterVariantTierDef[] runtimeTiers = new CharacterVariantTierDef[runtimeTierGUIDS.Length];
 
-            for(int i = 0; i < legacyTiers.Length; i++)
+            for (int i = 0; i < legacyTiers.Length; i++)
             {
                 yield return R2EKMath.Remap(i, 0, legacyTiers.Length, 0, 0.33f);
                 legacyTiers[i] = AssetDatabaseUtil.LoadAssetFromGUID<VariantTierDef>(legacyTierGUIDS[i]);
@@ -266,7 +266,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
             yield return 0.33f;
 
-            for(int i = 0; i < runtimeTierGUIDS.Length; i++)
+            for (int i = 0; i < runtimeTierGUIDS.Length; i++)
             {
                 yield return R2EKMath.Remap(i, 0, runtimeTierGUIDS.Length, 0.33f, 0.66f);
                 runtimeTiers[i] = AssetDatabaseUtil.LoadAssetFromGUID<CharacterVariantTierDef>(runtimeTierGUIDS[i]);
@@ -279,20 +279,20 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
             unmatchedObjects.AddRange(runtimeTiers);
 
             Log($"Legacy Tier Count: {legacyTiers.Length}, Runtime Tier Count: {runtimeTiers.Length}", true);
-            for(int i = 0; i < legacyTiers.Length; i++)
+            for (int i = 0; i < legacyTiers.Length; i++)
             {
                 yield return R2EKMath.Remap(i, 0, legacyTiers.Length, 0.66f, 0.99f);
                 VariantTierDef legacyTier = legacyTiers[i];
 
                 string legacyName = legacyTier.name;
                 string nameMatch = legacyName.Replace("_Legacy", "");
-                foreach(var runtimeTier in runtimeTiers)
+                foreach (var runtimeTier in runtimeTiers)
                 {
                     //If the runtime tier's cached name is equal to the old legacy name, then it's a match.
-                    if(runtimeTier.cachedName.Equals(nameMatch, StringComparison.OrdinalIgnoreCase))
+                    if (runtimeTier.cachedName.Equals(nameMatch, StringComparison.OrdinalIgnoreCase))
                     {
                         //If the legacyTier is assigned at runtime, add it to the Scrobj->Scrobj dictionary
-                        if(legacyTier.tier == VariantTierIndex.AssignedAtRuntime)
+                        if (legacyTier.tier == VariantTierIndex.AssignedAtRuntime)
                         {
                             unmatchedObjects.Remove(legacyTier);
                             unmatchedObjects.Remove(runtimeTier);
@@ -310,10 +310,10 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                 }
             }
 
-            if(unmatchedObjects.Count > 0)
+            if (unmatchedObjects.Count > 0)
             {
                 StringBuilder sb = HG.StringBuilderPool.RentStringBuilder();
-                foreach(var unmatchedObject in unmatchedObjects)
+                foreach (var unmatchedObject in unmatchedObjects)
                 {
                     sb.AppendLine(unmatchedObject.ToString());
                 }
@@ -347,19 +347,27 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                         .WithProgressReport(progress);
 
                     var subroutine = entryLookup.PerformLookupAsync();
-                    while(subroutine.MoveNext())
+                    while (subroutine.MoveNext())
                     {
                         yield return null;
                     }
 
                     string result = entryLookup.results.FirstOrDefault();
-                    GameObject prefab = Addressables.LoadAssetAsync<GameObject>(result).WaitForCompletion();
-                    if(prefab)
+                    if (string.IsNullOrEmpty(result))
+                    {
+                        LogWarning($"Could not find an AddressableBody for {legacyVariant}! (value=={legacyVariant.bodyName})");
+                        continue;
+                    }
+
+                    string guid = AddressablesPathDictionary.instance.GetGUIDFromPath(result);
+
+                    GameObject prefab = Addressables.LoadAssetAsync<GameObject>(guid).WaitForCompletion();
+                    if (prefab)
                     {
                         _legacyVariantToTargetBody.Add(legacyVariant, new AddressableBodyGUIDPair
                         {
                             characterBody = prefab.GetComponent<CharacterBody>(),
-                            guid = AddressablesPathDictionary.instance.GetGUIDFromPath(result)
+                            guid = guid
                         });
                     }
                     else
@@ -376,13 +384,13 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
             int migratedCount = 0;
             int skippedCount = 0;
-            for(int i = 0; i < variantDefs.Length; i++)
+            for (int i = 0; i < variantDefs.Length; i++)
             {
                 VariantDef legacyVariant = variantDefs[i];
                 yield return R2EKMath.Remap(i, 0, variantDefs.Length, 0, 1);
 
                 VariantVisuals legacyVisuals = legacyVariant.visualModifier;
-                if(!legacyVisuals)
+                if (!legacyVisuals)
                 {
                     Log($"Skipping {legacyVariant} as it has no visual modifiers.", true);
                     continue;
@@ -407,7 +415,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                     runtimeVisuals = CreateVisualModifierFromNonAddressableBody(legacyVisuals);
                 }
 
-                if(runtimeVisuals)
+                if (runtimeVisuals)
                 {
                     Log($"Created {runtimeVisuals} in memory");
                     _createdRuntimeVisualsWithLegacyCounterpartPairs.Add((legacyVisuals, runtimeVisuals));
@@ -522,7 +530,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
         private CharacterVariantVisualModifier CreateVisualModifierFromNonAddressableBody(VariantVisuals legacyVisuals)
         {
             List<CharacterVariantVisualModifier.LightReplacement> lightReplacements = new List<CharacterVariantVisualModifier.LightReplacement>();
-            for(int i = 0; i < legacyVisuals.lightReplacements.Length; i++)
+            for (int i = 0; i < legacyVisuals.lightReplacements.Length; i++)
             {
                 var legacyLightReplacement = legacyVisuals.lightReplacements[i];
                 lightReplacements.Add(new CharacterVariantVisualModifier.LightReplacement
@@ -534,7 +542,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
             }
 
             List<CharacterVariantVisualModifier.RendererTargetedReplacement<Mesh>> meshReplacements = new List<CharacterVariantVisualModifier.RendererTargetedReplacement<Mesh>>();
-            for(int i = 0; i < legacyVisuals.meshReplacements.Length; i++)
+            for (int i = 0; i < legacyVisuals.meshReplacements.Length; i++)
             {
                 var legacyMeshReplacement = legacyVisuals.meshReplacements[i];
                 meshReplacements.Add(new CharacterVariantVisualModifier.RendererTargetedReplacement<Mesh>
@@ -546,7 +554,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
             }
 
             List<CharacterVariantVisualModifier.RendererTargetedReplacement<Material>> materialReplacements = new List<CharacterVariantVisualModifier.RendererTargetedReplacement<Material>>();
-            for(int i = 0; i < legacyVisuals.materialReplacements.Length; i++)
+            for (int i = 0; i < legacyVisuals.materialReplacements.Length; i++)
             {
                 var legacyMaterialReplacement = legacyVisuals.materialReplacements[i];
                 materialReplacements.Add(new CharacterVariantVisualModifier.RendererTargetedReplacement<Material>
@@ -574,7 +582,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
             int migratedCount = 0;
             int skippedCount = 0;
 
-            for(int i = 0; i < variantDefs.Length; i++)
+            for (int i = 0; i < variantDefs.Length; i++)
             {
                 VariantDef legacyVariant = variantDefs[i];
 
@@ -594,9 +602,9 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                 result.isUnique = legacyVariant.isUnique;
                 result.spawnRate = legacyVariant.spawnRate;
                 result.arrivalToken = legacyVariant.arrivalToken;
-                
+
                 result.spawnCondition = GetBasicSpawnConditionFromLegacy(legacyVariant);
-                
+
                 result.masterModifiers = GetMasterModifiersFromLegacy(legacyVariant);
                 result.inventoryDefinition = GetInventoryDefinitionFromLegacy(legacyVariant);
 
@@ -657,7 +665,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                 CharacterVariantDef newVariant = _createdRuntimeVariantsWithLegacyCounterpartPairs[i].Item2;
                 VariantDef oldVariant = _createdRuntimeVariantsWithLegacyCounterpartPairs[i].Item1;
 
-                yield return R2EKMath.Remap(i, 0, _createdRuntimeTiersWithLegacyCounterpartPairs.Count, 0, 1);
+                yield return R2EKMath.Remap(i, 0, _createdRuntimeVariantsWithLegacyCounterpartPairs.Count, 0, 1);
 
                 //Get old variant path
                 string oldVariantPath = AssetDatabase.GetAssetPath(oldVariant);
@@ -705,7 +713,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
         private IVariantSpawnCondition GetBasicSpawnConditionFromLegacy(VariantDef legacyVariant)
         {
-            if(!legacyVariant.variantSpawnCondition)
+            if (!legacyVariant.variantSpawnCondition)
             {
                 return null;
             }
@@ -727,18 +735,18 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
         {
             List<IVariantMasterModifier> masterModifiers = new List<IVariantMasterModifier>();
 
-            if(legacyVariant.aiModifier.HasFlag(BasicAIModifier.Unstable))
+            if (legacyVariant.aiModifier.HasFlag(BasicAIModifier.Unstable))
             {
                 masterModifiers.Add(new UnstableAIModifier());
             }
-            if(legacyVariant.aiModifier.HasFlag(BasicAIModifier.ForceSprint))
+            if (legacyVariant.aiModifier.HasFlag(BasicAIModifier.ForceSprint))
             {
                 masterModifiers.Add(new AlwaysSprintAIModifier());
             }
 
             bool dampBonusNotAprox0 = !Mathf.Approximately(legacyVariant.baseAIDampBonus, 0);
             bool dampMultiplierNotAprox1 = !Mathf.Approximately(legacyVariant.baseAIDampMultiplier, 1);
-            if(dampBonusNotAprox0 || dampMultiplierNotAprox1)
+            if (dampBonusNotAprox0 || dampMultiplierNotAprox1)
             {
                 masterModifiers.Add(new BaseAIDampModifier(legacyVariant.baseAIDampBonus, legacyVariant.baseAIDampMultiplier));
             }
@@ -748,7 +756,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
         private VariantInventoryDefinition GetInventoryDefinitionFromLegacy(VariantDef legacyVariant)
         {
-            if(!legacyVariant.variantInventory)
+            if (!legacyVariant.variantInventory)
             {
                 return new VariantInventoryDefinition();
             }
@@ -758,7 +766,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
             List<AddressableItemCountPair> addressableItemCountPairs = new List<AddressableItemCountPair>();
             VariantInventoryDefinition.AddressableEquipmentInfo addressableEquipmentInfo = default;
 
-            for(int i = 0; i < legacyInventory.itemInventory.Length; i++)
+            for (int i = 0; i < legacyInventory.itemInventory.Length; i++)
             {
                 var legacyItem = legacyInventory.itemInventory[i];
                 addressableItemCountPairs.Add(new AddressableItemCountPair
@@ -768,7 +776,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                 });
             }
 
-            if(legacyInventory.equipmentInfo != null && 
+            if (legacyInventory.equipmentInfo != null &&
                 (legacyInventory.equipmentInfo.equipment.AssetExists || !string.IsNullOrWhiteSpace(legacyInventory.equipmentInfo.equipment.Address)))
             {
                 addressableEquipmentInfo = new VariantInventoryDefinition.AddressableEquipmentInfo
@@ -790,13 +798,13 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                 return null;
 
             //TODO: Log issue here, we've went from an array of overrides to an interface impl override.
-            if(legacyVariant.nameOverrides.Length > 1)
+            if (legacyVariant.nameOverrides.Length > 1)
             {
                 LogWarning($"Legacy Variant {legacyVariant} has more than one name override! this is no longer supported in VAPI 3.0!, It'll use the first name override, so make sure you fix this properly!");
             }
 
             var firstOverride = legacyVariant.nameOverrides[0];
-            switch(firstOverride.overrideType)
+            switch (firstOverride.overrideType)
             {
                 case OverrideNameType.Prefix:
                     return new VariantNamePrefix { prefixToken = firstOverride.token };
@@ -813,7 +821,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
         {
             List<VariantSkillReplacement> result = new List<VariantSkillReplacement>();
 
-            for(int i = 0; i < legacyVariant.skillReplacements.Length; i++)
+            for (int i = 0; i < legacyVariant.skillReplacements.Length; i++)
             {
                 var legacySkillReplacement = legacyVariant.skillReplacements[i];
                 result.Add(new VariantSkillReplacement(legacySkillReplacement.skillDef, legacySkillReplacement.skillSlot));
@@ -843,18 +851,18 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
         private VariantBuffStorage GetVariantBuffsFromLegacy(VariantDef legacyVariant)
         {
-            if(!legacyVariant.variantInventory || legacyVariant.variantInventory.buffInfos.Length == 0)
+            if (!legacyVariant.variantInventory || legacyVariant.variantInventory.buffInfos.Length == 0)
             {
                 return new VariantBuffStorage();
             }
 
             var legacyBuffInfos = legacyVariant.variantInventory.buffInfos;
             List<VariantBuffInfo> runtimeBuffInfos = new List<VariantBuffInfo>();
-            for(int i = 0; i < legacyBuffInfos.Length; i++)
+            for (int i = 0; i < legacyBuffInfos.Length; i++)
             {
                 var legacyBuffInfo = legacyBuffInfos[i];
                 VariantBuffInfo runtimeBuffInfo = new VariantBuffInfo { buffDef = legacyBuffInfo.buff, count = legacyBuffInfo.amount };
-                if(legacyBuffInfo.time > 0)
+                if (legacyBuffInfo.time > 0)
                 {
                     runtimeBuffInfo.timedApplicationImpl = new LegacyTimedBuffApplication { totalTimeForBuffs = legacyBuffInfo.time };
                 }
@@ -866,12 +874,12 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
         private CharacterVariantVisualModifier GetVisualModifierFromLegacyOrNull(VariantDef legacyVariant)
         {
-            if(!legacyVariant.visualModifier)
+            if (!legacyVariant.visualModifier)
             {
                 return null;
             }
 
-            for(int i = 0; i < _createdRuntimeVisualsWithLegacyCounterpartPairs.Count; i++)
+            for (int i = 0; i < _createdRuntimeVisualsWithLegacyCounterpartPairs.Count; i++)
             {
                 if (_createdRuntimeVisualsWithLegacyCounterpartPairs[i].Item1 == legacyVariant.visualModifier)
                 {
@@ -884,13 +892,13 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
         private VariantComponentCollection GetVariantComponentsFromLegacy(VariantDef legacyVariant)
         {
-            if(legacyVariant.componentProviders.Length == 0)
+            if (legacyVariant.componentProviders.Length == 0)
             {
                 return new VariantComponentCollection();
             }
 
             List<SerializableSystemType> variantComponents = new List<SerializableSystemType>();
-            for(int i = 0; i < legacyVariant.componentProviders.Length;)
+            for (int i = 0; i < legacyVariant.componentProviders.Length; i++)
             {
                 variantComponents.Add(legacyVariant.componentProviders[i].componentToAdd);
             }
