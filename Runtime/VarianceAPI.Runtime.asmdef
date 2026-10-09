@@ -31,7 +31,8 @@
         "DebugToolkit.dll",
         "MonoMod.Utils.dll",
         "KinematicCharacterController.dll",
-        "Mono.Cecil.dll"
+        "Mono.Cecil.dll",
+        "AsyncManagement.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [
