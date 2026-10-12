@@ -5,11 +5,11 @@ using UnityEngine.UIElements;
 namespace VAPI.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(VariantBuffStorage))]
-    public class VariantBuffStorageDrawer : PropertyDrawer
+    public class VariantBuffStorageDrawer : VAPIPropertyDrawer<VariantBuffStorage>
     {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        protected override void FinishUI()
         {
-            return new PropertyField(property.FindPropertyRelative("buffInfos"));
+            rootVisualElement.Q<PropertyField>().BindProperty(serializedProperty.FindPropertyRelative("buffInfos"));
         }
     }
 }

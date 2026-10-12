@@ -7,16 +7,15 @@ using UnityEngine.UIElements;
 namespace VAPI.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(VariantBuffInfo))]
-    public class VariantBuffInfoDrawer : PropertyDrawer
+    public class VariantBuffInfoDrawer : VAPIPropertyDrawer<VariantBuffInfo>
     {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        protected override void FinishUI()
         {
-            var root = VisualElementTemplateDictionary.instance.GetTemplateInstance(nameof(VariantBuffInfoDrawer), null, s => s.Contains("varianceapi"));
-            root.Q<PropertyField>("BuffDef").BindProperty(property.FindPropertyRelative("buffDef"));
+            rootVisualElement.Q<PropertyField>("BuffDef").BindProperty(serializedProperty.FindPropertyRelative("buffDef"));
 
-            var integerField = root.Q<IntegerField>();
+            var integerField = rootVisualElement.Q<IntegerField>();
             integerField.isDelayed = true;
-            var countProperty = property.FindPropertyRelative("count");
+            var countProperty = serializedProperty.FindPropertyRelative("count");
             integerField.RegisterValueChangedCallback((evt) =>
             {
                 countProperty.intValue = Mathf.Max(evt.newValue, 0);
@@ -24,8 +23,7 @@ namespace VAPI.Editor.PropertyDrawers
             });
             integerField.BindProperty(countProperty);
 
-            root.Q<PropertyField>("TimedApplicationImpl").BindProperty(property.FindPropertyRelative("timedApplicationImpl"));
-            return root;
+            rootVisualElement.Q<PropertyField>("TimedApplicationImpl").BindProperty(serializedProperty.FindPropertyRelative("timedApplicationImpl"));
         }
     }
 }

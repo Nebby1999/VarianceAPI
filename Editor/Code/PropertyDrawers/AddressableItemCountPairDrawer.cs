@@ -7,23 +7,21 @@ using UnityEngine.UIElements;
 namespace VAPI.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(AddressableItemCountPair))]
-    public class AddressableItemCountPairDrawer : PropertyDrawer
+    public class AddressableItemCountPairDrawer : VAPIPropertyDrawer<AddressableItemCountPair>
     {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        protected override void FinishUI()
         {
-            var root = VisualElementTemplateDictionary.instance.GetTemplateInstance(nameof(AddressableItemCountPairDrawer), null, (s => s.Contains("varianceapi")));
-            root.Q<PropertyField>().BindProperty(property.FindPropertyRelative("itemDef"));
+            rootVisualElement.Q<PropertyField>().BindProperty(serializedProperty.FindPropertyRelative("itemDef"));
 
-            var integerField = root.Q<IntegerField>();
+            var integerField = rootVisualElement.Q<IntegerField>();
             integerField.isDelayed = true;
-            var countProperty = property.FindPropertyRelative("count");
+            var countProperty = serializedProperty.FindPropertyRelative("count");
             integerField.RegisterValueChangedCallback((evt) =>
             {
                 countProperty.intValue = Mathf.Max(evt.newValue, 0);
                 integerField.value = countProperty.intValue;
             });
             integerField.BindProperty(countProperty);
-            return root;
         }
     }
 }

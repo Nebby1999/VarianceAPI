@@ -7,18 +7,15 @@ using UnityEngine.UIElements;
 namespace VAPI.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(CharacterVariantTarget))]
-    public class CharacterVariantTargetDrawer : PropertyDrawer
+    public class CharacterVariantTargetDrawer : VAPIPropertyDrawer<CharacterVariantTarget>
     {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        protected override void FinishUI()
         {
-            var root = VisualElementTemplateDictionary.instance.GetTemplateInstance(nameof(CharacterVariantTargetDrawer), null, (s => s.Contains("varianceapi")));
+            TextField textField = rootVisualElement.Q<TextField>("Key");
+            textField.BindProperty(serializedProperty.FindPropertyRelative("key"));
 
-            TextField textField = root.Q<TextField>("Key");
-            textField.BindProperty(property.FindPropertyRelative("key"));
-
-            EnumField enumField = root.Q<EnumField>("TargetType");
-            enumField.BindProperty(property.FindPropertyRelative("type"));
-            return root;
+            EnumField enumField = rootVisualElement.Q<EnumField>("TargetType");
+            enumField.BindProperty(serializedProperty.FindPropertyRelative("type"));
         }
     }
 }
