@@ -8,30 +8,26 @@ using UnityEngine.UIElements;
 namespace VAPI.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(VariantSkillReplacement))]
-    public class VariantSkillReplacementDrawer : PropertyDrawer
+    public class VariantSkillReplacementDrawer : VAPIPropertyDrawer<VariantSkillReplacement>
     {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        protected override void FinishUI()
         {
-            VisualElement root = VisualElementTemplateDictionary.instance.GetTemplateInstance(nameof(VariantSkillReplacementDrawer), null, s => s.Contains("varianceapi"));
+            rootVisualElement.Q<PropertyField>().BindProperty(serializedProperty.FindPropertyRelative(nameof(VariantSkillReplacement.skillDef)));
 
-            root.Q<PropertyField>().BindProperty(property.FindPropertyRelative(nameof(VariantSkillReplacement.skillDef)));
+            var slotNameTextField = rootVisualElement.Q<TextField>();
+            slotNameTextField.BindProperty(serializedProperty.FindPropertyRelative(nameof(VariantSkillReplacement.slotName)));
 
-            var slotNameTextField = root.Q<TextField>();
-            slotNameTextField.BindProperty(property.FindPropertyRelative(nameof(VariantSkillReplacement.slotName)));
-            
-            var slotEnumField = root.Q<EnumField>();
+            var slotEnumField = rootVisualElement.Q<EnumField>();
             slotEnumField.RegisterValueChangedCallback(e =>
             {
                 Enum val = e.newValue;
-                if(val == null)
+                if (val == null)
                 {
                     val = e.previousValue;
                 }
                 slotNameTextField?.SetDisplay(((SkillSlot)val) == SkillSlot.None);
             });
-            slotEnumField.BindProperty(property.FindPropertyRelative(nameof(VariantSkillReplacement.slot)));
-
-            return root;
+            slotEnumField.BindProperty(serializedProperty.FindPropertyRelative(nameof(VariantSkillReplacement.slot)));
         }
     }
 }

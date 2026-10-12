@@ -1,16 +1,17 @@
 using UnityEditor;
+using UnityEditor.UIElements;
 using UnityEngine;
+using UnityEngine.UIElements;
+using VAPI.Editor;
 
 namespace VAPI
 {
     [CustomPropertyDrawer(typeof(VariantDeathStateOverride))]
-    public class VariantDeathStateOverrideDrawer : PropertyDrawer
+    public class VariantDeathStateOverrideDrawer : VAPIPropertyDrawer<VariantDeathStateOverride>
     {
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        protected override void FinishUI()
         {
-            EditorGUI.BeginProperty(position, label, property);
-            EditorGUI.PropertyField(position, property.FindPropertyRelative("deathStateOverride"));
-            EditorGUI.EndProperty();
+            rootVisualElement.Q<PropertyField>().BindProperty(serializedProperty.FindPropertyRelative("deathStateOverride"));
         }
     }
 }

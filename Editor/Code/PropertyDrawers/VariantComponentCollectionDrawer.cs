@@ -5,11 +5,11 @@ using UnityEngine.UIElements;
 namespace VAPI.Editor.PropertyDrawers
 {
     [CustomPropertyDrawer(typeof(VariantComponentCollection))]
-    public class VariantComponentCollectionDrawer : PropertyDrawer
+    public class VariantComponentCollectionDrawer : VAPIPropertyDrawer<VariantComponentCollection>
     {
-        public override VisualElement CreatePropertyGUI(SerializedProperty property)
+        protected override void FinishUI()
         {
-            return new PropertyField(property.FindPropertyRelative("variantComponents"));
+            rootVisualElement.Q<PropertyField>().BindProperty(serializedProperty.FindPropertyRelative("variantComponents"));
         }
     }
 }
