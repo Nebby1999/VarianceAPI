@@ -185,7 +185,7 @@ namespace VAPI
                 {
                     forbiddenUnlock.Address = forbiddenUnlockableKeyOrReference.Value.a;
                 }
-                else if(forbiddenUnlockableKeyOrReference.Value.isB)
+                else if(forbiddenUnlockableKeyOrReference.Value.b)
                 {
                     forbiddenUnlock.Asset = forbiddenUnlockableKeyOrReference.Value.b;
                 }
@@ -201,7 +201,7 @@ namespace VAPI
                 {
                     requiredUnlock.Address = requiredUnlockableKeyOrReference.Value.a;
                 }
-                else if (requiredUnlockableKeyOrReference.Value.isB)
+                else if (requiredUnlockableKeyOrReference.Value.b)
                 {
                     requiredUnlock.Asset = requiredUnlockableKeyOrReference.Value.b;
                 }
@@ -221,7 +221,7 @@ namespace VAPI
                     {
                         requiredExpansionDefs[i] = new AddressReferencedExpansionDef(requiredExpansionKeyOrReferences[i].a);
                     }
-                    else if (requiredExpansionKeyOrReferences[i].isB)
+                    else if (requiredExpansionKeyOrReferences[i].b)
                     {
                         requiredExpansionDefs[i] = new AddressReferencedExpansionDef(requiredExpansionKeyOrReferences[i].b);
                     }
