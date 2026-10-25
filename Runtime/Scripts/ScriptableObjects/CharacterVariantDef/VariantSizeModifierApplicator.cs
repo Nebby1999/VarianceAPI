@@ -61,7 +61,7 @@ namespace VAPI
             //A coefficient of 1.1 would turn into a scale increase percentage of 10. One of 0.5 would turn into a scale reduction percentage of 50;
             int scalePercentage = Mathf.FloorToInt(realCoefficient * 100);
 
-            _usedBuffDef = scalePercentage > 100 ? VAPIContent.Buffs.VAPIIncreaseScale.asset! : VAPIContent.Buffs.VAPIDecreaseScale.asset!;
+            _usedBuffDef = _computedSizeCoefficient > 1 ? VAPIContent.Buffs.VAPIIncreaseScale.asset! : VAPIContent.Buffs.VAPIDecreaseScale.asset!;
             _buffStacks = scalePercentage;
             _characterBody.SetBuffCount(_usedBuffDef.buffIndex, _buffStacks);
 

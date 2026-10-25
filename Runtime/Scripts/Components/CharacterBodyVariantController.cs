@@ -418,8 +418,8 @@ namespace VAPI
 
         private void OnDestroy()
         {
-            //onVariantsAppliedBody = null;
-            //onVariantsUnappliedBody = null;
+            onVariantsApplied = null;
+            onVariantsUnapplied = null;
         }
     }
 }

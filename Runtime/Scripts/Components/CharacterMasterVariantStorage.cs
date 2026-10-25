@@ -28,6 +28,15 @@ namespace VAPI
         private void Awake()
         {
             characterMaster = GetComponent<CharacterMaster>();
+            characterMaster.onBodyStart += OnBodyStart;
+        }
+
+        private void OnBodyStart(CharacterBody obj)
+        {
+            if(obj.bodyIndex != _bodyIndexOfAppliedVariants)
+            {
+                UnapplyVariants();
+            }
         }
 
         public bool TryGetVariantsStoredForCharacter(in BodyIndex bodyIndex, out CharacterVariantDef[]? variantDefs)
