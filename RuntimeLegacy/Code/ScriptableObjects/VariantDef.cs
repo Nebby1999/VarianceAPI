@@ -13,10 +13,7 @@ using VAPI.Legacy.Components;
 
 namespace VAPI.Legacy
 {
-    /// <summary>
-    /// A ScriptableObject that represents a new Variant
-    /// </summary>
-    [CreateAssetMenu(fileName = "AssCunt", menuName = "VAPI/AssCunt")]
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete, there's a menu item under \"Tools/VAPI\" that's used to migrate VariantDef into CharacterVariantDef")]
     public class VariantDef : ScriptableObject
     {
         public string bodyName;

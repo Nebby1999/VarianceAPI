@@ -1,39 +1,15 @@
 ﻿using KinematicCharacterController;
+using System;
 using UnityEngine;
 
 namespace VAPI.Legacy
 {
-    /// <summary>
-    /// A ScriptableObject used to represent a Size Modifier
-    /// </summary>
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete, Modifying the scale of a character is now done in the CharacterVariantDef itself")]
     public class VariantSizeModifier : ScriptableObject
     {
-        [Header("Variant Size Modifier")]
-        [Tooltip("The new size of the Variant\nWhere 1.0 = 100% Base Size")]
         [Min(0)]
         public float sizeCoefficient;
 
-        [Tooltip("Wether this size modifier is for a Flying variant (IE: Wisps, Alloy Vultures, Blind Pests")]
         public bool forFlyingBody;
-
-        /// <summary>
-        /// Applies the size modifier to the model's transform
-        /// </summary>
-        /// <param name="mdlTransform">The model's transform</param>
-        /// <param name="kinematicCharacterMotors">The character's KinematicCharacterMotors, only relevant if <see cref="forFlyingBody"/> is set to true</param>
-        public void ApplySize(Transform mdlTransform, KinematicCharacterMotor[] kinematicCharacterMotors)
-        {
-            mdlTransform.localScale *= sizeCoefficient;
-            if (forFlyingBody)
-            {
-                foreach (KinematicCharacterMotor motor in kinematicCharacterMotors)
-                {
-                    if (motor)
-                    {
-                        motor.SetCapsuleDimensions(motor.Capsule.radius * sizeCoefficient, motor.CapsuleHeight * sizeCoefficient, sizeCoefficient);
-                    }
-                }
-            }
-        }
     }
 }

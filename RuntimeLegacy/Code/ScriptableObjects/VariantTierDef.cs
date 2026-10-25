@@ -9,9 +9,7 @@ using UnityEngine.Networking;
 
 namespace VAPI.Legacy
 {
-    /// <summary>
-    /// A ScriptableObject used to represent a variant's Tier
-    /// </summary>
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete, there's a menu item under \"Tools/VAPI\" that's used to migrate VariantTierDef into CharacterVariantTierDef")]
     public class VariantTierDef : ScriptableObject
     {
         [SerializeField]

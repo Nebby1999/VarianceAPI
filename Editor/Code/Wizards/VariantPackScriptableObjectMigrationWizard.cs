@@ -1,3 +1,4 @@
+#pragma warning disable CS0618 // Type or member is obsolete
 using HG;
 using RoR2;
 using RoR2.Editor;
@@ -909,3 +910,4 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
     }
 }
+#pragma warning restore CS0618 // Type or member is obsolete

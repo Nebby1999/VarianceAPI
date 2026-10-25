@@ -10,9 +10,7 @@ using UnityEngine;
 
 namespace VAPI.Legacy
 {
-    /// <summary>
-    /// A ScriptableObject used to represent unique SpawnConditions for a variant
-    /// </summary>
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete, Defining spawn conditions is done via the IVariantSpawnCondition interface, a reimplementation of this class exists as the BasicSpawnCondition class")]
     public class VariantSpawnCondition : ScriptableObject
     {
         [Tooltip("The amount of stages that need to be completed before the variant can spawn")]

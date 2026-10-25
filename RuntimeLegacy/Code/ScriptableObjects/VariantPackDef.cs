@@ -6,6 +6,7 @@ using UnityEngine;
 
 namespace VAPI.Legacy
 {
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete, VariantPacks are now raw C# files that you give to the VariantPackManager, they're similar to ContentPacks in that sense.")]
     public class VariantPackDef : ScriptableObject
     {
         public string nameToken;

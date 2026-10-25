@@ -8,6 +8,7 @@ using VAPI.Legacy.Components;
 
 namespace VAPI.Legacy
 {
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete, the capabilities of this ScriptableObject has been split between \"VariantInventoryDefintion\" and \"VariantBuffStorage\"")]
     public class VariantInventory : ScriptableObject
     {
         [Serializable]

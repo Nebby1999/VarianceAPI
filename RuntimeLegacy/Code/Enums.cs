@@ -2,6 +2,7 @@
 
 namespace VAPI.Legacy
 {
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete, VariantTiers are now a \"None\" tier and get assigned at runtime")]
     public enum VariantTierIndex
     {
         None = -1,
@@ -12,6 +13,7 @@ namespace VAPI.Legacy
         AssignedAtRuntime = 4,
     }
 
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete, you can specify where a variant component goes by decorating your component class with the TargetComponentObjectAttribute")]
     public enum ComponentAttachmentType
     {
         Body,
@@ -19,6 +21,7 @@ namespace VAPI.Legacy
         Model
     }
 
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete, defining name overrides is done via the IVariantNameProvider interface, a reimplementation of Prefix, Suffix and Complete can be found in VariantNamePrefix, VariantNameSuffix and VariantNameOverride respectively")]
     public enum OverrideNameType
     {
         Prefix,
@@ -26,6 +29,7 @@ namespace VAPI.Legacy
         Complete
     }
 
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete, defining AI modifiers is done via the IVariantMasterModifier interface, a reimplementation of Unstable and ForceSprint can be found in UnstableAIModifier and AlwaysSprintAIModifier respectively")]
     [Flags]
     public enum BasicAIModifier
     {
@@ -34,6 +38,8 @@ namespace VAPI.Legacy
         ForceSprint
     }
 
+
+    [Obsolete("VarianceAPI's 2.0 systems are obsolete")]
     public enum MeshType
     {
         Default,
