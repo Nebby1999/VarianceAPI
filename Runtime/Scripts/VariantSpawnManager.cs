@@ -134,8 +134,8 @@ namespace VAPI
             if (controllerForBody.doNotRollForVariants == true)
                 return false;
 
-            //If the body has a master storage, and the master storage has stored variants, do not roll new ones
-            if(controllerForBody.characterMasterVariantStorage != null && controllerForBody.characterMasterVariantStorage.hasStoredVariants)
+            //If the body has a master storage, and the master storage has stored variants for the body, do not roll new ones.
+            if(controllerForBody.characterMasterVariantStorage != null && controllerForBody.characterMasterVariantStorage.HasVariantsForBody(body.bodyIndex))
             {
                 return false;
             }

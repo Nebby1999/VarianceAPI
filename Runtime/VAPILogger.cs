@@ -59,11 +59,15 @@ namespace VAPI
 
         private static void LogRuntime(LogLevel level, object data, int i, string member)
         {
-            object data2 = (level.HasFlag(LogLevel.Warning) || level.HasFlag(LogLevel.Error) || level.HasFlag(LogLevel.Fatal)) ? Format(data, i, member) : data;
+            bool isWarning = level.HasFlag(LogLevel.Warning); // (level & LogLevel.Warning) == 0;
+            bool isError = level.HasFlag(LogLevel.Error); // (level & LogLevel.Error) == 0;
+            bool isFatal = level.HasFlag(LogLevel.Fatal); // (level & LogLevel.Fatal) == 0;
+
+            object data2 = (isWarning || isError || isFatal) ? Format(data, i, member) : data;
 
             _log?.Log(level, data2);
 #if DEBUG
-            if (_breakableLevel.HasFlag(level))
+            if (_breakableLevel.HasFlag(level))//((_breakableLevel & level) == 0)
             {
                 Break();
             }

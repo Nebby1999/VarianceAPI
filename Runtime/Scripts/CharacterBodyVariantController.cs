@@ -20,43 +20,39 @@ namespace VAPI
     /// </summary>
     public sealed class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
     {
-        public CharacterMasterVariantStorage characterMasterVariantStorage { get; private set; }
-        /*public CharacterMasterVariantStorage? characterMasterVariantStorage
+        public CharacterMasterVariantStorage? characterMasterVariantStorage
         {
             get
             {
-                //Return it if we already have it
-                if (_characterMasterVariantStorage)
-                    return _characterMasterVariantStorage;
-
-                //Search it up.
-
-                //If the body somehow doesnt exist, or the body is flagged as masterless, return null.
-                if(!characterBody || !characterBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless))
+                //If the backing field is not null, and the storage's master's body points to our body, return the backing field.
+                if (_characterMasterVariantStorage != null && _characterMasterVariantStorage.characterMaster && _characterMasterVariantStorage.characterMaster.GetBody() == characterBody)
                 {
-                    return null;
+                    return _characterMasterVariantStorage;
                 }
+                //Search our current storage and assign to the backing field
 
-                var master = characterBody.master;
-
-                //If there is no master, return null
-                if (!master)
+                //If there's no body, or the body is flagged as materless, return
+                if (!characterBody || characterBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless))
                     return null;
 
-                var storage = master.EnsureComponent<CharacterMasterVariantStorage>();
-                storage.AssignController(this);
-                return storage;
+                //Retrieve the storage from the master, cache the result
+                if(characterBody.master && characterBody.master.TryGetComponent<CharacterMasterVariantStorage>(out var storageInMaster))
+                {
+                    _characterMasterVariantStorage = storageInMaster;
+                }
+                return _characterMasterVariantStorage;
             }
         }
-        private CharacterMasterVariantStorage? _characterMasterVariantStorage;*/
+        private CharacterMasterVariantStorage? _characterMasterVariantStorage;
+
         public ReadOnlyArray<CharacterVariantDef> characterVariantDefs
         {
             get
             {
-                //If the master storage is not null, and it has stored variants, utilize it's stored array.
-                if (characterMasterVariantStorage != null && characterMasterVariantStorage.hasStoredVariants)
+                //If we have the storage, try getting the stored variants.
+                if(characterMasterVariantStorage != null && characterMasterVariantStorage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out var variantDefs))
                 {
-                    return characterMasterVariantStorage.storedVariants;
+                    return variantDefs!;
                 }
 
                 //Storage null, return our array
@@ -69,6 +65,7 @@ namespace VAPI
         public CharacterBody characterBody { get; private set; }
         public CharacterDeathBehavior? characterDeathBehavior { get; private set; }
         public CharacterModel? characterModel { get; private set; }
+
         /// <summary>
         /// The VariantSpawnManager will not roll for variants for this controller if this is true.
         /// </summary>
@@ -86,9 +83,6 @@ namespace VAPI
         }
         [SyncVar]
         private bool _doNotRollForVariants;
-
-        public event Action? onVariantsUnappliedBody;
-        public event Action<CharacterVariantDef[]>? onVariantsAppliedBody;
 
         private void Awake()
         {
@@ -112,46 +106,58 @@ namespace VAPI
             {
                 _skinHasBeenApplied = true;
             }
+
+            _characterVariantIndices.Callback = SyncListCallback; //Apply callback
         }
 
         private bool _skinHasBeenApplied = false;
         private void OnSkinApplied(int obj) => _skinHasBeenApplied = true;
 
-        //At this point the link between master and body should be set
-        private void Start()
+        public override void OnStartServer()
         {
-            if(characterMasterVariantStorage == null)
+            base.OnStartServer();
+
+            //When the controller starts on the server, check if we have a storage.
+            //If the storage has a variants array, set them on the controller.
+
+            //On the server when the body spawns it'll apply the ones on the storage.
+            //If the body respawns (via an extra life or via polymorph), it'll set the variants
+
+            //If a client disconnects, when reconnecting the server should have the proper array of variants to send to the client.
+            if(characterMasterVariantStorage != null && characterMasterVariantStorage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out CharacterVariantDef[]? storedVariants))
             {
-                //Do not retrieve or try to create the storage if flagged as masterless
-                if (!characterBody || characterBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless))
-                    return;
-
-                //Do not retrieve or try to create the storage if master doesnt exist
-                var master = characterBody.master;
-                if (!master)
-                    return;
-
-                //Ensure the component itself, and try to assign ourselves to the storage.
-                characterMasterVariantStorage = master.EnsureComponent<CharacterMasterVariantStorage>();
-                characterMasterVariantStorage.TryAssignController(this);
+                //We want to call the internal method directly, as we're using the variants in the storage rather than a foreign array
+                SetCharacterVariantDefsServerInternal(storedVariants!);
             }
         }
 
+        //public facing method, in VAPI it's called by the spawn manager and the Util method to turn something into a variant.
+        //It'll reject the incoming array if the master storage already has variants for the character.
         [Server]
         public void SetCharacterVariantDefsServer(CharacterVariantDef[] variantDefs)
         {
             if (!characterBody)
                 return;
 
-            if(characterMasterVariantStorage != null && characterMasterVariantStorage.hasStoredVariants)
+            if (variantDefs == null)
+                return;
+
+            //If we have a storage, and the storage already has variants set for our body, reject.
+            if(characterMasterVariantStorage != null && characterMasterVariantStorage.HasVariantsForBody(characterBody.bodyIndex))
             {
-                VAPILog.Warning($"Tried to set {this}'s variant defs, but it has a master storage and the master storage's stored variants are valid! this is not allowed!");
+                VAPILog.Warning($"Tried to set {this}'s variant defs, but the master storage has variants for {BodyCatalog.GetBodyName(characterBody.bodyIndex)}! This is not allowed!");
                 return;
             }
 
+            SetCharacterVariantDefsServerInternal(variantDefs);
+        }
+
+        [Server]
+        private void SetCharacterVariantDefsServerInternal(CharacterVariantDef[] variantDefs)
+        {
             //Clear the synclist, then add the new variants
             _characterVariantIndices.Clear();
-            for(int i = 0; i < variantDefs.Length; i++)
+            for (int i = 0; i < variantDefs.Length; i++)
             {
                 _characterVariantIndices.Add(variantDefs[i].characterVariantIndex);
             }
@@ -160,20 +166,6 @@ namespace VAPI
             OnSyncListDirty();
         }
 
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-            _characterVariantIndices.Callback = SyncListCallback; //Apply callback
-        }
-
-        //Callback is only called if the server is a client. So i _think_ a dedicated server will never get this callback, which isnt good.
-        //Because of that, we will use this callback as a "Client only" callback.
-        //From HLAPI source code:
-        //
-        //if (m_Behaviour.isServer && m_Behaviour.isClient && m_Callback != null)
-        //{
-        //  m_Callback.Invoke(op, itemIndex);
-        //}
         private void SyncListCallback(SyncList<NetworkCharacterVariantIndex>.Operation op, int itemIndex)
         {
             //GTFO if server.
@@ -188,8 +180,10 @@ namespace VAPI
             //First, unapply the modifications, if any
             UnapplyBodyModifications(characterVariantDefs);
 
-            //Invoke the event, the master storage listens this to unapply it's master modifiers
-            onVariantsUnappliedBody?.Invoke();
+            if(characterMasterVariantStorage != null)
+            {
+                characterMasterVariantStorage.UnapplyVariants();
+            }
 
             //Second, create new array and populate.
             _fallbackCharacterVariantDefs = new CharacterVariantDef[_characterVariantIndices.Count];
@@ -201,8 +195,10 @@ namespace VAPI
             //Thirdly, apply body modifications
             ApplyBodyModifications(_fallbackCharacterVariantDefs);
 
-            //Invoke the event, the master storage listens this to apply it's master modifications and store the variants
-            onVariantsAppliedBody?.Invoke(_fallbackCharacterVariantDefs);
+            if(characterMasterVariantStorage != null)
+            {
+                characterMasterVariantStorage.ApplyVariants(characterBody.bodyIndex, _fallbackCharacterVariantDefs);
+            }
         }
 
         private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
@@ -334,8 +330,8 @@ namespace VAPI
 
         private void OnDestroy()
         {
-            onVariantsAppliedBody = null;
-            onVariantsUnappliedBody = null;
+            //onVariantsAppliedBody = null;
+            //onVariantsUnappliedBody = null;
         }
 
         /*//So, VAPI 3.0 has the ability to store the variants on a master, however, we want to allow the ability for masterless variants to be a thing.

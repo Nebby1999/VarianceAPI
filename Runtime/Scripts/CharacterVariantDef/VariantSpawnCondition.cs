@@ -191,7 +191,7 @@ namespace VAPI
             {
                 return true;
             }
-            return stages.HasFlag(stageInfo.stage);
+            return (stages & stageInfo.stage) == 0;
         }
 
         /// <summary>

@@ -299,7 +299,22 @@ namespace VAPI
                 }
             }
 
-            VAPILog.Info($"Created providers and added the necessary behaviours to bodies");
+            //We now need to add the master storage to the master prefabs.
+            foreach(var masterPrefab in MasterCatalog.masterPrefabs)
+            {
+                //If the master has a body prefab, and the body prefab has a body, and the body to variants dictionary has it's body prefab's body index, add the storage.
+                //if that chain fails, check if the master prefab has the player character master controller, if so, add the storage anyways.
+
+                if((masterPrefab.TryGetComponent<CharacterMaster>(out var master) && 
+                    master.bodyPrefab && 
+                    master.bodyPrefab.TryGetComponent<CharacterBody>(out var body) && 
+                    bodyToVariants.ContainsKey(body.bodyIndex)) || masterPrefab.TryGetComponent<PlayerCharacterMasterController>(out _))
+                {
+                    masterPrefab.AddComponent<CharacterMasterVariantStorage>();
+                }
+            }
+
+            VAPILog.Info($"Created providers and added the necessary behaviours to bodies and masters");
             _characterVariantProviders = characterVariantProviders;
             if(providerlessVariants.Count > 0)
             {
