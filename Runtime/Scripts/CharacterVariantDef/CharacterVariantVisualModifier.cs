@@ -197,27 +197,30 @@ namespace VAPI
                 }
             }
 
-            for(int i = 0; i < meshReplacements.Length; i++)
+            if(VAPIConfig._activateMeshReplacementSystem)
             {
-                RendererTargetedReplacement<Mesh> rendererTargetedReplacement = meshReplacements[i];
-                if(!rendererTargetedReplacement.replacement)
+                for(int i = 0; i < meshReplacements.Length; i++)
                 {
-                    VAPILog.Warning($"Mesh Replacement at index {i} of {this} lacks a Mesh. Not applying mesh replacement.");
-                    continue;
-                }
+                    RendererTargetedReplacement<Mesh> rendererTargetedReplacement = meshReplacements[i];
+                    if(!rendererTargetedReplacement.replacement)
+                    {
+                        VAPILog.Warning($"Mesh Replacement at index {i} of {this} lacks a Mesh. Not applying mesh replacement.");
+                        continue;
+                    }
 
-                if(rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
-                {
-                    ref var rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
-                    SetMesh(rendererInfo.renderer, rendererTargetedReplacement.replacement!);
-                }
-                else if(rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
-                {
-                    SetMesh(renderer!, rendererTargetedReplacement.replacement!);
-                }
-                else
-                {
-                    VAPILog.Error($"Failed to apply Mesh Replacement at index {i} of {this}. The renderer could not be obtained via it's RendererInfo index or via the Transform Path.");
+                    if(rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
+                    {
+                        ref var rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
+                        SetMesh(rendererInfo.renderer, rendererTargetedReplacement.replacement!);
+                    }
+                    else if(rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
+                    {
+                        SetMesh(renderer!, rendererTargetedReplacement.replacement!);
+                    }
+                    else
+                    {
+                        VAPILog.Error($"Failed to apply Mesh Replacement at index {i} of {this}. The renderer could not be obtained via it's RendererInfo index or via the Transform Path.");
+                    }
                 }
             }
 

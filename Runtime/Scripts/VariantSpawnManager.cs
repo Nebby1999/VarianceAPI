@@ -1,4 +1,5 @@
 #nullable enable
+using MSU;
 using MSU.Config;
 using RiskOfOptions.OptionConfigs;
 using RoR2;
@@ -18,6 +19,7 @@ namespace VAPI
         /// <summary>
         /// The config for the Artifact of Variance's multiplier
         /// </summary>
+        [FormatToken("VAPI_ARTIFACT_VARIANCE_DESC")]
         [AutoConfig]
         public static ConfiguredFloat artifactSpawnRateMultiplier = new ConfiguredFloat(2)
         {

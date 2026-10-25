@@ -202,7 +202,7 @@ namespace VAPI
             public List<AddressableItemCountPair>? tierItems;
             public AddressReferencedBuffDef? tierBuffDef;
 
-            public string? spawnedSoundEvent;
+            public NetworkSoundEventDef? spawnedSoundEvent;
 
             /// <summary>
             /// Defaults to 0
@@ -268,7 +268,7 @@ namespace VAPI
                 return this;
             }
 
-            public CreateInstanceArgs SetSpawnedSoundEvent(string _spawnedSoundEvent)
+            public CreateInstanceArgs SetSpawnedSoundEvent(NetworkSoundEventDef _spawnedSoundEvent)
             {
                 spawnedSoundEvent = _spawnedSoundEvent;
                 return this;
@@ -333,7 +333,7 @@ namespace VAPI
             tierDef.announceArrivalInChat = args.announceArrivalInChat ?? false;
             tierDef.tierItems = args.tierItems?.ToArray() ?? tierDef.tierItems;
             tierDef.tierBuffDef = args.tierBuffDef ?? tierDef.tierBuffDef;
-            tierDef.spawnedSoundEvent = args.spawnedSoundEvent ?? "";
+            tierDef.spawnedSoundEvent = args.spawnedSoundEvent;
             tierDef.bonusArmor = args.bonusArmor ?? 0;
             tierDef.experienceRewardCoefficient = args.expRewardCoefficient ?? 0 + float.Epsilon;
             tierDef.goldRewardCoefficient = args.goldRewardCoefficient ?? 0 + float.Epsilon;

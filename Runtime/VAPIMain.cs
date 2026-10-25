@@ -9,8 +9,6 @@ using UnityEngine;
 
 namespace VAPI
 {
-    //TODO: Implement infinite tower support
-
     /// <summary>
     /// VarianceAPI's main class
     /// </summary>

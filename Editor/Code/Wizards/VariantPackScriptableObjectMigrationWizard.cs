@@ -188,6 +188,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                     name = legacyTierDef.name,
                     announceArrivalInChat = legacyTierDef.announcesArrival,
                     bonusArmor = legacyTierDef.armorBonus,
+                    spawnedSoundEvent = legacyTierDef.soundEvent,
                     expRewardCoefficient = legacyTierDef.experienceMultiplier,
                     goldRewardCoefficient = legacyTierDef.goldMultiplier,
                     commonItemRewardChance = legacyTierDef.whiteItemDropChance,
