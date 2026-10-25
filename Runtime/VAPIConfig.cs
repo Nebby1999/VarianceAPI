@@ -37,7 +37,7 @@ namespace VAPI
         /// </summary>
         public static ConfigFile? generalConfig { get; private set; }
         [AutoConfig]
-        internal static ConfiguredBool? _showVariantRuleCategory, _enableArtifactOfVariance, _activateMeshReplacementSystem, _sendArrivalMessages, _modifyGupDeathStates;
+        internal static ConfiguredBool? _showVariantRuleCategory, _enableArtifactOfVariance, _activateMeshReplacementSystem, _sendArrivalMessages, _playArrivalSFX, _modifyGupDeathStates;
         [AutoConfig]
         internal static ConfiguredColor? _variantHealthBarColor;
 
@@ -94,14 +94,18 @@ namespace VAPI
                 section = "General",
                 key = "Enable Artifact of Variance",
                 description = "Wether the Artifact of Variance is shown in the Artifacts section",
-                configFile = generalConfig
+                configFile = generalConfig,
+                checkBoxConfig = new CheckBoxConfig
+                {
+                    checkIfDisabled = () => Run.instance,
+                }
             }.WithConfigChange(b =>
             {
                 var ruleDef = VAPIRuleBook._varianceArtifactRuleDef;
                 ruleDef.FindChoice("On").excludeByDefault = !b;
                 ruleDef.FindChoice("Off").excludeByDefault = !b;
 
-                //TODO: remove or add infinite tower modifier if necessary.
+                InfiniteTower.AddOrRemoveWave(b);
 
                 if (PreGameController.instance && NetworkServer.active)
                     PreGameController.instance.RecalculateModifierAvailability();
@@ -120,6 +124,14 @@ namespace VAPI
                 section = "General",
                 key = "Send Arrival Messages",
                 description = "Wether variants which tier's send messages on arrival send said messages.",
+                configFile = generalConfig,
+            };
+
+            _playArrivalSFX = new ConfiguredBool(true)
+            {
+                section = "General",
+                key = "Play Arrival Sound Effects",
+                description = "Wether variants which tier's play sound effects on arrival play said sound effects.",
                 configFile = generalConfig,
             };
 

@@ -1,6 +1,8 @@
 #nullable enable
 using EntityStates;
 using MSU;
+using R2API;
+using R2API.ScriptableObjects;
 using RoR2;
 using RoR2.ContentManagement;
 using RoR2.ExpansionManagement;
@@ -21,7 +23,6 @@ namespace VAPI
         /// </summary>
         public static readonly LazyLoader<ExpansionDef> VAPIExpansion = new LazyLoader<ExpansionDef>(nameof(VAPIExpansion));
 
-        //TODO: Implement artifact code
         /// <summary>
         /// VAPI's Artifact
         /// </summary>
@@ -268,6 +269,14 @@ namespace VAPI
         
         public IEnumerator FinalizeAsync(FinalizeAsyncArgs args)
         {
+            using VAPIAssetRequest<ArtifactCode> request = VAPIAssets.LoadAssetAsync<ArtifactCode>("VarianceCode");
+            while(!request.isComplete)
+            {
+                yield return null;
+            }
+
+            ArtifactCodeAPI.AddCode(VAPIContent.Artifacts.Variance.asset!, request.asset);
+
             args.ReportProgress(1f);
             yield break;
         }

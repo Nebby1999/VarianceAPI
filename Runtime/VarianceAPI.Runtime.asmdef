@@ -32,7 +32,8 @@
         "MonoMod.Utils.dll",
         "KinematicCharacterController.dll",
         "Mono.Cecil.dll",
-        "AsyncManagement.dll"
+        "AsyncManagement.dll",
+        "R2API.Prefab.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [

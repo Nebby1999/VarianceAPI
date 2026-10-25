@@ -77,9 +77,8 @@ namespace VAPI
         [Tooltip("Variants of this tier will have this buff")]
         public AddressReferencedBuffDef tierBuffDef = new AddressReferencedBuffDef();
 
-        //TODO: Hook this up
         [Tooltip("A sound event that plays when the variant spawns")]
-        public string spawnedSoundEvent = "";
+        public NetworkSoundEventDef? spawnedSoundEvent;
 
         [Tooltip("A flat bonus armor added to variants of this tier. This value is compounded if multiple variants are assigned to a character")]
         public float bonusArmor;

@@ -8,6 +8,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
+using Random = UnityEngine.Random;
+using Object = UnityEngine.Object;
 
 namespace VAPI
 {
@@ -83,7 +85,22 @@ namespace VAPI
         }
         [SyncVar]
         private bool _doNotRollForVariants;
+        public bool supressArrivalMessage
+        {
+            get => _supressArrivalMessage;
+            [Server]
+            set
+            {
+                if(_supressArrivalMessage != value)
+                {
+                    _supressArrivalMessage = value;
+                }
+            }
+        }
+        [SyncVar]
+        private bool _supressArrivalMessage;
 
+        public event Action? onVariantsUnapplied;
         public event Action<CharacterVariantDef[]>? onVariantsApplied;
 
         private void Awake()
@@ -187,6 +204,8 @@ namespace VAPI
                 characterMasterVariantStorage.UnapplyVariants();
             }
 
+            onVariantsUnapplied?.Invoke();
+
             //Second, create new array and populate.
             _fallbackCharacterVariantDefs = new CharacterVariantDef[_characterVariantIndices.Count];
             for(int i = 0; i < _characterVariantIndices.Count; i++)
@@ -203,6 +222,69 @@ namespace VAPI
             }
 
             onVariantsApplied?.Invoke(_fallbackCharacterVariantDefs);
+
+            //If we're not supressing the arrival, and the config lets us send them, send it.
+            if(!supressArrivalMessage && VAPIConfig._sendArrivalMessages)
+            {
+                AnnounceArrival();
+            }
+        }
+
+        private static readonly List<string> _possibleArrivalTokensShared = new List<string>();
+        private static readonly List<NetworkSoundEventDef> _possibleSpawnSoundsShared = new List<NetworkSoundEventDef>();
+        private void AnnounceArrival()
+        {
+            //Get out if not the server
+            if(!NetworkServer.active)
+            {
+                return;
+            }
+
+            _possibleArrivalTokensShared.Clear();
+            _possibleSpawnSoundsShared.Clear();
+
+            bool shouldAnnounceArrival = false;
+            bool shouldPlaySFX = false;
+
+            for(int i = 0; i < _fallbackCharacterVariantDefs.Length; i++)
+            {
+                var def = _fallbackCharacterVariantDefs[i];
+                if (!def || def.variantTier == null)
+                    continue;
+
+                if(def.variantTier.announceArrivalInChat)
+                {
+                    shouldAnnounceArrival = true;
+                    if(!string.IsNullOrWhiteSpace(def.arrivalToken))
+                    {
+                        _possibleArrivalTokensShared.Add(def.arrivalToken);
+                    }
+                }
+
+                if(def.variantTier.spawnedSoundEvent)
+                {
+                    shouldPlaySFX = true;
+                    _possibleSpawnSoundsShared.Add(def.variantTier.spawnedSoundEvent);
+                }
+            }
+
+            if (shouldAnnounceArrival)
+            {
+                //If somehow all the defs that had the correct tier setting don't have arrival tokens, use the generic arrival.
+                bool hasAtLeastOneToken = _possibleArrivalTokensShared.Count > 0;
+                string arrivalToken = hasAtLeastOneToken ? HG.ArrayUtils.GetRandom(_possibleArrivalTokensShared) : "VAPI_GENERIC_ARRIVAL";
+                Chat.SendBroadcastChat(new Chat.SimpleChatMessage
+                {
+                    baseToken = arrivalToken,
+                    paramTokens = hasAtLeastOneToken ? new string[] { Language.GetString(characterBody.baseNameToken) } : null,
+                });
+            }
+
+            if(shouldPlaySFX && _possibleSpawnSoundsShared.Count > 0)
+            {
+                var spawnSFX = HG.ArrayUtils.GetRandom(_possibleSpawnSoundsShared);
+                EffectManager.SimpleSoundEffect(spawnSFX.index, characterBody.corePosition, true);
+            }
         }
 
         private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);

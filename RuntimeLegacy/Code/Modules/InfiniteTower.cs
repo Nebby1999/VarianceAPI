@@ -1,6 +1,7 @@
 ﻿using MSU;
 using RoR2;
 using RoR2.UI;
+using RoR2BepInExPack.GameAssetPathsBetter;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,7 +11,6 @@ using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.UI;
-using RoR2BepInExPack.GameAssetPaths.Version_1_39_0;
 
 namespace VAPI.Legacy.Modules
 {

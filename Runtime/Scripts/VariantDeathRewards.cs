@@ -1,8 +1,10 @@
 #nullable enable
 using HG;
 using RoR2;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 namespace VAPI
 {
@@ -11,6 +13,13 @@ namespace VAPI
     /// </summary>
     public sealed class VariantDeathRewards : MonoBehaviour, IOnKilledServerReceiver
     {
+        public enum ItemRewardType
+        {
+            Permanent,
+            Temporary,
+            Ethereal
+        }
+
         private sealed class ChanceWithCount
         {
             public float highestBaseChanceObserved = float.NegativeInfinity;
@@ -36,6 +45,31 @@ namespace VAPI
                 }
                 compoundedChance += chance;
                 compoundedCount++;
+            }
+        }
+        private struct DisposeModifiers : IDisposable
+        {
+            public DeathRewards? targetDeathRewards;
+
+            public float utilizedGoldRewardCoefficient;
+            public float utilizedExpRewardCoefficient;
+
+            public void Dispose()
+            {
+                if(targetDeathRewards)
+                {
+                    float modifiedGoldReward = targetDeathRewards!.goldReward;
+                    float newGoldReward = modifiedGoldReward / utilizedGoldRewardCoefficient;
+                    targetDeathRewards.goldReward = (uint)newGoldReward;
+
+                    float modifiedExpReward = targetDeathRewards!.expReward;
+                    float newExpReward = modifiedExpReward / utilizedExpRewardCoefficient;
+                    targetDeathRewards.expReward = (uint)newExpReward;
+                }
+
+                targetDeathRewards = null;
+                utilizedExpRewardCoefficient = 0;
+                utilizedGoldRewardCoefficient = 0;
             }
         }
 
@@ -69,24 +103,26 @@ namespace VAPI
 
         private void OnEnable()
         {
+            if(characterBodyVariantController)
+            {
+                characterBodyVariantController.onVariantsUnapplied += OnVariantsUnapplied;
+                characterBodyVariantController.onVariantsApplied += OnVariantsApplied;
+            }
         }
 
         private void OnDisable()
         {
+            if (characterBodyVariantController)
+            {
+                characterBodyVariantController.onVariantsUnapplied -= OnVariantsUnapplied;
+                characterBodyVariantController.onVariantsApplied -= OnVariantsApplied;
+            }
         }
 
-        private bool _rewardsApplied = false;
+        private DisposeModifiers? _disposeModifiers;
 
-        //TODO: Impl call sites for this shit
-        private void OnBecameVariant(ReadOnlyArray<CharacterVariantDef> variants)
+        private void OnVariantsApplied(CharacterVariantDef[] variants)
         {
-            if (_rewardsApplied)
-            {
-                VAPILog.Warning($"Cannot apply rewards twice for {this}");
-                return;
-            }
-            _rewardsApplied = true;
-
             if (supressRewards)
                 return;
 
@@ -168,11 +204,15 @@ namespace VAPI
             {
                 if (finalGoldMultiplier > 0)
                 {
-                    deathRewards!.goldReward *= (uint)finalGoldMultiplier;
+                    float baseGoldReward = deathRewards!.goldReward;
+                    float newGoldReward = baseGoldReward * finalGoldMultiplier;
+                    deathRewards!.goldReward = (uint)newGoldReward;
                 }
                 if (finalExpMultiplier > 0)
                 {
-                    deathRewards!.expReward *= (uint)finalExpMultiplier;
+                    float baseExpReward = deathRewards!.expReward;
+                    float newExpReward = baseExpReward * finalExpMultiplier;
+                    deathRewards!.expReward = (uint)newExpReward;
                 }
             }
 
@@ -185,6 +225,13 @@ namespace VAPI
             }
 
             _pickupRewardChance = totalChanceForItemPickup;
+        }
+
+        private void OnVariantsUnapplied()
+        {
+            _disposeModifiers?.Dispose();
+            _pickupTierRewardSelection.Clear();
+            _pickupRewardChance = 0f;
         }
 
         public void OnKilledServer(DamageReport damageReport)
