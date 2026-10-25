@@ -1,0 +1,68 @@
+{
+    "strings":
+    {
+    "VAPI_EXPANSION_NAME": "VarianceAPI",
+    "VAPI_EXPANSION_DESC": "Enables Variants to spawn in-game.",
+
+    "VAPI_ARTIFACT_VARIANCE_NAME" : "Artifact of Variance",
+    "VAPI_ARTIFACT_VARIANCE_DESC" : "Variant spawn rate is multiplied by {0}",
+
+    "VAPI_ITEM_EXTRAPRIMARY_NAME" : "Extra Primary Skill",
+    "VAPI_ITEM_EXTRAPRIMARY_PICKUP" : "Gain an extra <style=cIsUtility>Primary Skill stock</style>.",
+    "VAPI_ITEM_EXTRAPRIMARY_DESC" : "Gain an <style=cIsHealing>extra stock</style> for your <style=cIsUtility>Primary Skill</style> <style=cStack>(+1 per stack)</style>.",
+
+    "VAPI_ITEM_EXTRASECONDARY_NAME" : "Extra Secondary Skill",
+    "VAPI_ITEM_EXTRASECONDARY_PICKUP" : "Gain an extra <style=cIsUtility>Secondary Skill stock</style>.",
+    "VAPI_ITEM_EXTRASECONDARY_DESC" : "Gain an <style=cIsHealing>extra stock</style> for your <style=cIsUtility>Secondary Skill</style> <style=cStack>(+1 per stack)</style>.",
+
+    "VAPI_ITEM_EXTRAUTILITY_NAME" : "Extra Utility Skill",
+    "VAPI_ITEM_EXTRAUTILITY_PICKUP" : "Gain an extra <style=cIsUtility>Utility Skill stock</style>.",
+    "VAPI_ITEM_EXTRAUTILITY_DESC" : "Gain an <style=cIsHealing>extra stock</style> for your <style=cIsUtility>Utility Skill</style> <style=cStack>(+1 per stack)</style>.",
+
+    "VAPI_ITEM_EXTRASPECIAL_NAME" : "Extra Special Skill",
+    "VAPI_ITEM_EXTRASPECIAL_PICKUP" : "Gain an extra <style=cIsUtility>Special Skill stock</style>.",
+    "VAPI_ITEM_EXTRASPECIAL_DESC" : "Gain an <style=cIsHealing>extra stock</style> for your <style=cIsUtility>Special Skill</style> <style=cStack>(+1 per stack)</style>.",
+
+    "VAPI_ITEM_GLOBALCDR_NAME" : "Global Cooldown Reduction",
+    "VAPI_ITEM_GLOBALCDR_PICKUP" : "<style=cIsHealing>Reduces the cooldowns of ALL your skills</style> by <style=cIsUtility>1%</style>.",
+    "VAPI_ITEM_GLOBALCDR_DESC" : "<style=cIsHealing>Reduces the cooldowns of ALL your skills</style> by <style=cIsUtility>1%</style> <style=cStack>(+1 per stack)</style>.",
+
+    "VAPI_ITEM_PRIMARYCDR_NAME" : "Primary Cooldown Reduction",
+    "VAPI_ITEM_PRIMARYCDR_PICKUP" : "<style=cIsHealing>Reduces the cooldown</style> of your <style=cIsUtility>Primary Skill</style> by <style=cIsUtility>1%</style>.",
+    "VAPI_ITEM_PRIMARYCDR_DESC" : "<style=cIsHealing>Reduces the cooldown</style> of your <style=cIsUtility>Primary Skill</style> by <style=cIsUtility>1%</style> <style=cStack>(+1 per stack)</style>.",
+
+    "VAPI_ITEM_SECONDARYCDR_NAME" : "Secondary Cooldown Reduction",
+    "VAPI_ITEM_SECONDARYCDR_PICKUP" : "<style=cIsHealing>Reduces the cooldown</style> of your <style=cIsUtility>Secondary Skill</style> by <style=cIsUtility>1%</style>.",
+    "VAPI_ITEM_SECONDARYCDR_DESC" : "<style=cIsHealing>Reduces the cooldown</style> of your <style=cIsUtility>Secondary Skill</style> by <style=cIsUtility>1%</style> <style=cStack>(+1 per stack)</style>.",
+
+    "VAPI_ITEM_UTILITYCDR_NAME" : "Utility Cooldown Reduction",
+    "VAPI_ITEM_UTILITYCDR_PICKUP" : "<style=cIsHealing>Reduces the cooldown</style> of your <style=cIsUtility>Utility Skill</style> by <style=cIsUtility>1%</style>.",
+    "VAPI_ITEM_UTILITYCDR_DESC" : "<style=cIsHealing>Reduces the cooldown</style> of your <style=cIsUtility>Utility Skill</style> by <style=cIsUtility>1%</style> <style=cStack>(+1 per stack)</style>.",
+
+    "VAPI_ITEM_SPECIALCDR_NAME" : "Special Cooldown Reduction",
+    "VAPI_ITEM_SPECIALCDR_PICKUP" : "<style=cIsHealing>Reduces the cooldown</style> of your <style=cIsUtility>Special Skill</style> by <style=cIsUtility>1%</style>.",
+    "VAPI_ITEM_SPECIALCDR_DESC" : "<style=cIsHealing>Reduces the cooldown</style> of your <style=cIsUtility>Special Skill</style> by <style=cIsUtility>1%</style> <style=cStack>(+1 per stack)</style>.",
+
+    "VAPI_ITEM_PLUS1CRIT_NAME" : "+1 Crit",
+    "VAPI_ITEM_PLUS1CRIT_PICKUP" : "<style=cIsHealing>Increases</style> your <style=cIsDamage>critical strike</style> chance by <style=IsUtility>1%</style>.",
+    "VAPI_ITEM_PLUS1CRIT_DESC" : "<style=cIsHealing>Increases</style> your <style=cIsDamage>critical strike</style> chance by <style=IsUtility>1%</style> <style=cStack>(+1% per stack)</style>.",
+
+    "VAPI_ITEM_GREENHEALTHBAR_NAME" : "Colored Healthbar",
+    "VAPI_ITEM_GREENHEALTHBAR_PICKUP" : "Your <style=cIsHealing>Healthbar</style> has a different <style=cIsUtility>color</style>.",
+    "VAPI_ITEM_GREENHEALTHBAR_DESC" : "Your <style=cIsHealing>Healthbar</style> has a different <style=cIsUtility>color</style>. This has <style=cSub>no effect on your abilities</style>.",
+
+    "VAPI_GENERIC_ARRIVAL": "A {0} with unique properties has appeared!",
+
+    "VAPI_RULE_HEADER_VARIANTPACKS": "Variant Packs",
+    "VAPI_RULE_HEADER_VARIANTPACKS_SUBTITLE": "Variant Packs are custom Packages of Variants that will provide custom and unique variants to enemies in the game, Each pack can be enabled or disabled.",
+    "VAPI_RULE_HEADER_VARIANTPACKS_EMPTY": "There are no Variant Packs installed.",
+    
+    "VAPI_RULE_HEADER_VARIANTS": "Individual Variants",
+    "VAPI_RULE_HEADER_VARIANTS_EMPTY": "There are no available Variants.",
+    "VAPI_RULE_HEADER_VARIANTS_SUBTITLE": "Individual Variants that can spawn in the Run. Each variant may cause you misfortune, fun, or a gruesome death.",
+    "VAPI_RULE_VARIANT_ON_DESCRIPTION": "This variant will be able to spawn in the Run.",
+    "VAPI_RULE_VARIANT_OFF_DESCRIPTION": "This variant cannot spawn in the Run.",
+
+    "VAPI_INFINITETOWER_WAVE_COUNTER_VARIANCE":  "Wave {0} - Augment of Variety"
+    }
+}
