@@ -1,65 +1,114 @@
 #nullable enable
 using BepInEx.Configuration;
 using HG;
+using HG.Coroutines;
 using MSU.Config;
 using RiskOfOptions.OptionConfigs;
 using RoR2;
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEditor.VersionControl;
 using UnityEngine.Networking;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Index for <see cref="CharacterVariantTierDef"/>s
+    /// </summary>
     public enum CharacterVariantTierIndex
     {
+        /// <summary>
+        /// Represents ain invalid index
+        /// </summary>
         None = -1,
     }
 
+    /// <summary>
+    /// Catalog for <see cref="CharacterVariantTierDef"/>
+    /// </summary>
     public static class CharacterVariantTierCatalog
     {
+        /// <summary>
+        /// A <see cref="ReadOnlyArray{T}"/> of the registered <see cref="CharacterVariantTierDef"/>s
+        /// </summary>
+        public static ReadOnlyArray<CharacterVariantTierDef> registeredCharacterVariantTierDefs => _characterVariantTierDefs;
+
+        /// <summary>
+        /// The amount of <see cref="CharacterVariantTierDef"/>s stored in the catalog.
+        /// </summary>
         public static int characterVariantTierCount => _characterVariantTierDefs?.Length ?? -1;
         private static CharacterVariantTierDef[]? _characterVariantTierDefs;
         private static Dictionary<string, CharacterVariantTierIndex> _characterVariantTierNametoIndex = new Dictionary<string, CharacterVariantTierIndex>(StringComparer.OrdinalIgnoreCase);
 
+        /// <summary>
+        /// Catalog availability. Catalog initializes after <see cref="VariantPackManager"/>
+        /// </summary>
         public static ResourceAvailability catalogAvailability;
 
-        public static CharacterVariantTierDef GetCharacterVariantTierDef(CharacterVariantTierIndex index)
+        /// <summary>
+        /// Gets the <see cref="CharacterVariantTierDef"/> with the specified <paramref name="index"/>
+        /// <br></br>
+        /// Returns null if the <paramref name="index"/> is out of range
+        /// </summary>
+        /// <param name="index">The index of the <see cref="CharacterVariantTierDef"/></param>
+        public static CharacterVariantTierDef? GetCharacterVariantTierDef(CharacterVariantTierIndex index)
         {
             ThrowIfUnavailable();
             return HG.ArrayUtils.GetSafe(_characterVariantTierDefs!, (int)index);
         }
 
-        public static CharacterVariantTierIndex FindCharacterVariantTierIndex(string characterVariantTierName)
+        /// <summary>
+        /// Finds the <see cref="CharacterVariantTierIndex"/> that has the <see cref="CharacterVariantTierDef"/> with the specified name in <paramref name="characterVariantTierName"/>
+        /// <br></br>
+        /// Returns <see cref="CharacterVariantTierIndex.None"/> if there's no <see cref="CharacterVariantTierDef"/> with the name <paramref name="characterVariantTierName"/>
+        /// </summary>
+        /// <param name="characterVariantTierName">The name of the <see cref="CharacterVariantTierDef"/></param>
+        public static CharacterVariantTierIndex FindCharacterVariantTierIndex(string? characterVariantTierName)
         {
             ThrowIfUnavailable();
+
+            if(string.IsNullOrWhiteSpace(characterVariantTierName))
+            {
+                return CharacterVariantTierIndex.None;
+            }
+
             return _characterVariantTierNametoIndex.GetValueOrDefault(characterVariantTierName, CharacterVariantTierIndex.None);
         }
 
         [SystemInitializer(typeof(VariantPackManager))]
-        private static void Initialize()
+        private static IEnumerator Initialize()
         {
             _characterVariantTierNametoIndex.Clear();
 
-            _characterVariantTierDefs = RegisterTierDefs(VariantPackManager.characterVariantTierDefs);
+            using (var coroutineWithResult = CoroutineWithResult<CharacterVariantTierDef[]>.Rent(RegisterTierDefs(VariantPackManager.characterVariantTierDefs)))
+            {
+                while(coroutineWithResult.MoveNext())
+                {
+                    yield return null;
+                }
+
+                _characterVariantTierDefs = coroutineWithResult.result;
+            }
 
             VAPILog.Info($"CharacterVariantTierCatalog Initialized.");
 
             catalogAvailability.MakeAvailable();
         }
 
-        private static CharacterVariantTierDef[] RegisterTierDefs(ReadOnlyArray<CharacterVariantTierDef> tiers)
+        private static IEnumerator<CharacterVariantTierDef[]?> RegisterTierDefs(ReadOnlyArray<CharacterVariantTierDef> tiers)
         {
             CharacterVariantTierDef[] sortedTiers = new CharacterVariantTierDef[tiers.Length];
-            tiers.CopyTo(sortedTiers, 0 );
+            tiers.CopyTo(sortedTiers, 0);
 
             Array.Sort(sortedTiers, (a, b) => string.CompareOrdinal(a.cachedName, b.cachedName));
 
-            for(CharacterVariantTierIndex index = 0; ((int)index) < sortedTiers.Length; index++)
+            for (CharacterVariantTierIndex index = 0; ((int)index) < sortedTiers.Length; index++)
             {
+                yield return null;
                 CharacterVariantTierDef tierDef = sortedTiers[(int)index];
 
-                if(tierDef.associatedConfigFile != null)
+                if (tierDef.associatedConfigFile != null)
                 {
                     ConfigureTier(tierDef);
                 }
@@ -68,7 +117,7 @@ namespace VAPI
                 _characterVariantTierNametoIndex.Add(tierDef.cachedName, index);
             }
 
-            return sortedTiers;
+            yield return sortedTiers;
         }
 
         private static void ConfigureTier(CharacterVariantTierDef tierDef)
@@ -237,11 +286,17 @@ namespace VAPI
 
     public static partial class Extensions
     {
+        /// <summary>
+        /// Writes a <see cref="CharacterVariantTierIndex"/> to <paramref name="writer"/>
+        /// </summary>
         public static void Write(this NetworkWriter writer, CharacterVariantTierIndex index)
         {
             writer.WritePackedIndex32((int)index);
         }
 
+        /// <summary>
+        /// Reads a <see cref="CharacterVariantTierIndex"/> from <paramref name="reader"/>
+        /// </summary>
         public static CharacterVariantTierIndex ReadCharacterVariantTierIndex(this NetworkReader reader)
         {
             return (CharacterVariantTierIndex)reader.ReadPackedIndex32();

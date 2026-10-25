@@ -84,16 +84,41 @@ namespace VAPI
             return bodyName;
         }
     }
+
+    /// <summary>
+    /// Interface for implementing a name for a Variant.
+    /// <br></br>
+    /// Done via the <see cref="GetVariantName(string)"/> method.
+    /// <br></br>
+    /// Must support cloning via the <see cref="ICloneable"/> implementation.
+    /// <para></para>
+    /// <b>Built in name providers:</b>
+    /// <list type="bullet">
+    /// <item><see cref="VariantNameFormatter"/>: Uses a format token to retrieve the variant name</item>
+    /// <item><see cref="VariantNamePrefix"/>: Reimplementation of VAPI2.0's VariantNameOverride utilizing the "Prefix" override type.</item>
+    /// <item><see cref="VariantNameSuffix"/>: Reimplementation of VAPI2.0's VariantNameOverride utilizing the "Suffix" override type.</item>
+    /// <item><see cref="VariantNameOverride"/>: Reimplementation of VAPI2.0's VariantNameOverride utilizing the "Complete" override type</item>
+    /// </list>
+    /// </summary>
     public interface IVariantNameProvider : IValidatable, ICloneable
     {
         public string GetVariantName(string input);
     }
 
+    /// <summary>
+    /// A <see cref="IVariantNameProvider"/> that provides a name utilizing a format token.
+    /// </summary>
     [Serializable]
     public struct VariantNameFormatter : IVariantNameProvider
     {
+        /// <summary>
+        /// The format token to utilize
+        /// </summary>
         public string? formatToken;
 
+        /// <summary>
+        /// Returns a clone of this
+        /// </summary>
         public object Clone()
         {
             return new VariantNameFormatter
@@ -102,6 +127,9 @@ namespace VAPI
             };
         }
 
+        /// <summary>
+        /// Calls <see cref="Language.GetStringFormatted(string, object[])"/>, first argument is <see cref="formatToken"/> value, second argument is <paramref name="input"/>
+        /// </summary>
         public string GetVariantName(string input)
         {
             if(string.IsNullOrWhiteSpace(formatToken))
@@ -109,9 +137,12 @@ namespace VAPI
                 return input;
             }
 
-            return Language.GetStringFormatted(formatToken, input);
+            return Language.GetStringFormatted(Language.GetString(formatToken), input);
         }
 
+        /// <summary>
+        /// Validate method
+        /// </summary>
         public void Validate() { }
     }
 

@@ -2,9 +2,15 @@
 using RoR2.Skills;
 using RoR2;
 using System;
+using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Represents a replacement for a Skill.
+    /// <br></br>
+    /// This class shouldn't be reused across multiple variants, call <see cref="Clone"/> instead of reusing.
+    /// </summary>
     [Serializable]
     public sealed class VariantSkillReplacement : ICloneable
     {
@@ -31,10 +37,17 @@ namespace VAPI
             }
         }
 
+        [Tooltip("The skill to use as a replacement, can be left null.")]
         public SkillDef? skillDef;
+
+        [Tooltip("The slot to replace it's skill, if left none, the slot name is used instead")]
         public SkillSlot slot = SkillSlot.None;
+        [Tooltip("The name of the GenericSkill to replace it's skill, only used if slot is set to None")]
         public string slotName = "";
 
+        /// <summary>
+        /// Applies the skill replacements to the skill locator.
+        /// </summary>
         public IDisposable? ApplySkillReplacement(SkillLocator skillLocator)
         {
             if (!skillLocator)
@@ -65,6 +78,9 @@ namespace VAPI
             return (SkillDef)goToMainSkillDef!;
         }
 
+        /// <summary>
+        /// Returns a clone of this.
+        /// </summary>
         public object Clone()
         {
             if(slot == SkillSlot.None)
@@ -77,17 +93,28 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Constructor for a skill replacement targetting a skill slot
+        /// </summary>
         public VariantSkillReplacement(SkillDef? _skillDef, SkillSlot _slot)
         {
             skillDef = _skillDef;
             slot = _slot;
         }
+
+        /// <summary>
+        /// Constructor for a skill replacement targetting a slot name
+        /// </summary>
         public VariantSkillReplacement(SkillDef? _skillDef, string _slotName)
         {
             skillDef = _skillDef;
             slotName = _slotName;
             slot = SkillSlot.None;
         }
+
+        /// <summary>
+        /// Parameterless Constructor
+        /// </summary>
         public VariantSkillReplacement() { }
     }
 }

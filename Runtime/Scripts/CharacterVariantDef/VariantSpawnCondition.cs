@@ -22,7 +22,7 @@ namespace VAPI
     /// <para></para>
     /// <b>Built in spawn conditions:</b>
     /// <list type="bullet">
-    /// <item><see cref="BasicSpawnCondition"/>: The Reimplementation of VAPI2.0's VariantSpawnCondition. Implements conditions via minimum stage completions, Stage requirements, unlockable and expansion requirements.</item>
+    /// <item><see cref="BasicSpawnCondition"/>: The Reimplementation of VAPI2.0's VariantSpawnCondition.</item>
     /// </list>
     /// </summary>
     public interface IVariantSpawnCondition : IValidatable, ICloneable
@@ -44,10 +44,20 @@ namespace VAPI
         public bool IsAvailable();
     }
 
+    /// <summary>
+    /// A Spawn Condition that reimplements VAPI2.0's VariantSpawnCondition scriptable object
+    /// <br></br>
+    /// Open to inheritance, make sure to override <see cref="IsAvailable"/> and <see cref="Clone"/>
+    /// </summary>
     [Serializable]
     public class BasicSpawnCondition : IVariantSpawnCondition
     {
+        [Tooltip("The minimum stage completions for this variant.")]
         public int minimumStageCompletions = -1;
+
+        /// <summary>
+        /// Which stages this variant can spawn
+        /// </summary>
         public DirectorAPI.Stage stages { get => _stages; set => _stages = value; }
 
         UnlockableDef IVariantSpawnCondition.requiredUnlock => requiredUnlock.LoadAssetNow();
@@ -66,7 +76,9 @@ namespace VAPI
             }
         }
 
+        [Tooltip("The stages where this variant can spawn")]
         [SerializeField] private DirectorAPI.StageSerde _stages;
+        [Tooltip("A list of custom stages where this variant can spawn")]
         public string[] customStages = Array.Empty<string>();
 
         [Space]
@@ -80,6 +92,17 @@ namespace VAPI
         [Tooltip("These expansions must be enabled for this variant to spawn")]
         public AddressReferencedExpansionDef[] requiredExpansionDefs = Array.Empty<AddressReferencedExpansionDef>();
 
+        /// <summary>
+        /// Returns true if the variant is available using these spawn conditions.
+        /// <br></br>
+        /// Requires the following methods to return true:
+        /// <list type="bullet">
+        /// <item><see cref="AreExpansionRequirementsMet"/></item>
+        /// <item><see cref="AreUnlockableRequirementsMet"/></item>
+        /// <item><see cref="AreStageRequirementsMet"/></item>
+        /// <item><see cref="IsStageCountGreaterThanMinimum"/></item>
+        /// </list>
+        /// </summary>
         public virtual bool IsAvailable()
         {
             bool expansionRequirementMet = AreExpansionRequirementsMet();
@@ -90,6 +113,9 @@ namespace VAPI
             return expansionRequirementMet && unlockableRequirementMet && allowedInStage;
         }
 
+        /// <summary>
+        /// Validate method
+        /// </summary>
         public virtual void Validate()
         {
             for(int i = 0; i < customStages.Length; i++)
@@ -98,11 +124,20 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Returns true if <see cref="Run.stageClearCount"/> is greater or equal than <see cref="minimumStageCompletions"/>
+        /// </summary>
         protected bool IsStageCountGreaterThanMinimum()
         {
+            if (!Run.instance)
+                return false;
+
             return Run.instance.stageClearCount >= minimumStageCompletions;
         }
 
+        /// <summary>
+        /// Returns true if all the expansions in <see cref="requiredExpansionDefs"/> are enabled in the run.
+        /// </summary>
         protected bool AreExpansionRequirementsMet()
         {
             if (!Run.instance)
@@ -122,6 +157,9 @@ namespace VAPI
             return allExpansionsEnabled;
         }
 
+        /// <summary>
+        /// Returns true if unlockable requirements are met
+        /// </summary>
         protected bool AreUnlockableRequirementsMet()
         {
             if (!Run.instance)
@@ -133,6 +171,9 @@ namespace VAPI
             return flag0 && !flag1;
         }
 
+        /// <summary>
+        /// Returns true if stage requirements are met.
+        /// </summary>
         protected bool AreStageRequirementsMet()
         {
             if (!SceneInfo.instance)
@@ -153,7 +194,12 @@ namespace VAPI
             return stages.HasFlag(stageInfo.stage);
         }
 
-        public object Clone()
+        /// <summary>
+        /// Returns a clone of this as an instance of <see cref="BasicSpawnCondition"/>
+        /// <br></br>
+        /// Override this method if youre inheriting from this class.
+        /// </summary>
+        public virtual object Clone()
         {
             var result = new BasicSpawnCondition()
             {
@@ -172,6 +218,14 @@ namespace VAPI
         }
 
         #region Constructors
+        public static BasicSpawnCondition MinStages(int minStageCompletions)
+        {
+            return new BasicSpawnCondition(minStageCompletions, null, null, null, null, null);
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public BasicSpawnCondition(int? minimumStageCompletions, DirectorAPI.Stage? stages, string[]? customStages, Either<string, UnlockableDef>? forbiddenUnlockableKeyOrReference = null, Either<string, UnlockableDef>? requiredUnlockableKeyOrReference = null, Either<string, ExpansionDef>[]? requiredExpansionKeyOrReferences = null)
         {
             this.minimumStageCompletions = minimumStageCompletions ?? -1;
@@ -232,6 +286,10 @@ namespace VAPI
                 requiredExpansionDefs = Array.Empty<AddressReferencedExpansionDef>();
             }
         }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public BasicSpawnCondition() { }
         #endregion
     }

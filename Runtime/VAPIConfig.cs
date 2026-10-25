@@ -12,20 +12,38 @@ using AutoConfig = MSU.Config.ConfiguredVariable.AutoConfigAttribute;
 
 namespace VAPI
 {
+    /// <summary>
+    /// VarianceAPI's config class
+    /// </summary>
     public sealed class VAPIConfig
     {
+        /// <summary>
+        /// Base prefix for VarianceAPI's config file
+        /// </summary>
         public const string PREFIX = "VAPI.";
+        /// <summary>
+        /// Identifier for VarianceAPI's General config file
+        /// </summary>
         public const string GENERAL = PREFIX + "General";
+        /// <summary>
+        /// Identifier for VarianceAPI's Rewards config file
+        /// </summary>
         public const string REWARDS = PREFIX + "Rewards";
 
-        public static ConfigFactory? configFactory { get; private set; }
+        internal static ConfigFactory? configFactory { get; private set; }
 
+        /// <summary>
+        /// VarianceAPI's general config file
+        /// </summary>
         public static ConfigFile? generalConfig { get; private set; }
         [AutoConfig]
         internal static ConfiguredBool? _showVariantRuleCategory, _enableArtifactOfVariance, _activateMeshReplacementSystem, _sendArrivalMessages, _modifyGupDeathStates;
         [AutoConfig]
         internal static ConfiguredColor? _variantHealthBarColor;
 
+        /// <summary>
+        /// VarianceAPI's rewards config file
+        /// </summary>
         public static ConfigFile? rewardsConfig { get; private set; }
         [AutoConfig]
         internal static ConfiguredBool? _enableRewards, _luckAffectsItemRewards, _itemRewardsSpawnOnKiller;
@@ -36,7 +54,7 @@ namespace VAPI
 
         internal IEnumerator InitializeAsync(BaseUnityPlugin bup)
         {
-            if (_initialized)
+            if (_initialized) //Don't initialize twice
                 yield break;
 
             _initialized = true;
@@ -45,15 +63,19 @@ namespace VAPI
             generalConfig = configFactory.CreateConfigFile(GENERAL, false);
             rewardsConfig = configFactory.CreateConfigFile(REWARDS, false);
 
-            var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texVAPIIcon");
-            while(!iconRequest.IsComplete)
+            //Set stuff for ROO
+            using(var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texVAPIIcon"))
             {
-                yield return null;
+                while(!iconRequest.isComplete)
+                {
+                    yield return null;
+                }
+
+                ModSettingsManager.SetModIcon(iconRequest.asset!, bup.Info.Metadata.GUID, bup.Info.Metadata.Name);
+                ModSettingsManager.SetModDescription("General configuration for VarianceAPI.", bup.Info.Metadata.GUID, bup.Info.Metadata.Name);
             }
 
-            ModSettingsManager.SetModIcon(iconRequest.asset!, bup.Info.Metadata.GUID, bup.Info.Metadata.Name);
-            ModSettingsManager.SetModDescription("General configuration for VarianceAPI.", bup.Info.Metadata.GUID, bup.Info.Metadata.Name);
-
+            //Initialize configs
             SetConfigs();
         }
 

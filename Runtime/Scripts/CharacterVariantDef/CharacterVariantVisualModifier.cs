@@ -11,6 +11,13 @@ using UnityEngine.AddressableAssets;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Issues?:
+    /// 1. Modded bodies cannot use the transform path... this seems fine however, as we expose the index. If the address is empty then we can just hide or disable the transform path and force useIndex to be on.
+    /// 2. Special "Mesh Replacement" enums from VAPI 2.0 are not implemented
+    ///     These enums suck, both in concept and in terms of performance, technically speaking we can check if theyre still needed.
+    ///     If we do still need them, the code from VAPI 2.0 only modified the bones array from the skinned mesh renderer, so we can use our disposable system to dispose of those changes and revert it back to how it's meant to be,
+    /// </summary>
     [CreateAssetMenu(fileName = "new VariantVisualModifier", menuName = "VarianceAPI/VariantVisualModifier")]
     public sealed class CharacterVariantVisualModifier : CachedNameScriptableObject
     {
@@ -42,10 +49,7 @@ namespace VAPI
         [Serializable]
         public struct RendererTargetedReplacement<T> : ICloneable where T : UnityEngine.Object
         {
-            //TODO: TransformPath can only infer the required component via a sibling property, not ideal, fix later in MSU.
-            [SerializeField, HideInInspector]
-            private Renderer _dummy;
-            [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), siblingPropertyComponentTypeRequirement = nameof(_dummy))]
+            [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), componentTypeRequirement = typeof(Renderer))]
             public string? transformPath;
             public int rendererIndex;
             public bool useIndex;
@@ -75,8 +79,7 @@ namespace VAPI
         [Serializable]
         public struct LightReplacement : ICloneable
         {
-            private Light? _dummy;
-            [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), siblingPropertyComponentTypeRequirement = nameof(_dummy))]
+            [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), componentTypeRequirement = typeof(Light))]
             public string? transformPath;
             public int lightIndex;
 
@@ -156,7 +159,7 @@ namespace VAPI
         /// The vanilla target object, this is utilized exclusively for editor time and it's not used in runtime. If you're creating variants at runtime do not fill this field.
         /// </summary>
         [SerializeField, AddressableComponentRequirement(typeof(ModelSkinController), searchInChildren = true)]
-        internal AssetReferenceGameObject _vanillaTargetObject = new AssetReferenceGameObject("");
+        public AssetReferenceGameObject _vanillaTargetObject = new AssetReferenceGameObject("");
 
         public RendererTargetedReplacement<Material>[] materialReplacements = Array.Empty<RendererTargetedReplacement<Material>>();
         public RendererTargetedReplacement<Mesh>[] meshReplacements = Array.Empty<RendererTargetedReplacement<Mesh>>();

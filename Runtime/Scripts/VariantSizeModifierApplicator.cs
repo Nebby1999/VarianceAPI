@@ -7,99 +7,75 @@ using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Class that handles applying size modifiers to variants
+    /// </summary>
     public sealed class VariantSizeModifierApplicator : IDisposable
     {
-        private struct MotorCapsuleModifier : IDisposable
-        {
-            public readonly KinematicCharacterMotor motor;
-            public readonly float originalRadius;
-            public readonly float originalHeight;
-            public readonly float originalYOffset;
+        private float _computedSizeCoefficient;
+        private CharacterBody?_characterBody;
 
-            public MotorCapsuleModifier(KinematicCharacterMotor motor)
-            {
-                this.motor = motor;
-                var capsule = motor.Capsule;
-                originalRadius = capsule.radius;
-                originalHeight = capsule.height;
-                originalYOffset = motor.CapsuleYOffset;
-            }
+        private BuffDef? _usedBuffDef;
+        private int _buffStacks;
 
-            public void Dispose()
-            {
-                if (!motor)
-                    return;
-
-                motor.SetCapsuleDimensions(originalRadius, originalHeight, originalYOffset);
-            }
-        }
-        private float _computedSizeModifier;
-        private CharacterBody? _characterBody;
-        private MotorCapsuleModifier[]? _motorCapsuleModifiers;
-
+        /// <summary>
+        /// Disposes the size modifier, returning it to normal
+        /// </summary>
         public void Dispose()
         {
-            if(!_characterBody)
+            if(_characterBody == null || _usedBuffDef == null)
             {
                 return;
             }
 
-            if(TryGetModelTransform(out var modelTransform))
-            {
-                modelTransform!.localScale /= _computedSizeModifier;
-            }
-
-            if (_motorCapsuleModifiers == null)
-                return;
-
-            for(int i = 0; i < _motorCapsuleModifiers.Length; i++)
-            {
-                _motorCapsuleModifiers[i].Dispose();
-            }
+            _characterBody.SetBuffCount(_usedBuffDef.buffIndex, 0);
         }
 
+        /// <summary>
+        /// Applies the size modifier
+        /// </summary>
         public void Apply()
         {
-            if (!_characterBody)
+            if (_characterBody == null)
             {
                 return;
             }
 
-            if(TryGetModelTransform(out var modelTransform))
+            float realCoefficient = _computedSizeCoefficient;
+
+            //If the computed size coefficient is greater than 1, then we need to increase the scale. With a value of 1.1 we dont wanna increase size by 110%, but rather just 10%.
+            //If it's less, we dont need to reduce it by 1.
+            if(_computedSizeCoefficient > 1)
             {
-                modelTransform!.localScale *= _computedSizeModifier;
+                realCoefficient -= 1;
             }
 
-            KinematicCharacterMotor[] motors = _characterBody!.GetComponents<KinematicCharacterMotor>();
-            _motorCapsuleModifiers = new MotorCapsuleModifier[motors.Length];
-            for(int i = 0; i < motors.Length; i++)
-            {
-                var motor = motors[i];
-                _motorCapsuleModifiers[i] = new MotorCapsuleModifier(motor);
+            //A coefficient of 1.1 would turn into a scale increase percentage of 10. One of 0.5 would turn into a scale reduction percentage of 50;
+            int scalePercentage = Mathf.FloorToInt(realCoefficient * 100);
 
-                var capsule = motor.Capsule;
-                motor.SetCapsuleDimensions(capsule.radius * _computedSizeModifier, capsule.height * _computedSizeModifier, _computedSizeModifier);
-            }
+            _usedBuffDef = scalePercentage > 100 ? VAPIContent.Buffs.VAPIIncreaseScale.asset! : VAPIContent.Buffs.VAPIDecreaseScale.asset!;
+            _buffStacks = scalePercentage;
+            _characterBody.SetBuffCount(_usedBuffDef.buffIndex, _buffStacks);
         }
 
-        private bool TryGetModelTransform(out Transform? modelTransform)
-        {
-            modelTransform = null;
-            if (!_characterBody)
-                return false;
-
-            if (!_characterBody!.modelLocator)
-                return false;
-
-            modelTransform = _characterBody!.modelLocator!.modelTransform;
-            return modelTransform;
-        }
-
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="targetBody">The body that will have it's size modifier</param>
+        /// <param name="variantDefs">The variant defs used to calculate the final size modifier</param>
         public VariantSizeModifierApplicator(CharacterBody targetBody, ReadOnlyArray<CharacterVariantDef> variantDefs)
         {
             _characterBody = targetBody;
+
+            if(variantDefs.Length == 0)
+            {
+                _computedSizeCoefficient = 1;
+                return;
+            }
+
             float highestSizeModifier = float.NegativeInfinity;
             float summedSizeModifier = 0f;
+
             foreach(var variantDef in variantDefs)
             {
                 if(variantDef.scaleMultiplier > highestSizeModifier)
@@ -111,14 +87,16 @@ namespace VAPI
 
             if(variantDefs.Length <= 1)
             {
-                _computedSizeModifier = highestSizeModifier;
+                //Cant be 0
+                _computedSizeCoefficient = Mathf.Max(float.Epsilon, highestSizeModifier); ;
             }
             else
             {
                 summedSizeModifier -= highestSizeModifier;
                 summedSizeModifier /= (variantDefs.Length - 1);
 
-                _computedSizeModifier = highestSizeModifier + summedSizeModifier;
+                //Cant be 0.
+                _computedSizeCoefficient = Mathf.Max(float.Epsilon, highestSizeModifier + summedSizeModifier);
             }
         }
     }

@@ -6,6 +6,7 @@ using RoR2;
 using System;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using VAPI.AddressReferencedAssets;
 
 namespace VAPI
 {
@@ -15,60 +16,53 @@ namespace VAPI
     [Serializable]
     public sealed class CharacterVariantTarget : ICloneable
     {
-        public enum TargetType
-        {
-            CharacterBody,
-            CharacterMaster
-        }
+        [AddressableComponentRequirement(typeof(CharacterBody))]
+        public AddressReferencedBody targetBody = new AddressReferencedBody();
 
-        public string key = "";
-        public TargetType type;
-
-        public bool TryLoadCharacterComponent(out Component? characterComponent)
+        public bool TryLoadCharacterComponent(out CharacterBody? characterComponent)
         {
             characterComponent = LoadCharacterComponent();
             return characterComponent;
         }
 
-        public Component? LoadCharacterComponent()
+        public CharacterBody? LoadCharacterComponent()
         {
-            switch(type)
+            if (targetBody.IsInvalid)
+                return null;
+
+            var bodyPrefab = targetBody.LoadAssetNow();
+            if(!bodyPrefab)
             {
-                case TargetType.CharacterBody:
-                    {
-                        var bodyIndex = BodyCatalog.FindBodyIndex(key);
-                        return BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
-                    }
-                case TargetType.CharacterMaster:
-                    {
-                        var masterIndex = MasterCatalog.FindMasterIndex(key);
-                        GameObject masterPrefab = MasterCatalog.GetMasterPrefab(masterIndex);
-                        if(masterPrefab && masterPrefab.TryGetComponent<CharacterMaster>(out var master))
-                        {
-                            return master;
-                        }
-                        return null;
-                    }
+                return null;
+            }
+
+            if(bodyPrefab.TryGetComponent<CharacterBody>(out var body))
+            {
+                return body;
             }
             return null;
         }
 
         public bool IsKeyValid()
         {
-            return !string.IsNullOrWhiteSpace(key);
+            return !targetBody.IsInvalid;
         }
 
         public object Clone()
         {
-            return new CharacterVariantTarget(key, type);
+            return new CharacterVariantTarget(VAPIUtils.CloneAddressReferencedAsset<AddressReferencedBody, GameObject>(targetBody));
         }
 
         #region Constructors
-        public CharacterVariantTarget(string catalogName, TargetType targetType)
+        public CharacterVariantTarget(AddressReferencedBody _targetBody)
         {
-            key = catalogName;
-            type = targetType;
+            targetBody = _targetBody;
         }
+
+        public CharacterVariantTarget(string _bodyName) : this(new AddressReferencedBody(_bodyName)) { }
+
+        public CharacterVariantTarget(GameObject _bodyPrefab) : this(new AddressReferencedBody(_bodyPrefab)) { }
+
         public CharacterVariantTarget() { }
         #endregion
     }

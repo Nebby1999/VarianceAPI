@@ -72,6 +72,9 @@ namespace VAPI
             result.buffDef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedBuffDef, BuffDef>(buffDef);
             return result;
         }
+
+        public static VariantBuffInfo Create(string buffName, int count = 1) => new VariantBuffInfo { buffDef = buffName, count = count };
+        public static VariantBuffInfo Create(BuffDef buffDef, int count = 1) => new VariantBuffInfo { buffDef = buffDef, count = count };
     }
 
     [Serializable]
@@ -149,16 +152,16 @@ namespace VAPI
         }
 
         #region Constructors
+        public VariantBuffStorage(BuffDef buffDef, int count = 1) : this(VariantBuffInfo.Create(buffDef, count)) { }
+        public VariantBuffStorage(string buffName, int count = 1) : this(VariantBuffInfo.Create(buffName, count)) { }
+        public VariantBuffStorage(VariantBuffInfo buffInfo) : this(new VariantBuffInfo[1] { buffInfo })
+        {
+            buffInfos = new VariantBuffInfo[1] { buffInfo };
+        }
         public VariantBuffStorage(VariantBuffInfo[] _buffInfos)
         {
             buffInfos = _buffInfos;
         }
-
-        public VariantBuffStorage(VariantBuffInfo buffInfo)
-        {
-            buffInfos = new VariantBuffInfo[1] { buffInfo };
-        }
-
         public VariantBuffStorage() { }
         #endregion
     }

@@ -1,5 +1,6 @@
 #nullable enable
 using HG;
+using MSU;
 using RoR2;
 using System;
 using System.Collections.Generic;
@@ -181,6 +182,21 @@ namespace VAPI
         }
 
         public VariantComponentCollection() { }
+
+        public static VariantComponentCollection Create<T>() where T : VariantComponent => new VariantComponentCollection((SerializableSystemType)typeof(T));
+        private static List<SerializableSystemType> _createParamsTypeHelper = new List<SerializableSystemType>();
+        public static VariantComponentCollection Create(params Type[] variantComponentTypes)
+        {
+            _createParamsTypeHelper.Clear();
+            foreach(Type type in variantComponentTypes)
+            {
+                if(type.IsSubclassOf(typeof(VariantComponent)))
+                {
+                    _createParamsTypeHelper.Add((SerializableSystemType)type);
+                }
+            }
+            return new VariantComponentCollection(_createParamsTypeHelper.ToArray());
+        }
         #endregion
     }
 }

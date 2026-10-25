@@ -11,6 +11,7 @@ using System.Text;
 using UnityEditor;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using VAPI.AddressReferencedAssets;
 using VAPI.Legacy;
 
 namespace VAPI.Editor.Windows
@@ -597,7 +598,7 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
 
                 CharacterVariantDef result = CachedNameScriptableObject.CreateInstance<CharacterVariantDef>(legacyVariant.name);
 
-                result.targetCharacter = new CharacterVariantTarget(legacyVariant.bodyName, CharacterVariantTarget.TargetType.CharacterBody);
+                result.targetBody = new CharacterVariantTarget(new AddressReferencedBody(legacyVariant.bodyName));
                 result.variantTier = GetRuntimeTierFromLegacy(legacyVariant);
                 result.isUnique = legacyVariant.isUnique;
                 result.spawnRate = legacyVariant.spawnRate;
@@ -797,7 +798,6 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
             if (legacyVariant.nameOverrides.Length == 0)
                 return null;
 
-            //TODO: Log issue here, we've went from an array of overrides to an interface impl override.
             if (legacyVariant.nameOverrides.Length > 1)
             {
                 LogWarning($"Legacy Variant {legacyVariant} has more than one name override! this is no longer supported in VAPI 3.0!, It'll use the first name override, so make sure you fix this properly!");

@@ -7,9 +7,19 @@ using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Monobehaviour used to fire equipments from variants
+    /// </summary>
     public sealed class VariantEquipmentHandler : MonoBehaviour
     {
+        /// <summary>
+        /// The time between attempts of firing the equipment
+        /// </summary>
         public const float TIME_BETWEEN_ATTEMPTS = 0.25f;
+
+        /// <summary>
+        /// Data for the equipment
+        /// </summary>
         public struct EquipmentData
         {
             public EquipmentIndex requiredIndex;
@@ -17,40 +27,58 @@ namespace VAPI
             public float aiMaxUseDistance;
             public float timeUntilEquipmentSwitch;
         }
+
+        /// <summary>
+        /// The CharacterMaster that's firing the equipment
+        /// </summary>
         public CharacterMaster? characterMaster { get; private set; }
+
+        /// <summary>
+        /// The <see cref="characterMaster"/>'s inventory
+        /// </summary>
         public Inventory inventory { get; private set; }
 
-        public List<EquipmentData> equipmentDatas = new List<EquipmentData>();
-        private int currentDataIndex = -1;
-        private Run.FixedTimeStamp attemptFireTimeStamp = default;
-        private Run.FixedTimeStamp switchTimeStamp;
+        private List<EquipmentData> _equipmentDatas = new List<EquipmentData>();
+        private int _currentDataIndex = -1;
+        private Run.FixedTimeStamp _attemptFireTimeStamp = default;
+        private Run.FixedTimeStamp _switchTimeStamp;
 
+        /// <summary>
+        /// Adds a new equipment data to this behaviour
+        /// </summary>
+        /// <param name="equipmentIndex">The equipment we want to fire</param>
+        /// <param name="aiMaxUseHealthFraction">The AI's health must be lower than this fraction for the equipment to fire</param>
+        /// <param name="aiMaxUseDistance">The AI's distance to it's target must be lower than this value for the equipment to fire</param>
+        /// <param name="timeBetweenEquipmentSwitches">The time between equipment switches</param>
         public void AddEquipmentData(EquipmentIndex equipmentIndex, float aiMaxUseHealthFraction, float aiMaxUseDistance, float timeBetweenEquipmentSwitches)
         {
-            foreach (var data in equipmentDatas)
+            foreach (var data in _equipmentDatas)
             {
                 if (data.requiredIndex == equipmentIndex)
                     return;
             }
 
-            equipmentDatas.Add(new EquipmentData
+            _equipmentDatas.Add(new EquipmentData
             {
                 aiMaxUseDistance = aiMaxUseDistance,
                 aiMaxUseHealthFraction = aiMaxUseHealthFraction,
                 requiredIndex = equipmentIndex,
                 timeUntilEquipmentSwitch = timeBetweenEquipmentSwitches
             });
-            currentDataIndex = -1;
+            _currentDataIndex = -1;
         }
 
+        /// <summary>
+        /// Removes the equipment data associated with <paramref name="index"/>
+        /// </summary>
         public void RemoveEquipmentData(EquipmentIndex index)
         {
-            for (int i = equipmentDatas.Count - 1; i >= 0; i--)
+            for (int i = _equipmentDatas.Count - 1; i >= 0; i--)
             {
-                if (equipmentDatas[i].requiredIndex == index)
+                if (_equipmentDatas[i].requiredIndex == index)
                 {
-                    equipmentDatas.RemoveAt(i);
-                    currentDataIndex = -1;
+                    _equipmentDatas.RemoveAt(i);
+                    _currentDataIndex = -1;
                     return;
                 }
             }
@@ -64,8 +92,8 @@ namespace VAPI
 
         private void Start()
         {
-            switchTimeStamp = Run.FixedTimeStamp.now;
-            attemptFireTimeStamp = Run.FixedTimeStamp.now;
+            _switchTimeStamp = Run.FixedTimeStamp.now;
+            _attemptFireTimeStamp = Run.FixedTimeStamp.now;
         }
 
         private void FixedUpdate()
@@ -76,16 +104,16 @@ namespace VAPI
             }
 
             //Switch equipment
-            if(switchTimeStamp.hasPassed)
+            if(_switchTimeStamp.hasPassed)
             {
                 SwitchEquipment();
-                switchTimeStamp = Run.FixedTimeStamp.now + GetTimeUntilEquipmentSwitch();
+                _switchTimeStamp = Run.FixedTimeStamp.now + GetTimeUntilEquipmentSwitch();
             }
 
             //Attempt to fire equipment using current data.
-            if (attemptFireTimeStamp.hasPassed)
+            if (_attemptFireTimeStamp.hasPassed)
             {
-                attemptFireTimeStamp = Run.FixedTimeStamp.now + TIME_BETWEEN_ATTEMPTS;
+                _attemptFireTimeStamp = Run.FixedTimeStamp.now + TIME_BETWEEN_ATTEMPTS;
                 AttemptToFireEquipment();
             }
         }
@@ -93,15 +121,15 @@ namespace VAPI
         private void SwitchEquipment()
         {
             inventory.SwitchToNextEquipmentInSet();
-            for (int i = 0; i < equipmentDatas.Count; i++)
+            for (int i = 0; i < _equipmentDatas.Count; i++)
             {
-                if (equipmentDatas[i].requiredIndex == inventory.currentEquipmentIndex)
+                if (_equipmentDatas[i].requiredIndex == inventory.currentEquipmentIndex)
                 {
-                    currentDataIndex = i;
+                    _currentDataIndex = i;
                     return;
                 }
             }
-            currentDataIndex = -1;
+            _currentDataIndex = -1;
         }
 
         private void AttemptToFireEquipment()
@@ -133,9 +161,9 @@ namespace VAPI
 
         private float GetTimeUntilEquipmentSwitch()
         {
-            if(HG.ListUtils.IsInBounds(equipmentDatas, currentDataIndex))
+            if(HG.ListUtils.IsInBounds(_equipmentDatas, _currentDataIndex))
             {
-                var data = equipmentDatas[currentDataIndex];
+                var data = _equipmentDatas[_currentDataIndex];
                 if(Mathf.Approximately(data.timeUntilEquipmentSwitch, 0f))
                 {
                     return float.PositiveInfinity;
@@ -147,18 +175,18 @@ namespace VAPI
 
         private float GetAIMaxUseHealthFraction()
         {
-            if(HG.ListUtils.IsInBounds(equipmentDatas, currentDataIndex))
+            if(HG.ListUtils.IsInBounds(_equipmentDatas, _currentDataIndex))
             {
-                return equipmentDatas[currentDataIndex].aiMaxUseHealthFraction;
+                return _equipmentDatas[_currentDataIndex].aiMaxUseHealthFraction;
             }
             return float.PositiveInfinity;
         }
 
         private float GetAiMaxUseDistance()
         {
-            if(HG.ListUtils.IsInBounds(equipmentDatas, currentDataIndex))
+            if(HG.ListUtils.IsInBounds(_equipmentDatas, _currentDataIndex))
             {
-                return equipmentDatas[currentDataIndex].aiMaxUseDistance;
+                return _equipmentDatas[_currentDataIndex].aiMaxUseDistance;
             }
             return float.PositiveInfinity;
         }

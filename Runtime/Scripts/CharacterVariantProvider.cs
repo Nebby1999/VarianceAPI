@@ -7,20 +7,42 @@ using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// A class that provides <see cref="CharacterVariantDef"/>s for <see cref="BodyIndex"/>es
+    /// </summary>
     public sealed class CharacterVariantProvider
     {
+        /// <summary>
+        /// The total amount of variants stored in this provider
+        /// </summary>
         public int totalVariantCount => allVariants.Length;
+
+        /// <summary>
+        /// A ReadOnlyArray of all the variants stored in this provider
+        /// </summary>
         public ReadOnlyArray<CharacterVariantDef> allVariants => _allVariants;
         private readonly CharacterVariantDef[] _allVariants;
-        public readonly BodyIndex associatedBodyIndex;
-        public readonly MasterCatalog.MasterIndex associatedMasterIndex;
 
-        //These are filtered per stage.
+        /// <summary>
+        /// The <see cref="BodyIndex"/> associated with this provider, the <see cref="CharacterVariantDef"/>s stored here is for this body
+        /// </summary>
+        public readonly BodyIndex associatedBodyIndex;
+
+        /// <summary>
+        /// A ReadOnlyList of the <see cref="CharacterVariantDef"/>s that are unique and can spawn on the current stage
+        /// </summary>
         public ReadOnlyList<CharacterVariantDef> filteredUniqueVariants => _filteredUniqueVariants;
         private readonly List<CharacterVariantDef> _filteredUniqueVariants;
+
+        /// <summary>
+        /// A ReadOnlyList of the <see cref="CharacterVariantDef"/>s that are not unique and can spawn on the current stage
+        /// </summary>
         public ReadOnlyList<CharacterVariantDef> filteredNonUniqueVariants => _filteredNonUniqueVariants;
         private readonly List<CharacterVariantDef> _filteredNonUniqueVariants;
 
+        /// <summary>
+        /// Filtes the variant for the current stage, this is called automatically on stage start
+        /// </summary>
         public void FilterVariants()
         {
             for(int i = 0; i < totalVariantCount; i++)
@@ -43,12 +65,28 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Arguments for rolling the <see cref="CharacterVariantDef"/> for a character
+        /// </summary>
         public struct RollVariantDefsArgs
         {
+            /// <summary>
+            /// The RNG instance used in the rolling
+            /// </summary>
             public Xoroshiro128Plus rng;
+
+            /// <summary>
+            /// A multiplier applied to the spawn chance of the variant
+            /// </summary>
             public float? spawnChanceMultiplier;
         }
 
+        /// <summary>
+        /// Rolls an array of <see cref="CharacterVariantDef"/>s from this provider.
+        /// <br></br>
+        /// If a Unique variant is rolled, only the unique variant will be returned. If no unique variants are rolled, then multiple variants may be selected, causing a merged variant
+        /// </summary>
+        /// <param name="args">The arguments for rolling the variants</param>
         public CharacterVariantDef[]? RollVariantDefs(RollVariantDefsArgs args)
         {
             if(filteredUniqueVariants.Count > 0 && RollUniques(args.rng, args.spawnChanceMultiplier ?? 1f, out CharacterVariantDef? uniqueResult))
@@ -67,7 +105,9 @@ namespace VAPI
         private readonly WeightedSelection<int> uniqueVariantIndexSelector = new WeightedSelection<int>();
         private bool RollUniques(Xoroshiro128Plus spawnRng, float spawnChanceMultiplier, out CharacterVariantDef? uniqueResult)
         {
+            //Clear the index selector
             uniqueVariantIndexSelector.Clear();
+
             float notUniqueChance = 0;
             for(int i = 0; i < filteredUniqueVariants.Count; i++)
             {
@@ -107,11 +147,10 @@ namespace VAPI
             return success;
         }
 
-        public CharacterVariantProvider(CharacterVariantDef[] variantDefsForCharacter, BodyIndex? associatedBodyIndex, MasterCatalog.MasterIndex? associatedMasterIndex)
+        internal CharacterVariantProvider(CharacterVariantDef[] variantDefsForCharacter, BodyIndex associatedBodyIndex)
         {
             _allVariants = variantDefsForCharacter;
-            this.associatedBodyIndex = associatedBodyIndex ?? BodyIndex.None;
-            this.associatedMasterIndex = associatedMasterIndex ?? MasterCatalog.MasterIndex.none;
+            this.associatedBodyIndex = associatedBodyIndex;
 
             _filteredNonUniqueVariants = new List<CharacterVariantDef>();
             _filteredUniqueVariants = new List<CharacterVariantDef>();

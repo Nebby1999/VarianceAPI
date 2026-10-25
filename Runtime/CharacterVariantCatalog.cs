@@ -1,109 +1,213 @@
 #nullable enable
 using HG;
+using HG.Coroutines;
 using MSU.Config;
 using R2API.Utils;
 using RoR2;
 using RoR2.CharacterAI;
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Index struct for <see cref="CharacterVariantIndex"/>
+    /// </summary>
     public struct CharacterVariantIndex : IEquatable<CharacterVariantIndex>
     {
+        /// <summary>
+        /// Constructor for a <see cref="CharacterVariantIndex"/>
+        /// </summary>
+        /// <param name="i">The index of the variant</param>
         public CharacterVariantIndex(int i)
         {
             this.i = i;
         }
         private readonly int i;
+
+        /// <summary>
+        /// Returns true if the index is valid
+        /// </summary>
         public bool isValid => i >= 0;
 
+        /// <summary>
+        /// Represents an invalid index
+        /// </summary>
         public static readonly CharacterVariantIndex none = new CharacterVariantIndex(-1);
 
+        /// <summary>
+        /// Explicitly casts a <see cref="CharacterVariantIndex"/> into an <see cref="int"/>
+        /// </summary>
         public static explicit operator int(CharacterVariantIndex masterIndex) => masterIndex.i;
+
+        /// <summary>
+        /// Explicitly casts an <see cref="int"/> int a <see cref="CharacterVariantIndex"/>
+        /// </summary>
+        /// <param name="value"></param>
         public static explicit operator CharacterVariantIndex(int value) => new CharacterVariantIndex(value);
+
+        /// <summary>
+        /// Returns true if <paramref name="other"/> and <see cref="this"/> have the same indices
+        /// </summary>
         public bool Equals(CharacterVariantIndex other) => i == other.i;
+
+        /// <summary>
+        /// Returns true if <paramref name="obj"/> is a boxed <see cref="CharacterVariantIndex"/>, and it has the same index as <see cref="this"/>
+        /// </summary>
         public override bool Equals(object obj) => obj is CharacterVariantIndex other && Equals(other);
+
+        /// <summary>
+        /// Returns the hash code for this <see cref="CharacterVariantIndex"/>
+        /// </summary>
         public override int GetHashCode() => i;
+
+        /// <summary>
+        /// Equality operator, see <see cref="Equals(CharacterVariantIndex)"/>
+        /// </summary>
         public static bool operator ==(CharacterVariantIndex a, CharacterVariantIndex b) => a.i == b.i;
+
+        /// <summary>
+        /// Inequality operator, negates the result of <see cref="Equals(CharacterVariantIndex)"/>
+        /// </summary>
         public static bool operator !=(CharacterVariantIndex a, CharacterVariantIndex b) => a.i != b.i;
     }
 
+    /// <summary>
+    /// A Networkable version of <see cref="CharacterVariantIndex"/>
+    /// </summary>
     [Serializable]
     public struct NetworkCharacterVariantIndex : IEquatable<NetworkCharacterVariantIndex>
     {
+        /// <summary>
+        /// The index being networked
+        /// </summary>
         public uint i;
+
+        /// <summary>
+        /// Implicitly casts a <see cref="CharacterVariantIndex"/> into a <see cref="NetworkCharacterVariantIndex"/>
+        /// </summary>
         public static implicit operator NetworkCharacterVariantIndex(CharacterVariantIndex masterIndex)
         {
             return new NetworkCharacterVariantIndex { i = (uint)((int)masterIndex + 1) };
         }
+
+        /// <summary>
+        /// Implicitly casts a <see cref="NetworkCharacterVariantIndex"/> into a <see cref="CharacterVariantIndex"/>
+        /// </summary>
+        /// <param name="networkMasterIndex"></param>
         public static implicit operator CharacterVariantIndex(NetworkCharacterVariantIndex networkMasterIndex)
         {
             return new CharacterVariantIndex(((int)networkMasterIndex.i) - 1);
         }
+
+        /// <summary>
+        /// Returns true if the <see cref="NetworkCharacterVariantIndex"/> passed in <paramref name="other"/> has the same index as <see cref="this"/>
+        /// </summary>
         public bool Equals(NetworkCharacterVariantIndex other) => i == other.i;
+
+        /// <summary>
+        /// Returns true if the <paramref name="obj"/> is a boxed <see cref="NetworkCharacterVariantIndex"/>, and it's index is equal to <see cref="this"/>'s index
+        /// </summary>
         public override bool Equals(object obj) => obj is CharacterVariantIndex other && Equals(other);
+
+        /// <summary>
+        /// Retrieves the hash code for this <see cref="NetworkCharacterVariantIndex"/>
+        /// </summary>
         public override int GetHashCode() => (int)i;
     }
 
+    /// <summary>
+    /// Catalog for <see cref="CharacterVariantDef"/>s
+    /// </summary>
     public static class CharacterVariantCatalog
     {
+        /// <summary>
+        /// A <see cref="ReadOnlyArray{T}"/> of the registered <see cref="CharacterVariantDef"/>s
+        /// </summary>
         public static ReadOnlyArray<CharacterVariantDef> registeredCharacterVariantDefs => _characterVariantDefs;
+
+        /// <summary>
+        /// The amount of <see cref="CharacterVariantDef"/>s stored in the catalog
+        /// </summary>
         public static int characterVariantCount => _characterVariantDefs?.Length ?? -1;
         private static CharacterVariantDef[]? _characterVariantDefs;
         private static Dictionary<string, CharacterVariantIndex> _characterVariantNameToIndex = new Dictionary<string, CharacterVariantIndex>(StringComparer.OrdinalIgnoreCase);
 
-        private static CharacterVariantProvider[]? _characterVariantProviders;
+        private static CharacterVariantProvider?[] _characterVariantProviders = Array.Empty<CharacterVariantProvider>();
 
+        /// <summary>
+        /// Catalog availability. Catalog initializes after <see cref="BodyCatalog"/>, <see cref="MasterCatalog"/> and <see cref="VariantPackManager"/>
+        /// </summary>
         public static ResourceAvailability catalogAvailability;
 
+        /// <summary>
+        /// Gets the <see cref="CharacterVariantDef"/> with the specified <paramref name="index"/>
+        /// <br></br>
+        /// Returns null if the <paramref name="index"/> is out of range
+        /// </summary>
+        /// <param name="index">The index of the <see cref="CharacterVariantDef"/></param>
         public static CharacterVariantDef? GetCharacterVariantDef(CharacterVariantIndex index)
         {
             ThrowIfUnavailable();
             return HG.ArrayUtils.GetSafe(_characterVariantDefs!, (int)index);
         }
 
-        public static CharacterVariantIndex FindCharacterVariantIndex(string characterVariantDefName)
+        /// <summary>
+        /// Finds the <see cref="CharacterVariantIndex"/> that has the <see cref="CharacterVariantDef"/> with the specified name in <paramref name="characterVariantDefName"/>
+        /// <br></br>
+        /// Returns <see cref="CharacterVariantIndex.none"/> if there's no <see cref="CharacterVariantDef"/> with the name <paramref name="characterVariantDefName"/>
+        /// </summary>
+        /// <param name="characterVariantDefName">The name of the <see cref="CharacterVariantDef"/></param>
+        public static CharacterVariantIndex FindCharacterVariantIndex(string? characterVariantDefName)
         {
             ThrowIfUnavailable();
+
+            if(string.IsNullOrWhiteSpace(characterVariantDefName))
+            {
+                return CharacterVariantIndex.none;
+            }
+
             return _characterVariantNameToIndex.GetValueOrDefault(characterVariantDefName, CharacterVariantIndex.none);
         }
 
-        public static CharacterVariantProvider? FindCharacterVariantProvider(BodyIndex bodyIndex)
+        public static CharacterVariantProvider? FindCharacterVariantProvider(GameObject? bodyPrefab) => FindCharacterVariantProvider(bodyPrefab != null ? bodyPrefab.GetComponent<CharacterBody>() : null);
+        public static CharacterVariantProvider? FindCharacterVariantProvider(CharacterBody? bodyComponent) => GetCharacterVariantProvider(bodyComponent != null ? bodyComponent.bodyIndex : BodyIndex.None);
+
+        /// <summary>
+        /// Finds the <see cref="CharacterVariantProvider"/> for the specified body in <paramref name="bodyIndex"/>.
+        /// <br></br>
+        /// returns null if <paramref name="bodyIndex"/> has no variant provider
+        /// </summary>
+        /// <param name="bodyIndex">The index to retrieve it's variant provider</param>
+        public static CharacterVariantProvider? GetCharacterVariantProvider(BodyIndex bodyIndex)
         {
             ThrowIfUnavailable();
-            for(int i = 0; i < _characterVariantProviders!.Length; i++)
-            {
-                if (_characterVariantProviders[i].associatedBodyIndex == bodyIndex)
-                {
-                    return _characterVariantProviders[i];
-                }
-            }
-            return null;
+
+            //The providers array is mapped to body indices, so using get safe will get that body's variants.
+            return HG.ArrayUtils.GetSafe(_characterVariantProviders, (int)bodyIndex);
         }
 
-        public static CharacterVariantProvider? FindCharacterVariantProvider(MasterCatalog.MasterIndex masterIndex)
-        {
-            ThrowIfUnavailable();
-            for (int i = 0; i < _characterVariantProviders!.Length; i++)
-            {
-                if (_characterVariantProviders[i].associatedMasterIndex == masterIndex)
-                {
-                    return _characterVariantProviders[i];
-                }
-            }
-            return null;
-        }
 
-        [SystemInitializer(typeof(BodyCatalog), typeof(MasterCatalog), typeof(VariantPackManager))]
-        private static void Initialize()
+
+        [SystemInitializer(typeof(BodyCatalog), typeof(VariantPackManager))]
+        private static IEnumerator Initialize()
         {
             _characterVariantNameToIndex.Clear();
 
-            _characterVariantDefs = RegisterVariantDefs(VariantPackManager.characterVariantDefs);
+            using(var coroutineWithResult = CoroutineWithResult<CharacterVariantDef[]?>.Rent(RegisterVariantDefs(VariantPackManager.characterVariantDefs)))
+            {
+                while(coroutineWithResult.MoveNext())
+                {
+                    yield return null;
+                }
+
+                _characterVariantDefs = coroutineWithResult.result;
+            }
 
             Stage.onStageStartGlobal += FilterCharacterVariantProviders;
 
@@ -111,151 +215,106 @@ namespace VAPI
             catalogAvailability.MakeAvailable();
         }
 
-        private static CharacterVariantDef[]? RegisterVariantDefs(ReadOnlyArray<CharacterVariantDef> readOnlyVariantDefs)
+        private static IEnumerator<CharacterVariantDef[]?> RegisterVariantDefs(ReadOnlyArray<CharacterVariantDef> readOnlyVariantDefs)
         {
-            void AddToCatalog(CharacterVariantDef variantDef, CharacterVariantIndex index)
-            {
-                //Only configure variants with providers.
-                if(variantDef.associatedConfigFile != null && variantDef.hasProvider)
-                {
-                    ConfigureVariant(variantDef);
-                }
-                variantDef.characterVariantIndex = index;
-                _characterVariantNameToIndex.Add(variantDef.cachedName, variantDef.characterVariantIndex);
-            }
+
+            //Sort the variants
             CharacterVariantDef[] sortedVariants = new CharacterVariantDef[readOnlyVariantDefs.Length];
             readOnlyVariantDefs.CopyTo(sortedVariants, 0);
 
             Array.Sort(sortedVariants, (a, b) => string.CompareOrdinal(a.cachedName, b.cachedName));
 
-            //Dictionaries to create the VariantProviders
+            //Dictionary to map a body index to the list of variants
             Dictionary<BodyIndex, List<CharacterVariantDef>> bodyToVariants = new Dictionary<BodyIndex, List<CharacterVariantDef>>();
-            Dictionary<MasterCatalog.MasterIndex, List<CharacterVariantDef>> masterToVariants = new Dictionary<MasterCatalog.MasterIndex, List<CharacterVariantDef>>();
 
-            //Helpers for filling the bodyToVariants and masterToVariants
-            List<BodyIndex> bodyIndicesAssociatedWithVariant = new List<BodyIndex>();
-            List<MasterCatalog.MasterIndex> masterIndicesAssociatedWithVariant = new List<MasterCatalog.MasterIndex>();
-
-            //A list of variants without providers, these are caused by invalid TargetCharacters.
+            //A list of variants without providers, these are caused by invalid target characters (direct ref null, address is invalid, or doesnt resolve to an actual body)
             List<CharacterVariantDef> providerlessVariants = new List<CharacterVariantDef>();
 
-            CharacterVariantIndex index = CharacterVariantIndex.none;
             for(int i = 0; i < sortedVariants.Length; i++)
             {
-                index = (CharacterVariantIndex)i;
+                yield return null;
+                
+                CharacterVariantIndex index = (CharacterVariantIndex)i;
                 CharacterVariantDef variantDef = sortedVariants[i];
 
-                bodyIndicesAssociatedWithVariant.Clear();
-                masterIndicesAssociatedWithVariant.Clear();
-
-                if(!variantDef.targetCharacter.IsKeyValid())
+                void AddToCatalog()
                 {
-                    providerlessVariants.Add(variantDef);
-                    AddToCatalog(variantDef, index);
-                    continue;
-                }
-
-                if(!variantDef.targetCharacter.TryLoadCharacterComponent(out Component? characterComponent))
-                {
-                    providerlessVariants.Add(variantDef);
-                    AddToCatalog(variantDef, index);
-                    continue;
-                }
-
-                if(characterComponent is CharacterBody body)
-                {
-                    AddAssociatedMasterIndices(body, masterIndicesAssociatedWithVariant);
-                    ListUtils.AddIfUnique(bodyIndicesAssociatedWithVariant, body.bodyIndex);
-                }
-                else if(characterComponent is CharacterMaster master)
-                {
-                    ListUtils.AddIfUnique(masterIndicesAssociatedWithVariant, master.masterIndex);
-                    if(master.bodyPrefab && master.bodyPrefab.TryGetComponent<CharacterBody>(out var masterBody))
+                    //Only configure variants with providers.
+                    if (variantDef.associatedConfigFile != null && variantDef.hasProvider)
                     {
-                        ListUtils.AddIfUnique(bodyIndicesAssociatedWithVariant, masterBody.bodyIndex);
+                        ConfigureVariant(variantDef);
                     }
+                    variantDef.characterVariantIndex = index;
+                    _characterVariantNameToIndex.Add(variantDef.cachedName, variantDef.characterVariantIndex);
                 }
-                else
+
+                //Checking if this variant will be assigned to a provider.
+                //If the target body fails to load or is invalid, we'll still add it to the catalog to keep the indices consistent.
+
+                //target metadata is invallid. no provider.
+                if(!variantDef.targetBody.IsKeyValid())
                 {
                     providerlessVariants.Add(variantDef);
-                    AddToCatalog(variantDef, index);
+                    AddToCatalog();
                     continue;
                 }
-
-                foreach (var bodyIndexAssociatedWithVariant in bodyIndicesAssociatedWithVariant)
+                //target metadata is valid, but doesnt resolve to a body. No provider
+                if(!variantDef.targetBody.TryLoadCharacterComponent(out var characterBody))
                 {
-                    bodyToVariants.TryAdd(bodyIndexAssociatedWithVariant, new List<CharacterVariantDef>());
-                    bodyToVariants[bodyIndexAssociatedWithVariant].Add(variantDef);
+                    providerlessVariants.Add(variantDef);
+                    AddToCatalog();
+                    continue;
                 }
-
-                foreach(var masterIndexAssociatedWithVariant in masterIndicesAssociatedWithVariant)
+                //Invalid body index. no provider
+                if(characterBody!.bodyIndex == BodyIndex.None)
                 {
-                    masterToVariants.TryAdd(masterIndexAssociatedWithVariant, new List<CharacterVariantDef>());
-                    masterToVariants[masterIndexAssociatedWithVariant].Add(variantDef);
+                    providerlessVariants.Add(variantDef);
+                    AddToCatalog();
+                    continue;
                 }
+                //Add the body's index to the dictionary, this dictionary is later used to create the provider.
+                bodyToVariants.TryAdd(characterBody!.bodyIndex, new List<CharacterVariantDef>());
+                bodyToVariants[characterBody!.bodyIndex].Add(variantDef);
 
+                //Provider success
                 variantDef.hasProvider = true;
-                AddToCatalog(variantDef, index);
+                AddToCatalog();
             }
 
+            VAPILog.Info($"Finished associating CharacterVariantDefs with bodies");
             //Finalize initialization
-            List<CharacterVariantProvider> characterVariantProviders = new List<CharacterVariantProvider>();
-            foreach (var (bodyIndex, variantDefs) in bodyToVariants)
+            //Map for BodyIndex to provider, faster lookups.
+            CharacterVariantProvider?[] characterVariantProviders = new CharacterVariantProvider?[BodyCatalog.bodyCount];
+            foreach(var (bodyIndex, variantDefs) in bodyToVariants)
             {
-                characterVariantProviders.Add(new CharacterVariantProvider(variantDefs.ToArray(), bodyIndex, null));
+                yield return null;
+                //Create the providers for the body
+                characterVariantProviders[(int)bodyIndex] = new CharacterVariantProvider(variantDefs.ToArray(), bodyIndex);
 
                 CharacterBody characterBody = BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
-                characterBody.gameObject.EnsureComponent<CharacterBodyVariantController>();
-
-                if (VAPIConfig._enableRewards)
+                characterBody.gameObject.EnsureComponent<CharacterBodyVariantController>(); //Ensure our component, add death rewards if enabled.
+                if(VAPIConfig._enableRewards)
                 {
                     characterBody.gameObject.EnsureComponent<VariantDeathRewards>();
                 }
             }
 
-            foreach (var (masterIndex, variantDefs) in masterToVariants)
-            {
-                characterVariantProviders.Add(new CharacterVariantProvider(variantDefs.ToArray(), null, masterIndex));
-
-                CharacterMaster characterMaster = MasterCatalog.GetMasterPrefab(masterIndex).GetComponent<CharacterMaster>();
-                characterMaster.gameObject.EnsureComponent<CharacterMasterVariantStorage>();
-
-                if (characterMaster.bodyPrefab)
-                {
-                    //Ensure the component, we don't want to call Add because there's a chance that the previous foreach added the component.
-                    characterMaster.bodyPrefab.EnsureComponent<CharacterBodyVariantController>();
-                    if (VAPIConfig._enableRewards)
-                    {
-                        characterMaster.bodyPrefab.EnsureComponent<VariantDeathRewards>();
-                    }
-                }
-            }
-
-            _characterVariantProviders = characterVariantProviders.ToArray();
+            VAPILog.Info($"Created providers and added the necessary behaviours to bodies");
+            _characterVariantProviders = characterVariantProviders;
             if(providerlessVariants.Count > 0)
             {
-                StringBuilder sb = HG.StringBuilderPool.RentStringBuilder();
-                sb.AppendLine($"The following variants did not resolve a valid CharacterMaster or CharacterBody, and as a result, have no CharacterVariantProviders. They're still added to the catalog but they won't be spawned by the built in systems. If they're meant to be for a vanilla character, consider validating the AddressReferencedCharacterBody/Master you're using. If it's for a modded character, consider adding the VariantDef only if the mod is present, and checking that the catalog key for AddressReferencedCharacterBody/Master is typed correctly:");
-                foreach(var variant in providerlessVariants)
+                using(HG.StringBuilderPool.RentStringBuilder(out var sb))
                 {
-                    sb.AppendLine(variant.ToString());
+                    sb.AppendLine($"The following variants did not resolve a valid CharacterBody, and as a result, have no CharacterVariantProviders. They're still added to the catalog but they won't be spawned by the built in systems. If they're meant to be for a vanilla charater, consider validating the AddressReferencedBody you're using. If it's for a modded character, consider adding the VariantDef only if the mod is present, and checking that the catalog key for AddressReferencedBody is typed correctly:");
+                    foreach(var variant in providerlessVariants)
+                    {
+                        sb.AppendLine(variant.ToString());
+                    }
+                    VAPILog.Message(sb.ToString());
                 }
-                VAPILog.Message(sb.ToString());
-                HG.StringBuilderPool.ReturnStringBuilder(sb);
             }
-            return sortedVariants;
-        }
 
-        private static void AddAssociatedMasterIndices(CharacterBody body, in List<MasterCatalog.MasterIndex> output)
-        {
-            for (int i = 0; i < MasterCatalog.masterPrefabMasterComponents.Length; i++)
-            {
-                CharacterMaster characterMaster = MasterCatalog.masterPrefabMasterComponents[i];
-                if (characterMaster.bodyPrefab && characterMaster.bodyPrefab == body.gameObject)
-                {
-                    ListUtils.AddIfUnique(output, characterMaster.masterIndex);
-                }
-            }
+            yield return sortedVariants;
         }
 
         private static void FilterCharacterVariantProviders(Stage obj)
@@ -273,7 +332,7 @@ namespace VAPI
                 variantDef.spawnRate = new ConfiguredFloat(variantDef.spawnRate)
                 {
                     //Only variants with providers are configured, and to be in a provider, you need to have valid targetCharacter reference.
-                    section = $"{variantDef.targetCharacter.LoadCharacterComponent()!.name} Variants",
+                    section = $"{variantDef.targetBody.LoadCharacterComponent()!.name} Variants",
                     key = $"{variantDef.cachedName} Spawn Rate",
                     description = $"Chance for the {variantDef.cachedName} variant to spawn. (Percentage, 0-100)",
                     configFile = variantDef.associatedConfigFile,
@@ -294,7 +353,7 @@ namespace VAPI
 
                 variantDef.isUnique = new ConfiguredBool(variantDef.isUnique)
                 {
-                    section = $"{variantDef.targetCharacter.LoadCharacterComponent()!.name} Variants",
+                    section = $"{variantDef.targetBody.LoadCharacterComponent()!.name} Variants",
                     key = $"{variantDef.cachedName} Uniqueness",
                     description = $"Wether or not {variantDef.cachedName} is Unique. Unique variants cannot merge with other ones.",
                     configFile = variantDef.associatedConfigFile,
@@ -344,30 +403,6 @@ namespace VAPI
             HG.StringBuilderPool.ReturnStringBuilder(stringBuilder);
         }
 
-        [ConCommand(commandName = "vapi_list_masters", flags = ConVarFlags.None, helpText = "Lists all the Masters that have VariantDefs")]
-        private static void CCVapiListMasters(ConCommandArgs args)
-        {
-            ThrowIfUnavailable();
-
-            StringBuilder stringBuilder = HG.StringBuilderPool.RentStringBuilder();
-            stringBuilder.AppendLine("Masters with Variants:");
-            stringBuilder.AppendLine("----------------------");
-
-            foreach (CharacterVariantProvider characterVariantProvider in _characterVariantProviders!)
-            {
-                if (characterVariantProvider.associatedMasterIndex == MasterCatalog.MasterIndex.none)
-                {
-                    continue;
-                }
-
-                GameObject masterPrefab = MasterCatalog.GetMasterPrefab(characterVariantProvider.associatedMasterIndex);
-                stringBuilder.AppendLine($"{masterPrefab.name} (Variant Count: {characterVariantProvider.totalVariantCount}).");
-            }
-
-            Debug.Log(stringBuilder.ToString());
-            HG.StringBuilderPool.ReturnStringBuilder(stringBuilder);
-        }
-
         [ConCommand(commandName = "vapi_list_body_variants", helpText = "Lists all the VariantDefs associated to a body.")]
         private static void CCVapiListBodyVariants(ConCommandArgs args)
         {
@@ -387,7 +422,7 @@ namespace VAPI
                 return;
             }
 
-            CharacterVariantProvider? provider = FindCharacterVariantProvider(bodyIndex);
+            CharacterVariantProvider? provider = GetCharacterVariantProvider(bodyIndex);
             if(provider == null)
             {
                 Debug.Log($"The provided body does not have a CharacterVariantProvider. To get a list of bodies that have variants use \"vapi_list_bodies\".");
@@ -398,45 +433,6 @@ namespace VAPI
             stringBuilder.AppendLine($"{BodyCatalog.GetBodyPrefab(bodyIndex).name}'s Variants");
             stringBuilder.AppendLine("-------------------------------------------------------");
             for(int i = 0; i < provider.totalVariantCount; i++)
-            {
-                CharacterVariantDef variantDef = provider.allVariants[i];
-                stringBuilder.AppendLine($"[{i}] = {variantDef.cachedName}");
-            }
-            Debug.Log(stringBuilder.ToString());
-            HG.StringBuilderPool.ReturnStringBuilder(stringBuilder);
-        }
-
-
-        [ConCommand(commandName = "vapi_list_master_variants", helpText = "Lists all the VariantDefs associated to a Master.")]
-        private static void CCVapiListMasterVariants(ConCommandArgs args)
-        {
-            ThrowIfUnavailable();
-
-            if (args.Count == 0)
-            {
-                Debug.Log("No arguments given.");
-                return;
-            }
-
-            string masterName = args[0];
-            MasterCatalog.MasterIndex masterIndex = VAPIUtils.GetMasterIndex(masterName);
-            if (masterIndex == MasterCatalog.MasterIndex.none)
-            {
-                Debug.Log($"No Master could be found with the name {masterName}. To get a list of masters that have variants use \"vapi_list_masters\".");
-                return;
-            }
-
-            CharacterVariantProvider? provider = FindCharacterVariantProvider(masterIndex);
-            if (provider == null)
-            {
-                Debug.Log($"The provided master does not have a CharacterVariantProvider. To get a list of masters that have variants use \"vapi_list_masters\".");
-                return;
-            }
-
-            StringBuilder stringBuilder = HG.StringBuilderPool.RentStringBuilder();
-            stringBuilder.AppendLine($"{MasterCatalog.GetMasterPrefab(masterIndex).name}'s Variants");
-            stringBuilder.AppendLine("-------------------------------------------------------");
-            for (int i = 0; i < provider.totalVariantCount; i++)
             {
                 CharacterVariantDef variantDef = provider.allVariants[i];
                 stringBuilder.AppendLine($"[{i}] = {variantDef.cachedName}");
@@ -468,9 +464,9 @@ namespace VAPI
                 Debug.Log("Could not find master.");
                 return;
             }
-            var masterPrefab = MasterCatalog.GetMasterPrefab(masterIndex);
+            var characterMaster = MasterCatalog.GetMasterPrefab(masterIndex).GetComponent<CharacterMaster>();
 
-            var provider = FindCharacterVariantProvider(masterIndex);
+            var provider = FindCharacterVariantProvider(characterMaster.bodyPrefab);
             if(provider == null)
             {
                 Debug.Log($"CharacterMaster with name {args[0]} does not have a CharacterVariantProvider");
@@ -502,7 +498,7 @@ namespace VAPI
 
             MasterSummon masterSummon = new MasterSummon()
             {
-                masterPrefab = masterPrefab,
+                masterPrefab = characterMaster.gameObject,
                 ignoreTeamMemberLimit = true,
                 useAmbientLevel = false,
                 position = location,
@@ -564,7 +560,7 @@ namespace VAPI
 
             GameObject bodyPrefab = BodyCatalog.GetBodyPrefab(body);
 
-            var provider = FindCharacterVariantProvider(body);
+            var provider = GetCharacterVariantProvider(body);
             if (provider == null)
             {
                 Debug.Log($"CharacterBody with name {args[0]} does not have a CharacterVariantProvider");
@@ -616,21 +612,33 @@ namespace VAPI
 
     public static partial class Extensions
     {
+        /// <summary>
+        /// Writes a <see cref="NetworkCharacterVariantIndex"/> to <paramref name="writer"/>
+        /// </summary>
         public static void Write(this NetworkWriter writer, NetworkCharacterVariantIndex index)
         {
             writer.WritePackedUInt32(index.i);
         }
 
+        /// <summary>
+        /// Reads a <see cref="NetworkCharacterVariantIndex"/> from <paramref name="reader"/>
+        /// </summary>
         public static NetworkCharacterVariantIndex ReadNetworkCharacterVariantIndex(this NetworkReader reader)
         {
             return new NetworkCharacterVariantIndex() { i = reader.ReadPackedUInt32() };
         }
 
+        /// <summary>
+        /// Writes a <see cref="CharacterVariantIndex"/> to <paramref name="writer"/>
+        /// </summary>
         public static void Write(this NetworkWriter writer, CharacterVariantIndex index)
         {
             writer.Write((NetworkCharacterVariantIndex)index);
         }
 
+        /// <summary>
+        /// Reads a <see cref="CharacterVariantIndex"/> from <paramref name="reader"/>
+        /// </summary>
         public static CharacterVariantIndex ReadCharacterVariantIndex(this NetworkReader reader)
         {
             return (CharacterVariantIndex)reader.ReadNetworkCharacterVariantIndex();

@@ -10,10 +10,27 @@ using Random = UnityEngine.Random;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Utility methods for VarianceAPI
+    /// </summary>
     public static class VAPIUtils
     {
-        public static BodyIndex GetBodyIndex(string bodyName)
+        /// <summary>
+        /// A static readonly instance of <see cref="WaitForEndOfFrame"/>
+        /// </summary>
+        public static readonly WaitForEndOfFrame waitForEndOfFrame = new WaitForEndOfFrame();
+        /// <summary>
+        /// Retrieves the <see cref="BodyIndex"/> for <paramref name="bodyName"/>
+        /// <br></br>
+        /// Uses DebugToolkit's partial body recognition if installed
+        /// </summary>
+        public static BodyIndex GetBodyIndex(string? bodyName)
         {
+            if(string.IsNullOrWhiteSpace(bodyName))
+            {
+                return BodyIndex.None;
+            }
+
             if (MSU.MSUtil.IsModInstalled(DebugToolkit.DebugToolkit.GUID))
             {
                 return GetBodyIndexDT(bodyName);
@@ -27,8 +44,18 @@ namespace VAPI
             return DebugToolkit.StringFinder.Instance.GetBodyFromPartial(bodyName);
         }
 
-        public static MasterCatalog.MasterIndex GetMasterIndex(string masterName)
+        /// <summary>
+        /// Retrieves the <see cref="MasterCatalog.MasterIndex"/> for <paramref name="masterName"/>
+        /// <br></br>
+        /// Uses DebugToolkit's partial master recognition if installed
+        /// </summary>
+        public static MasterCatalog.MasterIndex GetMasterIndex(string? masterName)
         {
+            if(string.IsNullOrWhiteSpace(masterName))
+            {
+                return MasterCatalog.MasterIndex.none;
+            }
+
             if(MSU.MSUtil.IsModInstalled(DebugToolkit.DebugToolkit.GUID))
             {
                 return GetMasterIndexDT(masterName);
@@ -42,6 +69,14 @@ namespace VAPI
             return DebugToolkit.StringFinder.Instance.GetAiFromPartial(masterName);
         }
 
+        /// <summary>
+        /// Method utilized to clone an <see cref="AddressReferencedAsset"/>.
+        /// <br></br>
+        /// returns an empty <see cref="AddressReferencedAsset"/> if <paramref name="other"/> is null
+        /// </summary>
+        /// <typeparam name="T1">The type of AddressReferencedAsset we're cloning</typeparam>
+        /// <typeparam name="T2">The type of asset that <see cref="AddressReferencedAsset"/> is loading</typeparam>
+        /// <param name="other">The <see cref="AddressReferencedAsset"/> that we're copying</param>
         public static T1 CloneAddressReferencedAsset<T1, T2>(T1? other) where T1 : AddressReferencedAsset<T2>, new() where T2 : UnityEngine.Object
         {
             var copy = new T1();
@@ -62,154 +97,79 @@ namespace VAPI
             return copy;
         }
 
-        public static void ModifyMasterToBecomeVariant(GameObject masterObject, CharacterVariantDef[] variantDefs, DeathRewards? baseDeathRewards = null, float deathRewardsCoefficient = 1f)
+        /// <summary>
+        /// Modifies the <paramref name="spawnedInstance"/> to become a variant.
+        /// <br></br>
+        /// This is done by pre-assigning the <paramref name="variantDefs"/> into the master's <see cref="CharacterMasterVariantStorage"/>. This method is used particularly in <see cref="VariantMasterSummon"/> and <see cref="VariantDirectorSpawnRequest"/>
+        /// </summary>
+        /// <param name="spawnedInstance">The master object to turn into a variant</param>
+        /// <param name="variantDefs">The variant defs for the master</param>
+        /// <param name="baseDeathRewards">A base death rewards, can be used to make the master drop extra loot</param>
+        /// <param name="deathRewardsCoefficient">Used only if <paramref name="baseDeathRewards"/> is not null. The gold and experience reward will be multiplied by this coefficient</param>
+        public static void TransformSpawnedInstanceIntoVariant(GameObject? spawnedInstance, CharacterVariantDef[]? variantDefs, DeathRewards? baseDeathRewards = null, float deathRewardsCoefficient = 1f)
         {
-            if (!masterObject || variantDefs == null)
+            if (spawnedInstance == null || variantDefs == null)
                 return;
 
             if (!NetworkServer.active)
                 return;
 
-            if(!masterObject.TryGetComponent<CharacterMaster>(out var master))
+            if(spawnedInstance.TryGetComponent<CharacterBody>(out CharacterBody spawnedBodyInstance) == false)
             {
+                if(spawnedInstance.TryGetComponent(out CharacterMaster spawnedInstanceMaster))
+                {
+                    spawnedBodyInstance = spawnedInstanceMaster.GetBody();
+                }
+            }
+
+            if (!spawnedBodyInstance)
                 return;
-            }
 
-            if(master.TryGetComponent<CharacterMasterVariantStorage>(out var variantStorage))
-            {
-                variantStorage.SetVariantDefsForCharacter(variantDefs);
-                variantStorage.doNotRollForVariants = true;
-            }
-
-            var body = master.GetBody();
-            if(!body)
-            {
-                return;
-            }
-
-            if(baseDeathRewards && body.TryGetComponent<DeathRewards>(out var deathRewards))
+            if(baseDeathRewards && spawnedBodyInstance.TryGetComponent<DeathRewards>(out var deathRewards))
             {
                 deathRewards.expReward = (uint)(baseDeathRewards!.expReward * deathRewardsCoefficient);
                 deathRewards.goldReward = (uint)(baseDeathRewards!.goldReward * deathRewardsCoefficient);
             }
 
-            if(body.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController) && !variantStorage)
+            if(spawnedBodyInstance.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
             {
-                bodyVariantController.SetFallbackCharacterVariantDefs(variantDefs);
+                bodyVariantController.SetCharacterVariantDefsServer(variantDefs);
                 bodyVariantController.doNotRollForVariants = true;
             }
         }
     }
+
+    /// <summary>
+    /// Basic extensions class
+    /// </summary>
     public static partial class Extensions
     {
-        public static bool CheckRoll0To1(this Xoroshiro128Plus rng, float zeroToOnceChance, float luck = 0f, CharacterMaster? effectOriginMaster = null)
+        /// <summary>
+        /// Gets or Finds a GenericSkill from within <paramref name="locator"/>.
+        /// <br></br>
+        /// If <paramref name="slot"/> is none, the GenericSkill is retrieved using <paramref name="fallbackSkillName"/>
+        /// <br></br>
+        /// This method returns null if the locator doesnt have a GenericSkill at slot <paramref name="slot"/>, or if it doesnt have a GenericSkill with the name <paramref name="fallbackSkillName"/>
+        /// </summary>
+        /// <param name="locator">The locator where we want to find a skill</param>
+        /// <param name="slot">The skill slot</param>
+        /// <param name="fallbackSkillName">The skill's name</param>
+        public static GenericSkill? GetOrFindSkill(this SkillLocator? locator, SkillSlot slot, string? fallbackSkillName)
         {
-            return CheckRoll(rng, zeroToOnceChance * 100f, luck, effectOriginMaster);
-        }
+            if (locator == null)
+                return null;
 
-        public static bool CheckRoll(this Xoroshiro128Plus rng, float percentchance, float luck = 0f, CharacterMaster? effectOriginMaster = null)
-        {
-            if(rng == null)
-            {
-                return false;
-            }
-
-            CharacterBody? characterBody = effectOriginMaster.AsValidOrNull()?.GetBody();
-            if (percentchance <= 0f)
-            {
-                return false;
-            }
-
-            bool wasLucky = false;
-            int rerollCount = Mathf.CeilToInt(Mathf.Abs(luck));
-            float randomValue = rng.RangeFloat(0f, 100f);
-            float firstRollValue = randomValue;
-            for(int i = 0; i < rerollCount; i++)
-            {
-                float rerollValue = Random.Range(0f, 100f);
-                randomValue = (luck > 0) ? Mathf.Min(randomValue, rerollValue) : Mathf.Max(randomValue, rerollValue);
-            }
-
-            if(randomValue <= percentchance)
-            {
-                wasLucky = firstRollValue > percentchance;
-                if(characterBody)
-                {
-                    characterBody!.wasLucky = wasLucky;
-                }
-                return true;
-            }
-            return false;
-        }
-
-        public static GenericSkill? GetOrFindSkill(this SkillLocator locator, SkillSlot slot, string fallbackSkillName)
-        {
             if(slot == SkillSlot.None)
             {
+                if (string.IsNullOrWhiteSpace(fallbackSkillName))
+                    return null;
+
                 return locator.FindSkill(fallbackSkillName);
             }
             else
             {
                 return locator.GetSkill(slot);
             }
-        }
-
-        internal static bool TryGetOptionalArgIndex(this ConCommandArgs args, string startingIdentifier, out int index, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
-        {
-            for (int i = 0; i < args.userArgs.Count; i++)
-            {
-                if (args.TryGetArgString(i).StartsWith(startingIdentifier, stringComparison))
-                {
-                    index = i;
-                    return true;
-                }
-            }
-            index = -1;
-            return false;
-        }
-        internal static bool? TryGetOptionalBool(this ConCommandArgs args, string startingIdentifier, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
-        {
-            for (int i = 0; i < args.userArgs.Count; i++)
-            {
-                if (args.TryGetArgString(i).StartsWith(startingIdentifier, stringComparison))
-                {
-                    string rawArg = args.userArgs[i];
-                    if (bool.TryParse(rawArg.Substring(startingIdentifier.Length), out bool result))
-                    {
-                        return result;
-                    }
-                }
-            }
-            return null;
-        }
-
-        internal static string? TryGetOptionalString(this ConCommandArgs args, string startingIdentifier, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
-        {
-            for (int i = 0; i < args.userArgs.Count; i++)
-            {
-                if (args.TryGetArgString(i).StartsWith(startingIdentifier, stringComparison))
-                {
-                    string rawArg = args.userArgs[i];
-                    return rawArg.Substring(startingIdentifier.Length);
-                }
-            }
-            return null;
-        }
-
-        internal static float? TryGetOptionalFloat(this ConCommandArgs args, string startingIdentifier, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
-        {
-            for (int i = 0; i < args.userArgs.Count; i++)
-            {
-                if (args.TryGetArgString(i).StartsWith(startingIdentifier, stringComparison))
-                {
-                    string rawArg = args.userArgs[i];
-                    if (float.TryParse(rawArg.Substring(startingIdentifier.Length), out float result))
-                    {
-                        return result;
-                    }
-                }
-            }
-            return null;
         }
 
         internal static int? TryGetOptionalInt(this ConCommandArgs args, string startingIdentifier, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase)
@@ -236,22 +196,6 @@ namespace VAPI
 
             EquipmentIndex equipmentIndex = EquipmentCatalog.FindEquipmentIndex(optionalString);
             return equipmentIndex;
-        }
-
-        internal static TEnum? TryGetOptionalEnum<TEnum>(this ConCommandArgs args, string startingIdentifier, StringComparison stringComparison = StringComparison.OrdinalIgnoreCase) where TEnum : struct
-        {
-            for (int i = 0; i < args.userArgs.Count; i++)
-            {
-                if (args.TryGetArgString(i).StartsWith(startingIdentifier, stringComparison))
-                {
-                    string rawArg = args.userArgs[i];
-                    if (Enum.TryParse(rawArg.Substring(startingIdentifier.Length), true, out TEnum result))
-                    {
-                        return result;
-                    }
-                }
-            }
-            return null;
         }
     }
 }

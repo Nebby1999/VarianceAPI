@@ -5,13 +5,20 @@ using RoR2;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
+using static MSU.Config.ConfiguredVariable;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Class that manages the spawning of variants, this class is found within a Run behaviour thats only instantiated if <see cref="VAPIContent.VAPIExpansion"/> is enabled.
+    /// </summary>
     [RequireComponent(typeof(NetworkParent))]
     public sealed class VariantSpawnManager : MonoBehaviour
     {
-
+        /// <summary>
+        /// The config for the Artifact of Variance's multiplier
+        /// </summary>
+        [AutoConfig]
         public static ConfiguredFloat artifactSpawnRateMultiplier = new ConfiguredFloat(2)
         {
             section = "General",
@@ -27,11 +34,25 @@ namespace VAPI
             }
         };
 
+        /// <summary>
+        /// Returns the singleton instance of the manager
+        /// </summary>
         public static VariantSpawnManager? instance => _instance;
         private static VariantSpawnManager? _instance;
 
+        /// <summary>
+        /// The base RNG for the other RNG classes in this manager, available only on the server
+        /// </summary>
         public Xoroshiro128Plus? variantRng { get; private set; }
+
+        /// <summary>
+        /// The RNG handling variant spawns, available only on the server
+        /// </summary>
         public Xoroshiro128Plus? variantSpawnRng { get; private set; }
+
+        /// <summary>
+        /// The RNG handling variant rewards, available only on the server
+        /// </summary>
         public Xoroshiro128Plus? variantRewardRng { get; private set; }
 
         private void Start()
@@ -46,14 +67,15 @@ namespace VAPI
 
         private void OnEnable()
         {
-            CharacterMaster.onStartGlobal += OnMasterStart;
+            //CharacterMaster.onStartGlobal += OnMasterStart;
             CharacterBody.onBodyStartGlobal += OnBodyStart;
 
             SingletonHelper.Assign(ref _instance, this);
         }
+
         private void OnDisable()
         {
-            CharacterMaster.onStartGlobal -= OnMasterStart;
+            //CharacterMaster.onStartGlobal -= OnMasterStart;
             CharacterBody.onBodyStartGlobal -= OnBodyStart;
 
             SingletonHelper.Unassign(ref _instance, this);
@@ -69,81 +91,64 @@ namespace VAPI
             //When the body starts, check it's master for a list of provided variants.
             //If masterless, Get the variants from the VariantProvider utilizing the CharacterBody index.
             //Basically, Master is the main source, if no master, fallback to Provider.
+            
             if (!NetworkServer.active)
                 return;
 
-            if(!body.TryGetComponent<CharacterBodyVariantController>(out var characterBodyVariantController))
+            //If we cant roll the variants for the body that just started, return.
+            if (CanRollVariantsForBody(body, out CharacterBodyVariantController? variantController, out CharacterVariantProvider? provider) == false)
+                return;
+
+            //We can roll variants for the body, so proceed to roll them.
+            CharacterVariantDef[]? variantDefs = provider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
+
+            //Do not assign variant defs if theyre null or empty.
+            if(variantDefs == null || variantDefs.Length == 0)
             {
                 return;
             }
 
-            //If it succesfully gets the variants from the master, return.
-            if (characterBodyVariantController.TryLinkCharacterMasterVariantStorage())
-            {
-                return;
-            }
-
-            if(!characterBodyVariantController.doNotRollForVariants)
-            {
-                return;
-            }
-
-            CharacterVariantProvider? provider = CharacterVariantCatalog.FindCharacterVariantProvider(body.bodyIndex);
-            if(provider == null)
-            {
-                return;
-            }
-
-            //Character has no master, but the variant provider exists, proceed to roll the fallback variants.
-            CharacterVariantDef[]? fallbackVariantDefs = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
-
-            if(fallbackVariantDefs == null || fallbackVariantDefs.Length == 0)
-            {
-                return;
-            }
-
-            characterBodyVariantController.SetFallbackCharacterVariantDefs(fallbackVariantDefs);
-
-            //TODO: Impl event for master picking variants?
+            variantController!.SetCharacterVariantDefsServer(variantDefs);
         }
 
-        private void OnMasterStart(CharacterMaster master)
+        private bool CanRollVariantsForBody(CharacterBody body, out CharacterBodyVariantController? characterBodyVariantController, out CharacterVariantProvider? characterVariantProvider)
         {
-            //When the master starts, Select the variants to utilize. and store them.
-            //The variants are then stuck forever.
-            //PlayercharacterMaster works slightly different, however.
-            if (!NetworkServer.active)
-                return;
+            characterBodyVariantController = null;
+            characterVariantProvider = null;
 
-            if(!master.TryGetComponent<CharacterMasterVariantStorage>(out var masterVariantStorage))
+            //This shouldnt even happen, fuck my stupid chungus life
+            if (!body)
+                return false;
+
+            //Retrieve the provider, but don't assign it to the out variable yet, we'll only assign the out variables once we're bound to return true.
+            CharacterVariantProvider? providerForBody = CharacterVariantCatalog.GetCharacterVariantProvider(body.bodyIndex);
+            //If the body doesnt have a provider, return false.
+            if (CharacterVariantCatalog.GetCharacterVariantProvider(body.bodyIndex) == null)
             {
-                return;
+                return false;
             }
 
-            //Do not turn into a variant if it's forbidden for this character.
-            if(masterVariantStorage.doNotRollForVariants)
+            //This shouldnt happen, log it if it does happen
+            if(body.TryGetComponent<CharacterBodyVariantController>(out var controllerForBody) == false)
             {
-                return;
+                VAPILog.Warning($"CharacterBody {body} has a CharacterVariantProvider, but the body prefab lacks the variant controller! this shouldnt be possible!");
+                return false;
             }
 
-            CharacterVariantProvider? provider = CharacterVariantCatalog.FindCharacterVariantProvider(master.masterIndex);
-            if(provider == null)
+            //If the controller says the manager can't roll for variants, then dont.
+            if (controllerForBody.doNotRollForVariants == true)
+                return false;
+
+            //If the body has a master storage, and the master storage has stored variants, do not roll new ones
+            if(controllerForBody.characterMasterVariantStorage != null && controllerForBody.characterMasterVariantStorage.hasStoredVariants)
             {
-                return;
+                return false;
             }
 
-            //TODO: Impl variance artifact effect
-            CharacterVariantDef[]? variantDefsForMaster = provider.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
-
-            if(variantDefsForMaster == null || variantDefsForMaster.Length == 0)
-            {
-                return;
-            }
-
-            masterVariantStorage.SetVariantDefsForCharacter(variantDefsForMaster);
-
-            //TODO: Impl event for master picking variants?
+            //All checks passed, set out variables and return true.
+            characterBodyVariantController = controllerForBody;
+            characterVariantProvider = providerForBody;
+            return true;
         }
-
     }
 }

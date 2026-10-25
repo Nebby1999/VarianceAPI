@@ -11,11 +11,8 @@ namespace VAPI.Editor.PropertyDrawers
     {
         protected override void FinishUI()
         {
-            TextField textField = rootVisualElement.Q<TextField>("Key");
-            textField.BindProperty(serializedProperty.FindPropertyRelative("key"));
-
-            EnumField enumField = rootVisualElement.Q<EnumField>("TargetType");
-            enumField.BindProperty(serializedProperty.FindPropertyRelative("type"));
+            PropertyField pField = rootVisualElement.Q<PropertyField>();
+            pField.BindProperty(serializedProperty.FindPropertyRelative("targetBody"));
         }
     }
 }

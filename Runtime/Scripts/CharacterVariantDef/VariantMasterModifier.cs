@@ -4,9 +4,13 @@ using RoR2.CharacterAI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Called on both client and server
+    /// </summary>
     public interface IVariantMasterModifier : IValidatable, ICloneable
     {
         public IDisposable? ModifyMaster(CharacterMaster master);
@@ -64,9 +68,12 @@ namespace VAPI
 
         public IDisposable? ModifyMaster(CharacterMaster master)
         {
+            if (!NetworkServer.active)
+                return null;
+
             if (master.aiComponents == null)
             {
-                return default;
+                return null;
             }
 
             UnstableAIModifierResult result = new UnstableAIModifierResult();
@@ -159,6 +166,11 @@ namespace VAPI
         }
         public IDisposable? ModifyMaster(CharacterMaster master)
         {
+            if(!NetworkServer.active)
+            {
+                return null;
+            }
+
             if (master.aiComponents == null)
             {
                 return null;
@@ -243,6 +255,9 @@ namespace VAPI
         private float _baseAIDampMultiplier = 1;
         public IDisposable? ModifyMaster(CharacterMaster master)
         {
+            if (!NetworkServer.active)
+                return null;
+
             if (master.AiComponents == null)
                 return null;
 

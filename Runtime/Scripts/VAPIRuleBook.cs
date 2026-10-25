@@ -4,6 +4,8 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using VAPI.AddressReferencedAssets;
+using HG;
 
 namespace VAPI
 {
@@ -14,11 +16,13 @@ namespace VAPI
             public RuleCategoryDef category;
             public int categoryIndex;
         }
+
         private static RuleChoiceDef _varianceExpansionRuleChoice;
         private static CategoryWithIndex _variantPackCategory;
         private static CategoryWithIndex _variantCategory;
         internal static RuleDef _varianceArtifactRuleDef;
 
+        //Dictionary that stores the variant index with it's rule def
         private static Dictionary<CharacterVariantIndex, RuleDef> _variantIndexToRuleDef = new Dictionary<CharacterVariantIndex, RuleDef>();
 
         [SystemInitializer(typeof(RuleCatalog), typeof(CharacterVariantCatalog), typeof(CharacterVariantTierCatalog))]
@@ -179,7 +183,7 @@ namespace VAPI
         {
             RuleDef CreateRuleDefFromVariant(CharacterVariantDef characterVariantDef)
             {
-                Sprite icon = GetTargetCharacterSprite(characterVariantDef.targetCharacter);
+                Sprite icon = GetTargetCharacterSprite(characterVariantDef.targetBody);
                 string inGameVariantName = GetInGameVariantName(characterVariantDef);
 
                 RuleDef rule = new RuleDef($"Variants.{characterVariantDef.cachedName}", inGameVariantName);
@@ -254,18 +258,15 @@ namespace VAPI
         private static Sprite GetTargetCharacterSprite(CharacterVariantTarget target)
         {
             Sprite CreateFromIcon(Texture2D icon) => Sprite.Create(icon, new Rect(0f, 0f, icon.width, icon.height), new Vector2(0.5f, 0.5f), 100);
-            Component c = target.LoadCharacterComponent();
-            if(c is CharacterBody body && body.portraitIcon)
+
+            if(!target.TryLoadCharacterComponent(out var body))
+            {
+                return UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<Sprite>("2205ae9eb97f98e42ac56ee4a9e32474[texMysteryIcon]").WaitForCompletion();
+            }
+
+            if(body.portraitIcon)
             {
                 return CreateFromIcon((Texture2D)body.portraitIcon);
-            }
-            if(c is CharacterMaster master)
-            {
-                GameObject bodyPrefab = master.bodyPrefab;
-                if(bodyPrefab.TryGetComponent<CharacterBody>(out var masterBody) && masterBody.portraitIcon)
-                {
-                    return CreateFromIcon((Texture2D)masterBody.portraitIcon);
-                }
             }
 
             return UnityEngine.AddressableAssets.Addressables.LoadAssetAsync<Sprite>("2205ae9eb97f98e42ac56ee4a9e32474[texMysteryIcon]").WaitForCompletion();
@@ -273,16 +274,13 @@ namespace VAPI
 
         private static string GetInGameVariantName(CharacterVariantDef characterVariantDef)
         {
-            Component c = characterVariantDef.targetCharacter.LoadCharacterComponent();
             string baseNameToken = "???";
-            if(c is CharacterBody body)
+            if(!characterVariantDef.targetBody.TryLoadCharacterComponent(out CharacterBody body))
             {
-                baseNameToken = body.baseNameToken;
+                return baseNameToken;
             }
-            else if(c is CharacterMaster master && master.bodyPrefab && master.bodyPrefab.TryGetComponent<CharacterBody>(out var masterBody))
-            {
-                baseNameToken = masterBody.baseNameToken;
-            }
+
+            baseNameToken = body.baseNameToken;
 
             if(characterVariantDef.variantNameProvider == null)
             {
@@ -314,14 +312,14 @@ namespace VAPI
                 List<ExpansionDef> expansions = new List<ExpansionDef>();
 
                 //Add the expansionDef of the body, if it exists
-                var component = variantDef.targetCharacter.LoadCharacterComponent();
-                if(component is CharacterBody b && b.TryGetComponent<ExpansionRequirementComponent>(out var expansionRequirementComponent))
+                if(!variantDef.targetBody.TryLoadCharacterComponent(out CharacterBody characterBody))
+                {
+                    return expansions;
+                }
+
+                if(characterBody.TryGetComponent<ExpansionRequirementComponent>(out var expansionRequirementComponent))
                 {
                     expansions.Add(expansionRequirementComponent.requiredExpansion);
-                }
-                else if(component is CharacterMaster m && m.bodyPrefab && m.bodyPrefab.TryGetComponent<ExpansionRequirementComponent>(out var masterBodyExpansionRequirementComponent))
-                {
-                    expansions.Add(masterBodyExpansionRequirementComponent.requiredExpansion);
                 }
 
 

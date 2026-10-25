@@ -8,52 +8,164 @@ using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// A read only representation of a <see cref="VariantPack"/>
+    /// </summary>
     public readonly struct ReadOnlyVariantPack
     {
         //Access only to us.
         internal readonly VariantPack src;
-        public bool isValid => src != null;
-        public BepInPlugin ownerPlugin => src.ownerPlugin;
-        public ConfigFile? tierConfig => src.tierConfig;
-        public ConfigFile? variantConfig => src.variantConfig;
-        public string identifier => src.identifier;
-        public string nameToken => src.nameToken;
-        public string tooltipToken => src.tooltipToken;
-        public string descriptionToken => src.descriptionToken;
-        public Sprite packIcon => src.packIcon;
-        public RuleChoiceDef packEnabledChoice => src.packEnabledChoice;
 
+        /// <summary>
+        /// Returns true if the ReadOnlyVariantPack is valid.
+        /// </summary>
+        public bool isValid => src != null;
+
+        /// <summary>
+        /// Access to the plugin that added the pack
+        /// </summary>
+        public BepInPlugin ownerPlugin => src.ownerPlugin;
+
+        /// <summary>
+        /// Access to the pack's tier config, may be null.
+        /// </summary>
+        public ConfigFile? tierConfig => src.tierConfig;
+
+        /// <summary>
+        /// Access to the pack's variant config, may be null
+        /// </summary>
+        public ConfigFile? variantConfig => src.variantConfig;
+
+        /// <summary>
+        /// Access to the pack's identifier
+        /// </summary>
+        public string identifier => src.identifier;
+
+        /// <summary>
+        /// Access to the pack's name token, used in the rulebook
+        /// </summary>
+        public string nameToken => src.nameToken;
+
+        /// <summary>
+        /// Access to the pack's tooltip token, used in the rulebook
+        /// </summary>
+        public string tooltipToken => src.tooltipToken;
+
+        /// <summary>
+        /// Access to the pack's description token, used in the rulebook
+        /// </summary>
+        public string descriptionToken => src.descriptionToken;
+
+        /// <summary>
+        /// Access to this pack's icon, used in the rulebook
+        /// </summary>
+        public Sprite packIcon => src.packIcon;
+
+        /// <summary>
+        /// Access to this pack's enabled choice, this is null up until VarianceAPI's Rulebook Class initializes
+        /// </summary>
+        public RuleChoiceDef? packEnabledChoice => src.packEnabledChoice;
+
+        /// <summary>
+        /// Access to this pack's <see cref="CharacterVariantTierDef"/>s
+        /// </summary>
         public ReadOnlyNamedAssetCollection<CharacterVariantTierDef> characterVariantTierDefs => src.characterVariantTierDefs;
+        /// <summary>
+        /// Access to this pack's <see cref="CharacterVariantDef"/>
+        /// </summary>
         public ReadOnlyNamedAssetCollection<CharacterVariantDef> characterVariantDefs => src.characterVariantDefs;
 
+        /// <summary>
+        /// Access to this pack's index
+        /// </summary>
         public VariantPackIndex variantPackIndex => src.variantPackIndex;
+
+        /// <summary>
+        /// Returns if this pack is hidden, internal use only
+        /// </summary>
         internal readonly bool isHidden => src._isHidden;
 
+        /// <summary>
+        /// Constructor. Throws a <see cref="ArgumentNullException"/> if <paramref name="src"/> is null.
+        /// </summary>
+        /// <param name="src">The VariantPack to encapsulate in a <see cref="ReadOnlyVariantPack"/></param>
         public ReadOnlyVariantPack(VariantPack src)
         {
             this.src = src ?? throw new ArgumentNullException(nameof(src));
         }
     }
 
+    /// <summary>
+    /// The <see cref="VariantPack"/> is a class used to store and specify which <see cref="CharacterVariantDef"/>s and which <see cref="CharacterVariantTierDef"/>s are from your mod.
+    /// <br></br>
+    /// A ReadOnly version of this can be exposed via the <see cref="ReadOnlyVariantPack"/>
+    /// </summary>
     public sealed class VariantPack
     {
+        /// <summary>
+        /// The plugin that added this pack
+        /// </summary>
         public readonly BepInPlugin ownerPlugin;
+
+        /// <summary>
+        /// The config file for this pack's tiers, can be null
+        /// </summary>
         public ConfigFile? tierConfig;
+
+        /// <summary>
+        /// The config file for this pack's variants, can be null
+        /// </summary>
         public ConfigFile? variantConfig;
 
+        /// <summary>
+        /// An identifier for this pack, must be unique.
+        /// </summary>
         public readonly string identifier = "UNIDENTIFIED";
+
+        /// <summary>
+        /// The name token for this pack, this is used in the rulebook for enabling/disabling variant packs.
+        /// </summary>
         public readonly string nameToken = "";
+
+        /// <summary>
+        /// The tooltip token for this pack, this is used in the rulebook for enabling/disabling variant packs.
+        /// </summary>
         public readonly string tooltipToken = "";
+
+        /// <summary>
+        /// The description token for this pack, this is used in the rulebook for enabling/disabling variant packs.
+        /// </summary>
         public readonly string descriptionToken = "";
+
+        /// <summary>
+        /// The icon for this pack, this is used in the rulebook for enabling/disabling variant packs.
+        /// </summary>
         public readonly Sprite packIcon;
 
+        /// <summary>
+        /// A <see cref="NamedAssetCollection{TAsset}"/> that contains your pack's <see cref="CharacterVariantTierDef"/>
+        /// </summary>
         public readonly NamedAssetCollection<CharacterVariantTierDef> characterVariantTierDefs = new NamedAssetCollection<CharacterVariantTierDef>(ContentPack.getScriptableObjectName);
+
+        /// <summary>
+        /// A <see cref="NamedAssetCollection{TAsset}"/> that contains your pack's <see cref="CharacterVariantDef"/>
+        /// </summary>
         public readonly NamedAssetCollection<CharacterVariantDef> characterVariantDefs = new NamedAssetCollection<CharacterVariantDef>(ContentPack.getScriptableObjectName);
 
+        /// <summary>
+        /// Wether this pack is hidden from the rulebook, internal use only
+        /// </summary>
         internal readonly bool _isHidden;
+
+        /// <summary>
+        /// Your VariantPack's unique index, used for networking purposes and general housekeeping
+        /// </summary>
         public VariantPackIndex variantPackIndex => _packIndex;
 
-        public RuleChoiceDef packEnabledChoice { get; internal set; }
+        /// <summary>
+        /// Your VariantPack's enabled choice in the rulebook, this is null up until VarianceAPI's rulebook class initializes
+        /// </summary>
+        public RuleChoiceDef? packEnabledChoice { get; internal set; }
 
         internal VariantPackIndex _packIndex;
 

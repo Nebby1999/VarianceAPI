@@ -40,6 +40,16 @@ namespace VAPI
                 itemDef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedItemDef, ItemDef>(itemDef)
             };
         }
+
+        public static AddressableItemCountPair Create(string itemName, int count = 1)
+        {
+            return new AddressableItemCountPair { itemDef = itemName, count = count };
+        }
+
+        public static AddressableItemCountPair Create(ItemDef item, int count = 1)
+        {
+            return new AddressableItemCountPair { itemDef = item, count = count };
+        }
     }
 
     [Serializable]
@@ -99,6 +109,9 @@ namespace VAPI
                     equipmentDef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedEquipmentDef, EquipmentDef>(equipmentDef)
                 };
             }
+
+            public static AddressableEquipmentInfo Create(string equipmentName) => new AddressableEquipmentInfo { equipmentDef = equipmentName };
+            public static AddressableEquipmentInfo Create(EquipmentDef equipment) => new AddressableEquipmentInfo { equipmentDef = equipment };
         }
 
         public AddressableItemCountPair[] itemsToGrant = Array.Empty<AddressableItemCountPair>();
@@ -163,27 +176,14 @@ namespace VAPI
         }
 
         #region Constructors
+        public VariantInventoryDefinition(AddressableItemCountPair singleItem) : this(singleItem, default) { }
+        public VariantInventoryDefinition(AddressableItemCountPair[] itemsToGrant) : this(itemsToGrant, default) { }
+        public VariantInventoryDefinition(AddressableEquipmentInfo equipmentInfo) : this(Array.Empty<AddressableItemCountPair>(), equipmentInfo) { }
+        public VariantInventoryDefinition(AddressableItemCountPair singleItem, AddressableEquipmentInfo equipmentInfo) : this(new AddressableItemCountPair[] { singleItem }, equipmentInfo) { }
         public VariantInventoryDefinition(AddressableItemCountPair[] itemsToGrant, AddressableEquipmentInfo equipmentInfo)
         {
             this.equipmentInfo = equipmentInfo;
             this.itemsToGrant = itemsToGrant;
-        }
-        public VariantInventoryDefinition(AddressableItemCountPair[] itemsToGrant)
-        {
-            this.itemsToGrant = itemsToGrant;
-        }
-        public VariantInventoryDefinition(AddressableItemCountPair singleItem, AddressableEquipmentInfo equipmentInfo)
-        {
-            this.equipmentInfo = equipmentInfo;
-            this.itemsToGrant = new AddressableItemCountPair[1] { singleItem };
-        }
-        public VariantInventoryDefinition(AddressableItemCountPair singleItem)
-        {
-            this.itemsToGrant = new AddressableItemCountPair[1] { singleItem };
-        }
-        public VariantInventoryDefinition(AddressableEquipmentInfo equipmentInfo)
-        {
-            this.equipmentInfo = equipmentInfo;
         }
         public VariantInventoryDefinition() { }
         #endregion

@@ -6,6 +6,9 @@ using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Monobehaviour that handles death rewards for variants
+    /// </summary>
     public sealed class VariantDeathRewards : MonoBehaviour, IOnKilledServerReceiver
     {
         private sealed class ChanceWithCount
@@ -35,10 +38,23 @@ namespace VAPI
                 compoundedCount++;
             }
         }
+
+        /// <summary>
+        /// Access to the variant controller for the body
+        /// </summary>
         public CharacterBodyVariantController characterBodyVariantController { get; private set; }
+        /// <summary>
+        /// Access to the character body
+        /// </summary>
         public CharacterBody characterBody { get; private set; }
+        /// <summary>
+        /// Access to the base DeathRewards component, this may be null
+        /// </summary>
         public DeathRewards? deathRewards { get; private set; }
 
+        /// <summary>
+        /// Set this value to true if you don't want this variant to have reward modifications
+        /// </summary>
         public bool supressRewards;
 
         private float _pickupRewardChance;
@@ -221,7 +237,7 @@ namespace VAPI
                     return;
                 }
 
-                bool canDropItemOnHiddenRealm = VariantSpawnManager.instance!.variantRewardRng!.CheckRoll(chanceInRealm, luck, attackerMaster);
+                bool canDropItemOnHiddenRealm = Util.CheckRoll(chanceInRealm, luck, attackerMaster);
                 if (!canDropItemOnHiddenRealm)
                 {
                     return;
@@ -229,7 +245,7 @@ namespace VAPI
             }
 
             //If this check roll doesnt pass, then return, no reward for u
-            if (!VariantSpawnManager.instance!.variantRewardRng!.CheckRoll(_pickupRewardChance, luck, attackerMaster))
+            if (!Util.CheckRoll(_pickupRewardChance, luck, attackerMaster))
             {
                 return;
             }

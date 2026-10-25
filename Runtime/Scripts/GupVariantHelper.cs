@@ -9,6 +9,13 @@ using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Static class that handles proper variant propagation for Gups, Geeps and Gips.
+    /// <br></br>
+    /// This class is used to check which variants should be used when a Gup/Geep dies, and has to spawn new monsters. The class's utilities goes unused if <see cref="VAPIConfig._modifyGupDeathStates"/> is false.
+    /// <para></para>
+    /// Say for example you add a new "Gup" type called "Explosive", which explodes and dies when it uses it's spike attack. If you only want "Explosive Gup" to spawn "Explosive Geep", and "Explosive Geep" spawn "Explosive Gip", you can use this class to ensure that's the case.
+    /// </summary>
     public static class GupVariantHelper
     {
         private static HashSet<CharacterVariantDef> _blacklistedVariants = new HashSet<CharacterVariantDef>();
@@ -16,11 +23,27 @@ namespace VAPI
         private static Dictionary<CharacterVariantDef, CharacterVariantDef> _gupToGeepVariantRelation = new Dictionary<CharacterVariantDef, CharacterVariantDef>();
         private static Dictionary<CharacterVariantDef, CharacterVariantDef> _geepToGipVariantRelation = new Dictionary<CharacterVariantDef, CharacterVariantDef>();
 
+        /// <summary>
+        /// Adds a variant to the gup blacklist.
+        /// <br></br>
+        /// If a Gup/Geep dies and has <paramref name="def"/> in it's variant defs, it will not be propagated to it's children
+        /// </summary>
+        /// <param name="def">The variant def to blacklist</param>
         public static void AddVariantToGupBlacklist(CharacterVariantDef def)
         {
             _blacklistedVariants.Add(def);
         }
 
+        /// <summary>
+        /// Adds a new relation between 3 variant defs.
+        /// <br></br>
+        /// If modifyGupDeathStates is true in VAPI's config. When a Gup dies that has <paramref name="gupVariant"/> in it's list. The <paramref name="geepVariant"/> will be added to the resulting geep.
+        /// <br></br>
+        /// Same thing applies to Geeps dying and spawning Gips
+        /// </summary>
+        /// <param name="gupVariant">The Gup character variant def</param>
+        /// <param name="geepVariant">The Geep character variant def</param>
+        /// <param name="gipVariant">The Gip character variant def</param>
         public static void AddGupVariantRelation(CharacterVariantDef gupVariant, CharacterVariantDef geepVariant, CharacterVariantDef gipVariant)
         {
             _gupToGeepVariantRelation.TryAdd(gupVariant, geepVariant);
@@ -63,6 +86,7 @@ namespace VAPI
             if (!baseSplitDeath.characterBody.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
                 return toReturn;
 
+            //Wrap the master summon with the variant summon, which will ensure the Geep/Gip gets turned into a variant.
             VariantMasterSummon wrapper = new VariantMasterSummon(toReturn.masterSummon)
             {
                 deathRewardsCoefficient = 0.3f,
@@ -72,10 +96,11 @@ namespace VAPI
             return toReturn;
         }
 
-        private static List<CharacterVariantDef> _getVariantDefsBuffer = new List<CharacterVariantDef>();
         private static CharacterVariantDef[] GetVariantDefs(ReadOnlyArray<CharacterVariantDef> splittingBodyVariantDefs, GameObject masterPrefabToSplitTo, BodyIndex splittingBodyIndex)
         {
-            _getVariantDefsBuffer.Clear();
+            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var getVariantDefsBuffer);
+
+            getVariantDefsBuffer.Clear();
 
             BodyIndex splittingResultBodyIndex = BodyIndex.None;
             if(masterPrefabToSplitTo.TryGetComponent<CharacterMaster>(out var masterToSplitTo) 
@@ -94,24 +119,24 @@ namespace VAPI
                 //If it's splitting into more of itself, add the variantDef directly.
                 if(splittingResultBodyIndex == splittingBodyIndex)
                 {
-                    _getVariantDefsBuffer.Add(variantDef);
+                    getVariantDefsBuffer.Add(variantDef);
                     continue;
                 }
 
                 if(_gupToGeepVariantRelation.TryGetValue(variantDef, out var geepVariantDef))
                 {
-                    _getVariantDefsBuffer.Add(geepVariantDef);
+                    getVariantDefsBuffer.Add(geepVariantDef);
                     continue;
                 }
 
                 if(_geepToGipVariantRelation.TryGetValue(variantDef, out var gipVariantDef))
                 {
-                    _getVariantDefsBuffer.Add(gipVariantDef);
+                    getVariantDefsBuffer.Add(gipVariantDef);
                     continue;
                 }
             }
 
-            return _getVariantDefsBuffer.ToArray();
+            return getVariantDefsBuffer.ToArray();
         }
     }
 }

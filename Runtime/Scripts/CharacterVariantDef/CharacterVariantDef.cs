@@ -1,6 +1,3 @@
-#if UNITY_EDITOR
-using UnityEditor;
-#endif
 using System;
 using UnityEngine;
 using UnityEngine.UIElements;
@@ -13,44 +10,80 @@ using MSU;
 using System.Collections.Generic;
 using BepInEx.Configuration;
 using BepInEx;
+using VAPI.AddressReferencedAssets;
 #nullable enable
 
 namespace VAPI
 {
+    /// <summary>
+    /// ScriptableObject class for CharacterVariants.
+    /// <br></br>
+    /// New ones can be created in code via the <see cref="CharacterVariantDefBuilder"/>, or by "Cloning" one using <see cref="CharacterVariantDef.CreateInstance(CharacterVariantDef, string)"/>
+    /// </summary>
     [CreateAssetMenu(fileName = "New CharacterVariantDef", menuName = "VarianceAPI/CharacterVariantDef")]
     public sealed class CharacterVariantDef : CachedNameScriptableObject
     {
+        /// <summary>
+        /// The <see cref="CharacterVariantIndex"/> assigned to this variant def
+        /// </summary>
         public CharacterVariantIndex characterVariantIndex { get; internal set; }
+
         [Header("General Settings")]
-        public CharacterVariantTarget targetCharacter = new CharacterVariantTarget();
+        [Tooltip("A Target body for this variant. This variant will be available to this body.")]
+        public CharacterVariantTarget targetBody = new CharacterVariantTarget();
+        [Tooltip("The tier for this variant, can be left null")]
         public CharacterVariantTierDef? variantTier = null;
+
+        [Tooltip("Wether this variant is unique or not. Unique variants cannot merge with other variants")]
         public bool isUnique;
+
+        [Tooltip("The spawn rate for this variant")]
         [Range(0, 100)]
         public float spawnRate;
+
+        [Tooltip("An arrival token for this variant when it spawns, only used if it's tier announces arrivals")]
         public string arrivalToken = "";
 
         [Header("Spawn Conditions")]
         [SerializeReference, SubclassSelector]
+        [Tooltip("A spawn condition for this variant.")]
         public IVariantSpawnCondition? spawnCondition = null;
 
         [Header("Master Related")]
         [SerializeReference, SubclassSelector]
+        [Tooltip("An array of master modifiers for this variant")]
         public IVariantMasterModifier[] masterModifiers = Array.Empty<IVariantMasterModifier>();
+
+        [Tooltip("An inventory definition for this variant, holding information like items and equipments")]
         public VariantInventoryDefinition inventoryDefinition = new VariantInventoryDefinition();
 
         [Header("Body Related")]
         [SerializeReference, SubclassSelector]
+        [Tooltip("A name provider for this variant, used to change the display name")]
         public IVariantNameProvider? variantNameProvider = null;
+
+        [Tooltip("A death state override for this variant")]
         public VariantDeathStateOverride deathStateOverride = new VariantDeathStateOverride();
+
+        [Tooltip("An array of skill replacements for this variant")]
         public VariantSkillReplacement[] skillReplacements = Array.Empty<VariantSkillReplacement>();
+
         [SerializeReference, SubclassSelector]
+        [Tooltip("A stat modifier for this variant, uses RecalculateStatsAPI internally")]
         public IVariantStatModifier? statModifier = null;
+
+        [Tooltip("A list of buffs for this variant")]
         public VariantBuffStorage variantBuffs = new VariantBuffStorage();
+
+        [Tooltip("The visuals for this variant")]
         public CharacterVariantVisualModifier? visualModifier = null;
+
+        [Tooltip("A scale multiplier for this variant")]
         [Min(0 + float.Epsilon)]
         public float scaleMultiplier = 1f;
 
         [Header("Other")]
+        [Tooltip("A collection of components for this variant")]
         public VariantComponentCollection additionalVariantComponents = new VariantComponentCollection();
 
         /// <summary>
@@ -82,6 +115,9 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Returns true if this variant is available under the current run context.
+        /// </summary>
         public bool IsAvailable()
         {
             if (spawnRate == 0)
@@ -97,11 +133,14 @@ namespace VAPI
             return spawnCondition?.IsAvailable() ?? true;
         }
 
+        /// <summary>
+        /// Creates a clone of <paramref name="other"/>, assigns its name to <paramref name="newName"/> and returns the clone.
+        /// </summary>
         public static CharacterVariantDef CreateInstance(CharacterVariantDef other, string newName)
         {
             CharacterVariantDef variantDef = CreateInstance<CharacterVariantDef>();
             variantDef.cachedName = newName;
-            variantDef.targetCharacter = (CharacterVariantTarget)other.targetCharacter.Clone();
+            variantDef.targetBody = (CharacterVariantTarget)other.targetBody.Clone();
             variantDef.variantTier = other.variantTier;
             variantDef.isUnique = other.isUnique;
             variantDef.spawnRate = other.spawnRate;

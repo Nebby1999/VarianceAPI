@@ -11,31 +11,67 @@ using UnityEngine.Networking;
 
 namespace VAPI
 {
+    /// <summary>
+    /// A <see cref="NetworkBehaviour"/> used to apply variants at a Body level.
+    /// <para></para>
+    /// When the <see cref="CharacterBody"/> spawns, if it has a master it will try to sync itself with the master's <see cref="CharacterMasterVariantStorage"/>. If this succeeds it'll utilize the variants stored in it.
+    /// <br></br>
+    /// If this linking process fails, it'll roll it's own variants and store it in this component. This allows for the creation of masterless variants (For example, a goolake pot that leaves a tar pool on explosion)
+    /// </summary>
     public sealed class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
     {
+        public CharacterMasterVariantStorage characterMasterVariantStorage { get; private set; }
+        /*public CharacterMasterVariantStorage? characterMasterVariantStorage
+        {
+            get
+            {
+                //Return it if we already have it
+                if (_characterMasterVariantStorage)
+                    return _characterMasterVariantStorage;
 
-        //So, VAPI 3.0 has the ability to store the variants on a master, however, we want to allow the ability for masterless variants to be a thing.
-        //As a result, the main variants for the body _are_ the ones found on the master, if said master storage is not found then it must utilize it's internal storage.
-        //In terms of networking, the "Source of Truth" is the Master, if no master, then its this component.
+                //Search it up.
+
+                //If the body somehow doesnt exist, or the body is flagged as masterless, return null.
+                if(!characterBody || !characterBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless))
+                {
+                    return null;
+                }
+
+                var master = characterBody.master;
+
+                //If there is no master, return null
+                if (!master)
+                    return null;
+
+                var storage = master.EnsureComponent<CharacterMasterVariantStorage>();
+                storage.AssignController(this);
+                return storage;
+            }
+        }
+        private CharacterMasterVariantStorage? _characterMasterVariantStorage;*/
         public ReadOnlyArray<CharacterVariantDef> characterVariantDefs
         {
             get
             {
-                if(characterMasterVariantStorage)
+                //If the master storage is not null, and it has stored variants, utilize it's stored array.
+                if (characterMasterVariantStorage != null && characterMasterVariantStorage.hasStoredVariants)
                 {
-                    return characterMasterVariantStorage!.characterVariantDefs;
+                    return characterMasterVariantStorage.storedVariants;
                 }
 
+                //Storage null, return our array
                 return _fallbackCharacterVariantDefs;
             }
         }
         private CharacterVariantDef[] _fallbackCharacterVariantDefs = Array.Empty<CharacterVariantDef>();
-        private SyncListCharacterVariantIndex _fallbackCharacterVariantIndices = new SyncListCharacterVariantIndex();
-        public CharacterMasterVariantStorage? characterMasterVariantStorage { get; private set; }
+        private SyncListCharacterVariantIndex _characterVariantIndices = new SyncListCharacterVariantIndex();
+
         public CharacterBody characterBody { get; private set; }
         public CharacterDeathBehavior? characterDeathBehavior { get; private set; }
         public CharacterModel? characterModel { get; private set; }
-
+        /// <summary>
+        /// The VariantSpawnManager will not roll for variants for this controller if this is true.
+        /// </summary>
         public bool doNotRollForVariants
         {
             get => _doNotRollForVariants;
@@ -51,21 +87,24 @@ namespace VAPI
         [SyncVar]
         private bool _doNotRollForVariants;
 
+        public event Action? onVariantsUnappliedBody;
+        public event Action<CharacterVariantDef[]>? onVariantsAppliedBody;
+
         private void Awake()
         {
             characterBody = GetComponent<CharacterBody>();
 
-            if(characterBody.modelLocator && characterBody.modelLocator.modelTransform)
+            if (characterBody.modelLocator && characterBody.modelLocator.modelTransform)
             {
                 characterModel = characterBody.modelLocator.modelTransform.GetComponent<CharacterModel>();
             }
 
-            if(characterBody.TryGetComponent<CharacterDeathBehavior>(out var deathBehavior))
+            if (characterBody.TryGetComponent<CharacterDeathBehavior>(out var deathBehavior))
             {
                 characterDeathBehavior = deathBehavior;
             }
 
-            if(characterModel && characterModel!.TryGetComponent<ModelSkinController>(out var mdlSkinController))
+            if (characterModel && characterModel!.TryGetComponent<ModelSkinController>(out var mdlSkinController))
             {
                 mdlSkinController.onSkinApplied += OnSkinApplied;
             }
@@ -76,57 +115,55 @@ namespace VAPI
         }
 
         private bool _skinHasBeenApplied = false;
-        private void OnSkinApplied(int obj)
+        private void OnSkinApplied(int obj) => _skinHasBeenApplied = true;
+
+        //At this point the link between master and body should be set
+        private void Start()
         {
-            _skinHasBeenApplied = true;
+            if(characterMasterVariantStorage == null)
+            {
+                //Do not retrieve or try to create the storage if flagged as masterless
+                if (!characterBody || characterBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless))
+                    return;
+
+                //Do not retrieve or try to create the storage if master doesnt exist
+                var master = characterBody.master;
+                if (!master)
+                    return;
+
+                //Ensure the component itself, and try to assign ourselves to the storage.
+                characterMasterVariantStorage = master.EnsureComponent<CharacterMasterVariantStorage>();
+                characterMasterVariantStorage.TryAssignController(this);
+            }
+        }
+
+        [Server]
+        public void SetCharacterVariantDefsServer(CharacterVariantDef[] variantDefs)
+        {
+            if (!characterBody)
+                return;
+
+            if(characterMasterVariantStorage != null && characterMasterVariantStorage.hasStoredVariants)
+            {
+                VAPILog.Warning($"Tried to set {this}'s variant defs, but it has a master storage and the master storage's stored variants are valid! this is not allowed!");
+                return;
+            }
+
+            //Clear the synclist, then add the new variants
+            _characterVariantIndices.Clear();
+            for(int i = 0; i < variantDefs.Length; i++)
+            {
+                _characterVariantIndices.Add(variantDefs[i].characterVariantIndex);
+            }
+
+            //Call the OnSyncListDirty(), which will properly update our variants.
+            OnSyncListDirty();
         }
 
         public override void OnStartClient()
         {
             base.OnStartClient();
-            _fallbackCharacterVariantIndices.Callback = SyncListCallback;
-        }
-
-        private void Start()
-        {
-            TryLinkCharacterMasterVariantStorage();
-        }
-
-        public bool TryLinkCharacterMasterVariantStorage()
-        {
-            //Shortcircuit to true if we already have the master's variant storage.
-            if(characterMasterVariantStorage)
-            {
-                return true;
-            }
-
-            if(!characterBody.master)
-            {
-                return false;
-            }
-
-            if(!characterBody.master.TryGetComponent<CharacterMasterVariantStorage>(out var masterVariantStorage))
-            {
-                return false;
-            }
-
-            if(masterVariantStorage.doNotRollForVariants)
-            {
-                //Should "cannotBeVariant" be inherited from the master's variant storage?...
-                if(NetworkServer.active)
-                {
-                    doNotRollForVariants = masterVariantStorage.doNotRollForVariants;
-                }
-                return false;
-            }
-
-            //We've obtained our master's storage, so assign it here.
-            characterMasterVariantStorage = masterVariantStorage;
-
-            //Make it so we apply and unapply modifications whenever the master applies/unapplies modifications
-            characterMasterVariantStorage.onCharacterMasterVariantStorageApply += ApplyBodyModifications;
-            characterMasterVariantStorage.onCharacterMasterVariantStorageUnapply += UnapplyBodyModifications;
-            return true;
+            _characterVariantIndices.Callback = SyncListCallback; //Apply callback
         }
 
         //Callback is only called if the server is a client. So i _think_ a dedicated server will never get this callback, which isnt good.
@@ -148,54 +185,37 @@ namespace VAPI
 
         private void OnSyncListDirty()
         {
-            //First, unapply the body modifications.
+            //First, unapply the modifications, if any
             UnapplyBodyModifications(characterVariantDefs);
 
-            //Second, create new array and populate
-            _fallbackCharacterVariantDefs = new CharacterVariantDef[_fallbackCharacterVariantIndices.Count];
-            for (int i = 0; i < _fallbackCharacterVariantIndices.Count; i++)
+            //Invoke the event, the master storage listens this to unapply it's master modifiers
+            onVariantsUnappliedBody?.Invoke();
+
+            //Second, create new array and populate.
+            _fallbackCharacterVariantDefs = new CharacterVariantDef[_characterVariantIndices.Count];
+            for(int i = 0; i < _characterVariantIndices.Count; i++)
             {
-                _fallbackCharacterVariantDefs[i] = CharacterVariantCatalog.GetCharacterVariantDef(_fallbackCharacterVariantIndices[i])!;
+                _fallbackCharacterVariantDefs[i] = CharacterVariantCatalog.GetCharacterVariantDef(_characterVariantIndices[i])!;
             }
 
-            //Thirdy, apply body modifications
-            ApplyBodyModifications(characterVariantDefs);
-        }
+            //Thirdly, apply body modifications
+            ApplyBodyModifications(_fallbackCharacterVariantDefs);
 
-        [Server]
-        public void SetFallbackCharacterVariantDefs(CharacterVariantDef[] characterVariantDefs)
-        {
-            if(characterMasterVariantStorage)
-            {
-                //TODO: Log here, you shan't set fallback variant defs if the master storage exists.
-                return;
-            }
-            //First, clear the syncList;
-            _fallbackCharacterVariantIndices.Clear();
-            //Then, add the indices to the sync list.
-            for (int i = 0; i < characterVariantDefs.Length; i++)
-            {
-                _fallbackCharacterVariantIndices.Add(characterVariantDefs[i].characterVariantIndex);
-            }
-
-            //Call the OnSyncListDirty(), which will properly update our variants.
-            OnSyncListDirty();
+            //Invoke the event, the master storage listens this to apply it's master modifications and store the variants
+            onVariantsAppliedBody?.Invoke(_fallbackCharacterVariantDefs);
         }
 
         private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
         private void ApplyBodyModifications(ReadOnlyArray<CharacterVariantDef> characterVariants)
         {
             List<CharacterVariantVisualModifier> visualModifiers = new List<CharacterVariantVisualModifier>();
-            /*
-             * TODO:
-             * 2. Apply the Scale Mutliplier
-             */
-            for(int i = 0; i < characterVariants.Length; i++)
+
+            for (int i = 0; i < characterVariants.Length; i++)
             {
                 CharacterVariantDef characterVariantDef = characterVariants[i];
 
                 //Apply tier body modifiers
-                if(characterVariantDef.variantTier)
+                if (characterVariantDef.variantTier)
                 {
                     CharacterVariantTierDef variantTierDef = characterVariantDef.variantTier!;
                     _disposableCollectionHelper.AddDisposable(variantTierDef.ModifyBody(characterBody));
@@ -205,16 +225,16 @@ namespace VAPI
                 _disposableCollectionHelper.AddDisposable(characterVariantDef.variantBuffs.ApplyBuffs(characterBody));
 
                 //Apply skills
-                if(characterBody.skillLocator)
+                if (characterBody.skillLocator)
                 {
-                    foreach(var skillReplacement in characterVariantDef.skillReplacements)
+                    foreach (var skillReplacement in characterVariantDef.skillReplacements)
                     {
                         _disposableCollectionHelper.AddDisposable(skillReplacement.ApplySkillReplacement(characterBody.skillLocator));
                     }
                 }
 
                 //Apply death state override
-                if(characterDeathBehavior)
+                if (characterDeathBehavior)
                 {
                     _disposableCollectionHelper.AddDisposable(characterVariantDef.deathStateOverride.ApplyDeathStateOverride(characterDeathBehavior));
                 }
@@ -222,13 +242,13 @@ namespace VAPI
                 //Add Body Components
                 _disposableCollectionHelper.AddDisposable(characterVariantDef.additionalVariantComponents.ApplyComponents(characterBody));
 
-                if(characterModel)
+                if (characterModel)
                 {
                     //Add CharacterModel Components
                     _disposableCollectionHelper.AddDisposable(characterVariantDef.additionalVariantComponents.ApplyComponents(characterModel!));
 
                     //Store visual modifiers in the list, we will apply these in a coroutine since we need to await for the Skin to be applied.
-                    if(characterVariantDef.visualModifier)
+                    if (characterVariantDef.visualModifier)
                     {
                         visualModifiers.Add(characterVariantDef.visualModifier!);
                     }
@@ -252,35 +272,39 @@ namespace VAPI
             _disposableCollectionHelper.Dispose();
             _skinHasBeenApplied = false;
 
-            if(_applyVisualModifiersAfterSkinCoroutine != null)
+            if (_applyVisualModifiersAfterSkinCoroutine != null)
             {
                 StopCoroutine(_applyVisualModifiersAfterSkinCoroutine);
             }
-            if(_mdlSkinControllerApplySkinCoroutine != null)
+            if (_mdlSkinControllerApplySkinCoroutine != null)
             {
                 StopCoroutine(_mdlSkinControllerApplySkinCoroutine);
             }
         }
 
+        /// <summary>
+        /// Method used to apply stat modifiers, you shouldn't call this directly as it's called automatically by MSU's systems.
+        /// </summary>
         public void ModifyStatArguments(RecalculateStatsAPI.StatHookEventArgs args)
         {
-            for(int i = 0; i < characterVariantDefs.Length; i++)
+            for (int i = 0; i < characterVariantDefs.Length; i++)
             {
                 var characterVariantDef = characterVariantDefs[i];
                 characterVariantDef.statModifier?.ApplyStatModifiers(args, characterBody);
             }
         }
 
+
         private IEnumerator? _applyVisualModifiersAfterSkinCoroutine;
         private IEnumerator ApplyVisualModifiersAfterSkin(List<CharacterVariantVisualModifier> visualModifiers)
         {
             var waitForEndOfFrame = new WaitForEndOfFrame();
-            while(_skinHasBeenApplied == false)
+            while (_skinHasBeenApplied == false)
             {
                 yield return waitForEndOfFrame;
             }
 
-            foreach(var visualModifier in visualModifiers)
+            foreach (var visualModifier in visualModifiers)
             {
                 _disposableCollectionHelper.AddDisposable(visualModifier.ApplyVisualModifiers(characterModel!, this));
             }
@@ -293,7 +317,7 @@ namespace VAPI
             IEnumerator InternalCoroutine(IEnumerator applySkinCoroutine)
             {
                 var waitForEndOfFrame = new WaitForEndOfFrame();
-                while(applySkinCoroutine.MoveNext())
+                while (applySkinCoroutine.MoveNext())
                 {
                     yield return waitForEndOfFrame;
                 }
@@ -301,11 +325,26 @@ namespace VAPI
                 yield break;
             }
 
-            if(_mdlSkinControllerApplySkinCoroutine == null)
+            if (_mdlSkinControllerApplySkinCoroutine == null)
             {
                 _mdlSkinControllerApplySkinCoroutine = InternalCoroutine(subroutine);
                 StartCoroutine(_mdlSkinControllerApplySkinCoroutine);
             }
         }
+
+        private void OnDestroy()
+        {
+            onVariantsAppliedBody = null;
+            onVariantsUnappliedBody = null;
+        }
+
+        /*//So, VAPI 3.0 has the ability to store the variants on a master, however, we want to allow the ability for masterless variants to be a thing.
+//As a result, the main variants for the body _are_ the ones found on the master, if said master storage is not found then it must utilize it's internal storage.
+//In terms of networking, the "Source of Truth" is the Master, if no master, then its this component.
+
+
+
+
+*/
     }
 }

@@ -4,7 +4,8 @@ using UnityEngine;
 
 namespace VAPI
 {
-    public static class DevotedLemurianHelper
+    //Handles devoted lemurians being stupid
+    internal static class DevotedLemurianHelper
     {
         [SystemInitializer(typeof(CharacterVariantCatalog))]
         private static void Initialize()
@@ -21,7 +22,7 @@ namespace VAPI
                 GameObject masterPrefab = MasterCatalog.GetMasterPrefab(devotedLemurianMasterIndex);
                 if(masterPrefab.TryGetComponent<CharacterMasterVariantStorage>(out var variantStorage))
                 {
-                    variantStorage.doNotRollForVariants = true;
+                    //variantStorage.doNotRollForVariants = true;
                 }
             }
         }
@@ -30,7 +31,7 @@ namespace VAPI
         {
             if(obj.bodyIndex == CU8Content.BodyPrefabs.DevotedLemurianBruiserBody.bodyIndex && obj.master && obj.master.TryGetComponent<CharacterMasterVariantStorage>(out var variantStorage))
             {
-                variantStorage.ClearVariantDefsForCharacterServer();
+                //variantStorage.ClearVariantDefsForCharacterServer();
             }
         }
     }
