@@ -77,6 +77,10 @@ namespace VAPI
         [Tooltip("Variants of this tier will have this buff")]
         public AddressReferencedBuffDef tierBuffDef = new AddressReferencedBuffDef();
 
+        //TODO: Hook this up
+        [Tooltip("A sound event that plays when the variant spawns")]
+        public string spawnedSoundEvent = "";
+
         [Tooltip("A flat bonus armor added to variants of this tier. This value is compounded if multiple variants are assigned to a character")]
         public float bonusArmor;
 
@@ -198,6 +202,9 @@ namespace VAPI
             public bool? announceArrivalInChat;
             public List<AddressableItemCountPair>? tierItems;
             public AddressReferencedBuffDef? tierBuffDef;
+
+            public string? spawnedSoundEvent;
+
             /// <summary>
             /// Defaults to 0
             /// </summary>
@@ -262,6 +269,12 @@ namespace VAPI
                 return this;
             }
 
+            public CreateInstanceArgs SetSpawnedSoundEvent(string _spawnedSoundEvent)
+            {
+                spawnedSoundEvent = _spawnedSoundEvent;
+                return this;
+            }
+
             /// <summary>Chainable method, sets <see cref="bonusArmor"/> to <paramref name="_bonusArmor"/></summary>
             public CreateInstanceArgs SetBonusArmor(float _bonusArmor)
             {
@@ -321,6 +334,7 @@ namespace VAPI
             tierDef.announceArrivalInChat = args.announceArrivalInChat ?? false;
             tierDef.tierItems = args.tierItems?.ToArray() ?? tierDef.tierItems;
             tierDef.tierBuffDef = args.tierBuffDef ?? tierDef.tierBuffDef;
+            tierDef.spawnedSoundEvent = args.spawnedSoundEvent ?? "";
             tierDef.bonusArmor = args.bonusArmor ?? 0;
             tierDef.experienceRewardCoefficient = args.expRewardCoefficient ?? 0 + float.Epsilon;
             tierDef.goldRewardCoefficient = args.goldRewardCoefficient ?? 0 + float.Epsilon;
@@ -340,6 +354,7 @@ namespace VAPI
             {
                 name = name,
                 announceArrivalInChat = other.announceArrivalInChat,
+                spawnedSoundEvent = other.spawnedSoundEvent,
                 bonusArmor = other.bonusArmor,
                 bossItemRewardChance = other.bossItemRewardChance,
                 commonItemRewardChance = other.commonItemRewardChance,

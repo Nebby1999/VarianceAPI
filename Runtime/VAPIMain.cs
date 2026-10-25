@@ -1,6 +1,7 @@
 #nullable enable
 using BepInEx;
 using R2API.Utils;
+using RoR2;
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -8,6 +9,8 @@ using UnityEngine;
 
 namespace VAPI
 {
+    //TODO: Implement infinite tower support
+
     /// <summary>
     /// VarianceAPI's main class
     /// </summary>
@@ -43,6 +46,9 @@ namespace VAPI
             new VAPILog(Logger);
 
             new VAPIContent();
+
+
+            SystemInitializerInjector.InjectDependency<RuleBook>(typeof(VAPIRuleBook));
         }
 
         /// <summary>

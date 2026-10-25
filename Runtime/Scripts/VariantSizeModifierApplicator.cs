@@ -4,6 +4,7 @@ using KinematicCharacterController;
 using RoR2;
 using System;
 using UnityEngine;
+using UnityEngine.Networking;
 
 namespace VAPI
 {
@@ -23,7 +24,7 @@ namespace VAPI
         /// </summary>
         public void Dispose()
         {
-            if(_characterBody == null || _usedBuffDef == null)
+            if(!NetworkServer.active || _characterBody == null || _usedBuffDef == null)
             {
                 return;
             }
@@ -36,7 +37,7 @@ namespace VAPI
         /// </summary>
         public void Apply()
         {
-            if (_characterBody == null)
+            if (_characterBody == null || !NetworkServer.active)
             {
                 return;
             }

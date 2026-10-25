@@ -41,6 +41,7 @@ namespace VAPI
         [Range(0, 100)]
         public float spawnRate;
 
+        //TODO: Impl arrival token being called
         [Tooltip("An arrival token for this variant when it spawns, only used if it's tier announces arrivals")]
         public string arrivalToken = "";
 

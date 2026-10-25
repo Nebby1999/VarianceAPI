@@ -9,6 +9,7 @@ using HG;
 
 namespace VAPI
 {
+    //Does this need to be injected into the rulebook?
     internal static class VAPIRuleBook
     {
         private struct CategoryWithIndex

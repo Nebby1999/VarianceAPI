@@ -199,7 +199,7 @@ namespace VAPI
         {
             _characterVariantNameToIndex.Clear();
 
-            using(var coroutineWithResult = CoroutineWithResult<CharacterVariantDef[]?>.Rent(RegisterVariantDefs(VariantPackManager.characterVariantDefs)))
+            using(var coroutineWithResult = CoroutineWithResult<CharacterVariantDef[]>.Rent(RegisterVariantDefs(VariantPackManager.characterVariantDefs)))
             {
                 while(coroutineWithResult.MoveNext())
                 {
@@ -207,6 +207,19 @@ namespace VAPI
                 }
 
                 _characterVariantDefs = coroutineWithResult.result;
+            }
+
+            for(int i = 0; i < _characterVariantDefs!.Length; i++)
+            {
+                var def = _characterVariantDefs[i];
+                try
+                {
+                    def.additionalVariantComponents?.Initialize();
+                }
+                catch(Exception ex)
+                {
+                    VAPILog.Error($"Failed to initialize variant components for {def}: {ex}");
+                }
             }
 
             Stage.onStageStartGlobal += FilterCharacterVariantProviders;
@@ -336,7 +349,7 @@ namespace VAPI
         {
             for (int i = 0; i < _characterVariantProviders!.Length; i++)
             {
-                _characterVariantProviders[i].FilterVariants();
+                _characterVariantProviders[i]?.FilterVariants();
             }
         }
 

@@ -21,6 +21,7 @@ namespace VAPI
         /// </summary>
         public static readonly LazyLoader<ExpansionDef> VAPIExpansion = new LazyLoader<ExpansionDef>(nameof(VAPIExpansion));
 
+        //TODO: Implement artifact code
         /// <summary>
         /// VAPI's Artifact
         /// </summary>

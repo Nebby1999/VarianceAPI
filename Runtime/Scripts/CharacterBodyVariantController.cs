@@ -84,6 +84,8 @@ namespace VAPI
         [SyncVar]
         private bool _doNotRollForVariants;
 
+        public event Action<CharacterVariantDef[]>? onVariantsApplied;
+
         private void Awake()
         {
             characterBody = GetComponent<CharacterBody>();
@@ -199,6 +201,8 @@ namespace VAPI
             {
                 characterMasterVariantStorage.ApplyVariants(characterBody.bodyIndex, _fallbackCharacterVariantDefs);
             }
+
+            onVariantsApplied?.Invoke(_fallbackCharacterVariantDefs);
         }
 
         private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
@@ -333,14 +337,5 @@ namespace VAPI
             //onVariantsAppliedBody = null;
             //onVariantsUnappliedBody = null;
         }
-
-        /*//So, VAPI 3.0 has the ability to store the variants on a master, however, we want to allow the ability for masterless variants to be a thing.
-//As a result, the main variants for the body _are_ the ones found on the master, if said master storage is not found then it must utilize it's internal storage.
-//In terms of networking, the "Source of Truth" is the Master, if no master, then its this component.
-
-
-
-
-*/
     }
 }

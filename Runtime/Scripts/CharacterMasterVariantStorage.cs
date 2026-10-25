@@ -19,6 +19,9 @@ namespace VAPI
 
         public CharacterMaster characterMaster { get; private set; }
 
+        public event Action? onVariantsUnapplied;
+        public event Action? onVariantsApplied;
+
         private List<StorageMetadataEntry> _storageMetadataList = new List<StorageMetadataEntry>();
         private BodyIndex _bodyIndexOfAppliedVariants = BodyIndex.None;
 
@@ -41,6 +44,7 @@ namespace VAPI
             variantDefs = _storageMetadataList[variantStorageListIndex].storedVariants;
             return true;
         }
+
         public bool HasVariantsForBody(BodyIndex bodyIndex) => GetVariantStorageIndex(bodyIndex) != -1;
 
         private bool PushVariantsForCharacter(in BodyIndex bodyIndex, in CharacterVariantDef[] variantDefs)
@@ -80,6 +84,7 @@ namespace VAPI
             if (_bodyIndexOfAppliedVariants == bodyIndex)
                 return;
 
+            //If the storage doesnt have the variants for this body, push it
             if(!HasVariantsForBody(bodyIndex))
             {
                 PushVariantsForCharacter(bodyIndex, fallbackCharacterVariantDefs);
@@ -113,6 +118,8 @@ namespace VAPI
             }
 
             _bodyIndexOfAppliedVariants = bodyIndex;
+
+            onVariantsApplied?.Invoke();
         }
 
         internal void UnapplyVariants()
@@ -122,6 +129,8 @@ namespace VAPI
 
             //Set the body index of applied variants to none
             _bodyIndexOfAppliedVariants = BodyIndex.None;
+
+            onVariantsUnapplied?.Invoke();
         }
     }
 }
