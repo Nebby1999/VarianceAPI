@@ -103,7 +103,7 @@ namespace VAPI
         /// <summary>
         /// An <see cref="EntityState"/> that'll be used as the variant's death state.
         /// </summary>
-        public VariantDeathStateOverride deathStateOverride;
+        public VariantDeathStateOverride deathStateOverride = new VariantDeathStateOverride("");
 
         /// <summary>
         /// A list of <see cref="VariantSkillReplacement"/>s for this variant
@@ -135,14 +135,14 @@ namespace VAPI
             get => _scaleMultiplier;
             set
             {
-                if(float.IsNormal(value))
+                if(!float.IsNormal(value))
                 {
                     throw new Exception("scaleMultiplier cannot be NaN, Infinity or Subnormal");
                 }
                 _scaleMultiplier = Mathf.Max(0 + float.Epsilon, value);
             }
         }
-        private float _scaleMultiplier;
+        private float _scaleMultiplier = 1;
 
         /// <summary>
         /// The components for this variant

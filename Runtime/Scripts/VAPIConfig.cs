@@ -64,7 +64,7 @@ namespace VAPI
             rewardsConfig = configFactory.CreateConfigFile(REWARDS, false);
 
             //Set stuff for ROO
-            using(var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texVAPIIcon"))
+            using(var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texVarianceAPIExpansionIcon"))
             {
                 while(!iconRequest.isComplete)
                 {

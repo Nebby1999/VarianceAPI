@@ -59,8 +59,11 @@ namespace VAPI
 
             int increaseScaleCount = sender.GetBuffCount(VAPIContent.Buffs.VAPIIncreaseScale.asset!);
             int decreaseScaleCount = sender.GetBuffCount(VAPIContent.Buffs.VAPIDecreaseScale.asset!);
-            args.desiredScaleAdd += increaseScaleCount * 0.01f;
-            args.desiredScaleAdd -= decreaseScaleCount * 0.01f;
+
+            float increaseScaleCoefficient = ((float)increaseScaleCount) * 0.01f;
+            float decreaseScaleCoefficient = ((float)decreaseScaleCount) * 0.01f;
+            args.desiredScaleTotalMult *= 1 + increaseScaleCoefficient;
+            args.desiredScaleTotalMult /= 1 + decreaseScaleCoefficient;
         }
     }
 }

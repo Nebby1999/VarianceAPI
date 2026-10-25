@@ -32,4 +32,4 @@ MonoBehaviour:
   commonItemRewardChance: 10
   uncommonItemRewardChance: 5
   legendaryItemRewardChance: 3
-  bossItemRewardChance: 0
+  bossItemRewardChance: 3

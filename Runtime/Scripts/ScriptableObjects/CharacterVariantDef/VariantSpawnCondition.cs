@@ -110,7 +110,7 @@ namespace VAPI
             bool allowedInStage = AreStageRequirementsMet();
             bool stageCompletionRequirementReached = IsStageCountGreaterThanMinimum();
 
-            return expansionRequirementMet && unlockableRequirementMet && allowedInStage;
+            return expansionRequirementMet && unlockableRequirementMet && allowedInStage && stageCompletionRequirementReached;
         }
 
         /// <summary>
@@ -143,7 +143,6 @@ namespace VAPI
             if (!Run.instance)
                 return false;
 
-            bool allExpansionsEnabled = false;
             foreach(var addressReferencedExpansion in requiredExpansionDefs)
             {
                 if(!addressReferencedExpansion.AssetExists)
@@ -151,10 +150,13 @@ namespace VAPI
                     continue;
                 }
 
-                allExpansionsEnabled = Run.instance.IsExpansionEnabled(addressReferencedExpansion.Asset);
+                if(!Run.instance.IsExpansionEnabled(addressReferencedExpansion.Asset))
+                {
+                    return false;
+                }
             }
 
-            return allExpansionsEnabled;
+            return true;
         }
 
         /// <summary>

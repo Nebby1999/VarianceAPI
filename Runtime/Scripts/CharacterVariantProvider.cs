@@ -45,6 +45,9 @@ namespace VAPI
         /// </summary>
         public void FilterVariants()
         {
+            _filteredNonUniqueVariants.Clear();
+            _filteredUniqueVariants.Clear();
+
             for(int i = 0; i < totalVariantCount; i++)
             {
                 var variant = _allVariants[i];

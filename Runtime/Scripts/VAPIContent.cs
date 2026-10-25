@@ -21,7 +21,7 @@ namespace VAPI
         /// <summary>
         /// Access to VAPI's ExpansionDef, this expansion must be enabled for Variants to spawn. Loads on demand
         /// </summary>
-        public static readonly LazyLoader<ExpansionDef> VAPIExpansion = new LazyLoader<ExpansionDef>(nameof(VAPIExpansion));
+        public static readonly LazyLoader<ExpansionDef> VarianceAPI = new LazyLoader<ExpansionDef>(nameof(VarianceAPI));
 
         /// <summary>
         /// VAPI's Artifact
@@ -80,7 +80,7 @@ namespace VAPI
             /// <summary>
             /// Reference to a <see cref="BuffDef"/> that reduces the character's scale by 1%. Loads on demand
             /// </summary>
-            public static LazyLoader<BuffDef> VAPIDecreaseScale = new LazyLoader<BuffDef>("bd" + nameof(VAPIIncreaseScale));
+            public static LazyLoader<BuffDef> VAPIDecreaseScale = new LazyLoader<BuffDef>("bd" + nameof(VAPIDecreaseScale));
         }
 
         /// <summary>
@@ -151,6 +151,7 @@ namespace VAPI
 
         private static ContentPack contentPack { get; } = new ContentPack();
         private static VariantPack? variantPack { get; set; } //Created on demand during load static content async
+        private static VariantPack? testPack { get; set; }
 
         public IEnumerator LoadStaticContentAsync(LoadStaticContentAsyncArgs args)
         {
@@ -177,7 +178,21 @@ namespace VAPI
                 yield return null;
             }
 
+            //Populate test pack
+            var testPackPopulation = PopulateTestVariantPack();
+            while(testPackPopulation.MoveNext())
+            {
+                yield return null;
+            }
+
+            var infiniteTower = InfiniteTower.Init();
+            while(!infiniteTower.IsDone())
+            {
+                yield return null;
+            }
+
             VariantPackManager.AddVariantPack(variantPack);
+            VariantPackManager.AddVariantPack(testPack);
         }
 
         private IEnumerator InitializeAssetsAndConfig()
@@ -191,7 +206,7 @@ namespace VAPI
             var parallelProgressCoroutine = ParallelCoroutine.RequestFromPool();
 
             parallelProgressCoroutine.Add(new VAPIConfig().InitializeAsync(VAPIMain.instance!));
-            parallelProgressCoroutine.Add(LanguageFileLoader.AddLanguageFilesFromModAsync(VAPIMain.instance, "lang")); //Configure VAPI and add language tokens
+            parallelProgressCoroutine.Add(LanguageFileLoader.AddLanguageFilesFromModAsync(VAPIMain.instance, "languages")); //Configure VAPI and add language tokens
         
             while(parallelProgressCoroutine.MoveNext())
             {
@@ -205,19 +220,21 @@ namespace VAPI
         {
             var parallelLoadCoroutine = ParallelCoroutine.RequestFromPool(); ;
 
-            using var artifactLoad = VAPIAssets.LoadAssetsAsync<ArtifactDef>();
-            using var buffLoad = VAPIAssets.LoadAssetsAsync<BuffDef>();
-            using var itemLoad = VAPIAssets.LoadAssetsAsync<ItemDef>();
-            using var prefabLoad = VAPIAssets.LoadAssetsAsync<GameObject>();
-            using var skillDefLoad = VAPIAssets.LoadAssetsAsync<SkillDef>();
+            using var artifactLoad = VAPIAssets.LoadAllAssetsAsync<ArtifactDef>();
+            using var buffLoad = VAPIAssets.LoadAllAssetsAsync<BuffDef>();
+            using var itemLoad = VAPIAssets.LoadAllAssetsAsync<ItemDef>();
+            using var prefabLoad = VAPIAssets.LoadAllAssetsAsync<GameObject>();
+            using var skillDefLoad = VAPIAssets.LoadAllAssetsAsync<SkillDef>();
+            using var expansionDefLoad = VAPIAssets.LoadAllAssetsAsync<ExpansionDef>();
 
             parallelLoadCoroutine.Add(artifactLoad);
             parallelLoadCoroutine.Add(buffLoad);
             parallelLoadCoroutine.Add(itemLoad);
             parallelLoadCoroutine.Add(prefabLoad);
             parallelLoadCoroutine.Add(skillDefLoad);
+            parallelLoadCoroutine.Add(expansionDefLoad);
 
-            while (parallelLoadCoroutine.MoveNext())
+            while (!parallelLoadCoroutine.isDone)
             {
                 yield return null;
             }
@@ -228,6 +245,7 @@ namespace VAPI
             contentPack.buffDefs.Add(buffLoad.assets);
             contentPack.itemDefs.Add(itemLoad.assets);
             contentPack.skillDefs.Add(skillDefLoad.assets);
+            contentPack.expansionDefs.Add(expansionDefLoad.assets);
             contentPack.entityStateTypes.AddSingle(typeof(GoToMain));
 
             for (int i = 0; i < prefabLoad.assets!.Length; i++)
@@ -242,8 +260,8 @@ namespace VAPI
         private IEnumerator PopulateVariantPack()
         {
             //Load the pack's icon and the default tiers
-            using var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texVAPIIcon");
-            using var variantTierDefRequest = VAPIAssets.LoadAssetsAsync<CharacterVariantTierDef>();
+            using var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texVarianceAPIExpansionIcon");
+            using var variantTierDefRequest = VAPIAssets.LoadAllAssetsAsync<CharacterVariantTierDef>();
 
             var parallelCoroutine = ParallelCoroutine.RequestFromPool();
 
@@ -258,6 +276,41 @@ namespace VAPI
             //Initialize the pack
             variantPack = new VariantPack(identifier, iconRequest.asset!, VAPIConfig.rewardsConfig!, VAPIMain.instance!.Info.Metadata);
             variantPack.characterVariantTierDefs.Add(variantTierDefRequest.assets!);
+        }
+
+        private IEnumerator PopulateTestVariantPack()
+        {
+            using var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texCharacterVariantDefIcon");
+            using var scriptableVariantRequest = VAPIAssets.LoadAssetAsync<CharacterVariantDef>("ScriptableVariant");
+
+            var parallelCoroutine = ParallelCoroutine.RequestFromPool();
+
+            parallelCoroutine.Add(iconRequest);
+            parallelCoroutine.Add(scriptableVariantRequest);
+
+            while(!parallelCoroutine.isDone)
+            {
+                yield return null;
+            }
+
+            testPack = new VariantPack("TEST_PACK", "Test Pack", "This is a test pack", "Testing pack duh", iconRequest.asset!, VAPIMain.instance!, null, null);
+            testPack.characterVariantDefs.AddSingle(scriptableVariantRequest.asset!);
+            CreateCodeVariantAndAdd(testPack);
+        }
+
+        private void CreateCodeVariantAndAdd(VariantPack variantPack)
+        {
+            CharacterVariantDefBuilder builder = new CharacterVariantDefBuilder()
+                .SetCharacterVariantDefName("CodeVariant")
+                .SetVariantTier(VariantTierDefs.Uncommon.asset)
+                .SetCharacterTarget(new CharacterVariantTarget("LemurianBody"))
+                .AddSkillReplacement(null, SkillSlot.Secondary)
+                .SetVariantInventoryDefinition(new VariantInventoryDefinition(AddressableItemCountPair.Create("Syringe", 10000)))
+                .SetNameProvider(new VariantNameOverride { overrideToken = "Flamethrower Lemurian" })
+                .SetSpawnRate(20)
+                .SetScaleMultiplier(1.2f);
+
+            variantPack.characterVariantDefs.AddSingle(builder.Build()!);
         }
 
         public IEnumerator GenerateContentPackAsync(GetContentPackAsyncArgs args)

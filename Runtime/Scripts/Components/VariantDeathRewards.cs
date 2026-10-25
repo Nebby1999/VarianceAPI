@@ -126,6 +126,9 @@ namespace VAPI
             if (supressRewards)
                 return;
 
+            if (variants.Length == 0)
+                return;
+
             float highestGoldMultiplier = float.NegativeInfinity;
             float highestExpMultiplier = float.NegativeInfinity;
             float goldMultiplierAverage = 0;
@@ -214,6 +217,12 @@ namespace VAPI
                     float newExpReward = baseExpReward * finalExpMultiplier;
                     deathRewards!.expReward = (uint)newExpReward;
                 }
+                _disposeModifiers = new DisposeModifiers
+                {
+                    targetDeathRewards = deathRewards,
+                    utilizedExpRewardCoefficient = finalExpMultiplier,
+                    utilizedGoldRewardCoefficient = finalGoldMultiplier
+                };
             }
 
             float totalChanceForItemPickup = 0f;
@@ -236,24 +245,8 @@ namespace VAPI
 
         public void OnKilledServer(DamageReport damageReport)
         {
-            if (supressRewards)
+            if (!characterBodyVariantController || characterBodyVariantController.characterVariantDefs.Length == 0 ||supressRewards || damageReport == null || damageReport.victimBody == null || damageReport.victimBody != characterBody || !VariantSpawnManager.instance || !Run.instance)
                 return;
-
-            if (damageReport == null)
-                return;
-
-            if (damageReport.victimBody == null || damageReport.victimBody != characterBody)
-                return;
-
-            if (!VariantSpawnManager.instance)
-            {
-                return;
-            }
-
-            if (!Run.instance)
-            {
-                return;
-            }
 
             //Utilize the attacker master, prioritize owner if it exists
             CharacterMaster? attackerMaster = damageReport.attackerMaster;
@@ -261,12 +254,13 @@ namespace VAPI
             {
                 attackerMaster = damageReport.attackerOwnerMaster;
             }
-            CharacterBody? attackerBody = attackerMaster.GetBody();
 
             if (!attackerMaster)
             {
                 return;
             }
+
+            CharacterBody? attackerBody = attackerMaster.GetBody();
 
             if (_pickupTierRewardSelection.Count <= 0)
             {

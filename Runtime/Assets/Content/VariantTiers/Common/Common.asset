@@ -26,4 +26,4 @@ MonoBehaviour:
   commonItemRewardChance: 1
   uncommonItemRewardChance: 0
   legendaryItemRewardChance: 0
-  bossItemRewardChance: 0
+  bossItemRewardChance: 0.5

@@ -11,7 +11,7 @@ using static MSU.Config.ConfiguredVariable;
 namespace VAPI
 {
     /// <summary>
-    /// Class that manages the spawning of variants, this class is found within a Run behaviour thats only instantiated if <see cref="VAPIContent.VAPIExpansion"/> is enabled.
+    /// Class that manages the spawning of variants, this class is found within a Run behaviour thats only instantiated if <see cref="VAPIContent.VarianceAPI"/> is enabled.
     /// </summary>
     [RequireComponent(typeof(NetworkParent))]
     public sealed class VariantSpawnManager : MonoBehaviour
@@ -104,6 +104,7 @@ namespace VAPI
             //We can roll variants for the body, so proceed to roll them.
             CharacterVariantDef[] variantDefs = provider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
 
+
             variantController!.SetCharacterVariantDefsServer(variantDefs);
         }
 
@@ -120,7 +121,7 @@ namespace VAPI
             //Retrieve the provider, but don't assign it to the out variable yet, we'll only assign the out variables once we're bound to return true.
             CharacterVariantProvider? providerForBody = CharacterVariantCatalog.GetCharacterVariantProvider(body.bodyIndex);
             //If the body doesnt have a provider, return false.
-            if (CharacterVariantCatalog.GetCharacterVariantProvider(body.bodyIndex) == null)
+            if (providerForBody == null)
             {
                 return false;
             }
@@ -137,7 +138,8 @@ namespace VAPI
                 return false;
 
             //If the body has a master storage, and the master storage has stored variants for the body, do not roll new ones.
-            if(controllerForBody.characterMasterVariantStorage != null && controllerForBody.characterMasterVariantStorage.HasVariantsForBody(body.bodyIndex))
+            CharacterMasterVariantStorage storage = controllerForBody.GetCharacterMasterVariantStorage();
+            if(storage != null && storage.HasVariantsForBody(body.bodyIndex))
             {
                 return false;
             }

@@ -20,8 +20,19 @@ MonoBehaviour:
   loreToken: VAPI_ITEM_EXTRAUTILITY_LORE
   unlockableDef: {fileID: 0}
   pickupModelPrefab: {fileID: 0}
+  pickupModelReference:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
   pickupIconSprite: {fileID: 21300000, guid: e411ffd16b409854993fcdd45fcdd224, type: 3}
+  pickupIconSpriteReference:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+  itemPickupSpawnSound: 
+  itemPickupDestroySound: 
+  isConsumed: 0
   hidden: 0
-  canRemove: 1
-  tags: 04000000
+  canRemove: 0
+  tags: 040000002d0000002c0000000b0000000c0000000d0000000f0000001600000017000000180000002400000026000000
   requiredExpansion: {fileID: 11400000, guid: c6bb5aefe30f0ff449f147c467e0db10, type: 2}

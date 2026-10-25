@@ -77,7 +77,7 @@ namespace VAPI
         /// </summary>
         /// <typeparam name="TAsset">The type of assets to load</typeparam>
         /// <returns>A VAPIAssetRequest which can be awaited</returns>
-        public static VAPIAssetRequest<TAsset> LoadAssetsAsync<TAsset>() where TAsset : UnityEngine.Object
+        public static VAPIAssetRequest<TAsset> LoadAllAssetsAsync<TAsset>() where TAsset : UnityEngine.Object
         {
             ThrowIfUnavailable();
             return VAPIAssetRequest<TAsset>.RequestFromPool(_assetBundle!);
@@ -181,7 +181,7 @@ namespace VAPI
 
         bool IEnumerator.MoveNext()
         {
-            return internalCoroutine?.MoveNext() ?? false;
+            return isComplete == false;
         }
 
         /// <summary>
@@ -250,6 +250,7 @@ namespace VAPI
         private bool isSingleAssetLoad => !string.IsNullOrWhiteSpace(_assetName);
         private string? _assetName;
         private AssetBundle? _assetBundle;
+        private Type assetType => typeof(TAsset);
 
         protected override IEnumerator LoadAsset()
         {
@@ -280,7 +281,11 @@ namespace VAPI
             }
             else
             {
-                _assets = (TAsset[])request.allAssets;
+                _assets = new TAsset[request.allAssets.Length];
+                for(int i = 0; i < request.allAssets.Length; i++)
+                {
+                    _assets[i] = (TAsset)request.allAssets[i];
+                }
 
 #if DEBUG
                 if (_assets == null || _assets.Length == 0)

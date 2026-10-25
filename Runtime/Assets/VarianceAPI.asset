@@ -17,5 +17,13 @@ MonoBehaviour:
   nameToken: VAPI_EXPANSION_NAME
   descriptionToken: VAPI_EXPANSION_DESC
   iconSprite: {fileID: 21300000, guid: feea5224347bb1a4f943acd888f168e4, type: 3}
+  iconSpriteReference:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
   disabledIconSprite: {fileID: 0}
-  runBehaviorPrefab: {fileID: 6186782970129974865, guid: 4de399f5ad643f84c9ef4e48af6453ff, type: 3}
+  disabledIconSpriteReference:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+  runBehaviorPrefab: {fileID: 1371680024418545349, guid: 5aa7b893419774b4b8a74c64220e9540, type: 3}

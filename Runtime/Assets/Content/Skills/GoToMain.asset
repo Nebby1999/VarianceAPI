@@ -19,7 +19,7 @@ MonoBehaviour:
   icon: {fileID: 0}
   activationStateMachineName: Body
   activationState:
-    _typeName: EntityStates.EmptyState, VarianceAPI, Version=0.0.0.0, Culture=neutral,
+    _typeName: EntityStates.GoToMain, VarianceAPI.Runtime, Version=0.0.0.0, Culture=neutral,
       PublicKeyToken=null
   interruptPriority: 0
   baseRechargeInterval: 0
@@ -27,12 +27,20 @@ MonoBehaviour:
   rechargeStock: 1
   requiredStock: 100000000
   stockToConsume: 0
+  attackSpeedBuffsRestockSpeed: 0
+  attackSpeedBuffsRestockSpeed_Multiplier: 1
   resetCooldownTimerOnUse: 0
   fullRestockOnAssign: 1
   dontAllowPastMaxStocks: 0
   beginSkillCooldownOnSkillEnd: 0
+  isCooldownBlockedUntilManuallyReset: 0
   cancelSprintingOnActivation: 1
   forceSprintDuringState: 0
   canceledFromSprinting: 0
   isCombatSkill: 0
   mustKeyPress: 0
+  triggeredByPressRelease: 0
+  autoHandleLuminousShot: 1
+  suppressSkillActivation: 0
+  hideStockCount: 0
+  hideCooldown: 0

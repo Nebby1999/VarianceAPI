@@ -14,11 +14,12 @@ namespace VAPI
     public sealed class VariantSizeModifierApplicator : IDisposable
     {
         private float _computedSizeCoefficient;
-        private CharacterBody?_characterBody;
 
+        private CharacterBody? _characterBody;
         private BuffDef? _usedBuffDef;
         private int _buffStacks;
 
+        private ModelLocator? _modelLocator;
         /// <summary>
         /// Disposes the size modifier, returning it to normal
         /// </summary>
@@ -42,11 +43,17 @@ namespace VAPI
                 return;
             }
 
+            //Don't do anything if size coefficient is just 1
+            if(Mathf.Approximately(_computedSizeCoefficient, 1))
+            {
+                return;
+            }
+
             float realCoefficient = _computedSizeCoefficient;
 
             //If the computed size coefficient is greater than 1, then we need to increase the scale. With a value of 1.1 we dont wanna increase size by 110%, but rather just 10%.
             //If it's less, we dont need to reduce it by 1.
-            if(_computedSizeCoefficient > 1)
+            if(_computedSizeCoefficient >= 1)
             {
                 realCoefficient -= 1;
             }
@@ -57,6 +64,13 @@ namespace VAPI
             _usedBuffDef = scalePercentage > 100 ? VAPIContent.Buffs.VAPIIncreaseScale.asset! : VAPIContent.Buffs.VAPIDecreaseScale.asset!;
             _buffStacks = scalePercentage;
             _characterBody.SetBuffCount(_usedBuffDef.buffIndex, _buffStacks);
+
+            if(_modelLocator != null)
+            {
+                //Certainly this won't be bad
+                _modelLocator.enabled = true;
+                _modelLocator.autoUpdateModelTransform = true;
+            }
         }
 
         /// <summary>
@@ -79,6 +93,11 @@ namespace VAPI
 
             foreach(var variantDef in variantDefs)
             {
+                if(variantDef.scaleMultiplier <= 0)
+                {
+                    continue;
+                }
+
                 if(variantDef.scaleMultiplier > highestSizeModifier)
                 {
                     highestSizeModifier = variantDef.scaleMultiplier;
@@ -86,18 +105,30 @@ namespace VAPI
                 summedSizeModifier += variantDef.scaleMultiplier;
             }
 
-            if(variantDefs.Length <= 1)
+            if(float.IsInfinity(highestSizeModifier))
             {
-                //Cant be 0
-                _computedSizeCoefficient = Mathf.Max(float.Epsilon, highestSizeModifier); ;
+                _computedSizeCoefficient = 1;
             }
             else
             {
-                summedSizeModifier -= highestSizeModifier;
-                summedSizeModifier /= (variantDefs.Length - 1);
+                if (variantDefs.Length <= 1)
+                {
+                    //Cant be 0
+                    _computedSizeCoefficient = Mathf.Max(float.Epsilon, highestSizeModifier); ;
+                }
+                else
+                {
+                    summedSizeModifier -= highestSizeModifier;
+                    summedSizeModifier /= (variantDefs.Length - 1);
 
-                //Cant be 0.
-                _computedSizeCoefficient = Mathf.Max(float.Epsilon, highestSizeModifier + summedSizeModifier);
+                    //Cant be 0.
+                    _computedSizeCoefficient = Mathf.Max(float.Epsilon, highestSizeModifier + summedSizeModifier);
+                }
+            }
+
+            if(targetBody.TryGetComponent<ModelLocator>(out var mdlLocator))
+            {
+                _modelLocator = mdlLocator;
             }
         }
     }

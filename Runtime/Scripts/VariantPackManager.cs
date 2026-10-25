@@ -209,12 +209,14 @@ namespace VAPI
                 foreach(var variant in pack.characterVariantDefs)
                 {
                     variant.associatedConfigFile = pack.variantConfig;
+                    variant.ownerPlugin = pack.ownerPlugin;
                     variantDefs.Add(variant);
                 }
 
                 foreach(var tier in pack.characterVariantTierDefs)
                 {
                     tier.associatedConfigFile = pack.tierConfig;
+                    tier.ownerPlugin = pack.ownerPlugin;
                     tierDefs.Add(tier);
                 }
             }

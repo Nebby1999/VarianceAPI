@@ -29,7 +29,7 @@ namespace VAPI
         [SystemInitializer(typeof(RuleCatalog), typeof(CharacterVariantCatalog), typeof(CharacterVariantTierCatalog))]
         private static void Init()
         {
-            _varianceExpansionRuleChoice = VAPIContent.VAPIExpansion.asset.enabledChoice;
+            _varianceExpansionRuleChoice = VAPIContent.VarianceAPI.asset.enabledChoice;
 
             AddVariantPackCategory();
             AddVariantPackRules();
@@ -57,19 +57,15 @@ namespace VAPI
 
         private static void AddVariantPackCategory()
         {
-            //Hide category if VAPI is not enabled.
             bool VariantPackCategoryHiddenTest()
             {
-                bool preGameControllerExists = PreGameController.instance;
-                if (preGameControllerExists == false)
+                if (!PreGameController.instance || PreGameController.instance.readOnlyRuleBook == null)
                     return true;
 
                 bool isVAPIExpansionActive = PreGameController.instance.readOnlyRuleBook.IsChoiceActive(_varianceExpansionRuleChoice);
 
-                if (!isVAPIExpansionActive)
-                    return false;
-
-                return true;
+                //Hide category is expansion not active
+                return isVAPIExpansionActive == false;
             }
 
             var categoryDef = new RuleCategoryDef

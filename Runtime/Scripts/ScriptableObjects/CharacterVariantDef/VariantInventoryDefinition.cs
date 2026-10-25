@@ -136,7 +136,7 @@ namespace VAPI
             }
 
             EquipmentDef? equipmentDef = null;
-            if(equipmentInfo.equipmentDef != null)
+            if(equipmentInfo.equipmentDef != null && equipmentInfo.equipmentDef.IsInvalid == false)
             {
                 equipmentDef = equipmentInfo.equipmentDef.LoadAssetNow();
                 if(equipmentDef)

@@ -8,7 +8,6 @@ using RoR2;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using UnityEditor.VersionControl;
 using UnityEngine.Networking;
 
 namespace VAPI
