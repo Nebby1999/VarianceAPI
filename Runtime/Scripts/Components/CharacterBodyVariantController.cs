@@ -26,7 +26,7 @@ namespace VAPI
         {
             get
             {
-                CharacterMasterVariantStorage storage = GetCharacterMasterVariantStorage();
+                CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
                 //If we have the storage, try getting the stored variants.
                 if(storage != null && storage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out var variantDefs))
                 {
@@ -76,6 +76,9 @@ namespace VAPI
         [SyncVar]
         private bool _supressArrivalMessage;
 
+        [SyncVar]
+        private bool _isBeingForcefullySet;
+
         public event Action? onVariantsUnapplied;
         public event Action<CharacterVariantDef[]>? onVariantsApplied;
 
@@ -105,7 +108,7 @@ namespace VAPI
             _characterVariantIndices.Callback = SyncListCallback; //Apply callback
         }
 
-        public CharacterMasterVariantStorage GetCharacterMasterVariantStorage()
+        public CharacterMasterVariantStorage? GetCharacterMasterVariantStorage()
         {
             //If the backing field is not null, and the storage's master's body points to our body, return the backing field.
             if (_characterMasterVariantStorage != null && _characterMasterVariantStorage.characterMaster && _characterMasterVariantStorage.characterMaster.GetBody() == characterBody)
@@ -142,7 +145,7 @@ namespace VAPI
 
             //If a client disconnects, when reconnecting the server should have the proper array of variants to send to the client.
 
-            CharacterMasterVariantStorage storage = GetCharacterMasterVariantStorage();
+            CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
             if(storage != null && storage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out CharacterVariantDef[]? storedVariants))
             {
                 //We want to call the internal method directly, as we're using the variants in the storage rather than a foreign array
@@ -151,9 +154,9 @@ namespace VAPI
         }
 
         //public facing method, in VAPI it's called by the spawn manager and the Util method to turn something into a variant.
-        //It'll reject the incoming array if the master storage already has variants for the character.
+        //Unless force set is set to true, it'll reject the operation if the storage has variants for the body
         [Server]
-        public void SetCharacterVariantDefsServer(CharacterVariantDef[] variantDefs)
+        public void SetCharacterVariantDefsServer(CharacterVariantDef[] variantDefs, bool forceSet = false)
         {
             if (!characterBody)
                 return;
@@ -161,14 +164,18 @@ namespace VAPI
             if (variantDefs == null)
                 return;
 
-            //If we have a storage, and the storage already has variants set for our body, reject.
-            CharacterMasterVariantStorage storage = GetCharacterMasterVariantStorage();
-            if(storage != null && storage.HasVariantsForBody(characterBody.bodyIndex))
+            //If we have a storage, and the storage already has variants set for our body, reject. unless we're forcing it
+            CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
+            if(storage != null && storage.HasVariantsForBody(characterBody.bodyIndex) && forceSet == false)
             {
                 VAPILog.Warning($"Tried to set {this}'s variant defs, but the master storage has variants for {BodyCatalog.GetBodyName(characterBody.bodyIndex)}! This is not allowed!");
                 return;
             }
 
+            if(_isBeingForcefullySet != forceSet)
+            {
+                _isBeingForcefullySet = forceSet;
+            }
             SetCharacterVariantDefsServerInternal(variantDefs);
         }
 
@@ -200,7 +207,7 @@ namespace VAPI
             //First, unapply the modifications, if any
             UnapplyBodyModifications(characterVariantDefs);
 
-            CharacterMasterVariantStorage storage = GetCharacterMasterVariantStorage();
+            CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
             if(storage != null)
             {
                 storage.UnapplyVariants();
@@ -220,7 +227,7 @@ namespace VAPI
 
             if(storage != null)
             {
-                storage.ApplyVariants(characterBody.bodyIndex, _fallbackCharacterVariantDefs);
+                storage.ApplyVariants(characterBody.bodyIndex, _fallbackCharacterVariantDefs, _isBeingForcefullySet);
             }
 
             onVariantsApplied?.Invoke(_fallbackCharacterVariantDefs);

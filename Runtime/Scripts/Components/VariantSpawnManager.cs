@@ -138,7 +138,7 @@ namespace VAPI
                 return false;
 
             //If the body has a master storage, and the master storage has stored variants for the body, do not roll new ones.
-            CharacterMasterVariantStorage storage = controllerForBody.GetCharacterMasterVariantStorage();
+            CharacterMasterVariantStorage? storage = controllerForBody.GetCharacterMasterVariantStorage();
             if(storage != null && storage.HasVariantsForBody(body.bodyIndex))
             {
                 return false;

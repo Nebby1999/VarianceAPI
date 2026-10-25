@@ -418,7 +418,7 @@ namespace VAPI
 
             foreach(CharacterVariantProvider characterVariantProvider in _characterVariantProviders!)
             {
-                if(characterVariantProvider.associatedBodyIndex == BodyIndex.None)
+                if(characterVariantProvider == null || characterVariantProvider.associatedBodyIndex == BodyIndex.None)
                 {
                     continue;
                 }
@@ -507,7 +507,7 @@ namespace VAPI
             var availableVariants = provider.allVariants;
             foreach(string variantName in variantDefNames)
             {
-                foreach(var variantDef in variantDefs)
+                foreach(var variantDef in availableVariants)
                 {
                     if(variantDef.cachedName.Contains(variantName, StringComparison.OrdinalIgnoreCase))
                     {
@@ -608,13 +608,14 @@ namespace VAPI
                 return;
             }
 
-            var variantDefNamesAsListString = args[1];
+            var variantDefNamesAsListString = args.TryGetArgString(1) ?? "";
             string[] variantDefNames = variantDefNamesAsListString.Replace(" ", "").Split(',', StringSplitOptions.RemoveEmptyEntries);
             List<CharacterVariantDef> variantDefs = new List<CharacterVariantDef>();
+
             var availableVariants = provider.allVariants;
             foreach (string variantName in variantDefNames)
             {
-                foreach (var variantDef in variantDefs)
+                foreach (var variantDef in availableVariants)
                 {
                     if (variantDef.cachedName.Contains(variantName, StringComparison.OrdinalIgnoreCase))
                     {
@@ -630,9 +631,16 @@ namespace VAPI
             bool oldVal = stage1pod.value;
             stage1pod.SetBool(false);
 
-            var characterBody = senderMaster.Respawn(senderMaster.GetBody().footPosition, senderMaster.GetBody().transform.rotation, false);
-            if(characterBody)
+            if(senderMaster.TryGetComponent<CharacterMasterVariantStorage>(out var variantStorage))
             {
+                variantStorage.RemoveVariantStorageForCharacter(body);
+            }
+
+            var characterBody = senderMaster.Respawn(senderMaster.GetBody().footPosition, senderMaster.GetBody().transform.rotation, false);
+            if(characterBody && characterBody.TryGetComponent<CharacterBodyVariantController>(out var variantController))
+            {
+                variantController.doNotRollForVariants = true;
+                variantController.SetCharacterVariantDefsServer(variantDefs.ToArray(), true);
             }
         }
         #endregion

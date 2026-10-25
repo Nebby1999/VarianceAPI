@@ -151,7 +151,6 @@ namespace VAPI
 
         private static ContentPack contentPack { get; } = new ContentPack();
         private static VariantPack? variantPack { get; set; } //Created on demand during load static content async
-        private static VariantPack? testPack { get; set; }
 
         public IEnumerator LoadStaticContentAsync(LoadStaticContentAsyncArgs args)
         {
@@ -178,13 +177,6 @@ namespace VAPI
                 yield return null;
             }
 
-            //Populate test pack
-            var testPackPopulation = PopulateTestVariantPack();
-            while(testPackPopulation.MoveNext())
-            {
-                yield return null;
-            }
-
             var infiniteTower = InfiniteTower.Init();
             while(!infiniteTower.IsDone())
             {
@@ -192,7 +184,6 @@ namespace VAPI
             }
 
             VariantPackManager.AddVariantPack(variantPack);
-            VariantPackManager.AddVariantPack(testPack);
         }
 
         private IEnumerator InitializeAssetsAndConfig()
@@ -277,42 +268,6 @@ namespace VAPI
             variantPack = new VariantPack(identifier, iconRequest.asset!, VAPIConfig.rewardsConfig!, VAPIMain.instance!.Info.Metadata);
             variantPack.characterVariantTierDefs.Add(variantTierDefRequest.assets!);
         }
-
-        private IEnumerator PopulateTestVariantPack()
-        {
-            using var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texCharacterVariantDefIcon");
-            using var scriptableVariantRequest = VAPIAssets.LoadAssetAsync<CharacterVariantDef>("ScriptableVariant");
-
-            var parallelCoroutine = ParallelCoroutine.RequestFromPool();
-
-            parallelCoroutine.Add(iconRequest);
-            parallelCoroutine.Add(scriptableVariantRequest);
-
-            while(!parallelCoroutine.isDone)
-            {
-                yield return null;
-            }
-
-            testPack = new VariantPack("TEST_PACK", "Test Pack", "This is a test pack", "Testing pack duh", iconRequest.asset!, VAPIMain.instance!, null, null);
-            testPack.characterVariantDefs.AddSingle(scriptableVariantRequest.asset!);
-            CreateCodeVariantAndAdd(testPack);
-        }
-
-        private void CreateCodeVariantAndAdd(VariantPack variantPack)
-        {
-            CharacterVariantDefBuilder builder = new CharacterVariantDefBuilder()
-                .SetCharacterVariantDefName("CodeVariant")
-                .SetVariantTier(VariantTierDefs.Uncommon.asset)
-                .SetCharacterTarget(new CharacterVariantTarget("LemurianBody"))
-                .AddSkillReplacement(null, SkillSlot.Secondary)
-                .SetVariantInventoryDefinition(new VariantInventoryDefinition(AddressableItemCountPair.Create("Syringe", 10000)))
-                .SetNameProvider(new VariantNameOverride { overrideToken = "Flamethrower Lemurian" })
-                .SetSpawnRate(20)
-                .SetScaleMultiplier(1.2f);
-
-            variantPack.characterVariantDefs.AddSingle(builder.Build()!);
-        }
-
         public IEnumerator GenerateContentPackAsync(GetContentPackAsyncArgs args)
         {
             ContentPack.Copy(contentPack, args.output);
