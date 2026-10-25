@@ -91,7 +91,7 @@ namespace VAPI
             //When the body starts, check it's master for a list of provided variants.
             //If masterless, Get the variants from the VariantProvider utilizing the CharacterBody index.
             //Basically, Master is the main source, if no master, fallback to Provider.
-            
+
             if (!NetworkServer.active)
                 return;
 
@@ -100,16 +100,11 @@ namespace VAPI
                 return;
 
             //We can roll variants for the body, so proceed to roll them.
-            CharacterVariantDef[]? variantDefs = provider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
-
-            //Do not assign variant defs if theyre null or empty.
-            if(variantDefs == null || variantDefs.Length == 0)
-            {
-                return;
-            }
+            CharacterVariantDef[] variantDefs = provider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
 
             variantController!.SetCharacterVariantDefsServer(variantDefs);
         }
+
 
         private bool CanRollVariantsForBody(CharacterBody body, out CharacterBodyVariantController? characterBodyVariantController, out CharacterVariantProvider? characterVariantProvider)
         {

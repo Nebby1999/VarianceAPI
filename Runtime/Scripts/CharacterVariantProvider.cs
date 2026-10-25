@@ -87,7 +87,7 @@ namespace VAPI
         /// If a Unique variant is rolled, only the unique variant will be returned. If no unique variants are rolled, then multiple variants may be selected, causing a merged variant
         /// </summary>
         /// <param name="args">The arguments for rolling the variants</param>
-        public CharacterVariantDef[]? RollVariantDefs(RollVariantDefsArgs args)
+        public CharacterVariantDef[] RollVariantDefs(RollVariantDefsArgs args)
         {
             if(filteredUniqueVariants.Count > 0 && RollUniques(args.rng, args.spawnChanceMultiplier ?? 1f, out CharacterVariantDef? uniqueResult))
             {
@@ -99,7 +99,7 @@ namespace VAPI
                 return results!;
             }
 
-            return null;
+            return Array.Empty<CharacterVariantDef>();
         }
 
         private readonly WeightedSelection<int> uniqueVariantIndexSelector = new WeightedSelection<int>();
