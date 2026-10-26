@@ -346,7 +346,7 @@ This method of loading is more foolproof as item names may change but guids do n
                 return false;
 
             var address = addressReferencedAsset.Address;
-            if (AddressablesPathDictionary.instance.IsGUIDValid(address))
+            if (AddressablesPathDictionary.instance.IsGUIDValid(address) || string.IsNullOrWhiteSpace(address))
                 return false;
 
             return true;
@@ -354,6 +354,11 @@ This method of loading is more foolproof as item names may change but guids do n
         private bool TryGetMatchingAssetFromAddressablePath(List<string> paths, string toMatch, out string guid)
         {
             guid = string.Empty;
+            if(string.IsNullOrWhiteSpace(toMatch))
+            {
+                return false;
+            }
+
             foreach(string path in paths)
             {
                 var assetNameWithExtension = path.Substring(path.LastIndexOf('/') + 1);
