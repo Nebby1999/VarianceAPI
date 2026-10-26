@@ -82,49 +82,28 @@ namespace VAPI
         {
             _characterBody = targetBody;
 
-            if(variantDefs.Length == 0)
+            if (variantDefs.Length == 0)
             {
                 _computedSizeCoefficient = 1;
                 return;
             }
 
-            float highestSizeModifier = float.NegativeInfinity;
-            float summedSizeModifier = 0f;
-
+            float baseMultiplier = 1;
             foreach(var variantDef in variantDefs)
             {
-                if(variantDef.scaleMultiplier <= 0)
-                {
+                if (variantDef.scaleMultiplier <= 0)
                     continue;
-                }
 
-                if(variantDef.scaleMultiplier > highestSizeModifier)
-                {
-                    highestSizeModifier = variantDef.scaleMultiplier;
-                }
-                summedSizeModifier += variantDef.scaleMultiplier;
+                baseMultiplier *= variantDef.scaleMultiplier;
             }
 
-            if(float.IsInfinity(highestSizeModifier))
+            if(float.IsInfinity(baseMultiplier))
             {
                 _computedSizeCoefficient = 1;
+                return;
             }
-            else
-            {
-                if (variantDefs.Length <= 1)
-                {
-                    //Cant be 0
-                    _computedSizeCoefficient = Mathf.Max(float.Epsilon, highestSizeModifier); ;
-                }
-                else
-                {
-                    summedSizeModifier -= highestSizeModifier;
-                    summedSizeModifier /= (variantDefs.Length - 1);
 
-                    //Cant be 0.
-                    _computedSizeCoefficient = Mathf.Max(float.Epsilon, highestSizeModifier + summedSizeModifier);
-                }
-            }
+            _computedSizeCoefficient = Mathf.Max(float.Epsilon, _computedSizeCoefficient);
 
             if(targetBody.TryGetComponent<ModelLocator>(out var mdlLocator))
             {
