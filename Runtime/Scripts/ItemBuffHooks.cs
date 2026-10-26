@@ -32,27 +32,27 @@ namespace VAPI
             args.armorAdd += linearArmorBonusCount;
 
             int globalCDRCount = sender.GetItemCount(VAPIContent.Items.GlobalCDR.asset!);
-            args.allSkills.cooldownMultAdd -= globalCDRCount * 0.01f;
+            args.allSkills.cooldownMultiplier *= 1 - (globalCDRCount * 0.01f);
 
             int extraPrimaryCount = sender.GetItemCount(VAPIContent.Items.ExtraPrimary.asset!);
             int primaryCDRCount = sender.GetItemCount(VAPIContent.Items.PrimaryCDR.asset!);
             args.primarySkill.bonusStockAdd += extraPrimaryCount;
-            args.primarySkill.cooldownMultAdd -= primaryCDRCount * 0.01f;
+            args.primarySkill.cooldownMultiplier *= 1 - (primaryCDRCount * 0.01f);
 
             int extraSecondaryCount = sender.GetItemCount(VAPIContent.Items.ExtraSecondary.asset!);
             int secondaryCRDCount = sender.GetItemCount(VAPIContent.Items.SecondaryCDR.asset!);
             args.secondarySkill.bonusStockAdd += extraSecondaryCount;
-            args.secondarySkill.cooldownMultAdd -= secondaryCRDCount * 0.01f;
+            args.secondarySkill.cooldownMultiplier *= 1 - (secondaryCRDCount * 0.01f);
 
             int extraUtilityCount = sender.GetItemCount(VAPIContent.Items.ExtraUtility.asset!);
             int utilityCDRCount = sender.GetItemCount(VAPIContent.Items.UtilityCDR.asset!);
             args.utilitySkill.bonusStockAdd += extraUtilityCount;
-            args.utilitySkill.cooldownMultAdd -= utilityCDRCount * 0.01f;
+            args.utilitySkill.cooldownMultiplier *= 1 - (utilityCDRCount * 0.01f);
 
             int extraSpecialCount = sender.GetItemCount(VAPIContent.Items.ExtraSpecial.asset!);
             int specialCDRCount = sender.GetItemCount(VAPIContent.Items.SpecialCDR.asset!);
             args.specialSkill.bonusStockAdd += extraSpecialCount;
-            args.specialSkill.cooldownMultAdd -= specialCDRCount * 0.01f;
+            args.specialSkill.cooldownMultiplier *= 1 - (specialCDRCount * 0.01f);
 
             int plus1CritCount = sender.GetItemCount(VAPIContent.Items.Plus1Crit.asset!);
             args.critAdd += plus1CritCount;
