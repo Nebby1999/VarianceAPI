@@ -10,7 +10,7 @@ namespace VAPI.Editor.PropertyDrawers
     [CustomPropertyDrawer(typeof(VariantSkillReplacement))]
     public class VariantSkillReplacementDrawer : VAPIPropertyDrawer<VariantSkillReplacement>
     {
-        protected override void FinishUI()
+        protected override void FinishUI(VisualElement rootVisualElement, SerializedProperty serializedProperty)
         {
             rootVisualElement.Q<PropertyField>().BindProperty(serializedProperty.FindPropertyRelative(nameof(VariantSkillReplacement.skillDef)));
 

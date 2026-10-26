@@ -8,7 +8,7 @@ namespace VAPI.Editor.PropertyDrawers
     [CustomPropertyDrawer(typeof(VariantInventoryDefinition.AddressableEquipmentInfo))]
     public sealed class AddressableEquipmentInfoDrawer : VAPIPropertyDrawer<VariantInventoryDefinition.AddressableEquipmentInfo>
     {
-        protected override void FinishUI()
+        protected override void FinishUI(VisualElement rootVisualElement, SerializedProperty serializedProperty)
         {
             rootVisualElement.Q<PropertyField>().BindProperty(serializedProperty.FindPropertyRelative("equipmentDef"));
 

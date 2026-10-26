@@ -9,7 +9,7 @@ namespace VAPI.Editor.PropertyDrawers
     [CustomPropertyDrawer(typeof(VariantBuffInfo))]
     public class VariantBuffInfoDrawer : VAPIPropertyDrawer<VariantBuffInfo>
     {
-        protected override void FinishUI()
+        protected override void FinishUI(VisualElement rootVisualElement, SerializedProperty serializedProperty)
         {
             rootVisualElement.Q<PropertyField>("BuffDef").BindProperty(serializedProperty.FindPropertyRelative("buffDef"));
 

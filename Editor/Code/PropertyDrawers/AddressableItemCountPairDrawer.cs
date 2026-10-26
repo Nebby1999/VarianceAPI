@@ -9,7 +9,7 @@ namespace VAPI.Editor.PropertyDrawers
     [CustomPropertyDrawer(typeof(AddressableItemCountPair))]
     public class AddressableItemCountPairDrawer : VAPIPropertyDrawer<AddressableItemCountPair>
     {
-        protected override void FinishUI()
+        protected override void FinishUI(VisualElement rootVisualElement, SerializedProperty serializedProperty)
         {
             rootVisualElement.Q<PropertyField>().BindProperty(serializedProperty.FindPropertyRelative("itemDef"));
 

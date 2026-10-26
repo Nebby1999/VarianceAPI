@@ -9,7 +9,7 @@ namespace VAPI
     [CustomPropertyDrawer(typeof(VariantDeathStateOverride))]
     public class VariantDeathStateOverrideDrawer : VAPIPropertyDrawer<VariantDeathStateOverride>
     {
-        protected override void FinishUI()
+        protected override void FinishUI(VisualElement rootVisualElement, SerializedProperty serializedProperty)
         {
             rootVisualElement.Q<PropertyField>().BindProperty(serializedProperty.FindPropertyRelative("deathStateOverride"));
         }
