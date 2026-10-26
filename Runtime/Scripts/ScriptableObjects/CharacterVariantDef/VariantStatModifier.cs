@@ -102,16 +102,16 @@ namespace VAPI
         /// </summary>
         public virtual void ApplyStatModifiers(R2API.RecalculateStatsAPI.StatHookEventArgs args, CharacterBody targetBody)
         {
-            args.healthMultAdd += _healthMultiplier;
+            args.healthTotalMult *= _healthMultiplier;
             args.baseRegenAdd += regenBonus;
-            args.regenMultAdd += _regenMultiplier;
+            args.regenTotalMult *= _regenMultiplier;
             args.baseShieldAdd += shieldBonus;
-            args.shieldMultAdd += _shieldMultiplier;
-            args.moveSpeedMultAdd += _moveSpeedMultiplier;
-            args.attackSpeedMultAdd += _attackSpeedMultiplier;
-            args.damageMultAdd += _damageMultiplier;
+            args.shieldTotalMult *= _shieldMultiplier;
+            args.moveSpeedTotalMult *= _moveSpeedMultiplier;
+            args.attackSpeedTotalMult *= _attackSpeedMultiplier;
+            args.damageTotalMult *= _damageMultiplier;
             args.armorAdd += armorBonus;
-            args.armorTotalMult += _armorMultiplier; 
+            args.armorTotalMult *= _armorMultiplier; 
         }
 
         /// <summary>

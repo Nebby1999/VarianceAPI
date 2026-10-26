@@ -22,21 +22,6 @@ namespace VAPI
     /// </summary>
     public sealed class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
     {
-        public ReadOnlyArray<CharacterVariantDef> characterVariantDefs
-        {
-            get
-            {
-                CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
-                //If we have the storage, try getting the stored variants.
-                if(storage != null && storage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out var variantDefs))
-                {
-                    return variantDefs!;
-                }
-
-                //Storage null, return our array
-                return _fallbackCharacterVariantDefs;
-            }
-        }
         private CharacterVariantDef[] _fallbackCharacterVariantDefs = Array.Empty<CharacterVariantDef>();
         private SyncListCharacterVariantIndex _characterVariantIndices = new SyncListCharacterVariantIndex();
 
@@ -106,6 +91,19 @@ namespace VAPI
             }
 
             _characterVariantIndices.Callback = SyncListCallback; //Apply callback
+        }
+
+        public ReadOnlyArray<CharacterVariantDef> GetCharacterVariantDefs()
+        {
+            CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
+            //If we have the storage, try getting the stored variants.
+            if (storage != null && storage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out var variantDefs))
+            {
+                return variantDefs!;
+            }
+
+            //Storage null, return our array
+            return _fallbackCharacterVariantDefs;
         }
 
         public CharacterMasterVariantStorage? GetCharacterMasterVariantStorage()
@@ -205,7 +203,7 @@ namespace VAPI
         private void OnSyncListDirty()
         {
             //First, unapply the modifications, if any
-            UnapplyBodyModifications(characterVariantDefs);
+            UnapplyBodyModifications();
 
             CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
             if(storage != null)
@@ -347,7 +345,7 @@ namespace VAPI
             }
 
             //Apply scale modifiers
-            var scaleModifier = new VariantSizeModifierApplicator(characterBody, characterVariantDefs);
+            var scaleModifier = new VariantSizeModifierApplicator(characterBody, characterVariants);
             scaleModifier.Apply();
             _disposableCollectionHelper.AddDisposable(scaleModifier);
 
@@ -358,7 +356,7 @@ namespace VAPI
             }
         }
 
-        private void UnapplyBodyModifications(ReadOnlyArray<CharacterVariantDef> characterVariantDefs)
+        private void UnapplyBodyModifications()
         {
             _disposableCollectionHelper.Dispose();
             _skinHasBeenApplied = false;
@@ -378,10 +376,11 @@ namespace VAPI
         /// </summary>
         public void ModifyStatArguments(RecalculateStatsAPI.StatHookEventArgs args)
         {
-            for (int i = 0; i < characterVariantDefs.Length; i++)
+            var variants = GetCharacterVariantDefs();
+            for(int i = 0; i < variants.Length; i++)
             {
-                var characterVariantDef = characterVariantDefs[i];
-                characterVariantDef.statModifier?.ApplyStatModifiers(args, characterBody);
+                var variant = variants[i];
+                variant.statModifier?.ApplyStatModifiers(args, characterBody);
             }
         }
 

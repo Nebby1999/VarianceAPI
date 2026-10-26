@@ -245,7 +245,11 @@ namespace VAPI
 
         public void OnKilledServer(DamageReport damageReport)
         {
-            if (!characterBodyVariantController || characterBodyVariantController.characterVariantDefs.Length == 0 ||supressRewards || damageReport == null || damageReport.victimBody == null || damageReport.victimBody != characterBody || !VariantSpawnManager.instance || !Run.instance)
+            if (!characterBodyVariantController ||supressRewards || damageReport == null || damageReport.victimBody == null || damageReport.victimBody != characterBody || !VariantSpawnManager.instance || !Run.instance)
+                return;
+
+            var variantDefs = characterBodyVariantController.GetCharacterVariantDefs();
+            if (variantDefs.Length == 0)
                 return;
 
             //Utilize the attacker master, prioritize owner if it exists

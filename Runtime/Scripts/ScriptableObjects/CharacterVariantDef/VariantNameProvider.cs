@@ -74,9 +74,10 @@ namespace VAPI
         {
             if(body.TryGetComponent<CharacterBodyVariantController>(out var characterBodyVariantController))
             {
-                for(int i = 0; i < characterBodyVariantController.characterVariantDefs.Length; i++)
+                var variantDefs = characterBodyVariantController.GetCharacterVariantDefs();
+                for(int i = 0; i < variantDefs.Length; i++)
                 {
-                    CharacterVariantDef variantDef = characterBodyVariantController.characterVariantDefs[i];
+                    CharacterVariantDef variantDef = variantDefs[i];
                     bodyName = variantDef.variantNameProvider?.GetVariantName(bodyName) ?? bodyName;
                 }
             }
