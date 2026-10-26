@@ -27,16 +27,6 @@ namespace VAPI.Editor.Windows
         [MenuItem("Tools/VAPI/VariantPack ScriptableObject Migration Wizard")]
         public static void Open() => GetWindow<VariantPackScriptableObjectMigrationWizard>();
 
-        [MenuItem("test/test")]
-        public static void Test()
-        {
-            new AddressablesPathDictionary.EntryLookup()
-                .WithComponentRequirement(typeof(CharacterBody), false)
-                .WithTypeRestriction(typeof(GameObject))
-                .WithFilter("Body")
-                .WithLookupType(AddressablesPathDictionary.EntryType.Path)
-                .PerformLookup();
-        }
         protected override string GetHelpTooltip()
         {
             return
