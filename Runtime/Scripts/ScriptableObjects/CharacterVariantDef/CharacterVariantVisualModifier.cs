@@ -52,9 +52,40 @@ namespace VAPI
             [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), componentTypeRequirement = typeof(Renderer))]
             public string? transformPath;
             public int rendererIndex;
+
             public bool useIndex;
+            private bool _triedUpgrading;
 
             public T? replacement;
+
+            internal void UpgradeTransformPathToRendererIndex(CharacterModel characterModel)
+            {
+                if (_triedUpgrading == true)
+                    return;
+
+                _triedUpgrading = true;
+
+                if (string.IsNullOrWhiteSpace(transformPath))
+                {
+                    return;
+                }
+
+                var charModelTransform = characterModel.transform;
+                var child = charModelTransform.Find(transformPath);
+                if (!child)
+                    return;
+
+                Renderer renderer = child.GetComponent<Renderer>();
+                for (int i = 0; i < characterModel.baseRendererInfos.Length; i++)
+                {
+                    if (characterModel.baseRendererInfos[i].renderer == renderer)
+                    {
+                        useIndex = true;
+                        rendererIndex = i;
+                        return;
+                    }
+                }
+            }
 
             public bool TryGetRenderer(CharacterModel characterModel, out Renderer? renderer)
             {
@@ -84,6 +115,7 @@ namespace VAPI
             public int lightIndex;
 
             public bool useIndex;
+            private bool _triedUpgrading;
 
             public Color lightColor;
 
@@ -99,6 +131,35 @@ namespace VAPI
                     return false;
 
                 return child.TryGetComponent<Light>(out light);
+            }
+
+            internal void UpgradeTransformPathToLightIndex(CharacterModel characterModel)
+            {
+                if (_triedUpgrading == true)
+                    return;
+
+                _triedUpgrading = true;
+
+                if (string.IsNullOrWhiteSpace(transformPath))
+                {
+                    return;
+                }
+
+                var charModelTransform = characterModel.transform;
+                var child = charModelTransform.Find(transformPath);
+                if (!child)
+                    return;
+
+                Light light = child.GetComponent<Light>();
+                for (int i = 0; i < characterModel.baseLightInfos.Length; i++)
+                {
+                    if (characterModel.baseLightInfos[i].light == light)
+                    {
+                        useIndex = true;
+                        lightIndex = i;
+                        return;
+                    }
+                }
             }
 
             public object Clone()
@@ -173,19 +234,32 @@ namespace VAPI
                 VAPILog.Warning($"{characterModel} does not have a ModelSkinController! Characters require ModelSkinControllers and at the very least a BaseSkin since Memopt. Applying new variants to this character will not undo the skin changes.");
             }
 
+            ApplyMaterialReplacements(characterModel);
+            ApplyMeshReplacements(characterModel);
+            ApplyLightReplacements(characterModel);
+            ApplyPrefabInstantiationDatas(characterModel);
+
+            characterModel.materialsDirty = true;
+            return new ReapplySkinOnDisposed(characterBodyVariantController, mdlSkinController);
+        }
+
+        private void ApplyMaterialReplacements(CharacterModel characterModel)
+        {
             for(int i = 0; i < materialReplacements.Length; i++)
             {
-                RendererTargetedReplacement<Material> rendererTargetedReplacement = materialReplacements[i];
+                ref RendererTargetedReplacement<Material> rendererTargetedReplacement = ref materialReplacements[i];
 
                 if(!rendererTargetedReplacement.replacement)
                 {
-                    VAPILog.Warning($"Material Replacement at index {i} of {this} lacks a Material. Not applying material replacement.");
+                    VAPILog.Warning($"Material Replacement at index {i} of {this} lacks a Material. Not applying material replacement");
                     continue;
                 }
+
+                rendererTargetedReplacement.UpgradeTransformPathToRendererIndex(characterModel);
                 if(rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
                 {
-                    ref var rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
-                    rendererInfo.defaultMaterial = rendererTargetedReplacement.replacement!;
+                    ref CharacterModel.RendererInfo rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
+                    rendererInfo.defaultMaterial = rendererTargetedReplacement.replacement;
                 }
                 else if(rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
                 {
@@ -196,37 +270,63 @@ namespace VAPI
                     VAPILog.Error($"Failed to apply Material Replacement at index {i} of {this}. The renderer could not be obtained via it's RendererInfo index or via the Transform Path.");
                 }
             }
+        }
 
-            if(VAPIConfig._activateMeshReplacementSystem)
+        private void ApplyMeshReplacements(CharacterModel characterModel)
+        {
+            if(!VAPIConfig._activateMeshReplacementSystem)
             {
-                for(int i = 0; i < meshReplacements.Length; i++)
-                {
-                    RendererTargetedReplacement<Mesh> rendererTargetedReplacement = meshReplacements[i];
-                    if(!rendererTargetedReplacement.replacement)
-                    {
-                        VAPILog.Warning($"Mesh Replacement at index {i} of {this} lacks a Mesh. Not applying mesh replacement.");
-                        continue;
-                    }
+                return;
+            }
 
-                    if(rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
-                    {
-                        ref var rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
-                        SetMesh(rendererInfo.renderer, rendererTargetedReplacement.replacement!);
-                    }
-                    else if(rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
-                    {
-                        SetMesh(renderer!, rendererTargetedReplacement.replacement!);
-                    }
-                    else
-                    {
-                        VAPILog.Error($"Failed to apply Mesh Replacement at index {i} of {this}. The renderer could not be obtained via it's RendererInfo index or via the Transform Path.");
-                    }
+            void SetMesh(Renderer renderer, Mesh mesh)
+            {
+                if (renderer.TryGetComponent<MeshFilter>(out var meshFilter))
+                {
+                    meshFilter.sharedMesh = mesh;
+                }
+                else if (renderer is SkinnedMeshRenderer skinnedMeshRenderer)
+                {
+                    skinnedMeshRenderer.sharedMesh = mesh;
+                }
+                else
+                {
+                    VAPILog.Warning($"Cannot apply mesh {mesh} to renderer {renderer} as the renderer is not a SkinnedMeshRenderer or lacks a MeshFilter component.");
                 }
             }
 
+            for (int i = 0; i < meshReplacements.Length; i++)
+            {
+                ref RendererTargetedReplacement<Mesh> rendererTargetedReplacement = ref meshReplacements[i];
+                if(!rendererTargetedReplacement.replacement)
+                {
+                    VAPILog.Warning($"Mesh Replacement at index {i} of {this} lacks a Mesh. Not applying mesh replacement.");
+                    continue;
+                }
+
+                rendererTargetedReplacement.UpgradeTransformPathToRendererIndex(characterModel);
+                if(rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
+                {
+                    ref CharacterModel.RendererInfo rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
+                    SetMesh(rendererInfo.renderer, rendererTargetedReplacement.replacement!);
+                }
+                else if(rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
+                {
+                    SetMesh(renderer!, rendererTargetedReplacement.replacement!);
+                }
+                else
+                {
+                    VAPILog.Error($"Failed to apply Mesh Replacement at index {i} of {this}. The renderer could not be obtained via it's RendererInfo index or via the Transform Path.");
+                }
+            }
+        }
+
+        private void ApplyLightReplacements(CharacterModel characterModel)
+        {
             for(int i = 0; i < lightReplacements.Length; i++)
             {
-                LightReplacement lightReplacement = lightReplacements[i];
+                ref LightReplacement lightReplacement = ref lightReplacements[i];
+                lightReplacement.UpgradeTransformPathToLightIndex(characterModel);
 
                 if(lightReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseLightInfos, lightReplacement.lightIndex))
                 {
@@ -242,23 +342,35 @@ namespace VAPI
                     VAPILog.Error($"Failed to apply Light Replacement at index {i} of {this}. The Light could not be obtained via it's LightInfo index or via the Transform Path.");
                 }
             }
+        }
 
-            for(int i = 0; i < prefabInstantiationDatas.Length; i++)
+        private void ApplyPrefabInstantiationDatas(CharacterModel characterModel)
+        {
+            GameObject InstantiatePrefabOnTransform(GameObject prefab, Transform parentTransform, Vector3 localPos, Vector3 localRot, Vector3 localScale)
             {
-                var prefabInstantiationData = prefabInstantiationDatas[i];
+                var instance = Instantiate(prefab, parentTransform);
+                var instanceTransform = instance.transform;
+                instanceTransform.SetLocalPositionAndRotation(localPos, Quaternion.Euler(localRot));
+                instanceTransform.localScale = localScale;
+                return instance;
+            }
+
+            for (int i = 0; i < prefabInstantiationDatas.Length; i++)
+            {
+                ref PrefabInstantiationData prefabInstantiationData = ref prefabInstantiationDatas[i];
 
                 if(!prefabInstantiationData.prefab)
                 {
-                    VAPILog.Error($"Failed to InstantiatePrefab at index {i} of {this}. There is no GameObject to spawn.");
+                    VAPILog.Error($"Failed to Instantiate Prefab at index {i} of {this}. There's no GameObject to spawn.");
                     continue;
                 }
 
                 Transform? parentTransform = null;
-                if(prefabInstantiationData.TryGetChildLocatorTransform(characterModel, out parentTransform))
+                if (prefabInstantiationData.TryGetChildLocatorTransform(characterModel, out parentTransform))
                 {
                     characterModel.customGameObjectActivationTransforms.Add(InstantiatePrefabOnTransform(prefabInstantiationData.prefab!, parentTransform!, prefabInstantiationData.localPosition, prefabInstantiationData.localRotation, prefabInstantiationData.localScale).transform);
                 }
-                else if(prefabInstantiationData.TryGetTransformFromPath(characterModel, out parentTransform))
+                else if (prefabInstantiationData.TryGetTransformFromPath(characterModel, out parentTransform))
                 {
                     characterModel.customGameObjectActivationTransforms.Add(InstantiatePrefabOnTransform(prefabInstantiationData.prefab!, parentTransform!, prefabInstantiationData.localPosition, prefabInstantiationData.localRotation, prefabInstantiationData.localScale).transform);
                 }
@@ -267,33 +379,6 @@ namespace VAPI
                     VAPILog.Error($"Failed to instantiate Prefab at index {i} of {this}. The Target Transform could not be obtained via it's ChildLocator entry or via the Transform Path.");
                 }
             }
-
-            return new ReapplySkinOnDisposed(characterBodyVariantController, mdlSkinController);
-        }
-
-        private void SetMesh(Renderer renderer, Mesh mesh)
-        {
-            if (renderer.TryGetComponent<MeshFilter>(out var meshFilter))
-            {
-                meshFilter.sharedMesh = mesh;
-            }
-            else if(renderer is SkinnedMeshRenderer skinnedMeshRenderer)
-            {
-                skinnedMeshRenderer.sharedMesh = mesh;
-            }
-            else
-            {
-                VAPILog.Warning($"Cannot apply mesh {mesh} to renderer {renderer} as the renderer is not a SkinnedMeshRenderer or lacks a MeshFilter component.");
-            }
-        }
-
-        private GameObject InstantiatePrefabOnTransform(GameObject prefab, Transform parentTransform, Vector3 localPos, Vector3 localRot, Vector3 localScale)
-        {
-            var instance = Instantiate(prefab, parentTransform);
-            var instanceTransform = instance.transform;
-            instanceTransform.SetLocalPositionAndRotation(localPos, Quaternion.Euler(localRot));
-            instanceTransform.localScale = localScale;
-            return instance;
         }
 
         public struct CreateInstanceArgs

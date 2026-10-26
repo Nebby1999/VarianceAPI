@@ -354,6 +354,9 @@ namespace VAPI
                 _applyVisualModifiersAfterSkinCoroutine = ApplyVisualModifiersAfterSkin(visualModifiers);
                 StartCoroutine(_applyVisualModifiersAfterSkinCoroutine);
             }
+
+            //Set stats to dirty
+            characterBody.MarkAllStatsDirty();
         }
 
         private void UnapplyBodyModifications()
