@@ -92,6 +92,7 @@ namespace VAPI
             }
 
             _characterVariantIndices.Callback = SyncListCallback; //Apply callback
+            VAPILog.Info("Synclist Callback Applied on Awake.");
         }
 
         public ReadOnlyArray<CharacterVariantDef> GetCharacterVariantDefs()
@@ -100,9 +101,12 @@ namespace VAPI
             //If we have the storage, try getting the stored variants.
             if (storage != null && storage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out var variantDefs))
             {
+                VAPILog.Info($"Obtaining CharacterVariantDefs from {storage}. (Count: {variantDefs.Length}. IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
                 return variantDefs!;
             }
 
+
+            VAPILog.Info($"Obtaining fallback array from {this}. (Count: {_fallbackCharacterVariantDefs.Length}. IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
             //Storage null, return our array
             return _fallbackCharacterVariantDefs;
         }
@@ -112,19 +116,27 @@ namespace VAPI
             //If the backing field is not null, and the storage's master's body points to our body, return the backing field.
             if (_characterMasterVariantStorage != null && _characterMasterVariantStorage.characterMaster && _characterMasterVariantStorage.characterMaster.GetBody() == characterBody)
             {
+
+                VAPILog.Info($"Returning cached Storage, Master's body matches our own (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
                 return _characterMasterVariantStorage;
             }
             //Search our current storage and assign to the backing field
 
             //If there's no body, or the body is flagged as materless, return
             if (!characterBody || characterBody.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless))
+            {
+                VAPILog.Info($"Returning null storage as body is masterless (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
                 return null;
+            }
 
             //Retrieve the storage from the master, cache the result
             if (characterBody.master && characterBody.master.TryGetComponent<CharacterMasterVariantStorage>(out var storageInMaster))
             {
+                VAPILog.Info($"Found Storage and cached it. (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
                 _characterMasterVariantStorage = storageInMaster;
             }
+
+            VAPILog.Info($"Returning {_characterMasterVariantStorage} after the original caching process failed. (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
             return _characterMasterVariantStorage;
         }
         private CharacterMasterVariantStorage? _characterMasterVariantStorage;
@@ -136,6 +148,7 @@ namespace VAPI
         {
             base.OnStartServer();
 
+            VAPILog.Info($"OnStartServer called (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
             //When the controller starts on the server, check if we have a storage.
             //If the storage has a variants array, set them on the controller.
 
@@ -147,6 +160,7 @@ namespace VAPI
             CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
             if(storage != null && storage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out CharacterVariantDef[]? storedVariants))
             {
+                VAPILog.Info($"Assigning variants from {storage}. (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
                 //We want to call the internal method directly, as we're using the variants in the storage rather than a foreign array
                 SetCharacterVariantDefsServerInternal(storedVariants!);
             }
@@ -181,12 +195,14 @@ namespace VAPI
         [Server]
         private void SetCharacterVariantDefsServerInternal(CharacterVariantDef[] variantDefs)
         {
+            VAPILog.Info($"Clearing Variant indices synclist (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
             //Clear the synclist, then add the new variants
             _characterVariantIndices.Clear();
             for (int i = 0; i < variantDefs.Length; i++)
             {
                 _characterVariantIndices.Add(variantDefs[i].characterVariantIndex);
             }
+            VAPILog.Info($"Added {variantDefs.Length} variants to synclist (IsServer={NetworkServer.active}|IsClient={NetworkClient.active}). Calling SyncListDirty manually");
 
             //Call the OnSyncListDirty(), which will properly update our variants.
             OnSyncListDirty();
@@ -195,25 +211,32 @@ namespace VAPI
         private void SyncListCallback(SyncList<NetworkCharacterVariantIndex>.Operation op, int itemIndex)
         {
             //GTFO if server.
+            VAPILog.Info($"SyncList callback called. (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
             if (NetworkServer.active)
+            {
+                VAPILog.Info($"Returning from SyncList callback as we're the server.");
                 return;
+            }
 
             OnSyncListDirty();
         }
 
         private void OnSyncListDirty()
         {
+            VAPILog.Info($"Unapplying body modifications (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
             //First, unapply the modifications, if any
             UnapplyBodyModifications();
 
             CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
             if(storage != null)
             {
+                VAPILog.Info($"Unapplying master modifications (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
                 storage.UnapplyVariants();
             }
 
             onVariantsUnapplied?.Invoke();
 
+            VAPILog.Info($"Creating fallback character variant defs array (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
             //Second, create new array and populate.
             _fallbackCharacterVariantDefs = new CharacterVariantDef[_characterVariantIndices.Count];
             for(int i = 0; i < _characterVariantIndices.Count; i++)
@@ -221,11 +244,13 @@ namespace VAPI
                 _fallbackCharacterVariantDefs[i] = CharacterVariantCatalog.GetCharacterVariantDef(_characterVariantIndices[i])!;
             }
 
+            VAPILog.Info($"Applying Body Modifications (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
             //Thirdly, apply body modifications
             ApplyBodyModifications(_fallbackCharacterVariantDefs);
 
             if(storage != null)
             {
+                VAPILog.Info($"Applying Master Modifications, trying to store variants on master. (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
                 storage.ApplyVariants(characterBody.bodyIndex, _fallbackCharacterVariantDefs, _isBeingForcefullySet);
             }
 
