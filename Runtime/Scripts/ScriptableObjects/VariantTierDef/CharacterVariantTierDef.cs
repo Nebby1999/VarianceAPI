@@ -31,16 +31,14 @@ namespace VAPI
 
             public void Dispose()
             {
-                if (!_affectedBody)
+                if (!_affectedBody || !NetworkServer.active)
                     return;
 
                 if(_buffDefToRemove)
                     _affectedBody.RemoveBuff(_buffDefToRemove);
 
-                for(int i = 0; i < _armorCountToRemove; i++)
-                {
-                    _affectedBody.RemoveBuff(VAPIContent.Buffs.VAPILinearArmorBonus.asset);
-                }
+                int armorBonusCount = _affectedBody.GetBuffCount(VAPIContent.Buffs.VAPILinearArmorBonus.asset);
+                _affectedBody.SetBuffCount(VAPIContent.Buffs.VAPILinearArmorBonus.asset!.buffIndex, Mathf.Max(0, armorBonusCount - _armorCountToRemove));
             }
         }
         private struct DisposableVariantTierMasterModifier : IDisposable
@@ -145,7 +143,7 @@ namespace VAPI
 
         internal IDisposable? ModifyBody(CharacterBody characterBody)
         {
-            if (!characterBody && !NetworkServer.active)
+            if (!characterBody || !NetworkServer.active)
             {
                 return null;
             }
@@ -157,10 +155,7 @@ namespace VAPI
             }
 
             int bonusArmorCount = Mathf.CeilToInt(bonusArmor);
-            for (int i = 0; i < bonusArmorCount; i++)
-            {
-                characterBody.AddBuff(VAPIContent.Buffs.VAPILinearArmorBonus.asset);
-            }
+            characterBody.SetBuffCount(VAPIContent.Buffs.VAPILinearArmorBonus.asset!.buffIndex, bonusArmorCount);
 
             return new DisposableVariantTierBodyModifier(characterBody, buffDef, bonusArmorCount);
         }
