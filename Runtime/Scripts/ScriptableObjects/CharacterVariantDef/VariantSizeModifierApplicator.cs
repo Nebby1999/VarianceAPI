@@ -88,22 +88,22 @@ namespace VAPI
                 return;
             }
 
-            float baseMultiplier = 1;
+            float sizeMultiplier = 1;
             foreach(var variantDef in variantDefs)
             {
                 if (variantDef.scaleMultiplier <= 0)
                     continue;
 
-                baseMultiplier *= variantDef.scaleMultiplier;
+                sizeMultiplier *= variantDef.scaleMultiplier;
             }
 
-            if(float.IsInfinity(baseMultiplier))
+            if(float.IsInfinity(sizeMultiplier))
             {
                 _computedSizeCoefficient = 1;
                 return;
             }
 
-            _computedSizeCoefficient = Mathf.Max(float.Epsilon, _computedSizeCoefficient);
+            _computedSizeCoefficient = Mathf.Max(float.Epsilon, sizeMultiplier);
 
             if(targetBody.TryGetComponent<ModelLocator>(out var mdlLocator))
             {
