@@ -9,6 +9,7 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     //This class is added dynamically by the CharacterBodyVariantController if the body has a master. it's added to CharacterMasters.
+    [AddComponentMenu("")]
     public sealed class CharacterMasterVariantStorage : MonoBehaviour
     {
         private struct StorageMetadataEntry

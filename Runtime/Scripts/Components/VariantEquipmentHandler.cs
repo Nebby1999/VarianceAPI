@@ -10,6 +10,7 @@ namespace VAPI
     /// <summary>
     /// Monobehaviour used to fire equipments from variants
     /// </summary>
+    [AddComponentMenu("")]
     public sealed class VariantEquipmentHandler : MonoBehaviour
     {
         /// <summary>

@@ -20,6 +20,7 @@ namespace VAPI
         private int _buffStacks;
 
         private ModelLocator? _modelLocator;
+        private ModelLocatorSizeUpdater? _modelLocatorSizeUpdater;
         /// <summary>
         /// Disposes the size modifier, returning it to normal
         /// </summary>
@@ -31,6 +32,8 @@ namespace VAPI
             }
 
             _characterBody.SetBuffCount(_usedBuffDef.buffIndex, 0);
+            UnityEngine.Object.Destroy(_modelLocatorSizeUpdater);
+            _modelLocatorSizeUpdater = null;
         }
 
         /// <summary>
@@ -38,7 +41,7 @@ namespace VAPI
         /// </summary>
         public void Apply()
         {
-            if (_characterBody == null || !NetworkServer.active)
+            if (_characterBody == null)
             {
                 return;
             }
@@ -47,6 +50,13 @@ namespace VAPI
             if(Mathf.Approximately(_computedSizeCoefficient, 1))
             {
                 return;
+            }
+
+            //If the model locator is not null, and its not enabled or doesnt auto update model transform, then we'll just drive the size ourselves.
+            //This method gets called on all machines, and we want this to be added.
+            if (_modelLocator != null && (_modelLocator.enabled == false || _modelLocator.autoUpdateModelTransform == false))
+            {
+                _modelLocatorSizeUpdater = _modelLocator.gameObject.AddComponent<ModelLocatorSizeUpdater>();
             }
 
             float realCoefficient = _computedSizeCoefficient;
@@ -63,14 +73,9 @@ namespace VAPI
 
             _usedBuffDef = _computedSizeCoefficient > 1 ? VAPIContent.Buffs.VAPIIncreaseScale.asset! : VAPIContent.Buffs.VAPIDecreaseScale.asset!;
             _buffStacks = scalePercentage;
-            _characterBody.SetBuffCount(_usedBuffDef.buffIndex, _buffStacks);
 
-            if(_modelLocator != null)
-            {
-                //Certainly this won't be bad
-                _modelLocator.enabled = true;
-                _modelLocator.autoUpdateModelTransform = true;
-            }
+            if(NetworkServer.active)
+                _characterBody.SetBuffCount(_usedBuffDef.buffIndex, _buffStacks);
         }
 
         /// <summary>

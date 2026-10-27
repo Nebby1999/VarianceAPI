@@ -11,6 +11,7 @@ namespace VAPI
     /// <summary>
     /// Monobehaviour that handles death rewards for variants
     /// </summary>
+    [AddComponentMenu("")]
     public sealed class VariantDeathRewards : MonoBehaviour, IOnKilledServerReceiver
     {
         public enum ItemRewardType

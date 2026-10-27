@@ -20,6 +20,7 @@ namespace VAPI
     /// <br></br>
     /// If this linking process fails, it'll roll it's own variants and store it in this component. This allows for the creation of masterless variants (For example, a goolake pot that leaves a tar pool on explosion)
     /// </summary>
+    [AddComponentMenu("")]
     public sealed class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
     {
         private CharacterVariantDef[] _fallbackCharacterVariantDefs = Array.Empty<CharacterVariantDef>();
