@@ -81,7 +81,6 @@ namespace VAPI
                     bodyName = variantDef.variantNameProvider?.GetVariantName(bodyName) ?? bodyName;
                 }
             }
-
             return bodyName;
         }
     }

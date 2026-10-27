@@ -640,7 +640,7 @@ namespace VAPI
             if(characterBody && characterBody.TryGetComponent<CharacterBodyVariantController>(out var variantController))
             {
                 variantController.doNotRollForVariants = true;
-                variantController.SetCharacterVariantDefsServer(variantDefs.ToArray(), true);
+                variantController.SetCharacterVariantDefsServer(variantDefs.ToArray());
             }
         }
         #endregion

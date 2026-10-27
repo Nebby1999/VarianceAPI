@@ -75,7 +75,7 @@ namespace VAPI
 
         public bool HasVariantsForBody(BodyIndex bodyIndex) => GetVariantStorageIndex(bodyIndex) != -1;
 
-        private void PushVariantsForCharacter(in BodyIndex bodyIndex, in CharacterVariantDef[] variantDefs, bool forceSet)
+        private void PushVariantsForCharacter(in BodyIndex bodyIndex, in CharacterVariantDef[] variantDefs)
         {
             if(bodyIndex == BodyIndex.None || variantDefs == null)
             {
@@ -90,11 +90,6 @@ namespace VAPI
                 _storageMetadataList.Add(new StorageMetadataEntry { relatedBodyIndex = bodyIndex, storedVariants = variantDefs });
                 return;
             }
-
-            if (!forceSet)
-                return;
-
-            VAPILog.Warning($"VariantStorage of body {BodyCatalog.GetBodyName(bodyIndex)} is being overwritten, unapplying variants.");
 
             UnapplyVariants();
             //Override list
@@ -114,14 +109,16 @@ namespace VAPI
 
         private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
 
-        internal void ApplyVariants(BodyIndex bodyIndex, CharacterVariantDef[] fallbackCharacterVariantDefs, bool forceSet = false)
+        internal void ApplyVariants(BodyIndex bodyIndex, CharacterVariantDef[] fallbackCharacterVariantDefs)
         {
             //If the body index of applied variants is the one that's incoming, return.
             //We definetly don't want to apply the master modifications twice.
             if (_bodyIndexOfAppliedVariants == bodyIndex)
+            {
                 return;
+            }
 
-            PushVariantsForCharacter(bodyIndex, fallbackCharacterVariantDefs, forceSet);
+            PushVariantsForCharacter(bodyIndex, fallbackCharacterVariantDefs);
 
             for (int i = 0; i < fallbackCharacterVariantDefs.Length; i++)
             {
