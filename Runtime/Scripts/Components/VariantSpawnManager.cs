@@ -88,6 +88,20 @@ namespace VAPI
             return RunArtifactManager.instance.IsArtifactEnabled(VAPIContent.Artifacts.Variance.asset) ? artifactSpawnRateMultiplier : 1f;
         }
 
+        private enum BodyStartProcedure
+        {
+            SetFromStorage,
+            RollVariants,
+            Return
+        }
+
+        private struct BodyStartProcedureRetrievedValues
+        {
+            public CharacterVariantProvider? variantProvider;
+            public CharacterBodyVariantController? bodyController;
+            public CharacterMasterVariantStorage? masterVariantStorage;
+        }
+
         private void OnBodyStart(CharacterBody body)
         {
             //When the body starts, check it's master for a list of provided variants.
@@ -97,15 +111,78 @@ namespace VAPI
             if (!NetworkServer.active)
                 return;
 
+            BodyStartProcedure procedure = GetProcedureForBody(body, out BodyStartProcedureRetrievedValues values);
+
+            switch(procedure)
+            {
+                case BodyStartProcedure.Return:
+                    {
+                        VAPILog.Info($"Not turning {body} into a variant, it simply cannot be one.");
+                        return;
+                    }
+                case BodyStartProcedure.RollVariants:
+                    {
+                        VAPILog.Info($"Rolling variants for {body} using the provider");
+                        CharacterVariantDef[] rolledVariants = values.variantProvider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = 1f });
+                        values.bodyController!.SetCharacterVariantDefsServer(rolledVariants);
+                        return;
+                    }
+                case BodyStartProcedure.SetFromStorage:
+                    {
+                        VAPILog.Info($"Trying to Set the variants from the storage.");
+                        if(values.masterVariantStorage!.TryGetVariantsStoredForCharacter(body.bodyIndex, out var variants))
+                        {
+                            VAPILog.Info($"Succesfully set the variants from the storage.");
+                            values.bodyController!.SetCharacterVariantDefsServer(variants!);
+                        }
+                        return;
+                    }
+            }
+
             //If we cant roll the variants for the body that just started, return.
-            if (CanRollVariantsForBody(body, out CharacterBodyVariantController? variantController, out CharacterVariantProvider? provider) == false)
+            /*if (CanRollVariantsForBody(body, out CharacterBodyVariantController? variantController, out CharacterVariantProvider? provider) == false)
+            {
                 return;
+            }
 
             //We can roll variants for the body, so proceed to roll them.
             CharacterVariantDef[] variantDefs = provider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
 
 
-            variantController!.SetCharacterVariantDefsServer(variantDefs);
+            variantController!.SetCharacterVariantDefsServer(variantDefs);*/
+        }
+
+        private BodyStartProcedure GetProcedureForBody(CharacterBody body, out BodyStartProcedureRetrievedValues retrievedValues)
+        {
+            retrievedValues = default;
+            if (!body)
+                return BodyStartProcedure.Return;
+
+            CharacterVariantProvider? retrievedProvider = CharacterVariantCatalog.GetCharacterVariantProvider(body.bodyIndex);
+            if (retrievedProvider == null)
+                return BodyStartProcedure.Return;
+
+            retrievedValues.variantProvider = retrievedProvider;
+
+            if(!body.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
+            {
+                VAPILog.Warning($"CharacterBody {body} has a CharacterVariantProvider, but the body prefab lacks the variant controller! this shouldnt be possible!");
+                return BodyStartProcedure.Return;
+            }
+
+            retrievedValues.bodyController = bodyVariantController;
+
+            if (bodyVariantController.doNotRollForVariants)
+                return BodyStartProcedure.Return;
+
+            CharacterMasterVariantStorage? variantStorage = bodyVariantController.GetCharacterMasterVariantStorage();
+            if(variantStorage != null && variantStorage.HasVariantsForBody(body.bodyIndex))
+            {
+                retrievedValues.masterVariantStorage = variantStorage;
+                return BodyStartProcedure.SetFromStorage;
+            }
+
+            return BodyStartProcedure.RollVariants;
         }
 
 

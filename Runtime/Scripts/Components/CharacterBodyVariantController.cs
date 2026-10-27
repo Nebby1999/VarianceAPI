@@ -23,6 +23,11 @@ namespace VAPI
     [AddComponentMenu("")]
     public sealed class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
     {
+        private void Message(string msg)
+        {
+            VAPILog.Message(msg + $" (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
+        }
+
         private CharacterVariantDef[] _fallbackCharacterVariantDefs = Array.Empty<CharacterVariantDef>();
         private SyncListCharacterVariantIndex _characterVariantIndices = new SyncListCharacterVariantIndex();
 
@@ -93,6 +98,22 @@ namespace VAPI
             {
                 characterDeathBehavior = deathBehavior;
             }
+
+            _characterVariantIndices.Callback = SyncListCallback;
+            Message("Awake Called");
+        }
+
+        public override void OnStartClient()
+        {
+            base.OnStartClient();
+
+            //When the client starts, the indices should already be set on the server.
+            //If the indices' count doesnt match our fallback array, we need to trigger a sync list dirty.
+            //this can happen when going to a new stage while a variant's master is set to "DontDestroyOnLoad", without this call they'll be variants in the host but look normal on the clients.
+            if(_characterVariantIndices.Count != _fallbackCharacterVariantDefs.Length)
+            {
+                OnSyncListDirty();
+            }
         }
 
         public ReadOnlyArray<CharacterVariantDef> GetCharacterVariantDefs()
@@ -134,30 +155,18 @@ namespace VAPI
         private CharacterMasterVariantStorage? _characterMasterVariantStorage;
 
 
-        public override void OnStartServer()
+        private void Start()
         {
-            base.OnStartServer();
-
-            //When the controller starts on the server, check if we have a storage.
-            //If the storage has a variants array, set them on the controller.
-
-            //On the server when the body spawns it'll apply the ones on the storage.
-            //If the body respawns (via an extra life or via polymorph), it'll set the variants
-
-            //If a client disconnects, when reconnecting the server should have the proper array of variants to send to the client.
-
-            CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
-            if(storage != null && storage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out CharacterVariantDef[]? storedVariants))
-            {
-                //We want to call the internal method directly, as we're using the variants in the storage rather than a foreign array
-                SetCharacterVariantDefsServerInternal(storedVariants!);
-            }
-        }
-
-        public override void OnStartClient()
-        {
-            base.OnStartClient();
-            _characterVariantIndices.Callback = SyncListCallback;
+            //if(NetworkServer.active)
+            //{
+            //    CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
+            //    if (storage != null && storage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out CharacterVariantDef[]? storedVariants))
+            //    {
+            //        Message($"Utilizing stored variants from master (count: {storedVariants!.Length})");
+            //        //We want to call the internal method directly, as we're using the variants in the storage rather than a foreign array
+            //        SetCharacterVariantDefsServerInternal(storedVariants!);
+            //    }
+            //}
         }
 
         //public facing method, in VAPI it's called by the spawn manager and the Util method to turn something into a variant.
@@ -184,36 +193,32 @@ namespace VAPI
         [Server]
         private void SetCharacterVariantDefsServerInternal(CharacterVariantDef[] variantDefs)
         {
+            Message("VariantDefs set on server, clearing synclist");
             _characterVariantIndices.Clear();
             for (int i = 0; i < variantDefs.Length; i++)
             {
                 _characterVariantIndices.Add(variantDefs[i].characterVariantIndex);
+                Message($"Adding variant {variantDefs[i].cachedName}");
             }
             variantsApplied = _characterVariantIndices.Count > 0;
-
-            //Call the OnSyncListDirty(), which will properly update our variants.
-            OnSyncListDirty();
         }
 
         private void SyncListCallback(SyncList<NetworkCharacterVariantIndex>.Operation op, int itemIndex)
         {
-            //GTFO if server.
-            if (NetworkServer.active)
-            {
-                return;
-            }
-
             OnSyncListDirty();
         }
 
         private void OnSyncListDirty()
         {
+            Message($"OnSyncListDirty called.");
             //First, unapply the modifications, if any
+            Message("Unapplying variants to body");
             UnapplyBodyModifications();
 
             CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
-            if(storage != null)
+            if(storage != null) 
             {
+                Message($"Unapplying variants to master");
                 storage.UnapplyVariants();
             }
 
@@ -227,10 +232,12 @@ namespace VAPI
             }
 
             //Thirdly, apply body modifications
+            Message("Applying variants to body");
             ApplyBodyModifications(_fallbackCharacterVariantDefs);
 
             if (storage != null)
             {
+                Message($"Pushing variants to master and applying them (count:{_fallbackCharacterVariantDefs.Length})");
                 storage.ApplyVariants(characterBody.bodyIndex, _fallbackCharacterVariantDefs);
             }
 

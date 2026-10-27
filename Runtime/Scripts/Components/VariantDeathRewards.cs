@@ -247,7 +247,6 @@ namespace VAPI
 
         public void OnKilledServer(DamageReport damageReport)
         {
-            VAPILog.Error($"{this} has died! (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
             if (!characterBodyVariantController ||supressRewards || damageReport == null || damageReport.victimBody == null || damageReport.victimBody != characterBody || !VariantSpawnManager.instance || !Run.instance)
                 return;
 
