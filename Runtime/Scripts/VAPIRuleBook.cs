@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using VAPI.AddressReferencedAssets;
 using HG;
+using System.Linq;
 
 namespace VAPI
 {
@@ -214,13 +215,31 @@ namespace VAPI
                 return rule;
             }
 
-            for (int i = 0; i < CharacterVariantCatalog.registeredCharacterVariantDefs.Length; i++)
+            //Order them by body name, that way all the "beetle body" variants will appear next to each other
+            List<CharacterVariantDef> variantDefsOrderedByBodyName = new List<CharacterVariantDef>();
+            for(int i = 0; i < CharacterVariantCatalog.characterVariantCount; i++)
             {
-                CharacterVariantDef def = CharacterVariantCatalog.registeredCharacterVariantDefs[i];
-
-                if (!def.hasProvider)
+                var def = CharacterVariantCatalog.registeredCharacterVariantDefs[i];
+                if(!def.hasProvider)
+                {
                     continue;
+                }
 
+                variantDefsOrderedByBodyName.Add(def);
+            }
+
+            //At this point since it has a provider it means the target body is not null and has a component.
+            variantDefsOrderedByBodyName.Sort((a, b) =>
+            {
+                CharacterBody aBody = a.targetBody.LoadCharacterComponent()!;
+                CharacterBody bBody = b.targetBody.LoadCharacterComponent()!;
+
+                return aBody.name.CompareTo(bBody.name);
+            });
+
+
+            foreach (var def in variantDefsOrderedByBodyName)
+            {
                 RuleDef variantRule = CreateRuleDefFromVariant(def);
                 RuleCatalogExtras.AddRuleToCatalog(variantRule, _variantCategory.categoryIndex);
             }
