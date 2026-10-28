@@ -573,7 +573,10 @@ namespace VAPI
                     }
                 }
             }
-            variantDefs.OrderBy(variantDef => (int)variantDef.characterVariantIndex);
+            variantDefs.Sort((a, b) =>
+            {
+                return ((int)a.characterVariantIndex).CompareTo(((int)b.characterVariantIndex));
+            });
 
             var senderBody = args.senderBody;
             Vector3 location = args.sender.master.GetBody().transform.position;
@@ -695,8 +698,10 @@ namespace VAPI
                     }
                 }
             }
-
-            variantDefs.OrderBy(variantDef => (int)variantDef.characterVariantIndex);
+            variantDefs.Sort((a, b) =>
+            {
+                return ((int)a.characterVariantIndex).CompareTo(((int)b.characterVariantIndex));
+            });
 
             BodySpawnCard bodySpawnCard = ScriptableObject.CreateInstance<BodySpawnCard>();
             bodySpawnCard.sendOverNetwork = true;
@@ -786,8 +791,10 @@ namespace VAPI
                     }
                 }
             }
-
-            variantDefs.OrderBy(variantDef => (int)variantDef.characterVariantIndex);
+            variantDefs.Sort((a, b) =>
+            {
+                return ((int)a.characterVariantIndex).CompareTo(((int)b.characterVariantIndex));
+            });
 
             senderMaster.bodyPrefab = bodyPrefab;
 
