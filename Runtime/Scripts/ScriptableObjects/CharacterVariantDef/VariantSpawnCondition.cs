@@ -304,6 +304,14 @@ namespace VAPI
     {
         public CataloguedVariantReference dependantVariantDef;
 
+        /// <summary>
+        /// Wether the variant can spawn or not, this is checked before the <see cref="dependantVariantDef"/> isAvailable check is done.
+        /// <br></br>
+        /// This is used mostly for scenarios where we want to add a variant that depends on another variant's availability spawning, but want to control wether it can spawn or not via a config.
+        /// </summary>
+        [HideInInspector]
+        public bool canSpawn;
+
         public UnlockableDef? requiredUnlock
         {
             get
@@ -362,11 +370,13 @@ namespace VAPI
         public VariantDependantCondition(string _dependantVariantDefName)
         {
             dependantVariantDef = new CataloguedVariantReference(_dependantVariantDefName);
+            canSpawn = true;
         }
 
         public VariantDependantCondition(CharacterVariantDef _dependantVariantDef)
         {
             dependantVariantDef = new CataloguedVariantReference(_dependantVariantDef);
+            canSpawn = true;
         }
     }
 }

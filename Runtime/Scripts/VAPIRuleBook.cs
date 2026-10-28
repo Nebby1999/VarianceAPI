@@ -217,7 +217,7 @@ namespace VAPI
             }
 
             //Order them by body name, that way all the "beetle body" variants will appear next to each other
-            List<CharacterVariantDef> variantDefsOrderedByBodyName = new List<CharacterVariantDef>();
+            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var variantDefsOrderedByBodyName);
             for(int i = 0; i < CharacterVariantCatalog.characterVariantCount; i++)
             {
                 var def = CharacterVariantCatalog.registeredCharacterVariantDefs[i];

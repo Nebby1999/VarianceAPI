@@ -146,6 +146,18 @@ namespace VAPI
         /// </summary>
         public static ResourceAvailability catalogAvailability;
 
+        public static List<CharacterVariantDef>? RetrieveDependantSpawnVariants(CharacterVariantDef dependee)
+        {
+            if(dependee == null || _dependeeVariantToDependantVariants.TryGetValue(dependee, out var dependants) == false)
+            {
+                return null;
+            }
+
+            List<CharacterVariantDef> result = ListPool<CharacterVariantDef>.RentCollection();
+            result.AddRange(dependants);
+            return result;
+        }
+
         /// <summary>
         /// Gets the <see cref="CharacterVariantDef"/> with the specified <paramref name="index"/>
         /// <br></br>
@@ -265,7 +277,7 @@ namespace VAPI
             Dictionary<BodyIndex, List<CharacterVariantDef>> bodyToVariants = new Dictionary<BodyIndex, List<CharacterVariantDef>>();
 
             //A list of variants without providers, these are caused by invalid target characters (direct ref null, address is invalid, or doesnt resolve to an actual body)
-            List<CharacterVariantDef> providerlessVariants = new List<CharacterVariantDef>();
+            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var providerlessVariants);
 
             for(int i = 0; i < sortedVariants.Length; i++)
             {
@@ -305,7 +317,10 @@ namespace VAPI
                     continue;
                 }
                 //Add the body's index to the dictionary, this dictionary is later used to create the provider.
-                bodyToVariants.TryAdd(characterBody!.bodyIndex, new List<CharacterVariantDef>());
+                if(!bodyToVariants.ContainsKey(characterBody!.bodyIndex))
+                {
+                    bodyToVariants.Add(characterBody.bodyIndex, ListPool<CharacterVariantDef>.RentCollection());
+                }
                 bodyToVariants[characterBody!.bodyIndex].Add(variantDef);
 
                 //Provider success
@@ -359,6 +374,11 @@ namespace VAPI
                     }
                     VAPILog.Message(sb.ToString());
                 }
+            }
+
+            foreach(var (_, list) in bodyToVariants)
+            {
+                ListPool<CharacterVariantDef>.ReturnCollection(list);
             }
 
             yield return sortedVariants;
@@ -560,7 +580,8 @@ namespace VAPI
 
             var variantDefNamesAsListString = args[1];
             string[] variantDefNames = variantDefNamesAsListString.Replace(" ", "").Split(',', StringSplitOptions.RemoveEmptyEntries);
-            List<CharacterVariantDef> variantDefs = new List<CharacterVariantDef>();
+
+            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var variantDefs);
             var availableVariants = provider.allVariants;
             foreach(string variantName in variantDefNames)
             {
@@ -684,7 +705,7 @@ namespace VAPI
 
             var variantDefNamesAsListString = args.TryGetArgString(1) ?? "";
             string[] variantDefNames = variantDefNamesAsListString.Replace(" ", "").Split(',', StringSplitOptions.RemoveEmptyEntries);
-            List<CharacterVariantDef> variantDefs = new List<CharacterVariantDef>();
+            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var variantDefs);
 
             var availableVariants = provider.allVariants;
             foreach (string variantName in variantDefNames)
@@ -777,7 +798,7 @@ namespace VAPI
 
             var variantDefNamesAsListString = args.TryGetArgString(1) ?? "";
             string[] variantDefNames = variantDefNamesAsListString.Replace(" ", "").Split(',', StringSplitOptions.RemoveEmptyEntries);
-            List<CharacterVariantDef> variantDefs = new List<CharacterVariantDef>();
+            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var variantDefs);
 
             var availableVariants = provider.allVariants;
             foreach (string variantName in variantDefNames)

@@ -128,11 +128,11 @@ namespace VAPI
             return success;
         }
 
-        private readonly List<CharacterVariantDef> notUniquesPick = new List<CharacterVariantDef>();
         private bool RollNonUniques(Xoroshiro128Plus spawnRng, float spawnChanceMultiplier, out CharacterVariantDef[]? results)
         {
-            notUniquesPick.Clear();
-            for(int i = 0; i < filteredNonUniqueVariants.Count; i++)
+            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var notUniquesPick);
+
+            for (int i = 0; i < filteredNonUniqueVariants.Count; i++)
             {
                 CharacterVariantDef variant = filteredNonUniqueVariants[i];
                 var spawnRate = Mathf.Min(100, variant.spawnRate * spawnChanceMultiplier);

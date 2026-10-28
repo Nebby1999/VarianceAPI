@@ -187,7 +187,7 @@ namespace VAPI
             _registeredPacks = new VariantPack[packCount];
             List<ReadOnlyVariantPack> readOnlyVariantPacks = new List<ReadOnlyVariantPack>();
 
-            List<CharacterVariantDef> variantDefs = new List<CharacterVariantDef>();
+            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var variantDefs);
             List<CharacterVariantTierDef> tierDefs = new List<CharacterVariantTierDef>();
 
             //Iterate and assign indices
