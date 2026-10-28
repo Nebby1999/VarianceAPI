@@ -259,11 +259,11 @@ namespace VAPI
 
             if (isSingleAssetLoad)
             {
-                request = _assetBundle.LoadAssetAsync<TAsset>(_assetName);
+                request = _assetBundle!.LoadAssetAsync<TAsset>(_assetName);
             }
             else
             {
-                request = _assetBundle.LoadAllAssetsAsync<TAsset>();
+                request = _assetBundle!.LoadAllAssetsAsync<TAsset>();
             }
 
             while (!request.isDone)

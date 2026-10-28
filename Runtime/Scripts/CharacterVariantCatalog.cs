@@ -277,7 +277,7 @@ namespace VAPI
             Dictionary<BodyIndex, List<CharacterVariantDef>> bodyToVariants = new Dictionary<BodyIndex, List<CharacterVariantDef>>();
 
             //A list of variants without providers, these are caused by invalid target characters (direct ref null, address is invalid, or doesnt resolve to an actual body)
-            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var providerlessVariants);
+            List<CharacterVariantDef> providerlessVariants = ListPool<CharacterVariantDef>.RentCollection();
 
             for(int i = 0; i < sortedVariants.Length; i++)
             {
@@ -380,6 +380,7 @@ namespace VAPI
             {
                 ListPool<CharacterVariantDef>.ReturnCollection(list);
             }
+            ListPool<CharacterVariantDef>.ReturnCollection(providerlessVariants);
 
             yield return sortedVariants;
         }

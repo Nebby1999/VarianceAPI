@@ -37,7 +37,9 @@ namespace VAPI
         /// <summary>
         /// The <see cref="characterMaster"/>'s inventory
         /// </summary>
+#pragma warning disable CS8618
         public Inventory inventory { get; private set; }
+#pragma warning restore CS8618
 
         private List<EquipmentData> _equipmentDatas = new List<EquipmentData>();
         private int _currentDataIndex = -1;

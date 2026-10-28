@@ -18,7 +18,9 @@ namespace VAPI
             public CharacterVariantDef[] storedVariants;
         }
 
+#pragma warning disable CS8618
         public CharacterMaster characterMaster { get; private set; }
+#pragma warning restore CS8618
 
         public event Action? onVariantsUnapplied;
         public event Action? onVariantsApplied;
