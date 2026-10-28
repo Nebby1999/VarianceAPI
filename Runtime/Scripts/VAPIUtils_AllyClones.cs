@@ -143,6 +143,21 @@ namespace VAPI
             return CloneIntoAllyVariant(args);
         }
 
+        public static CharacterVariantDef? CloneIntoLemurianPolymorph(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
+        {
+            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            {
+                src = def,
+                makeHidden = makeHidden,
+                resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
+                cloneSuffix = "Polymorph",
+                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_Base_Lemurian.LemurianBody_prefab, RoR2_DLC4_ShrineCompulsion.PolymorphLemurianBody_prefab),
+                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(RoR2Content.BodyPrefabs.LemurianBody), nameof(DLC4Content.BodyPrefabs.PolymorphLemurianBody)),
+                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Lemurian.LemurianBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_DLC4_ShrineCompulsion.PolymorphLemurianBody_prefab).WaitForCompletion())
+            };
+            return CloneIntoAllyVariant(args);
+        }
+
         public struct CloneIntoAllyVariantArgs
         {
             public CharacterVariantDef src;
