@@ -3,11 +3,13 @@ using HG;
 using MSU;
 using R2API.AddressReferencedAssets;
 using RoR2;
+using RoR2.AddressableAssets;
 using RoR2.ContentManagement;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace VAPI
 {
@@ -171,7 +173,8 @@ namespace VAPI
         [Serializable]
         public struct PrefabInstantiationData : ICloneable
         {
-            public GameObject? prefab;
+            public GameObject? prefabDirectReference;
+            public AssetReferenceGameObject? prefabAddress;
 
             [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = true, rootComponentType = typeof(CharacterModel))]
             public string? transformPath;
@@ -186,6 +189,20 @@ namespace VAPI
             public object Clone()
             {
                 return this;
+            }
+
+            internal GameObject? GetPrefabToInstantiate(out AsyncOperationHandle<GameObject>? loadedPrefabHandle)
+            {
+                loadedPrefabHandle = null;
+
+                if (prefabDirectReference != null)
+                    return prefabDirectReference;
+                else if(prefabAddress != null && prefabAddress.RuntimeKeyIsValid())
+                {
+                    loadedPrefabHandle = AssetAsyncReferenceManager<GameObject>.LoadAsset(prefabAddress, AsyncReferenceHandleUnloadType.OnSceneUnload);
+                    return loadedPrefabHandle.Value.WaitForCompletion();
+                }
+                return null;
             }
 
             internal bool TryGetChildLocatorTransform(CharacterModel characterModel, out Transform? resultTransform)
@@ -363,24 +380,54 @@ namespace VAPI
             {
                 ref PrefabInstantiationData prefabInstantiationData = ref prefabInstantiationDatas[i];
 
-                if(!prefabInstantiationData.prefab)
+                GameObject? prefab = prefabInstantiationData.GetPrefabToInstantiate(out var handle);
+                if(!prefab)
                 {
                     VAPILog.Error($"Failed to Instantiate Prefab at index {i} of {this}. There's no GameObject to spawn.");
+                    if (handle.HasValue)
+                        AssetAsyncReferenceManager<GameObject>.UnloadAsset(prefabInstantiationData.prefabAddress);
+
                     continue;
                 }
 
                 Transform? parentTransform = null;
+                GameObject? instantiatedPrefab = null;
                 if (prefabInstantiationData.TryGetChildLocatorTransform(characterModel, out parentTransform))
                 {
-                    characterModel.customGameObjectActivationTransforms.Add(InstantiatePrefabOnTransform(prefabInstantiationData.prefab!, parentTransform!, prefabInstantiationData.localPosition, prefabInstantiationData.localRotation, prefabInstantiationData.localScale).transform);
+                    instantiatedPrefab = InstantiatePrefabOnTransform(prefab!, parentTransform!, prefabInstantiationData.localPosition, prefabInstantiationData.localRotation, prefabInstantiationData.localScale);
+                    characterModel.customGameObjectActivationTransforms.Add(instantiatedPrefab.transform);
                 }
                 else if (prefabInstantiationData.TryGetTransformFromPath(characterModel, out parentTransform))
                 {
-                    characterModel.customGameObjectActivationTransforms.Add(InstantiatePrefabOnTransform(prefabInstantiationData.prefab!, parentTransform!, prefabInstantiationData.localPosition, prefabInstantiationData.localRotation, prefabInstantiationData.localScale).transform);
+                    instantiatedPrefab = InstantiatePrefabOnTransform(prefab!, parentTransform!, prefabInstantiationData.localPosition, prefabInstantiationData.localRotation, prefabInstantiationData.localScale);
+                    characterModel.customGameObjectActivationTransforms.Add(instantiatedPrefab.transform);
                 }
                 else
                 {
                     VAPILog.Error($"Failed to instantiate Prefab at index {i} of {this}. The Target Transform could not be obtained via it's ChildLocator entry or via the Transform Path.");
+                    if (handle.HasValue)
+                        AssetAsyncReferenceManager<GameObject>.UnloadAsset(prefabInstantiationData.prefabAddress);
+
+                    return;
+                }
+
+                //If the handle is not null, add the addressable prefab instance component so it gets released when destroyed
+                if(handle.HasValue)
+                {
+                    instantiatedPrefab!.AddComponent<AddressablePrefabInstance>()
+                        .assetReference = prefabInstantiationData.prefabAddress;
+                }
+
+                if(instantiatedPrefab != null && instantiatedPrefab.TryGetComponent<CustomGameObjectActivationInfoContainer>(out var infoContainer))
+                {
+                    if(infoContainer.rendererInfos.Length > 0)
+                    {
+                        characterModel.baseRendererInfos = HG.ArrayUtils.Join(characterModel.baseRendererInfos, infoContainer.rendererInfos);
+                    }
+                    if(infoContainer.lightInfos.Length > 0)
+                    {
+                        characterModel.baseLightInfos = HG.ArrayUtils.Join(characterModel.baseLightInfos, infoContainer.lightInfos);
+                    }
                 }
             }
         }
