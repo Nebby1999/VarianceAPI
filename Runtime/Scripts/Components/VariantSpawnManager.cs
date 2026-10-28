@@ -121,7 +121,7 @@ namespace VAPI
                     }
                 case BodyStartProcedure.RollVariants:
                     {
-                        CharacterVariantDef[] rolledVariants = values.variantProvider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = 1f });
+                        CharacterVariantDef[] rolledVariants = values.variantProvider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
                         values.bodyController!.SetCharacterVariantDefsServer(rolledVariants);
                         return;
                     }

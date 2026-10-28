@@ -36,7 +36,8 @@ namespace VAPI
 
         [Tooltip("Wether this variant is unique or not. Unique variants cannot merge with other variants")]
         public bool isUnique;
-        [Tooltip("Wether this variant is hidden from the RuleBook options.")]
+
+        [Tooltip("Wether this variant is hidden from the RuleBook options. Hidden variants will also not get config entries for the uniqueness and spawn rate settings")]
         public bool isHidden;
 
         [Tooltip("The spawn rate for this variant")]
@@ -141,6 +142,7 @@ namespace VAPI
             variantDef.targetBody = (CharacterVariantTarget)other.targetBody.Clone();
             variantDef.variantTier = other.variantTier;
             variantDef.isUnique = other.isUnique;
+            variantDef.isHidden = other.isHidden;
             variantDef.spawnRate = other.spawnRate;
             variantDef.arrivalToken = other.arrivalToken;
 
@@ -179,6 +181,10 @@ namespace VAPI
                 variantDef.statModifier = (IVariantStatModifier?)other.statModifier.Clone();
             }
             variantDef.variantBuffs = (VariantBuffStorage)other.variantBuffs.Clone();
+            if(other.visualModifier != null)
+            {
+                variantDef.visualModifier = other.visualModifier;
+            }
             variantDef.scaleMultiplier = other.scaleMultiplier;
 
             variantDef.additionalVariantComponents = (VariantComponentCollection)other.additionalVariantComponents.Clone();

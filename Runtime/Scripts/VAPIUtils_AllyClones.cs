@@ -11,182 +11,182 @@ namespace VAPI
     {
         public static CharacterVariantDef? CloneIntoDevotedLemurian(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
-            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            CloneForOtherBodyARgs args = new CloneForOtherBodyARgs
             {
                 src = def,
                 makeHidden = makeHidden,
                 resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
                 cloneSuffix = "Devoted",
-                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_Base_Lemurian.LemurianBody_prefab, RoR2_CU8.DevotedLemurianBody_prefab),
-                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(RoR2Content.BodyPrefabs.LemurianBody), nameof(CU8Content.BodyPrefabs.DevotedLemurianBody)),
-                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Lemurian.LemurianBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_CU8.DevotedLemurianBody_prefab).WaitForCompletion())
+                originalToOtherGUIDGetter = () => new OriginalToOtherReferencePair<string>(RoR2_Base_Lemurian.LemurianBody_prefab, RoR2_CU8.DevotedLemurianBody_prefab),
+                originalToOtherBodyCatalogReferenceGetter = () => new OriginalToOtherReferencePair<string>(nameof(RoR2Content.BodyPrefabs.LemurianBody), nameof(CU8Content.BodyPrefabs.DevotedLemurianBody)),
+                originalToOtherDirectReferenceGetter = () => new OriginalToOtherReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Lemurian.LemurianBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_CU8.DevotedLemurianBody_prefab).WaitForCompletion())
             };
-            return CloneIntoAllyVariant(args);
+            return CloneForOtherBody(args);
         }
 
         public static CharacterVariantDef? CloneIntoDevotedLemurianBruiser(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
-            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            CloneForOtherBodyARgs args = new CloneForOtherBodyARgs
             {
                 src = def,
                 makeHidden = makeHidden,
                 resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
                 cloneSuffix = "Devoted",
-                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_Base_LemurianBruiser.LemurianBruiserBody_prefab, RoR2_CU8.DevotedLemurianBruiserBody_prefab),
-                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(RoR2Content.BodyPrefabs.LemurianBruiserBody), nameof(CU8Content.BodyPrefabs.DevotedLemurianBruiserBody)),
-                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_LemurianBruiser.LemurianBruiserBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_CU8.DevotedLemurianBruiserBody_prefab).WaitForCompletion())
+                originalToOtherGUIDGetter = () => new OriginalToOtherReferencePair<string>(RoR2_Base_LemurianBruiser.LemurianBruiserBody_prefab, RoR2_CU8.DevotedLemurianBruiserBody_prefab),
+                originalToOtherBodyCatalogReferenceGetter = () => new OriginalToOtherReferencePair<string>(nameof(RoR2Content.BodyPrefabs.LemurianBruiserBody), nameof(CU8Content.BodyPrefabs.DevotedLemurianBruiserBody)),
+                originalToOtherDirectReferenceGetter = () => new OriginalToOtherReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_LemurianBruiser.LemurianBruiserBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_CU8.DevotedLemurianBruiserBody_prefab).WaitForCompletion())
             };
-            return CloneIntoAllyVariant(args);
+            return CloneForOtherBody(args);
         }
 
         public static CharacterVariantDef? CloneIntoBeetleGuardGland(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
-            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            CloneForOtherBodyARgs args = new CloneForOtherBodyARgs
             {
                 src = def,
                 makeHidden = makeHidden,
                 resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
                 cloneSuffix = "Gland",
-                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_Base_BeetleGuard.BeetleGuardBody_prefab, RoR2_Base_BeetleGland.BeetleGuardAllyBody_prefab),
-                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(RoR2Content.BodyPrefabs.BeetleGuardBody), nameof(RoR2Content.BodyPrefabs.BeetleGuardAllyBody)),
-                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_BeetleGuard.BeetleGuardBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_Base_BeetleGland.BeetleGuardAllyBody_prefab).WaitForCompletion())
+                originalToOtherGUIDGetter = () => new OriginalToOtherReferencePair<string>(RoR2_Base_BeetleGuard.BeetleGuardBody_prefab, RoR2_Base_BeetleGland.BeetleGuardAllyBody_prefab),
+                originalToOtherBodyCatalogReferenceGetter = () => new OriginalToOtherReferencePair<string>(nameof(RoR2Content.BodyPrefabs.BeetleGuardBody), nameof(RoR2Content.BodyPrefabs.BeetleGuardAllyBody)),
+                originalToOtherDirectReferenceGetter = () => new OriginalToOtherReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_BeetleGuard.BeetleGuardBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_Base_BeetleGland.BeetleGuardAllyBody_prefab).WaitForCompletion())
             };
-            return CloneIntoAllyVariant(args);
+            return CloneForOtherBody(args);
         }
 
         public static CharacterVariantDef? CloneIntoRoboBallGreenBuddy(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
-            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            CloneForOtherBodyARgs args = new CloneForOtherBodyARgs
             {
                 src = def,
                 makeHidden = makeHidden,
                 resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
                 cloneSuffix = "EmpathyGreen",
-                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_Base_RoboBallBoss.RoboBallMiniBody_prefab, RoR2_Base_RoboBallBuddy.RoboBallGreenBuddyBody_prefab),
-                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(RoR2Content.BodyPrefabs.RoboBallMiniBody), nameof(RoR2Content.BodyPrefabs.RoboBallGreenBuddyBody)),
-                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_RoboBallBoss.RoboBallMiniBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_Base_RoboBallBuddy.RoboBallGreenBuddyBody_prefab).WaitForCompletion())
+                originalToOtherGUIDGetter = () => new OriginalToOtherReferencePair<string>(RoR2_Base_RoboBallBoss.RoboBallMiniBody_prefab, RoR2_Base_RoboBallBuddy.RoboBallGreenBuddyBody_prefab),
+                originalToOtherBodyCatalogReferenceGetter = () => new OriginalToOtherReferencePair<string>(nameof(RoR2Content.BodyPrefabs.RoboBallMiniBody), nameof(RoR2Content.BodyPrefabs.RoboBallGreenBuddyBody)),
+                originalToOtherDirectReferenceGetter = () => new OriginalToOtherReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_RoboBallBoss.RoboBallMiniBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_Base_RoboBallBuddy.RoboBallGreenBuddyBody_prefab).WaitForCompletion())
             };
-            return CloneIntoAllyVariant(args);
+            return CloneForOtherBody(args);
         }
         public static CharacterVariantDef? CloneIntoRoboBallRedBuddy(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
-            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            CloneForOtherBodyARgs args = new CloneForOtherBodyARgs
             {
                 src = def,
                 makeHidden = makeHidden,
                 resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
                 cloneSuffix = "EmpathyRed",
-                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_Base_RoboBallBoss.RoboBallMiniBody_prefab, RoR2_Base_RoboBallBuddy.RoboBallRedBuddyBody_prefab),
-                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(RoR2Content.BodyPrefabs.RoboBallMiniBody), nameof(RoR2Content.BodyPrefabs.RoboBallRedBuddyBody)),
-                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_RoboBallBoss.RoboBallMiniBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_Base_RoboBallBuddy.RoboBallRedBuddyBody_prefab).WaitForCompletion())
+                originalToOtherGUIDGetter = () => new OriginalToOtherReferencePair<string>(RoR2_Base_RoboBallBoss.RoboBallMiniBody_prefab, RoR2_Base_RoboBallBuddy.RoboBallRedBuddyBody_prefab),
+                originalToOtherBodyCatalogReferenceGetter = () => new OriginalToOtherReferencePair<string>(nameof(RoR2Content.BodyPrefabs.RoboBallMiniBody), nameof(RoR2Content.BodyPrefabs.RoboBallRedBuddyBody)),
+                originalToOtherDirectReferenceGetter = () => new OriginalToOtherReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_RoboBallBoss.RoboBallMiniBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_Base_RoboBallBuddy.RoboBallRedBuddyBody_prefab).WaitForCompletion())
             };
-            return CloneIntoAllyVariant(args);
+            return CloneForOtherBody(args);
         }
 
         public static CharacterVariantDef? CloneIntoMinorConstructOnKill(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
-            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            CloneForOtherBodyARgs args = new CloneForOtherBodyARgs
             {
                 src = def,
                 makeHidden = makeHidden,
                 resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
                 cloneSuffix = "Nucleus",
-                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_DLC1_MajorAndMinorConstruct.MinorConstructBody_prefab, RoR2_DLC1_MajorAndMinorConstruct.MinorConstructOnKillBody_prefab),
-                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(DLC1Content.BodyPrefabs.MinorConstructBody), nameof(DLC1Content.BodyPrefabs.MinorConstructOnKillBody)),
-                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_MajorAndMinorConstruct.MinorConstructBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_MajorAndMinorConstruct.MinorConstructOnKillBody_prefab).WaitForCompletion())
+                originalToOtherGUIDGetter = () => new OriginalToOtherReferencePair<string>(RoR2_DLC1_MajorAndMinorConstruct.MinorConstructBody_prefab, RoR2_DLC1_MajorAndMinorConstruct.MinorConstructOnKillBody_prefab),
+                originalToOtherBodyCatalogReferenceGetter = () => new OriginalToOtherReferencePair<string>(nameof(DLC1Content.BodyPrefabs.MinorConstructBody), nameof(DLC1Content.BodyPrefabs.MinorConstructOnKillBody)),
+                originalToOtherDirectReferenceGetter = () => new OriginalToOtherReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_MajorAndMinorConstruct.MinorConstructBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_MajorAndMinorConstruct.MinorConstructOnKillBody_prefab).WaitForCompletion())
             };
-            return CloneIntoAllyVariant(args);
+            return CloneForOtherBody(args);
         }
 
         public static CharacterVariantDef? CloneIntoVoidMegaCrabAlly(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
-            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            CloneForOtherBodyARgs args = new CloneForOtherBodyARgs
             {
                 src = def,
                 makeHidden = makeHidden,
                 resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
                 cloneSuffix = "Zoea",
-                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_DLC1_VoidMegaCrab.VoidMegaCrabBody_prefab, RoR2_DLC1_VoidMegaCrab.VoidMegaCrabAllyBody_prefab),
-                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(DLC1Content.BodyPrefabs.VoidMegaCrabBody), nameof(DLC1Content.BodyPrefabs.VoidMegaCrabAllyBody)),
-                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_VoidMegaCrab.VoidMegaCrabBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_VoidMegaCrab.VoidMegaCrabAllyBody_prefab).WaitForCompletion())
+                originalToOtherGUIDGetter = () => new OriginalToOtherReferencePair<string>(RoR2_DLC1_VoidMegaCrab.VoidMegaCrabBody_prefab, RoR2_DLC1_VoidMegaCrab.VoidMegaCrabAllyBody_prefab),
+                originalToOtherBodyCatalogReferenceGetter = () => new OriginalToOtherReferencePair<string>(nameof(DLC1Content.BodyPrefabs.VoidMegaCrabBody), nameof(DLC1Content.BodyPrefabs.VoidMegaCrabAllyBody)),
+                originalToOtherDirectReferenceGetter = () => new OriginalToOtherReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_VoidMegaCrab.VoidMegaCrabBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_VoidMegaCrab.VoidMegaCrabAllyBody_prefab).WaitForCompletion())
             };
-            return CloneIntoAllyVariant(args);
+            return CloneForOtherBody(args);
         }
 
         public static CharacterVariantDef? CloneIntoVoidJailerAlly(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
-            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            CloneForOtherBodyARgs args = new CloneForOtherBodyARgs
             {
                 src = def,
                 makeHidden = makeHidden,
                 resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
                 cloneSuffix = "Zoea",
-                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_DLC1_VoidJailer.VoidJailerBody_prefab, RoR2_DLC1_VoidJailer.VoidJailerAllyBody_prefab),
-                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(DLC1Content.BodyPrefabs.VoidJailerBody), nameof(DLC1Content.BodyPrefabs.VoidJailerAllyBody)),
-                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_VoidJailer.VoidJailerBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_VoidJailer.VoidJailerAllyBody_prefab).WaitForCompletion())
+                originalToOtherGUIDGetter = () => new OriginalToOtherReferencePair<string>(RoR2_DLC1_VoidJailer.VoidJailerBody_prefab, RoR2_DLC1_VoidJailer.VoidJailerAllyBody_prefab),
+                originalToOtherBodyCatalogReferenceGetter = () => new OriginalToOtherReferencePair<string>(nameof(DLC1Content.BodyPrefabs.VoidJailerBody), nameof(DLC1Content.BodyPrefabs.VoidJailerAllyBody)),
+                originalToOtherDirectReferenceGetter = () => new OriginalToOtherReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_VoidJailer.VoidJailerBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_DLC1_VoidJailer.VoidJailerAllyBody_prefab).WaitForCompletion())
             };
-            return CloneIntoAllyVariant(args);
+            return CloneForOtherBody(args);
         }
 
         public static CharacterVariantDef? CloneIntoNullifierAlly(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
-            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            CloneForOtherBodyARgs args = new CloneForOtherBodyARgs
             {
                 src = def,
                 makeHidden = makeHidden,
                 resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
                 cloneSuffix = "Zoea",
-                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_Base_Nullifier.NullifierBody_prefab, RoR2_Base_Nullifier.NullifierAllyBody_prefab),
-                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(RoR2Content.BodyPrefabs.NullifierBody), nameof(RoR2Content.BodyPrefabs.NullifierAllyBody)),
-                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Nullifier.NullifierBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Nullifier.NullifierAllyBody_prefab).WaitForCompletion())
+                originalToOtherGUIDGetter = () => new OriginalToOtherReferencePair<string>(RoR2_Base_Nullifier.NullifierBody_prefab, RoR2_Base_Nullifier.NullifierAllyBody_prefab),
+                originalToOtherBodyCatalogReferenceGetter = () => new OriginalToOtherReferencePair<string>(nameof(RoR2Content.BodyPrefabs.NullifierBody), nameof(RoR2Content.BodyPrefabs.NullifierAllyBody)),
+                originalToOtherDirectReferenceGetter = () => new OriginalToOtherReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Nullifier.NullifierBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Nullifier.NullifierAllyBody_prefab).WaitForCompletion())
             };
-            return CloneIntoAllyVariant(args);
+            return CloneForOtherBody(args);
         }
 
         public static CharacterVariantDef? CloneIntoLemurianPolymorph(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
-            CloneIntoAllyVariantArgs args = new CloneIntoAllyVariantArgs
+            CloneForOtherBodyARgs args = new CloneForOtherBodyARgs
             {
                 src = def,
                 makeHidden = makeHidden,
                 resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
                 cloneSuffix = "Polymorph",
-                allyGUIDGetter = () => new CloneIntoAllyVariantReferencePair<string>(RoR2_Base_Lemurian.LemurianBody_prefab, RoR2_DLC4_ShrineCompulsion.PolymorphLemurianBody_prefab),
-                allyCatalogReferenceGetter = () => new CloneIntoAllyVariantReferencePair<string>(nameof(RoR2Content.BodyPrefabs.LemurianBody), nameof(DLC4Content.BodyPrefabs.PolymorphLemurianBody)),
-                allyDirectReferenceGetter = () => new CloneIntoAllyVariantReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Lemurian.LemurianBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_DLC4_ShrineCompulsion.PolymorphLemurianBody_prefab).WaitForCompletion())
+                originalToOtherGUIDGetter = () => new OriginalToOtherReferencePair<string>(RoR2_Base_Lemurian.LemurianBody_prefab, RoR2_DLC4_ShrineCompulsion.PolymorphLemurianBody_prefab),
+                originalToOtherBodyCatalogReferenceGetter = () => new OriginalToOtherReferencePair<string>(nameof(RoR2Content.BodyPrefabs.LemurianBody), nameof(DLC4Content.BodyPrefabs.PolymorphLemurianBody)),
+                originalToOtherDirectReferenceGetter = () => new OriginalToOtherReferencePair<GameObject>(Addressables.LoadAssetAsync<GameObject>(RoR2_Base_Lemurian.LemurianBody_prefab).WaitForCompletion(), Addressables.LoadAssetAsync<GameObject>(RoR2_DLC4_ShrineCompulsion.PolymorphLemurianBody_prefab).WaitForCompletion())
             };
-            return CloneIntoAllyVariant(args);
+            return CloneForOtherBody(args);
         }
 
-        public struct CloneIntoAllyVariantArgs
+        public struct CloneForOtherBodyARgs
         {
             public CharacterVariantDef src;
-            public Func<CloneIntoAllyVariantReferencePair<GameObject>> allyDirectReferenceGetter;
-            public Func<CloneIntoAllyVariantReferencePair<string>> allyGUIDGetter;
-            public Func<CloneIntoAllyVariantReferencePair<string>> allyCatalogReferenceGetter;
+            public Func<OriginalToOtherReferencePair<GameObject>> originalToOtherDirectReferenceGetter;
+            public Func<OriginalToOtherReferencePair<string>> originalToOtherGUIDGetter;
+            public Func<OriginalToOtherReferencePair<string>> originalToOtherBodyCatalogReferenceGetter;
             public string cloneSuffix;
             public bool? makeHidden;
             public bool? resultAvailableOnlyIfSrcAvailable;
         }
 
-        public struct CloneIntoAllyVariantReferencePair<T>
+        public struct OriginalToOtherReferencePair<T>
         {
             public T? original;
-            public T? allyVariant;
+            public T? other;
 
-            public CloneIntoAllyVariantReferencePair(T? _original, T? _allyVariant)
+            public OriginalToOtherReferencePair(T? _original, T? _allyVariant)
             {
                 original = _original;
-                allyVariant = _allyVariant;
+                other = _allyVariant;
             }
         }
 
-        public static CharacterVariantDef? CloneIntoAllyVariant(CloneIntoAllyVariantArgs args)
+        public static CharacterVariantDef? CloneForOtherBody(CloneForOtherBodyARgs args)
         {
             CharacterVariantDef src = args.src;
-            Func<CloneIntoAllyVariantReferencePair<GameObject>> allyDirectReferenceGetter = args.allyDirectReferenceGetter;
-            Func<CloneIntoAllyVariantReferencePair<string>> allyGUIDGetter = args.allyGUIDGetter;
-            Func<CloneIntoAllyVariantReferencePair<string>> allyCatalogReferenceGetter = args.allyCatalogReferenceGetter;
+            Func<OriginalToOtherReferencePair<GameObject>> originalToOtherDirectReferenceGetter = args.originalToOtherDirectReferenceGetter;
+            Func<OriginalToOtherReferencePair<string>> originalToOtherGUIDGetter = args.originalToOtherGUIDGetter;
+            Func<OriginalToOtherReferencePair<string>> originalToOtherBodyCatalogReferenceGetter = args.originalToOtherBodyCatalogReferenceGetter;
             string cloneSuffix = args.cloneSuffix;
             bool makeHidden = args.makeHidden ?? true;
             bool resultAvailableOnlyIfSrcAvailable = args.resultAvailableOnlyIfSrcAvailable ?? true;
@@ -194,33 +194,33 @@ namespace VAPI
             var characterVariantTarget = src.targetBody;
             if (!characterVariantTarget.IsKeyValid())
             {
-                VAPILog.Warning($"Cannot Clone {src} into an Ally Variant, the target body is not valid.");
+                VAPILog.Warning($"Cannot Clone {src} for another body, the target body is not valid.");
                 return null;
             }
 
             if (characterVariantTarget.targetBody.AssetExists)
             {
-                GameObject newDirectReferenceValue = null;
+                GameObject? newDirectReferenceValue = null;
                 var originalDirectReferenceValue = characterVariantTarget.targetBody.Asset;
 
-                CloneIntoAllyVariantReferencePair<GameObject> retrievedDirectReferencePair = allyDirectReferenceGetter.Invoke();
+                OriginalToOtherReferencePair<GameObject> retrievedDirectReferencePair = originalToOtherDirectReferenceGetter.Invoke();
                 if (originalDirectReferenceValue != retrievedDirectReferencePair.original)
                 {
-                    VAPILog.Warning($"Cannot clone {src} into an Ally Variant. The target body has a direct asset reference, but said asset does not match the \"original\" value of the allyDirectReferenceGetter function.");
+                    VAPILog.Warning($"Cannot clone {src} for another body. The target body has a direct asset reference, but said asset does not match the \"original\" value of the originalToOtherDirectReferenceGetter function.");
                     return null;
                 }
-                else if (retrievedDirectReferencePair.allyVariant == null)
+                else if (retrievedDirectReferencePair.other == null)
                 {
-                    VAPILog.Warning($"Cannot clone {src} into an Ally Variant. The allyDirectReferenceGetter function returned null for it's \"allyVariant\" value.");
+                    VAPILog.Warning($"Cannot clone {src} for another body. The originalToOtherDirectReferenceGetter function returned null for it's \"other\" value.");
                     return null;
                 }
                 else
                 {
-                    newDirectReferenceValue = retrievedDirectReferencePair.allyVariant;
+                    newDirectReferenceValue = retrievedDirectReferencePair.other;
                 }
 
-                VAPILog.Info($"Creating an Ally Variant from {src} (originalBody={characterVariantTarget.targetBody.Asset}|newBody={newDirectReferenceValue}). Be sure to add it to your VariantPack!");
-                return CreateAllyClone(src, cloneSuffix, new CharacterVariantTarget(newDirectReferenceValue), makeHidden, resultAvailableOnlyIfSrcAvailable);
+                VAPILog.Info($"Creating a clone Variant from {src} (originalBody={characterVariantTarget.targetBody.Asset}|newBody={newDirectReferenceValue}). Be sure to add it to your VariantPack!");
+                return CreateClone(src, cloneSuffix, new CharacterVariantTarget(newDirectReferenceValue), makeHidden, resultAvailableOnlyIfSrcAvailable);
             }
             //At this point the asset doesnt exist, so lets check by address. We'll create a dummy asset reference and call it's RuntimeKeyIsValid property, if it returns true, we'll do the matching via the GUIDs.
             AssetReferenceT<GameObject> assetReferenceGameObject = new AssetReferenceT<GameObject>(characterVariantTarget.targetBody.Address);
@@ -229,56 +229,56 @@ namespace VAPI
                 string newAddressValue = "";
                 string originalAddressValue = characterVariantTarget.targetBody.Address;
 
-                CloneIntoAllyVariantReferencePair<string> retrievedGUIDReferencePair = allyGUIDGetter.Invoke();
+                OriginalToOtherReferencePair<string> retrievedGUIDReferencePair = originalToOtherGUIDGetter.Invoke();
 
                 if (!string.Equals(originalAddressValue, retrievedGUIDReferencePair.original))
                 {
-                    VAPILog.Warning($"Cannot clone {src} into an Ally Variant. The target body has a valid GUID reference, but said GUID does not match the \"original\" value of the allyGUIDGetter Function.");
+                    VAPILog.Warning($"Cannot clone {src} for another body. The target body has a valid GUID reference, but said GUID does not match the \"original\" value of the originalToOtherGUIDGetter Function.");
                     return null;
                 }
-                else if (string.IsNullOrWhiteSpace(retrievedGUIDReferencePair.allyVariant))
+                else if (string.IsNullOrWhiteSpace(retrievedGUIDReferencePair.other))
                 {
-                    VAPILog.Warning($"Cannot clone {src} into an Ally Variant. The allyGUIDGetter function returned null for it's \"allyVariant\" value.");
+                    VAPILog.Warning($"Cannot clone {src} for another body. The originalToOtherGUIDGetter function returned null for it's \"other\" value.");
                 }
                 else
                 {
-                    newAddressValue = retrievedGUIDReferencePair.allyVariant;
+                    newAddressValue = retrievedGUIDReferencePair.other;
                 }
 
-                VAPILog.Info($"Creating an Ally Variant from {src} (originalBody={characterVariantTarget.targetBody.Address}|newBody={newAddressValue}). Be sure to add it to your VariantPack!");
-                return CreateAllyClone(src, cloneSuffix, new CharacterVariantTarget(newAddressValue), makeHidden, resultAvailableOnlyIfSrcAvailable);
+                VAPILog.Info($"Creating an clone Variant from {src} (originalBody={characterVariantTarget.targetBody.Address}|newBody={newAddressValue}). Be sure to add it to your VariantPack!");
+                return CreateClone(src, cloneSuffix, new CharacterVariantTarget(newAddressValue), makeHidden, resultAvailableOnlyIfSrcAvailable);
             }
             else //Runtime key not valid, using catalog loading.
             {
                 string newBodyName = "";
                 string originalNameValue = characterVariantTarget.targetBody.Address;
 
-                CloneIntoAllyVariantReferencePair<string> retrievedCatalogReferencePair = allyCatalogReferenceGetter.Invoke();
+                OriginalToOtherReferencePair<string> retrievedCatalogReferencePair = originalToOtherBodyCatalogReferenceGetter.Invoke();
 
                 if (!string.Equals(originalNameValue, retrievedCatalogReferencePair.original))
                 {
-                    VAPILog.Warning($"Cannot clone {src} into an Ally Variant. The target body has a valid GUID reference, but said GUID does not match the \"original\" value of the allyGUIDGetter Function.");
+                    VAPILog.Warning($"Cannot clone {src} for another body. The target body has a valid catalog name reference, but said catalog name does not match the \"original\" value of the originalToOtherBodyCatalogReferenceGetter Function.");
                     return null;
                 }
-                else if (string.IsNullOrWhiteSpace(retrievedCatalogReferencePair.allyVariant))
+                else if (string.IsNullOrWhiteSpace(retrievedCatalogReferencePair.other))
                 {
-                    VAPILog.Warning($"Cannot clone {src} into an Ally Variant. The allyGUIDGetter function returned null for it's \"allyVariant\" value.");
+                    VAPILog.Warning($"Cannot clone {src} for another body. The originalToOtherBodyCatalogReferenceGetter function returned null for it's \"other\" value.");
                 }
                 else
                 {
-                    newBodyName = retrievedCatalogReferencePair.allyVariant;
+                    newBodyName = retrievedCatalogReferencePair.other;
                 }
 
-                VAPILog.Info($"Creating an Ally Variant from {src} (originalBody={characterVariantTarget.targetBody.Address}|newBody={newBodyName}). Be sure to add it to your VariantPack!");
-                return CreateAllyClone(src, cloneSuffix, new CharacterVariantTarget(newBodyName), makeHidden, resultAvailableOnlyIfSrcAvailable);
+                VAPILog.Info($"Creating clone Variant from {src} (originalBody={characterVariantTarget.targetBody.Address}|newBody={newBodyName}). Be sure to add it to your VariantPack!");
+                return CreateClone(src, cloneSuffix, new CharacterVariantTarget(newBodyName), makeHidden, resultAvailableOnlyIfSrcAvailable);
             }
         }
 
-        private static CharacterVariantDef CreateAllyClone(CharacterVariantDef src, string cloneSuffix, CharacterVariantTarget newTarget, bool makeHidden, bool resultAvailableOnlyIfSrcAvailable)
+        private static CharacterVariantDef CreateClone(CharacterVariantDef src, string cloneSuffix, CharacterVariantTarget newTarget, bool makeHidden, bool resultAvailableOnlyIfSrcAvailable)
         {
             if (string.IsNullOrWhiteSpace(cloneSuffix))
             {
-                VAPILog.Warning($"An AllyClone for {src} is being made, but the cloneSuffix is null or whitespace! Appending current date time ticks as the suffix.");
+                VAPILog.Warning($"A clone for {src} is being made, but the cloneSuffix is null or whitespace! Appending current date time ticks as the suffix.");
                 cloneSuffix = DateTime.Now.Ticks.ToString();
             }
             CharacterVariantDef copy = CharacterVariantDef.CreateInstance(src, $"{cloneSuffix}{src.cachedName}");

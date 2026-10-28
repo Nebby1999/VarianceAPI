@@ -227,7 +227,7 @@ namespace VAPI
         public LightReplacement[] lightReplacements = Array.Empty<LightReplacement>();
         public PrefabInstantiationData[] prefabInstantiationDatas = Array.Empty<PrefabInstantiationData>();
 
-        public IDisposable ApplyVisualModifiers(CharacterModel characterModel, CharacterBodyVariantController characterBodyVariantController)
+        public IDisposable ApplyVisualModifiers(CharacterModel characterModel, CharacterBodyVariantController characterBodyVariantController, out bool appliedMeshReplacements)
         {
             if(!characterModel.TryGetComponent<ModelSkinController>(out var mdlSkinController))
             {
@@ -235,7 +235,7 @@ namespace VAPI
             }
 
             ApplyMaterialReplacements(characterModel);
-            ApplyMeshReplacements(characterModel);
+            appliedMeshReplacements = ApplyMeshReplacements(characterModel);
             ApplyLightReplacements(characterModel);
             ApplyPrefabInstantiationDatas(characterModel);
 
@@ -272,11 +272,12 @@ namespace VAPI
             }
         }
 
-        private void ApplyMeshReplacements(CharacterModel characterModel)
+        private bool ApplyMeshReplacements(CharacterModel characterModel)
         {
+            bool success = false;
             if(!VAPIConfig._activateMeshReplacementSystem)
             {
-                return;
+                return success;
             }
 
             void SetMesh(Renderer renderer, Mesh mesh)
@@ -309,16 +310,19 @@ namespace VAPI
                 {
                     ref CharacterModel.RendererInfo rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
                     SetMesh(rendererInfo.renderer, rendererTargetedReplacement.replacement!);
+                    success = true;
                 }
                 else if(rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
                 {
                     SetMesh(renderer!, rendererTargetedReplacement.replacement!);
+                    success = true;
                 }
                 else
                 {
                     VAPILog.Error($"Failed to apply Mesh Replacement at index {i} of {this}. The renderer could not be obtained via it's RendererInfo index or via the Transform Path.");
                 }
             }
+            return success;
         }
 
         private void ApplyLightReplacements(CharacterModel characterModel)

@@ -137,6 +137,7 @@ namespace VAPI
         public static int characterVariantCount => _characterVariantDefs?.Length ?? -1;
         private static CharacterVariantDef[]? _characterVariantDefs;
         private static Dictionary<string, CharacterVariantIndex> _characterVariantNameToIndex = new Dictionary<string, CharacterVariantIndex>(StringComparer.OrdinalIgnoreCase);
+        private static Dictionary<CharacterVariantDef, List<CharacterVariantDef>> _dependeeVariantToDependantVariants = new Dictionary<CharacterVariantDef, List<CharacterVariantDef>>();
 
         private static CharacterVariantProvider?[] _characterVariantProviders = Array.Empty<CharacterVariantProvider>();
 
@@ -212,6 +213,22 @@ namespace VAPI
             for(int i = 0; i < _characterVariantDefs!.Length; i++)
             {
                 var def = _characterVariantDefs[i];
+
+                //If we get a def that's hidden, and the def has a dependant availability condition, then we need to make sure the config data from the dependee gets passed to the dependant.
+                if(def.isHidden && def.spawnCondition is VariantDependantCondition dependantCondition)
+                {
+                    var dependee = dependantCondition.dependantVariantDef.GetCharacterVariantDef();
+                    if(dependee != null)
+                    {
+                        _dependeeVariantToDependantVariants.TryAdd(dependee, new List<CharacterVariantDef>());
+                        _dependeeVariantToDependantVariants[dependee].Add(def);
+                    }
+                    else
+                    {
+                        VAPILog.Warning($"{def} has a VariantDependantCondition spawn condition, but the dependantVariantDef doesnt exist!");
+                    }
+                }
+
                 try
                 {
                     def.additionalVariantComponents?.Initialize();
@@ -220,6 +237,13 @@ namespace VAPI
                 {
                     VAPILog.Error($"Failed to initialize variant components for {def}: {ex}");
                 }
+            }
+
+            //Once we have the dependee dictionary done, that's when we config
+            for(int i = 0; i < _characterVariantDefs.Length; i++)
+            {
+                var def = _characterVariantDefs[i];
+                ConfigureVariant(def);
             }
 
             Stage.onStageStartGlobal += FilterCharacterVariantProviders;
@@ -252,11 +276,6 @@ namespace VAPI
 
                 void AddToCatalog()
                 {
-                    //Only configure variants with providers.
-                    if (variantDef.associatedConfigFile != null && variantDef.hasProvider)
-                    {
-                        ConfigureVariant(variantDef);
-                    }
                     variantDef.characterVariantIndex = index;
                     _characterVariantNameToIndex.Add(variantDef.cachedName, variantDef.characterVariantIndex);
                 }
@@ -355,6 +374,9 @@ namespace VAPI
 
         private static void ConfigureVariant(CharacterVariantDef variantDef)
         {
+            if (variantDef.isHidden)
+                return;
+
             try
             {
                 variantDef.spawnRate = new ConfiguredFloat(variantDef.spawnRate)
@@ -376,7 +398,7 @@ namespace VAPI
                 .WithConfigChange(f =>
                 {
                     variantDef.spawnRate = f;
-                    //VAPIRuleBook.OnVariantDefSpawnRateChanged(variantDef);
+                    UpdateDependentDefSpawnRates(variantDef);
                 }).DoConfigure();
 
                 variantDef.isUnique = new ConfiguredBool(variantDef.isUnique)
@@ -390,11 +412,34 @@ namespace VAPI
                 }.WithConfigChange(b =>
                 {
                     variantDef.isUnique = b;
+                    UpdateDependentDefUniqueness(variantDef);
                 }).DoConfigure();
             }
             catch(Exception e)
             {
                 VAPILog.Error($"Error Configuring Variant {variantDef}: {e}");
+            }
+        }
+
+        private static void UpdateDependentDefSpawnRates(CharacterVariantDef dependee)
+        {
+            if(_dependeeVariantToDependantVariants.TryGetValue(dependee, out var variantDefs))
+            {
+                foreach(var variantDef in variantDefs)
+                {
+                    variantDef.spawnRate = dependee.spawnRate;
+                }
+            }
+        }
+
+        private static void UpdateDependentDefUniqueness(CharacterVariantDef dependee)
+        {
+            if(_dependeeVariantToDependantVariants.TryGetValue(dependee, out var variantDefs))
+            {
+                foreach(var variantDef in variantDefs)
+                {
+                    variantDef.isUnique = dependee.isUnique;
+                }
             }
         }
 

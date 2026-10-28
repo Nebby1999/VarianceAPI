@@ -57,6 +57,11 @@ namespace VAPI
         public bool isUnique = false;
 
         /// <summary>
+        /// Wether the variant is hidden or not by default, mainly used for VAPI's innate support for creating Ally variants (such as <see cref="VAPIUtils.CloneIntoBeetleGuardGland(CharacterVariantDef, bool, bool)"/>
+        /// </summary>
+        public bool isHidden = false;
+
+        /// <summary>
         /// The Spawn rate (0 -> 100) for this variant to spawn. Cannot be NaN, Infinity or Subnormal.
         /// <br></br>
         /// Gets clamped between 0 and 100

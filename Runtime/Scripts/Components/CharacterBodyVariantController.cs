@@ -172,6 +172,10 @@ namespace VAPI
         [Server]
         private void SetCharacterVariantDefsServerInternal(CharacterVariantDef[] variantDefs)
         {
+            if(variantDefs.Length > 0)
+            {
+                VAPILog.Message($"{this} is becoming a variant!");
+            }
             _characterVariantIndices.Clear();
             for (int i = 0; i < variantDefs.Length; i++)
             {
@@ -383,10 +387,19 @@ namespace VAPI
                 yield return waitForEndOfFrame;
             }
 
+            bool shouldUpdateIDRS = false;
             foreach (var visualModifier in visualModifiers)
             {
-                _disposableCollectionHelper.AddDisposable(visualModifier.ApplyVisualModifiers(characterModel!, this));
+                _disposableCollectionHelper.AddDisposable(visualModifier.ApplyVisualModifiers(characterModel!, this, out bool appliedMeshReplacements));
+                shouldUpdateIDRS |= appliedMeshReplacements;
             }
+
+            if(shouldUpdateIDRS && characterModel != null && characterModel.body != null && characterModel.body.inventory != null)
+            {
+                characterModel.DisableAllItemDisplays();
+                characterModel.UpdateItemDisplay(characterModel.body.inventory);
+            }
+
             _applyVisualModifiersAfterSkinCoroutine = null;
         }
 
