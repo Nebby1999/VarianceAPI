@@ -5,7 +5,9 @@ using RoR2;
 using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using static VAPI.VAPIUtils;
 using Random = UnityEngine.Random;
 
 namespace VAPI
@@ -13,7 +15,7 @@ namespace VAPI
     /// <summary>
     /// Utility methods for VarianceAPI
     /// </summary>
-    public static class VAPIUtils
+    public static partial class VAPIUtils
     {
         /// <summary>
         /// A static readonly instance of <see cref="WaitForEndOfFrame"/>
@@ -136,6 +138,26 @@ namespace VAPI
                 bodyVariantController.SetCharacterVariantDefsServer(variantDefs);
                 bodyVariantController.doNotRollForVariants = true;
             }
+        }
+
+        /// <summary>
+        /// Returns True if <paramref name="characterVariantDef"/> can spawn under the current run context.
+        /// <para></para>
+        /// This is done by checking if the VariantDef is enabled on the Run's rulebook, and then returning the value of <paramref name="characterVariantDef"/>'s spawn condition.
+        /// <br></br>
+        /// If no spawn condition exists and the variant is available in the rulebook, it returns true.
+        /// </summary>
+        public static bool IsVariantAvailable(CharacterVariantDef? characterVariantDef)
+        {
+            if (characterVariantDef == null)
+                return false;
+
+            if (!Run.instance || !VAPIRuleBook.IsVariantRuleEnabled(characterVariantDef, Run.instance.ruleBook))
+            {
+                return false;
+            }
+
+            return characterVariantDef.spawnCondition?.IsAvailable() ?? true;
         }
     }
 

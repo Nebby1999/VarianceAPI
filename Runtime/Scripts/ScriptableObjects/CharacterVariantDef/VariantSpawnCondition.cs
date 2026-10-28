@@ -30,12 +30,12 @@ namespace VAPI
         /// <summary>
         /// The required unlockable for this variant, this can return null and it's utilized to determine wether a Variant requires an UnlockableDef to be accessible from the In-Lobby RuleBook
         /// </summary>
-        public UnlockableDef requiredUnlock { get; }
+        public UnlockableDef? requiredUnlock { get; }
 
         /// <summary>
         /// The required expansion defs for this variant, this can return null and it's utilized to determine wether a Variant requires the Expansions in this Enumerable to be accessible from the In-Lobby RuleBook
         /// </summary>
-        public IEnumerable<ExpansionDef> requiredExpansionDefs { get; }
+        public IEnumerable<ExpansionDef>? requiredExpansionDefs { get; }
 
         /// <summary>
         /// Wether this variant is Available or not
@@ -60,8 +60,8 @@ namespace VAPI
         /// </summary>
         public DirectorAPI.Stage stages { get => _stages; set => _stages = value; }
 
-        UnlockableDef IVariantSpawnCondition.requiredUnlock => requiredUnlock.LoadAssetNow();
-        IEnumerable<ExpansionDef> IVariantSpawnCondition.requiredExpansionDefs
+        UnlockableDef? IVariantSpawnCondition.requiredUnlock => requiredUnlock.LoadAssetNow();
+        IEnumerable<ExpansionDef>? IVariantSpawnCondition.requiredExpansionDefs
         {
             get
             {
@@ -294,5 +294,79 @@ namespace VAPI
         /// </summary>
         public BasicSpawnCondition() { }
         #endregion
+    }
+
+    /// <summary>
+    /// A Spawn Condition that returns true if the <see cref="VariantDependantCondition.dependantVariantDef"/>'s availability also resolves to true.
+    /// </summary>
+    [Serializable]
+    public struct VariantDependantCondition : IVariantSpawnCondition
+    {
+        public CataloguedVariantReference dependantVariantDef;
+
+        public UnlockableDef? requiredUnlock
+        {
+            get
+            {
+                var variantDef = dependantVariantDef.GetCharacterVariantDef();
+                if(variantDef != null && variantDef.spawnCondition != null)
+                {
+                    return variantDef.spawnCondition.requiredUnlock;
+                }
+                return null;
+            }
+        }
+
+        public IEnumerable<ExpansionDef>? requiredExpansionDefs
+        {
+            get
+            {
+                var variantDef = dependantVariantDef.GetCharacterVariantDef();
+                if(variantDef != null && variantDef.spawnCondition != null)
+                {
+                    return variantDef.spawnCondition.requiredExpansionDefs;
+                }
+                return null;
+            }
+        }
+
+        public object Clone()
+        {
+            return new VariantDependantCondition(dependantVariantDef);
+        }
+
+        public bool IsAvailable()
+        {
+            CharacterVariantDef? variantDef = dependantVariantDef.GetCharacterVariantDef();
+            if(variantDef == null)
+            {
+                return true;
+            }
+
+            return VAPIUtils.IsVariantAvailable(variantDef);
+        }
+
+        public void Validate()
+        {
+            if(dependantVariantDef.IsValid() == false)
+            {
+                VAPILog.Warning($"VariantDependantCondition {this} has an invalid dependantVariantDef field");
+            }
+        }
+
+        public VariantDependantCondition(CataloguedVariantReference _dependantVariantDef)
+        {
+            dependantVariantDef = _dependantVariantDef;
+        }
+
+        public VariantDependantCondition(string _dependantVariantDefName)
+        {
+            dependantVariantDef = new CataloguedVariantReference(_dependantVariantDefName);
+        }
+
+        public VariantDependantCondition(CharacterVariantDef _dependantVariantDef)
+        {
+            dependantVariantDef = new CataloguedVariantReference(_dependantVariantDef);
+        }
     }
 }

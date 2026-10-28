@@ -117,39 +117,23 @@ namespace VAPI
             {
                 case BodyStartProcedure.Return:
                     {
-                        VAPILog.Info($"Not turning {body} into a variant, it simply cannot be one.");
                         return;
                     }
                 case BodyStartProcedure.RollVariants:
                     {
-                        VAPILog.Info($"Rolling variants for {body} using the provider");
                         CharacterVariantDef[] rolledVariants = values.variantProvider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = 1f });
                         values.bodyController!.SetCharacterVariantDefsServer(rolledVariants);
                         return;
                     }
                 case BodyStartProcedure.SetFromStorage:
                     {
-                        VAPILog.Info($"Trying to Set the variants from the storage.");
                         if(values.masterVariantStorage!.TryGetVariantsStoredForCharacter(body.bodyIndex, out var variants))
                         {
-                            VAPILog.Info($"Succesfully set the variants from the storage.");
                             values.bodyController!.SetCharacterVariantDefsServer(variants!);
                         }
                         return;
                     }
             }
-
-            //If we cant roll the variants for the body that just started, return.
-            /*if (CanRollVariantsForBody(body, out CharacterBodyVariantController? variantController, out CharacterVariantProvider? provider) == false)
-            {
-                return;
-            }
-
-            //We can roll variants for the body, so proceed to roll them.
-            CharacterVariantDef[] variantDefs = provider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
-
-
-            variantController!.SetCharacterVariantDefsServer(variantDefs);*/
         }
 
         private BodyStartProcedure GetProcedureForBody(CharacterBody body, out BodyStartProcedureRetrievedValues retrievedValues)
@@ -183,48 +167,6 @@ namespace VAPI
             }
 
             return BodyStartProcedure.RollVariants;
-        }
-
-
-        private bool CanRollVariantsForBody(CharacterBody body, out CharacterBodyVariantController? characterBodyVariantController, out CharacterVariantProvider? characterVariantProvider)
-        {
-            characterBodyVariantController = null;
-            characterVariantProvider = null;
-
-            //This shouldnt even happen, fuck my stupid chungus life
-            if (!body)
-                return false;
-
-            //Retrieve the provider, but don't assign it to the out variable yet, we'll only assign the out variables once we're bound to return true.
-            CharacterVariantProvider? providerForBody = CharacterVariantCatalog.GetCharacterVariantProvider(body.bodyIndex);
-            //If the body doesnt have a provider, return false.
-            if (providerForBody == null)
-            {
-                return false;
-            }
-
-            //This shouldnt happen, log it if it does happen
-            if(body.TryGetComponent<CharacterBodyVariantController>(out var controllerForBody) == false)
-            {
-                VAPILog.Warning($"CharacterBody {body} has a CharacterVariantProvider, but the body prefab lacks the variant controller! this shouldnt be possible!");
-                return false;
-            }
-
-            //If the controller says the manager can't roll for variants, then dont.
-            if (controllerForBody.doNotRollForVariants == true)
-                return false;
-
-            //If the body has a master storage, and the master storage has stored variants for the body, do not roll new ones.
-            CharacterMasterVariantStorage? storage = controllerForBody.GetCharacterMasterVariantStorage();
-            if(storage != null && storage.HasVariantsForBody(body.bodyIndex))
-            {
-                return false;
-            }
-
-            //All checks passed, set out variables and return true.
-            characterBodyVariantController = controllerForBody;
-            characterVariantProvider = providerForBody;
-            return true;
         }
     }
 }

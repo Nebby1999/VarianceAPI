@@ -23,11 +23,6 @@ namespace VAPI
     [AddComponentMenu("")]
     public sealed class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
     {
-        private void Message(string msg)
-        {
-            VAPILog.Message(msg + $" (IsServer={NetworkServer.active}|IsClient={NetworkClient.active})");
-        }
-
         private CharacterVariantDef[] _fallbackCharacterVariantDefs = Array.Empty<CharacterVariantDef>();
         private SyncListCharacterVariantIndex _characterVariantIndices = new SyncListCharacterVariantIndex();
 
@@ -100,7 +95,6 @@ namespace VAPI
             }
 
             _characterVariantIndices.Callback = SyncListCallback;
-            Message("Awake Called");
         }
 
         public override void OnStartClient()
@@ -154,21 +148,6 @@ namespace VAPI
         }
         private CharacterMasterVariantStorage? _characterMasterVariantStorage;
 
-
-        private void Start()
-        {
-            //if(NetworkServer.active)
-            //{
-            //    CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
-            //    if (storage != null && storage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out CharacterVariantDef[]? storedVariants))
-            //    {
-            //        Message($"Utilizing stored variants from master (count: {storedVariants!.Length})");
-            //        //We want to call the internal method directly, as we're using the variants in the storage rather than a foreign array
-            //        SetCharacterVariantDefsServerInternal(storedVariants!);
-            //    }
-            //}
-        }
-
         //public facing method, in VAPI it's called by the spawn manager and the Util method to turn something into a variant.
         //Unless force set is set to true, it'll reject the operation if the storage has variants for the body
         [Server]
@@ -193,12 +172,10 @@ namespace VAPI
         [Server]
         private void SetCharacterVariantDefsServerInternal(CharacterVariantDef[] variantDefs)
         {
-            Message("VariantDefs set on server, clearing synclist");
             _characterVariantIndices.Clear();
             for (int i = 0; i < variantDefs.Length; i++)
             {
                 _characterVariantIndices.Add(variantDefs[i].characterVariantIndex);
-                Message($"Adding variant {variantDefs[i].cachedName}");
             }
             variantsApplied = _characterVariantIndices.Count > 0;
         }
@@ -210,15 +187,12 @@ namespace VAPI
 
         private void OnSyncListDirty()
         {
-            Message($"OnSyncListDirty called.");
             //First, unapply the modifications, if any
-            Message("Unapplying variants to body");
             UnapplyBodyModifications();
 
             CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
             if(storage != null) 
             {
-                Message($"Unapplying variants to master");
                 storage.UnapplyVariants();
             }
 
@@ -232,12 +206,10 @@ namespace VAPI
             }
 
             //Thirdly, apply body modifications
-            Message("Applying variants to body");
             ApplyBodyModifications(_fallbackCharacterVariantDefs);
 
             if (storage != null)
             {
-                Message($"Pushing variants to master and applying them (count:{_fallbackCharacterVariantDefs.Length})");
                 storage.ApplyVariants(characterBody.bodyIndex, _fallbackCharacterVariantDefs);
             }
 

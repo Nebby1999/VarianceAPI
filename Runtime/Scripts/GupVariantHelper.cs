@@ -68,6 +68,7 @@ namespace VAPI
 
             if(!matchBeforeBodySplitterPerform)
             {
+                VAPILog.Fatal($"Failed to hook BaseSplitDeath.FixedUpdate(). Dictionaries inside the GupVariantHelper class won't be used to properly propagate variants!");
                 return;
             }
 

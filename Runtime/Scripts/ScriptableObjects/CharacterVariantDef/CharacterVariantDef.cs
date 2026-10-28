@@ -36,6 +36,8 @@ namespace VAPI
 
         [Tooltip("Wether this variant is unique or not. Unique variants cannot merge with other variants")]
         public bool isUnique;
+        [Tooltip("Wether this variant is hidden from the RuleBook options.")]
+        public bool isHidden;
 
         [Tooltip("The spawn rate for this variant")]
         [Range(0, 100)]
@@ -126,11 +128,7 @@ namespace VAPI
             if (!hasProvider)
                 return false;
 
-            //Unavailable if no run or if the rule is not enabled.
-            if (!Run.instance || !VAPIRuleBook.IsVariantRuleEnabled(this, Run.instance.ruleBook))
-                return false;
-
-            return spawnCondition?.IsAvailable() ?? true;
+            return VAPIUtils.IsVariantAvailable(this);
         }
 
         /// <summary>

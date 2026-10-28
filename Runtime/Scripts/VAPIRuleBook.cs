@@ -186,6 +186,7 @@ namespace VAPI
 
                 RuleDef rule = new RuleDef($"Variants.{characterVariantDef.cachedName}", inGameVariantName);
                 rule.displayToken = inGameVariantName;
+                rule.hideLobbyDisplay = characterVariantDef.isHidden;
 
                 VAPIRuleChoiceDef onChoice = VAPIRuleChoiceDef.CreateAndAddToRule(rule, "On");
                 onChoice.sprite = icon;
@@ -340,11 +341,12 @@ namespace VAPI
 
 
                 var spawnCondition = variantDef.spawnCondition;
-                if(spawnCondition != null)
+                if(spawnCondition != null && spawnCondition.requiredExpansionDefs != null)
                 {
                     foreach(var expansion in spawnCondition.requiredExpansionDefs)
                     {
-                        HG.ListUtils.AddIfUnique(expansions, expansion);
+                        if(expansion != null)
+                            HG.ListUtils.AddIfUnique(expansions, expansion);
                     }
                 }
                 return expansions;
