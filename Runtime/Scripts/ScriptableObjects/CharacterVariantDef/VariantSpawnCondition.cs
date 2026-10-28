@@ -310,7 +310,7 @@ namespace VAPI
         /// This is used mostly for scenarios where we want to add a variant that depends on another variant's availability spawning, but want to control wether it can spawn or not via a config.
         /// </summary>
         [HideInInspector]
-        public bool canSpawn;
+        public bool cannotSpawn;
 
         public UnlockableDef? requiredUnlock
         {
@@ -345,6 +345,9 @@ namespace VAPI
 
         public bool IsAvailable()
         {
+            if (cannotSpawn)
+                return false;
+
             CharacterVariantDef? variantDef = dependantVariantDef.GetCharacterVariantDef();
             if(variantDef == null)
             {
@@ -365,18 +368,19 @@ namespace VAPI
         public VariantDependantCondition(CataloguedVariantReference _dependantVariantDef)
         {
             dependantVariantDef = _dependantVariantDef;
+            cannotSpawn = false;
         }
 
         public VariantDependantCondition(string _dependantVariantDefName)
         {
             dependantVariantDef = new CataloguedVariantReference(_dependantVariantDefName);
-            canSpawn = true;
+            cannotSpawn = false;
         }
 
         public VariantDependantCondition(CharacterVariantDef _dependantVariantDef)
         {
             dependantVariantDef = new CataloguedVariantReference(_dependantVariantDef);
-            canSpawn = true;
+            cannotSpawn = false;
         }
     }
 }
