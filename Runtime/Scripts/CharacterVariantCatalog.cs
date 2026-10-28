@@ -525,9 +525,21 @@ namespace VAPI
             "\"team:\" Which team is the variant in (team:monster)")]
         private static void CCVapiSpawnAI(ConCommandArgs args)
         {
+            if(!VariantSpawnManager.instance)
+            {
+                Debug.LogWarning($"VarianceAPI's Variant Spawning commands are not available when the VarianceAPI expansion is disabled.");
+                return;
+            }
+
             if(args.Count == 0)
             {
                 Debug.Log("No Arguments Given.");
+                return;
+            }
+
+            if(!args.senderBody)
+            {
+                Debug.Log($"Sender must have a body");
                 return;
             }
 
@@ -561,8 +573,17 @@ namespace VAPI
                     }
                 }
             }
+            variantDefs.OrderBy(variantDef => (int)variantDef.characterVariantIndex);
 
+            var senderBody = args.senderBody;
             Vector3 location = args.sender.master.GetBody().transform.position;
+            if(senderBody.TryGetComponent<InputBankTest>(out var inputBankTest))
+            {
+                if(Physics.Raycast(inputBankTest.GetAimRay(), out RaycastHit raycastHit, 1024, LayerIndex.world.mask))
+                {
+                    location = raycastHit.point;
+                }
+            }
 
             int aiCount = args.TryGetOptionalInt("count:") ?? 1;
             EquipmentIndex equipmentIndex = args.TryGetOptionalEquipmentIndex("equipment:") ?? EquipmentIndex.None;
@@ -612,13 +633,109 @@ namespace VAPI
             }
         }
 
+        [ConCommand(commandName = "vapi_spawn_body", flags = ConVarFlags.ExecuteOnServer, helpText = "Spawns a Masterless Body Prefab with the specified VariantDefs.\n" +
+            "Mandatory Arguments:\n" +
+            "[0] = bodyName (must be flagged as masterless)" +
+            "[1] = CharacterVariantDef name list. (Encapsulate in quotes (\"). Separate by commas (,). Spaces are allowed.)")]
+        private static void CCVapiSpawnBody(ConCommandArgs args)
+        {
+            if (!VariantSpawnManager.instance)
+            {
+                Debug.LogWarning($"VarianceAPI's Variant Spawning commands are not available when the VarianceAPI expansion is disabled.");
+                return;
+            }
+
+            if (args.Count == 0)
+            {
+                Debug.Log($"No Arguments Given");
+                return;
+            }
+
+            if (!args.senderBody)
+            {
+                Debug.Log($"Sender must have a body");
+                return;
+            }
+
+            BodyIndex bodyIndex = VAPIUtils.GetBodyIndex(args[0]);
+            if(bodyIndex == BodyIndex.None)
+            {
+                Debug.Log("No body could be found with that name");
+                return;
+            }
+
+            CharacterBody bodyPrefab = BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
+
+            if(!bodyPrefab.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless))
+            {
+                Debug.Log($"Cannot spawn {bodyPrefab} as a variant via vapi_spawn_body as it's not flagged as a masterless body. Utilize vapi_spawn_ai instead.");
+                return;
+            }
+
+            var provider = GetCharacterVariantProvider(bodyIndex);
+            if(provider == null)
+            {
+                Debug.Log($"CharacterBody with name {args[0]} does not have a CharacterVariantProvider");
+                return;
+            }
+
+            var variantDefNamesAsListString = args.TryGetArgString(1) ?? "";
+            string[] variantDefNames = variantDefNamesAsListString.Replace(" ", "").Split(',', StringSplitOptions.RemoveEmptyEntries);
+            List<CharacterVariantDef> variantDefs = new List<CharacterVariantDef>();
+
+            var availableVariants = provider.allVariants;
+            foreach (string variantName in variantDefNames)
+            {
+                foreach (var variantDef in availableVariants)
+                {
+                    if (variantDef.cachedName.Contains(variantName, StringComparison.OrdinalIgnoreCase))
+                    {
+                        variantDefs.Add(variantDef);
+                        break;
+                    }
+                }
+            }
+
+            variantDefs.OrderBy(variantDef => (int)variantDef.characterVariantIndex);
+
+            BodySpawnCard bodySpawnCard = ScriptableObject.CreateInstance<BodySpawnCard>();
+            bodySpawnCard.sendOverNetwork = true;
+            bodySpawnCard.prefab = bodyPrefab.gameObject;
+            bodySpawnCard.nodeGraphType = RoR2.Navigation.MapNodeGroup.GraphType.Ground;
+            bodySpawnCard.directorCreditCost = 0;
+
+            var spawnRequest = new DirectorSpawnRequest(bodySpawnCard, new DirectorPlacementRule
+            {
+                position = args.senderBody.corePosition,
+                maxDistance = 5,
+                minDistance = 1,
+                placementMode = DirectorPlacementRule.PlacementMode.NearestNode,
+                spawnOnTarget = args.senderBody.transform
+            }, VariantSpawnManager.instance!.variantSpawnRng);
+
+            VariantDirectorSpawnRequest spawnRequestVariant = new VariantDirectorSpawnRequest(spawnRequest)
+            {
+                variantDefs = variantDefs.ToArray()
+            };
+
+            bodySpawnCard.DoSpawn(args.senderBody.corePosition, Quaternion.identity, spawnRequest);
+
+            UnityEngine.Object.Destroy(bodySpawnCard);
+        }
+
         [ConCommand(commandName = "vapi_spawn_as", flags = ConVarFlags.ExecuteOnServer, helpText = "Respawns you as the specified body prefab with the specified VariantDefs.\n" +
             "Mandatory Arguments:\n" +
             "[0] = bodyName\n" +
-            "[1] = CharacterVariantDef name list. (Encapsulate in \"\". Separate by \",\". Spaces are allowed.)")]
+            "[1] = CharacterVariantDef name list. (Encapsulate in quotes (\"). Separate by \",\". Spaces are allowed.)")]
         private static void CCVapiSpawnAs(ConCommandArgs args)
         {
-            if(args.Count == 0)
+            if (!VariantSpawnManager.instance)
+            {
+                Debug.LogWarning($"VarianceAPI's Variant Spawning commands are not available when the VarianceAPI expansion is disabled.");
+                return;
+            }
+
+            if (args.Count == 0)
             {
                 Debug.Log("No arguments Given");
                 return;
@@ -669,6 +786,8 @@ namespace VAPI
                     }
                 }
             }
+
+            variantDefs.OrderBy(variantDef => (int)variantDef.characterVariantIndex);
 
             senderMaster.bodyPrefab = bodyPrefab;
 
