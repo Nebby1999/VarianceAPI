@@ -83,6 +83,13 @@ namespace VAPI
         public static bool operator >=(CharacterVariantIndex a, CharacterVariantIndex b) => a.i >= b.i;
         public static CharacterVariantIndex operator ++(CharacterVariantIndex index) => new CharacterVariantIndex(index.i + 1);
         public static CharacterVariantIndex operator --(CharacterVariantIndex index) => new CharacterVariantIndex(index.i - 1);
+
+        public override string ToString()
+        {
+            var def = CharacterVariantCatalog.GetCharacterVariantDef(this);
+            string defName = def ? def!.cachedName : "NULL";
+            return $"{i}({defName})";
+        }
     }
 
     /// <summary>
@@ -568,7 +575,6 @@ namespace VAPI
                 {
                     variantDef.spawnRate = f;
                     UpdateDependentDefSpawnRates(variantDef);
-                    VAPIRuleBook.OnVariantDefSpawnRateChanged(variantDef);
                 }).DoConfigure();
 
                 variantDef.isUnique = new ConfiguredBool(variantDef.isUnique)

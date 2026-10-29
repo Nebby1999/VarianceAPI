@@ -213,7 +213,6 @@ namespace VAPI
 
 
                 _variantIndexToRuleDef.Add(characterVariantDef.characterVariantIndex, rule);
-                OnVariantDefSpawnRateChanged(characterVariantDef);
                 return rule;
             }
 
@@ -244,39 +243,6 @@ namespace VAPI
             {
                 RuleDef variantRule = CreateRuleDefFromVariant(def);
                 RuleCatalogExtras.AddRuleToCatalog(variantRule, _variantCategory.categoryIndex);
-            }
-        }
-
-        public static void OnVariantDefSpawnRateChanged(CharacterVariantDef variantDef)
-        {
-            if(!_variantIndexToRuleDef.TryGetValue(variantDef.characterVariantIndex, out RuleDef ruleDef))
-            {
-                return;
-            }
-
-            var onChoice = ruleDef.FindChoice("On");
-            var offChoice = ruleDef.FindChoice("Off");
-
-            var canChangeInRulebook = variantDef.spawnRate > 0;
-            if(canChangeInRulebook == false)
-            {
-                //Make it so the rule def's default choice is the off choice
-                ruleDef.defaultChoiceIndex = offChoice.localIndex;
-                //hide the on choice
-                onChoice.excludeByDefault = true;
-            }
-            else
-            {
-                //Make it so the rule def's default choice is the on choice
-                ruleDef.defaultChoiceIndex = onChoice.localIndex;
-                //show the on choice
-                onChoice.excludeByDefault = false;
-            }
-
-            //If we're the server, and the pregame controller exists, apply rulebook choice when the config changes.
-            if(NetworkServer.active && PreGameController.instance)
-            {
-                PreGameController.instance.ApplyChoice(canChangeInRulebook ? onChoice.globalIndex : offChoice.globalIndex);
             }
         }
 
