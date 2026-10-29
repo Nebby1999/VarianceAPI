@@ -159,7 +159,7 @@ namespace VAPI
             if (characterVariantDef == null)
                 return false;
 
-            if (!Run.instance || !VAPIRuleBook.IsVariantRuleEnabled(characterVariantDef, Run.instance.ruleBook))
+            if(VariantSpawnManager.instance == null || VariantSpawnManager.instance.IsVariantAvailable(characterVariantDef.characterVariantIndex) == false)
             {
                 return false;
             }

@@ -57,14 +57,14 @@ namespace VAPI
         public DeathRewards? requesterDeathRewards;
 
         /// <summary>
-        /// If true, the announcement system will not announce the variant's arrival.
-        /// </summary>
-        public bool supressArrivalMessage;
-
-        /// <summary>
         /// A reward coefficient of <see cref="requesterDeathRewards"/>'s gold and experience amounts
         /// </summary>
         public float deathRewardsCoefficient = 1;
+
+        /// <summary>
+        /// If true, the announcement system will not announce the variant's arrival.
+        /// </summary>
+        public bool supressArrivalMessage;
 
         /// <summary>
         /// Event called when the DirectorSpawnRequest is performed, and the result is turned into a variant
