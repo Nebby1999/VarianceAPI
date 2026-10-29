@@ -63,6 +63,11 @@ namespace VAPI
         public float deathRewardsCoefficient = 1;
 
         /// <summary>
+        /// If true, the announcement system will not announce the variant's arrival.
+        /// </summary>
+        public bool supressArrivalMessage;
+
+        /// <summary>
         /// Event called when the summon is performed
         /// </summary>
         public event Action<VariantMasterSummonReport>? onSummonPerformed;
@@ -84,7 +89,14 @@ namespace VAPI
             {
                 MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
 
-                VAPIUtils.TransformSpawnedInstanceIntoVariant(masterSummonReport.summonMasterInstance.gameObject, variantDefs, summonerDeathRewards, deathRewardsCoefficient);
+                VAPIUtils.TransformSpawnedInstanceIntoVariant(new VAPIUtils.TransformSpawnedInstanceIntoVariantArgs
+                {
+                    spawnedInstance = masterSummonReport.summonMasterInstance.gameObject,
+                    variantDefs = variantDefs,
+                    baseDeathRewards = summonerDeathRewards,
+                    deathRewardsCoefficient = deathRewardsCoefficient,
+                    supressArrivalMessage = supressArrivalMessage
+                });
 
                 var report = new VariantMasterSummonReport(masterSummonReport, variantDefs);
                 onSummonPerformed?.Invoke(report);

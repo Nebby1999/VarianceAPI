@@ -99,17 +99,23 @@ namespace VAPI
             return copy;
         }
 
-        /// <summary>
-        /// Modifies the <paramref name="spawnedInstance"/> to become a variant.
-        /// <br></br>
-        /// This is done by pre-assigning the <paramref name="variantDefs"/> into the master's <see cref="CharacterMasterVariantStorage"/>. This method is used particularly in <see cref="VariantMasterSummon"/> and <see cref="VariantDirectorSpawnRequest"/>
-        /// </summary>
-        /// <param name="spawnedInstance">The master object to turn into a variant</param>
-        /// <param name="variantDefs">The variant defs for the master</param>
-        /// <param name="baseDeathRewards">A base death rewards, can be used to make the master drop extra loot</param>
-        /// <param name="deathRewardsCoefficient">Used only if <paramref name="baseDeathRewards"/> is not null. The gold and experience reward will be multiplied by this coefficient</param>
-        public static void TransformSpawnedInstanceIntoVariant(GameObject? spawnedInstance, CharacterVariantDef[]? variantDefs, DeathRewards? baseDeathRewards = null, float deathRewardsCoefficient = 1f)
+        public struct TransformSpawnedInstanceIntoVariantArgs
         {
+            public GameObject? spawnedInstance;
+            public CharacterVariantDef[]? variantDefs;
+            public DeathRewards? baseDeathRewards;
+            public float? deathRewardsCoefficient;
+            public bool? supressArrivalMessage; 
+        }
+
+        public static void TransformSpawnedInstanceIntoVariant(TransformSpawnedInstanceIntoVariantArgs args)
+        {
+            GameObject? spawnedInstance = args.spawnedInstance;
+            CharacterVariantDef[]? variantDefs = args.variantDefs;
+            DeathRewards? baseDeathRewards = args.baseDeathRewards;
+            float deathRewardsCoefficient = args.deathRewardsCoefficient ?? 1;
+            bool supressArrivalMessage = args.supressArrivalMessage ?? false;
+
             if (spawnedInstance == null || variantDefs == null)
                 return;
 
@@ -127,16 +133,17 @@ namespace VAPI
             if (!spawnedBodyInstance)
                 return;
 
-            if(baseDeathRewards && spawnedBodyInstance.TryGetComponent<DeathRewards>(out var deathRewards))
+            if(baseDeathRewards != null && spawnedBodyInstance.TryGetComponent<DeathRewards>(out var deathRewards))
             {
-                deathRewards.expReward = (uint)(baseDeathRewards!.expReward * deathRewardsCoefficient);
-                deathRewards.goldReward = (uint)(baseDeathRewards!.goldReward * deathRewardsCoefficient);
+                baseDeathRewards.expReward = (uint)(baseDeathRewards!.expReward * deathRewardsCoefficient);
+                baseDeathRewards.goldReward = (uint)(baseDeathRewards!.goldReward * deathRewardsCoefficient);
             }
 
             if(spawnedBodyInstance.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
             {
                 bodyVariantController.SetCharacterVariantDefsServer(variantDefs);
                 bodyVariantController.doNotRollForVariants = true;
+                bodyVariantController.supressArrivalMessageServer = supressArrivalMessage;
             }
         }
 

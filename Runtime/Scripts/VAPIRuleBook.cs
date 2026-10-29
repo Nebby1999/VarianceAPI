@@ -7,6 +7,7 @@ using UnityEngine;
 using VAPI.AddressReferencedAssets;
 using HG;
 using System.Linq;
+using UnityEngine.Networking;
 
 namespace VAPI
 {
@@ -256,20 +257,40 @@ namespace VAPI
             var onChoice = ruleDef.FindChoice("On");
             var offChoice = ruleDef.FindChoice("Off");
 
-            var shouldDisplay = variantDef.spawnRate > 0;
-            onChoice.excludeByDefault = !shouldDisplay;
-            offChoice.excludeByDefault = !shouldDisplay;
-        }
-
-        public static bool IsVariantRuleEnabled(CharacterVariantDef variant, RuleBook runRuleBook)
-        {
-            if(!_variantIndexToRuleDef.TryGetValue(variant.characterVariantIndex, out RuleDef ruleDef))
+            var canChangeInRulebook = variantDef.spawnRate > 0;
+            if(canChangeInRulebook == false)
             {
-                return false;
+                //Make it so the rule def's default choice is the off choice
+                ruleDef.defaultChoiceIndex = offChoice.localIndex;
+                //hide the on choice
+                onChoice.excludeByDefault = true;
+            }
+            else
+            {
+                //Make it so the rule def's default choice is the on choice
+                ruleDef.defaultChoiceIndex = onChoice.localIndex;
+                //show the on choice
+                onChoice.excludeByDefault = false;
             }
 
-            var onChoice = (VAPIRuleChoiceDef)ruleDef.FindChoice("On");
-            return runRuleBook.IsChoiceActive(onChoice) && runRuleBook.IsChoiceActive(onChoice.tiedPackEnabledChoice);
+            //If we're the server, and the pregame controller exists, apply rulebook choice when the config changes.
+            if(NetworkServer.active && PreGameController.instance)
+            {
+                PreGameController.instance.ApplyChoice(canChangeInRulebook ? onChoice.globalIndex : offChoice.globalIndex);
+            }
+        }
+
+        public static void GenerateCharacterVariantMask(this RuleBook book, CharacterVariantMask dest)
+        {
+            dest.Clear();
+            for(int i = 0; i < book.ruleValues.Length; i++)
+            {
+                RuleChoiceDef ruleChoiceDef = RuleCatalog.GetRuleDef(i).choices[book.ruleValues[i]];
+                if(ruleChoiceDef is VAPIRuleChoiceDef vapiRuleChoiceDef && vapiRuleChoiceDef.variantIndex != CharacterVariantIndex.none)
+                {
+                    dest.Add(vapiRuleChoiceDef.variantIndex);
+                }
+            }
         }
 
         private static Sprite GetTargetCharacterSprite(CharacterVariantTarget target)

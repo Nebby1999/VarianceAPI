@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -75,6 +76,13 @@ namespace VAPI
         /// Inequality operator, negates the result of <see cref="Equals(CharacterVariantIndex)"/>
         /// </summary>
         public static bool operator !=(CharacterVariantIndex a, CharacterVariantIndex b) => a.i != b.i;
+
+        public static bool operator <(CharacterVariantIndex a, CharacterVariantIndex b) => a.i < b.i;
+        public static bool operator >(CharacterVariantIndex a, CharacterVariantIndex b) => a.i > b.i;
+        public static bool operator <=(CharacterVariantIndex a, CharacterVariantIndex b) => a.i <= b.i;
+        public static bool operator >=(CharacterVariantIndex a, CharacterVariantIndex b) => a.i >= b.i;
+        public static CharacterVariantIndex operator ++(CharacterVariantIndex index) => new CharacterVariantIndex(index.i + 1);
+        public static CharacterVariantIndex operator --(CharacterVariantIndex index) => new CharacterVariantIndex(index.i - 1);
     }
 
     /// <summary>
@@ -119,6 +127,146 @@ namespace VAPI
         /// Retrieves the hash code for this <see cref="NetworkCharacterVariantIndex"/>
         /// </summary>
         public override int GetHashCode() => (int)i;
+    }
+
+    public class CharacterVariantMask : ICollection<CharacterVariantIndex>, IEnumerable<CharacterVariantIndex>, IEnumerable
+    {
+        public struct Enumerator : IEnumerator<CharacterVariantIndex>, IEnumerator, IDisposable
+        {
+            public bool[] target;
+
+            public CharacterVariantIndex Current { get; set; }
+
+            object IEnumerator.Current => Current;
+
+            public Enumerator(bool[] array)
+            {
+                Current = CharacterVariantIndex.none;
+                target = array;
+            }
+
+            public void Dispose()
+            {
+                throw new NotImplementedException();
+            }
+
+            public bool MoveNext()
+            {
+                CharacterVariantIndex characterVariantCount = (CharacterVariantIndex)CharacterVariantCatalog.characterVariantCount;
+                while(Current < characterVariantCount)
+                {
+                    if (target[(int)Current])
+                    {
+                        return true;
+                    }
+
+                    Current++;
+                }
+
+                return false;
+            }
+
+            public void Reset()
+            {
+                Current = CharacterVariantIndex.none;
+            }
+        }
+
+        public bool[] array;
+        public int Count => array.Length;
+        public bool IsReadOnly => false;
+
+        public CharacterVariantMask()
+        {
+            array = new bool[CharacterVariantCatalog.characterVariantCount];
+        }
+
+        public static CharacterVariantMask Rent()
+        {
+            return CollectionPool<CharacterVariantIndex, CharacterVariantMask>.RentCollection();
+        }
+
+        public static CollectionPool<CharacterVariantIndex, CharacterVariantMask>.DisposableRental Rent(out CharacterVariantMask mask)
+        {
+            return CollectionPool<CharacterVariantIndex, CharacterVariantMask>.RentCollection(out mask);
+        }
+
+        public static void Return(CharacterVariantMask mask)
+        {
+            if(mask.array.Length == CharacterVariantCatalog.characterVariantCount)
+            {
+                CollectionPool<CharacterVariantIndex, CharacterVariantMask>.ReturnCollection(mask);
+            }
+        }
+
+        public bool Contains(CharacterVariantIndex characterVariantIndex)
+        {
+            return HG.ArrayUtils.GetSafe(array, ((int)characterVariantIndex));
+        }
+
+        public void Add(CharacterVariantIndex characterVariantIndex)
+        {
+            if(ArrayUtils.IsInBounds(array, ((int)characterVariantIndex)))
+            {
+                array[((int)characterVariantIndex)] = true;
+            }
+        }
+
+        public bool Remove(CharacterVariantIndex characterVariantIndex)
+        {
+            if(ArrayUtils.IsInBounds(array, ((int)characterVariantIndex)))
+            {
+                ref bool reference = ref array[((int)characterVariantIndex)];
+                bool result = reference;
+                reference = false;
+                return result;
+            }
+            return false;
+        }
+
+        public void Clear()
+        {
+            ArrayUtils.SetAll(array, false);
+        }
+
+        public void CopyTo(CharacterVariantIndex[] array, int arrayIndex)
+        {
+            for (int i = 0; i < this.array.Length; i++)
+            {
+                if (this.array[i])
+                {
+                    array[arrayIndex++] = (CharacterVariantIndex)i;
+                }
+            }
+        }
+
+        public void CloneTo(CharacterVariantMask other)
+        {
+            for(int i = 0; i < Count; i++)
+            {
+                other.array[i] = array[i];
+            }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Swap(CharacterVariantMask maskA, CharacterVariantMask maskB)
+        {
+            ArrayUtils.SwapElements(maskA.array, maskB.array);
+        }
+        public Enumerator GetEnumerator()
+        {
+            return new Enumerator(array);
+        }
+
+        IEnumerator<CharacterVariantIndex> IEnumerable<CharacterVariantIndex>.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
+        }
     }
 
     /// <summary>
@@ -420,6 +568,7 @@ namespace VAPI
                 {
                     variantDef.spawnRate = f;
                     UpdateDependentDefSpawnRates(variantDef);
+                    VAPIRuleBook.OnVariantDefSpawnRateChanged(variantDef);
                 }).DoConfigure();
 
                 variantDef.isUnique = new ConfiguredBool(variantDef.isUnique)

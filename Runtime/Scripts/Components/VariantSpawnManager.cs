@@ -42,6 +42,8 @@ namespace VAPI
         public static VariantSpawnManager? instance => _instance;
         private static VariantSpawnManager? _instance;
 
+        private CharacterVariantMask availableVariants;
+
         /// <summary>
         /// The base RNG for the other RNG classes in this manager, available only on the server
         /// </summary>
@@ -57,6 +59,29 @@ namespace VAPI
         /// </summary>
         public Xoroshiro128Plus? variantRewardRng { get; private set; }
 
+        public bool IsVariantAvailable(CharacterVariantIndex variantIndex) => availableVariants.Contains(variantIndex);
+
+        private void Awake()
+        {
+            Run.instance.networkRuleBookComponent.onRuleBookUpdated += OnRulebookUpdated;
+            availableVariants = CharacterVariantMask.Rent();
+        }
+
+        private void OnRulebookUpdated(NetworkRuleBook book)
+        {
+            if(book != null)
+            {
+                RuleBook ruleBook = book.ruleBook;
+                ruleBook.GenerateCharacterVariantMask(availableVariants);
+            }
+        }
+
+        private void OnDestroy()
+        {
+            Run.instance.networkRuleBookComponent.onRuleBookUpdated -= OnRulebookUpdated;
+            CharacterVariantMask.Return(availableVariants);
+        }
+
         private void Start()
         {
             if(NetworkServer.active)
@@ -65,6 +90,8 @@ namespace VAPI
                 variantSpawnRng = new Xoroshiro128Plus(variantRng.nextUlong);
                 variantRewardRng = new Xoroshiro128Plus(variantRng.nextUlong);
             }
+
+            OnRulebookUpdated(Run.instance.networkRuleBookComponent);
         }
 
         private void OnEnable()

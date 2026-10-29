@@ -47,20 +47,8 @@ namespace VAPI
         }
         [SyncVar]
         private bool _doNotRollForVariants;
-        public bool supressArrivalMessage
-        {
-            get => _supressArrivalMessage;
-            [Server]
-            set
-            {
-                if(_supressArrivalMessage != value)
-                {
-                    _supressArrivalMessage = value;
-                }
-            }
-        }
-        [SyncVar]
-        private bool _supressArrivalMessage;
+
+        public bool supressArrivalMessageServer { get; set; }
 
         public bool variantsApplied
         {
@@ -76,6 +64,8 @@ namespace VAPI
         }
         [SyncVar]
         public bool _noVariantsApplied;
+
+        public CharacterVariantMask appliedVariantMask { get; set; }
 
         public event Action? onVariantsUnapplied;
         public event Action<CharacterVariantDef[]>? onVariantsApplied;
@@ -95,6 +85,7 @@ namespace VAPI
             }
 
             _characterVariantIndices.Callback = SyncListCallback;
+            appliedVariantMask = CharacterVariantMask.Rent();
         }
 
         public override void OnStartClient()
@@ -202,11 +193,15 @@ namespace VAPI
 
             onVariantsUnapplied?.Invoke();
 
+            //Clear the applied variant mask
+            appliedVariantMask.Clear();
+            
             //Second, create new array and populate.
             _fallbackCharacterVariantDefs = new CharacterVariantDef[_characterVariantIndices.Count];
             for(int i = 0; i < _characterVariantIndices.Count; i++)
             {
                 _fallbackCharacterVariantDefs[i] = CharacterVariantCatalog.GetCharacterVariantDef(_characterVariantIndices[i])!;
+                appliedVariantMask.Add(_characterVariantIndices[i]); //set the mask's value
             }
 
             //Thirdly, apply body modifications
@@ -220,9 +215,9 @@ namespace VAPI
             onVariantsApplied?.Invoke(_fallbackCharacterVariantDefs);
 
             //If we're not supressing the arrival, and the config lets us send them, send it.
-            if(!supressArrivalMessage && VAPIConfig._sendArrivalMessages)
+            if(NetworkServer.active && supressArrivalMessageServer == false && VAPIConfig._sendArrivalMessages)
             {
-                AnnounceArrival();
+                AnnounceArrivalServer();
             }
 
             characterBody.MarkAllStatsDirty();
@@ -230,7 +225,7 @@ namespace VAPI
 
         private static readonly List<string> _possibleArrivalTokensShared = new List<string>();
         private static readonly List<NetworkSoundEventDef> _possibleSpawnSoundsShared = new List<NetworkSoundEventDef>();
-        private void AnnounceArrival()
+        private void AnnounceArrivalServer()
         {
             //Get out if not the server
             if(!NetworkServer.active)
@@ -428,6 +423,7 @@ namespace VAPI
         {
             onVariantsApplied = null;
             onVariantsUnapplied = null;
+            CharacterVariantMask.Return(appliedVariantMask);
         }
     }
 }
