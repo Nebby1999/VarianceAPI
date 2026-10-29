@@ -65,7 +65,7 @@ namespace VAPI
         [SyncVar]
         public bool _noVariantsApplied;
 
-        public CharacterVariantMask appliedVariantMask { get; set; }
+        private CharacterVariantMask _appliedVariantMask;
 
         public event Action? onVariantsUnapplied;
         public event Action<CharacterVariantDef[]>? onVariantsApplied;
@@ -85,8 +85,11 @@ namespace VAPI
             }
 
             _characterVariantIndices.Callback = SyncListCallback;
-            appliedVariantMask = CharacterVariantMask.Rent();
+            _appliedVariantMask = CharacterVariantMask.Rent();
         }
+
+        public bool IsVariantApplied(CharacterVariantDef? characterVariantDef) => IsVariantApplied(characterVariantDef ? characterVariantDef!.characterVariantIndex : CharacterVariantIndex.none);
+        public bool IsVariantApplied(CharacterVariantIndex variantIndex) => _appliedVariantMask.Contains(variantIndex);
 
         public override void OnStartClient()
         {
@@ -194,14 +197,14 @@ namespace VAPI
             onVariantsUnapplied?.Invoke();
 
             //Clear the applied variant mask
-            appliedVariantMask.Clear();
+            _appliedVariantMask.Clear();
             
             //Second, create new array and populate.
             _fallbackCharacterVariantDefs = new CharacterVariantDef[_characterVariantIndices.Count];
             for(int i = 0; i < _characterVariantIndices.Count; i++)
             {
                 _fallbackCharacterVariantDefs[i] = CharacterVariantCatalog.GetCharacterVariantDef(_characterVariantIndices[i])!;
-                appliedVariantMask.Add(_characterVariantIndices[i]); //set the mask's value
+                _appliedVariantMask.Add(_characterVariantIndices[i]); //set the mask's value
             }
 
             //Thirdly, apply body modifications
@@ -423,7 +426,7 @@ namespace VAPI
         {
             onVariantsApplied = null;
             onVariantsUnapplied = null;
-            CharacterVariantMask.Return(appliedVariantMask);
+            CharacterVariantMask.Return(_appliedVariantMask);
         }
     }
 }
