@@ -68,6 +68,16 @@ namespace VAPI
         public bool supressArrivalMessage;
 
         /// <summary>
+        /// If true, when the summoned variant dies it is guaranteed to never drop items
+        /// </summary>
+        public bool noItemReward;
+
+        /// <summary>
+        /// If true, when the summoned variant is spawned it is guaranteed to not recieve any reward modifications from the applied variants.
+        /// </summary>
+        public bool noGoldExpModifications;
+
+        /// <summary>
         /// Event called when the summon is performed
         /// </summary>
         public event Action<VariantMasterSummonReport>? onSummonPerformed;
@@ -95,7 +105,9 @@ namespace VAPI
                     variantDefs = variantDefs,
                     baseDeathRewards = summonerDeathRewards,
                     deathRewardsCoefficient = deathRewardsCoefficient,
-                    supressArrivalMessage = supressArrivalMessage
+                    supressArrivalMessage = supressArrivalMessage,
+                    noGoldExpModifications = noGoldExpModifications,
+                    noItemRewards = noItemReward,
                 });
 
                 var report = new VariantMasterSummonReport(masterSummonReport, variantDefs);

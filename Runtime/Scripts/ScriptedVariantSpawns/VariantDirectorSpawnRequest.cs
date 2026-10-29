@@ -67,6 +67,16 @@ namespace VAPI
         public bool supressArrivalMessage;
 
         /// <summary>
+        /// If true, when the summoned variant dies it is guaranteed to never drop items
+        /// </summary>
+        public bool noItemReward;
+
+        /// <summary>
+        /// If true, when the summoned variant is spawned it is guaranteed to not recieve any reward modifications from the applied variants.
+        /// </summary>
+        public bool noGoldExpModifications;
+
+        /// <summary>
         /// Event called when the DirectorSpawnRequest is performed, and the result is turned into a variant
         /// </summary>
         public event Action<VariantDirectorSpawnResult>? onSpawnPerformed;
@@ -90,7 +100,9 @@ namespace VAPI
                     variantDefs = variantDefs,
                     supressArrivalMessage = supressArrivalMessage,
                     baseDeathRewards = requesterDeathRewards,
-                    deathRewardsCoefficient = deathRewardsCoefficient
+                    deathRewardsCoefficient = deathRewardsCoefficient,
+                    noItemRewards = noItemReward,
+                    noGoldExpModifications = noGoldExpModifications,
                 });
                 var variantSpawnResult = new VariantDirectorSpawnResult(spawnCardResult, variantDefs);
                 onSpawnPerformed?.Invoke(variantSpawnResult);

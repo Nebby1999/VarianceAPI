@@ -105,7 +105,9 @@ namespace VAPI
             public CharacterVariantDef[]? variantDefs;
             public DeathRewards? baseDeathRewards;
             public float? deathRewardsCoefficient;
-            public bool? supressArrivalMessage; 
+            public bool? noItemRewards;
+            public bool? noGoldExpModifications;
+            public bool? supressArrivalMessage;
         }
 
         public static void TransformSpawnedInstanceIntoVariant(TransformSpawnedInstanceIntoVariantArgs args)
@@ -115,6 +117,8 @@ namespace VAPI
             DeathRewards? baseDeathRewards = args.baseDeathRewards;
             float deathRewardsCoefficient = args.deathRewardsCoefficient ?? 1;
             bool supressArrivalMessage = args.supressArrivalMessage ?? false;
+            bool noGoldExpModifications = args.noGoldExpModifications ?? false;
+            bool noItemRewards = args.noItemRewards ?? false;
 
             if (spawnedInstance == null || variantDefs == null)
                 return;
@@ -144,6 +148,12 @@ namespace VAPI
                 bodyVariantController.SetCharacterVariantDefsServer(variantDefs);
                 bodyVariantController.doNotRollForVariants = true;
                 bodyVariantController.supressArrivalMessageServer = supressArrivalMessage;
+            }
+
+            if (spawnedBodyInstance.TryGetComponent<VariantDeathRewards>(out var variantDeathRewards))
+            {
+                variantDeathRewards.noItemRewardServer = noItemRewards;
+                variantDeathRewards.noGoldExpModificationsServer = noGoldExpModifications;
             }
         }
 

@@ -15,13 +15,6 @@ namespace VAPI
     [AddComponentMenu("")]
     public sealed class VariantDeathRewards : MonoBehaviour, IOnKilledServerReceiver
     {
-        public enum ItemRewardType
-        {
-            Permanent,
-            Temporary,
-            Ethereal
-        }
-
         private sealed class ChanceWithCount
         {
             public float highestBaseChanceObserved = float.NegativeInfinity;
@@ -88,10 +81,8 @@ namespace VAPI
         /// </summary>
         public DeathRewards? deathRewards { get; private set; }
 
-        /// <summary>
-        /// Set this value to true if you don't want this variant to have reward modifications
-        /// </summary>
-        public bool supressRewards;
+        public bool noItemRewardServer;
+        public bool noGoldExpModificationsServer;
 
         private float _pickupRewardChance;
         private WeightedSelection<ItemTier> _pickupTierRewardSelection = new WeightedSelection<ItemTier>();
@@ -125,9 +116,6 @@ namespace VAPI
 
         private void OnVariantsApplied(CharacterVariantDef[] variants)
         {
-            if (supressRewards)
-                return;
-
             if (variants.Length == 0)
                 return;
 
@@ -205,7 +193,7 @@ namespace VAPI
             }
 
 
-            if (deathRewards)
+            if (deathRewards && noGoldExpModificationsServer == false)
             {
                 if (finalGoldMultiplier > 0)
                 {
@@ -247,7 +235,7 @@ namespace VAPI
 
         public void OnKilledServer(DamageReport damageReport)
         {
-            if (!characterBodyVariantController ||supressRewards || damageReport == null || damageReport.victimBody == null || damageReport.victimBody != characterBody || !VariantSpawnManager.instance || !Run.instance)
+            if (!characterBodyVariantController || noItemRewardServer || damageReport == null || damageReport.victimBody == null || damageReport.victimBody != characterBody || !VariantSpawnManager.instance || !Run.instance)
                 return;
 
             var variantDefs = characterBodyVariantController.GetCharacterVariantDefs();
