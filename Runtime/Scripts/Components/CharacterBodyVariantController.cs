@@ -170,17 +170,39 @@ namespace VAPI
             {
                 VAPILog.Message($"{this} is becoming a variant!");
             }
+
             _characterVariantIndices.Clear();
             for (int i = 0; i < variantDefs.Length; i++)
             {
                 _characterVariantIndices.Add(variantDefs[i].characterVariantIndex);
             }
-            variantsApplied = _characterVariantIndices.Count > 0;
+            if(_characterVariantIndices.Count > 0)
+            {
+                _characterVariantIndices.Dirty(0);
+                variantsApplied = true;
+            }
+            else
+            {
+                variantsApplied = false;
+            }
         }
 
+        //Synclists kinda suck, if a character rolls multiple variants this method will be called n + 1 times. where n is the amount of variants being assigned.
+        //The +1 is due to the clear operation.
+        //So instead, we'll only call OnSyncListDirty if:
+        //1. The operation is "CLEAR" (removing variants)
+        //2. The operation is "DIRTY" (this will effectively be apply variants)
         private void SyncListCallback(SyncList<NetworkCharacterVariantIndex>.Operation op, int itemIndex)
         {
-            OnSyncListDirty();
+            switch(op)
+            {
+                case SyncList<NetworkCharacterVariantIndex>.Operation.OP_CLEAR:
+                case SyncList<NetworkCharacterVariantIndex>.Operation.OP_DIRTY:
+                    OnSyncListDirty();
+                    break;
+                default:
+                    return;
+            }
         }
 
         private void OnSyncListDirty()
@@ -223,7 +245,7 @@ namespace VAPI
                 AnnounceArrivalServer();
             }
 
-            characterBody.MarkAllStatsDirty();
+            characterBody.RecalculateStats();
         }
 
         private static readonly List<string> _possibleArrivalTokensShared = new List<string>();
