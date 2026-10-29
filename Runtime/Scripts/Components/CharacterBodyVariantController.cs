@@ -104,6 +104,11 @@ namespace VAPI
             }
         }
 
+        private void Start()
+        {
+            characterBody.MarkAllStatsDirty();
+        }
+
         public ReadOnlyArray<CharacterVariantDef> GetCharacterVariantDefs()
         {
             CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
@@ -244,10 +249,9 @@ namespace VAPI
             {
                 AnnounceArrivalServer();
             }
-
-            characterBody.RecalculateStats();
+            
+            characterBody.MarkAllStatsDirty();
         }
-
         private static readonly List<string> _possibleArrivalTokensShared = new List<string>();
         private static readonly List<NetworkSoundEventDef> _possibleSpawnSoundsShared = new List<NetworkSoundEventDef>();
         private void AnnounceArrivalServer()
@@ -365,9 +369,6 @@ namespace VAPI
                 _applyVisualModifiersAfterSkinCoroutine = ApplyVisualModifiersAfterSkin(visualModifiers);
                 StartCoroutine(_applyVisualModifiersAfterSkinCoroutine);
             }
-
-            //Set stats to dirty
-            characterBody.MarkAllStatsDirty();
         }
 
         private void UnapplyBodyModifications()
