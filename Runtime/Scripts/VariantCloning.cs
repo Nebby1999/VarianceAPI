@@ -159,6 +159,53 @@ namespace VAPI
             return CloneForOtherBody(args);
         }
 
+        private struct ScavData
+        {
+            public string cloneSuffix;
+            public string bodyName;
+        }
+
+        private static ScavData[] _lunarScavDatas = new ScavData[4]
+        {
+            new ScavData
+            {
+                cloneSuffix = "Kipkip",
+                bodyName = nameof(RoR2Content.BodyPrefabs.ScavLunar1Body),
+            },
+            new ScavData
+            {
+                cloneSuffix = "Wipwip",
+                bodyName = nameof(RoR2Content.BodyPrefabs.ScavLunar2Body),
+            },
+            new ScavData
+            {
+                cloneSuffix = "Twiptwip",
+                bodyName = nameof(RoR2Content.BodyPrefabs.ScavLunar3Body),
+            },
+            new ScavData
+            {
+                cloneSuffix = "Guragura",
+                bodyName = nameof(RoR2Content.BodyPrefabs.ScavLunar4Body)
+            }
+        };
+        private static ScavData[] _sanctumScavDatas = new ScavData[3]
+        {
+            new ScavData
+            {
+                bodyName = nameof(DLC4Content.BodyPrefabs.ScavSanctum1Body),
+                cloneSuffix = "Variation1",
+            },
+            new ScavData
+            {
+                bodyName = nameof(DLC4Content.BodyPrefabs.ScavSanctum2Body),
+                cloneSuffix = "Variation2",
+            },
+            new ScavData
+            {
+                bodyName = nameof(DLC4Content.BodyPrefabs.ScavSanctum3Body),
+                cloneSuffix = "Variation3"
+            }
+        };
 
         /// <summary>
         /// Adds a new Lunar Scavenger to clone when an end user calls <see cref="CloneIntoLunarScavs(CharacterVariantDef, bool, bool)"/>
@@ -166,58 +213,40 @@ namespace VAPI
         /// <param name="cloneSuffix">The suffix to append to the <see cref="CharacterVariantDef"/>. By convention this is usually the "name" of the Twisted Scavenger, for example "Kipkip"</param>
         /// <param name="bodyName">The body prefab name of the twisted scavenger</param>
         /// <returns>True if the lunar scav was added to the clone array, false if there's a clone suffix conflict.</returns>
-        public static bool AddLunarScavToClone(string cloneSuffix, string bodyName)
+        public static bool AddLunarScavToClone(string cloneSuffix, string bodyName) => AddScavToClone(cloneSuffix, bodyName, ref _lunarScavDatas);
+
+        /// <summary>
+        /// Adds a new Sanctum Scavenger to clone when an end user calls <see cref="CloneIntoSanctumScavs(CharacterVariantDef, bool, bool)"/>
+        /// </summary>
+        /// <param name="cloneSuffix">The suffix to append to the <see cref="CharacterVariantDef"/>. By convention this currently is the string "Variation" followed by a number, such as "Variation1"</param>
+        /// <param name="bodyName">The body prefab name of the sanctum scavenger</param>
+        /// <returns>True if the Sanctum scav was added to the clone array, false if there's a clone suffix conflict.</returns>
+        public static bool AddSanctumScavToClone(string cloneSuffix, string bodyName) => AddScavToClone(cloneSuffix, bodyName, ref _sanctumScavDatas);
+
+        private static bool AddScavToClone(string cloneSuffix, string bodyName, ref ScavData[] scavDataTarget)
         {
-            LunarScavData scavData = new LunarScavData
+            ScavData scavData = new ScavData
             {
                 cloneSuffix = cloneSuffix,
                 bodyName = bodyName,
             };
 
-            for(int i = 0; i < _lunarScavDatas.Length; i++)
+            for (int i = 0; i < scavDataTarget.Length; i++)
             {
-                if (_lunarScavDatas[i].cloneSuffix == cloneSuffix)
+                if (scavDataTarget[i].cloneSuffix == cloneSuffix)
                 {
-                    VAPILog.Warning($"Cannot add a new Lunar Scav to clone with suffix {cloneSuffix} as it conflicts with the pre-existing entry at index {i}");
+                    VAPILog.Warning($"Cannot add a new Scav to clone with suffix {cloneSuffix} as it conflicts with the pre-existing entry at index {i}");
                     return false;
                 }
             }
 
-            HG.ArrayUtils.ArrayAppend(ref _lunarScavDatas, scavData);
+            HG.ArrayUtils.ArrayAppend(ref scavDataTarget, scavData);
             return true;
         }
 
-        private struct LunarScavData
-        {
-            public string cloneSuffix;
-            public string bodyName;
-        }
-
-        private static LunarScavData[] _lunarScavDatas = new LunarScavData[4]
-        {
-            new LunarScavData
-            {
-                cloneSuffix = "Kipkip",
-                bodyName = nameof(RoR2Content.BodyPrefabs.ScavLunar1Body),
-            },
-            new LunarScavData
-            {
-                cloneSuffix = "Wipwip",
-                bodyName = nameof(RoR2Content.BodyPrefabs.ScavLunar2Body),
-            },
-            new LunarScavData
-            {
-                cloneSuffix = "Twiptwip",
-                bodyName = nameof(RoR2Content.BodyPrefabs.ScavLunar3Body),
-            },
-            new LunarScavData
-            {
-                cloneSuffix = "Guragura",
-                bodyName = nameof(RoR2Content.BodyPrefabs.ScavLunar4Body)
-            }
-        };
-
-        public static CharacterVariantDef[] CloneIntoLunarScavs(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
+        public static CharacterVariantDef[] CloneIntoLunarScavs(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true) => CloneIntoScavVariants(def, _lunarScavDatas, resultAvailableOnlyIfSrcAvailable);
+        public static CharacterVariantDef[] CloneIntoSanctumScavs(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable) => CloneIntoScavVariants(def, _sanctumScavDatas, makeHidden, resultAvailableOnlyIfSrcAvailable);
+        private static CharacterVariantDef[] CloneIntoScavVariants(CharacterVariantDef def, ScavData[] scavData, bool makeHidden, bool resultAvailableOnlyIfSrcAvailable)
         {
             using var _ = ListPool<CharacterVariantDef>.RentCollection(out var results);
 
@@ -229,11 +258,11 @@ namespace VAPI
                 requiredSrcBodyName = nameof(RoR2Content.BodyPrefabs.ScavBody)
             };
 
-            for(int i = 0; i < _lunarScavDatas.Length; i++)
+            for(int i = 0; i < scavData.Length; i++)
             {
                 CloneForOtherBodyArgs copy = args;
-                copy.cloneSuffix = _lunarScavDatas[i].cloneSuffix;
-                copy.targetBodyName = _lunarScavDatas[i].bodyName;
+                copy.cloneSuffix = scavData[i].cloneSuffix;
+                copy.targetBodyName = scavData[i].bodyName;
 
                 var clone = CloneForOtherBody(copy);
                 if(clone != null)
