@@ -15,7 +15,7 @@ namespace VAPI
     /// <summary>
     /// Utility methods for VarianceAPI
     /// </summary>
-    public static partial class VAPIUtils
+    public static class VAPIUtils
     {
         /// <summary>
         /// A static readonly instance of <see cref="WaitForEndOfFrame"/>

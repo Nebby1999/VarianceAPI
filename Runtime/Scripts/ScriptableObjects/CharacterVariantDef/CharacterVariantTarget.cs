@@ -18,6 +18,7 @@ namespace VAPI
     {
         [AddressableComponentRequirement(typeof(CharacterBody))]
         public AddressReferencedBody targetBody = new AddressReferencedBody();
+        private CharacterBody _cachedBody;
 
         public bool TryLoadCharacterComponent(out CharacterBody? characterComponent)
         {
@@ -27,6 +28,17 @@ namespace VAPI
 
         public CharacterBody? LoadCharacterComponent()
         {
+            if(BodyCatalog.availability.available == false)
+            {
+                VAPILog.Error($"Cannot load character component for {targetBody} as the body catalog is not initialized!");
+                return null;
+            }
+
+            if(_cachedBody)
+            {
+                return _cachedBody;
+            }
+
             if (targetBody.IsInvalid)
                 return null;
 
@@ -38,7 +50,8 @@ namespace VAPI
 
             if(bodyPrefab.TryGetComponent<CharacterBody>(out var body))
             {
-                return body;
+                _cachedBody = body;
+                return _cachedBody;
             }
             return null;
         }
@@ -57,6 +70,7 @@ namespace VAPI
         public CharacterVariantTarget(AddressReferencedBody _targetBody)
         {
             targetBody = _targetBody;
+            _cachedBody = null;
         }
 
         public CharacterVariantTarget(string _bodyName) : this(new AddressReferencedBody(_bodyName)) { }
