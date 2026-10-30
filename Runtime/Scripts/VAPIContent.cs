@@ -9,6 +9,7 @@ using RoR2.ExpansionManagement;
 using RoR2.Skills;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
 
 namespace VAPI
@@ -217,6 +218,7 @@ namespace VAPI
             using var prefabLoad = VAPIAssets.LoadAllAssetsAsync<GameObject>();
             using var skillDefLoad = VAPIAssets.LoadAllAssetsAsync<SkillDef>();
             using var expansionDefLoad = VAPIAssets.LoadAllAssetsAsync<ExpansionDef>();
+            var noSkillIconLoad = Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_UI.texGenericSkillIcons_png_texGenericSkillIcons_0_);
 
             parallelLoadCoroutine.Add(artifactLoad);
             parallelLoadCoroutine.Add(buffLoad);
@@ -224,6 +226,7 @@ namespace VAPI
             parallelLoadCoroutine.Add(prefabLoad);
             parallelLoadCoroutine.Add(skillDefLoad);
             parallelLoadCoroutine.Add(expansionDefLoad);
+            parallelLoadCoroutine.Add(noSkillIconLoad);
 
             while (!parallelLoadCoroutine.isDone)
             {
@@ -246,6 +249,10 @@ namespace VAPI
                     contentPack.networkedObjectPrefabs.AddSingle(prefabLoad.assets[i]);
                 }
             }
+
+            //Assign the "GoToMain" icon to the no skill icon
+            var skillDef = skillDefLoad.assets![0];
+            skillDef.icon = noSkillIconLoad.Result;
         }
 
         private IEnumerator PopulateVariantPack()

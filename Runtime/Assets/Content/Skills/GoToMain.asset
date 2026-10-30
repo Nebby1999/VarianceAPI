@@ -12,9 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 1391837873, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
   m_Name: GoToMain
   m_EditorClassIdentifier: 
-  skillName: EmptySkillDef
-  skillNameToken: 
-  skillDescriptionToken: 
+  skillName: GoToMain
+  skillNameToken: VAPI_SKILL_GENERIC_GOTOMAIN_NAME
+  skillDescriptionToken: VAPI_SKILL_GENERIC_GOTOMAIN_DESC
   keywordTokens: []
   icon: {fileID: 0}
   activationStateMachineName: Body
