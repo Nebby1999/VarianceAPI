@@ -60,7 +60,23 @@ namespace VAPI
         /// </summary>
         public DirectorAPI.Stage stages { get => _stages; set => _stages = value; }
 
-        UnlockableDef? IVariantSpawnCondition.requiredUnlock => requiredUnlock.LoadAssetNow();
+        UnlockableDef? IVariantSpawnCondition.requiredUnlock
+        {
+            get
+            {
+                if(requiredUnlock == null || requiredUnlock.IsInvalid)
+                {
+                    return null;
+                }
+
+                if(requiredUnlock.AssetExists)
+                {
+                    return requiredUnlock.Asset;
+                }
+
+                return requiredUnlock.LoadAssetNow();
+            }
+        }
         IEnumerable<ExpansionDef>? IVariantSpawnCondition.requiredExpansionDefs
         {
             get
@@ -68,9 +84,15 @@ namespace VAPI
                 List<ExpansionDef> expansionDefs = new List<ExpansionDef>();
                 foreach(var expansion in requiredExpansionDefs)
                 {
-                    var exp = expansion.LoadAssetNow();
-                    if(exp)
-                        expansionDefs.Add(exp);
+                    if (expansion == null || expansion.IsInvalid)
+                        continue;
+
+                    if(expansion.AssetExists)
+                    {
+                        expansionDefs.Add(expansion.Asset);
+                    }
+
+                    expansionDefs.Add(expansion.LoadAssetNow());
                 }
                 return expansionDefs;
             }
@@ -84,12 +106,15 @@ namespace VAPI
         [Space]
 
         [Tooltip("This unlockable must be unlocked for this variant to spawn")]
+        [NoCatalogLoad]
         public AddressReferencedUnlockableDef requiredUnlock = new AddressReferencedUnlockableDef();
 
         [Tooltip("This unlockable CANNOT be unlocked for this variant to spawn")]
+        [NoCatalogLoad]
         public AddressReferencedUnlockableDef forbiddenUnlock = new AddressReferencedUnlockableDef();
 
         [Tooltip("These expansions must be enabled for this variant to spawn")]
+        [NoCatalogLoad]
         public AddressReferencedExpansionDef[] requiredExpansionDefs = Array.Empty<AddressReferencedExpansionDef>();
 
         /// <summary>
