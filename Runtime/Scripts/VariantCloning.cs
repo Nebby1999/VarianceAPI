@@ -193,17 +193,17 @@ namespace VAPI
             new ScavData
             {
                 bodyName = nameof(DLC4Content.BodyPrefabs.ScavSanctum1Body),
-                cloneSuffix = "Variation1",
+                cloneSuffix = "Sanctum1",
             },
             new ScavData
             {
                 bodyName = nameof(DLC4Content.BodyPrefabs.ScavSanctum2Body),
-                cloneSuffix = "Variation2",
+                cloneSuffix = "Sanctum2",
             },
             new ScavData
             {
                 bodyName = nameof(DLC4Content.BodyPrefabs.ScavSanctum3Body),
-                cloneSuffix = "Variation3"
+                cloneSuffix = "Sanctum3"
             }
         };
 
@@ -218,7 +218,7 @@ namespace VAPI
         /// <summary>
         /// Adds a new Sanctum Scavenger to clone when an end user calls <see cref="CloneIntoSanctumScavs(CharacterVariantDef, bool, bool)"/>
         /// </summary>
-        /// <param name="cloneSuffix">The suffix to append to the <see cref="CharacterVariantDef"/>. By convention this currently is the string "Variation" followed by a number, such as "Variation1"</param>
+        /// <param name="cloneSuffix">The suffix to append to the <see cref="CharacterVariantDef"/>. By convention this currently is the string "Sanctum" followed by a number, such as "Sanctum1"</param>
         /// <param name="bodyName">The body prefab name of the sanctum scavenger</param>
         /// <returns>True if the Sanctum scav was added to the clone array, false if there's a clone suffix conflict.</returns>
         public static bool AddSanctumScavToClone(string cloneSuffix, string bodyName) => AddScavToClone(cloneSuffix, bodyName, ref _sanctumScavDatas);
@@ -244,8 +244,8 @@ namespace VAPI
             return true;
         }
 
-        public static CharacterVariantDef[] CloneIntoLunarScavs(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true) => CloneIntoScavVariants(def, _lunarScavDatas, resultAvailableOnlyIfSrcAvailable);
-        public static CharacterVariantDef[] CloneIntoSanctumScavs(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable) => CloneIntoScavVariants(def, _sanctumScavDatas, makeHidden, resultAvailableOnlyIfSrcAvailable);
+        public static CharacterVariantDef[] CloneIntoLunarScavs(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true) => CloneIntoScavVariants(def, _lunarScavDatas, makeHidden, resultAvailableOnlyIfSrcAvailable);
+        public static CharacterVariantDef[] CloneIntoSanctumScavs(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true) => CloneIntoScavVariants(def, _sanctumScavDatas, makeHidden, resultAvailableOnlyIfSrcAvailable);
         private static CharacterVariantDef[] CloneIntoScavVariants(CharacterVariantDef def, ScavData[] scavData, bool makeHidden, bool resultAvailableOnlyIfSrcAvailable)
         {
             using var _ = ListPool<CharacterVariantDef>.RentCollection(out var results);
