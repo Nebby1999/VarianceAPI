@@ -257,7 +257,7 @@ namespace VAPI
 
             if (string.IsNullOrWhiteSpace(aiSkillDriverTarget))
             {
-                VAPILog.Info($"Cannot apply AISkillDriverAimVectorModifier as the aiSkillDriverTarget field is null, empty or whitespace.")
+                VAPILog.Info($"Cannot apply AISkillDriverAimVectorModifier as the aiSkillDriverTarget field is null, empty or whitespace.");
                 return null;
             }
 
