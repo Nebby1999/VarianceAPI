@@ -1,5 +1,7 @@
 #nullable enable
+using MonoMod.Utils;
 using RoR2;
+using RoR2.Items;
 using System;
 
 namespace VAPI
@@ -43,9 +45,21 @@ namespace VAPI
         }
 
         /// <summary>
-        /// The MasterSummon that'll be turned into a variant
+        /// Tries to retrieve the MasterSummon instance that this VariantMasterSummon has a weak reference to.
+        /// <br>Since it's a weak reference, this method returns false if the MasterSummon has been finalized.</br>
         /// </summary>
-        public readonly MasterSummon masterSummon;
+        public bool TryGetMasterSummon(out MasterSummon? masterSummon)
+        {
+            if (_weakReference.IsAlive)
+            {
+                masterSummon = (MasterSummon)_weakReference.Target;
+                return true;
+            }
+            _weakReference.Target = null;
+            masterSummon = null;
+            return false;
+        }
+        private WeakReference _weakReference;
 
         /// <summary>
         /// The VariantDefs for the master
@@ -87,17 +101,32 @@ namespace VAPI
         /// </summary>
         public static event Action<VariantMasterSummonReport>? onServerVariantSummonGlobal;
 
+        private bool subscribed;
         /// <summary>
         /// Performs the summon
         /// </summary>
-        public void Perform() => masterSummon.Perform();
+        public void Perform()
+        {
+            if(TryGetMasterSummon(out MasterSummon? masterSummon))
+            {
+                masterSummon!.Perform();
+                return;
+            }
+            Unsub();
+        }
 
         private void OnMasterSummonReportGenerated(MasterSummon.MasterSummonReport masterSummonReport)
         {
+            if(!TryGetMasterSummon(out MasterSummon? masterSummon))
+            {
+                Unsub();
+                return;
+            }
+
             //If the master summon that just happened is the one stored in this, unhook from the event and turn it into a variant.
             if(masterSummonReport.masterSummon == masterSummon)
             {
-                MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
+                //MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
 
                 VAPIUtils.TransformSpawnedInstanceIntoVariant(new VAPIUtils.TransformSpawnedInstanceIntoVariantArgs
                 {
@@ -116,19 +145,34 @@ namespace VAPI
             }
         }
 
+        private void Unsub()
+        {
+            if(subscribed)
+            {
+                VAPILog.Message("Unsubbing from MasterSummon event.");
+                MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
+            }
+        }
+
+        private static int count;
         /// <summary>
         /// Constructor
         /// </summary>
         /// <param name="masterSummon">The master summon, from which once performed, will be turned into a variant</param>
         public VariantMasterSummon(MasterSummon masterSummon)
         {
-            this.masterSummon = masterSummon;
+            _weakReference = new WeakReference(masterSummon);
             MasterSummon.onServerMasterSummonGlobal += OnMasterSummonReportGenerated;
+            subscribed = true;
+            count++;
+            VAPILog.Info($"VariantMasterSummon constructed. Count:{count}");
         }
 
         ~VariantMasterSummon()
         {
-            MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
+            int prevCount = count;
+            count--;
+            VAPILog.Info($"VariantMasterSummon finalized. PrevCount:{prevCount} NewCount:{count}");
         }
     }
 }
