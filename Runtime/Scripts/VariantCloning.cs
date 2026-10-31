@@ -159,6 +159,36 @@ namespace VAPI
             return CloneForOtherBody(args);
         }
 
+        public static CharacterVariantDef? CloneIntoSuperRoboBallBoss(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
+        {
+            CloneForOtherBodyArgs args = new CloneForOtherBodyArgs
+            {
+                src = def,
+                makeHidden = makeHidden,
+                resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
+                cloneSuffix = "AWU",
+                requiredSrcBodyName = nameof(RoR2Content.BodyPrefabs.RoboBallBossBody),
+                targetBodyName = nameof(RoR2Content.BodyPrefabs.SuperRoboBallBossBody)
+            };
+
+            return CloneForOtherBody(args);
+        }
+
+        public static CharacterVariantDef? CloneIntoMinorConstructAttachable(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
+        {
+            CloneForOtherBodyArgs args = new CloneForOtherBodyArgs
+            {
+                src = def,
+                makeHidden = makeHidden,
+                resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
+                cloneSuffix = "MinorConstructAttachable",
+                requiredSrcBodyName = nameof(DLC1Content.BodyPrefabs.MinorConstructBody),
+                targetBodyName = nameof(DLC1Content.BodyPrefabs.MinorConstructAttachableBody)
+            };
+
+            return CloneForOtherBody(args);
+        }
+
         private struct ScavData
         {
             public string cloneSuffix;
