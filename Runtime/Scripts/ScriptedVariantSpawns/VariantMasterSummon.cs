@@ -63,23 +63,6 @@ namespace VAPI
         }
 
         /// <summary>
-        /// Tries to retrieve the MasterSummon instance that this VariantMasterSummon has a weak reference to.
-        /// <br>Since it's a weak reference, this method returns false if the MasterSummon has been finalized.</br>
-        /// </summary>
-        public bool TryGetMasterSummon(out MasterSummon? masterSummon)
-        {
-            if (_weakReference?.IsAlive ?? false)
-            {
-                masterSummon = (MasterSummon)_weakReference.Target;
-                return true;
-            }
-            _weakReference = null;
-            masterSummon = null;
-            return false;
-        }
-        private WeakReference? _weakReference;
-
-        /// <summary>
         /// The VariantDefs for the master
         /// </summary>
         public CharacterVariantDef[] variantDefs = Array.Empty<CharacterVariantDef>();
@@ -146,16 +129,6 @@ namespace VAPI
         public VariantMasterSummon(MasterSummon masterSummon)
         {
             _masterSummonToVariantMasterSummon.Add(masterSummon, this);
-
-            count++;
-            VAPILog.Message($"VariantMasterSummon created (count:{count})");
-        }
-        private static int count;
-        ~VariantMasterSummon()
-        {
-            int prevCount = count;
-            count--;
-            VAPILog.Message($"VariantMasterSummon finalized (prevCount:{prevCount}|count:{count}");
         }
     }
 }

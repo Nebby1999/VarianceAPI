@@ -115,17 +115,6 @@ namespace VAPI
         {
             this.spawnRequest = spawnRequest;
             spawnRequest.onSpawnedServer += OnCharacterSpawnedServer;
-            count++;
-            VAPILog.Message($"VariantDirectorSpawnRequest created (count:{count})");
-        }
-
-        private static int count;
-
-        ~VariantDirectorSpawnRequest()
-        {
-            int prevCount = count;
-            count--;
-            VAPILog.Message($"VariantDirectorSpawnRequest finalized (prevCount:{prevCount}|count:{count}");
         }
     }
 }
