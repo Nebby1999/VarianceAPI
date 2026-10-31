@@ -101,7 +101,6 @@ namespace VAPI
         /// </summary>
         public static event Action<VariantMasterSummonReport>? onServerVariantSummonGlobal;
 
-        private bool subscribed;
         /// <summary>
         /// Performs the summon
         /// </summary>
@@ -112,14 +111,16 @@ namespace VAPI
                 masterSummon!.Perform();
                 return;
             }
-            Unsub();
+            //Underlying master got collected, unsub and let us be collected eventually.
+            MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
         }
 
         private void OnMasterSummonReportGenerated(MasterSummon.MasterSummonReport masterSummonReport)
         {
             if(!TryGetMasterSummon(out MasterSummon? masterSummon))
             {
-                Unsub();
+                //Underlying master got collected, unsub and let us be collected eventually.
+                MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
                 return;
             }
 
@@ -145,16 +146,6 @@ namespace VAPI
             }
         }
 
-        private void Unsub()
-        {
-            if(subscribed)
-            {
-                VAPILog.Message("Unsubbing from MasterSummon event.");
-                MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
-            }
-        }
-
-        private static int count;
         /// <summary>
         /// Constructor
         /// </summary>
@@ -163,16 +154,6 @@ namespace VAPI
         {
             _weakReference = new WeakReference(masterSummon);
             MasterSummon.onServerMasterSummonGlobal += OnMasterSummonReportGenerated;
-            subscribed = true;
-            count++;
-            VAPILog.Info($"VariantMasterSummon constructed. Count:{count}");
-        }
-
-        ~VariantMasterSummon()
-        {
-            int prevCount = count;
-            count--;
-            VAPILog.Info($"VariantMasterSummon finalized. PrevCount:{prevCount} NewCount:{count}");
         }
     }
 }
