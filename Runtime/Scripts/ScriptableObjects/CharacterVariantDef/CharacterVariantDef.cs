@@ -190,22 +190,5 @@ namespace VAPI
             variantDef.additionalVariantComponents = (VariantComponentCollection)other.additionalVariantComponents.Clone();
             return variantDef;
         }
-
-        [ContextMenu("Fix oopsie")]
-        private void FixBadRegenMultiplier()
-        {
-            if(statModifier is BasicStatModifier basicStatModifier)
-            {
-                if(basicStatModifier.regenMultiplier == 0)
-                {
-                    basicStatModifier.regenMultiplier = 1;
-                }
-                statModifier = basicStatModifier;
-            }
-
-#if UNITY_EDITOR
-            UnityEditor.EditorUtility.SetDirty(this);
-#endif
-        }
     }
 }
