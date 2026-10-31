@@ -215,6 +215,113 @@ namespace VAPI
     }
 
     [Serializable]
+    public sealed class AISkillDriverAimVectorModifier : IVariantMasterModifier
+    {
+        private struct AISkillDriverAimVectorModifierResult : IDisposable
+        {
+            public AISkillDriver affectedAISkillDriver;
+            public float originalAimVectorDampTimeOverrideValue;
+            public float originalAimVectorMaxspeedOverrideValue;
+
+            public void Dispose()
+            {
+                affectedAISkillDriver.aimVectorDampTimeOverride = originalAimVectorDampTimeOverrideValue;
+                affectedAISkillDriver.aimVectorMaxSpeedOverride = originalAimVectorMaxspeedOverrideValue;
+            }
+        }
+
+        public float aimVectorMaxSpeedMultiplier { get => _aimVectorMaxSpeedMultiplier; set => _aimVectorMaxSpeedMultiplier = Mathf.Max(0 + float.Epsilon, value); }
+        [SerializeField, Min(0 + float.Epsilon)]
+        private float _aimVectorMaxSpeedMultiplier = 1f;
+
+        public float aimVectorDampTimeMultiplier { get => _aimVectorDampTimeMultiplier; set => _aimVectorDampTimeMultiplier = Mathf.Max(0 + float.Epsilon, value); }
+        [SerializeField, Min(0 + float.Epsilon)]
+        private float _aimVectorDampTimeMultiplier = 1f;
+
+        public string aiSkillDriverTarget = "";
+
+        public object Clone()
+        {
+            return new AISkillDriverAimVectorModifier
+            {
+                aiSkillDriverTarget = aiSkillDriverTarget,
+                _aimVectorDampTimeMultiplier = _aimVectorDampTimeMultiplier,
+                _aimVectorMaxSpeedMultiplier = aimVectorMaxSpeedMultiplier
+            };
+        }
+
+        public IDisposable? ModifyMaster(CharacterMaster master)
+        {
+            if (!NetworkServer.active)
+                return null;
+
+            if (string.IsNullOrWhiteSpace(aiSkillDriverTarget))
+            {
+                VAPILog.Info($"Cannot apply AISkillDriverAimVectorModifier as the aiSkillDriverTarget field is null, empty or whitespace.")
+                return null;
+            }
+
+            if (master.AiComponents == null)
+                return null;
+
+            for(int i = 0; i < master.AiComponents.Length; i++)
+            {
+                var aiComponent = master.aiComponents[i];
+                foreach(var skillDriver in aiComponent.skillDrivers)
+                {
+                    if(skillDriver.customName != aiSkillDriverTarget)
+                    {
+                        continue;
+                    }
+
+                    var result = new AISkillDriverAimVectorModifierResult
+                    {
+                        originalAimVectorDampTimeOverrideValue = skillDriver.aimVectorDampTimeOverride,
+                        originalAimVectorMaxspeedOverrideValue = skillDriver.aimVectorMaxSpeedOverride,
+                        affectedAISkillDriver = skillDriver
+                    };
+
+                    //If there's no overrides set to the skill driver, initialize them by taking them from the AI component itself.
+                    if(skillDriver.aimVectorDampTimeOverride < 0)
+                    {
+                        skillDriver.aimVectorDampTimeOverride = aiComponent.aimVectorDampTime;
+                    }
+                    if(skillDriver.aimVectorMaxSpeedOverride < 0)
+                    {
+                        skillDriver.aimVectorMaxSpeedOverride = aiComponent.aimVectorMaxSpeed;
+                    }
+
+                    //apply multipliers to overrides then return the disposable
+                    skillDriver.aimVectorDampTimeOverride *= aimVectorDampTimeMultiplier;
+                    skillDriver.aimVectorMaxSpeedOverride *= aimVectorMaxSpeedMultiplier;
+
+                    return result;
+                }
+            }
+
+            return null;
+        }
+
+        public void Validate()
+        {
+            if(string.IsNullOrWhiteSpace(aiSkillDriverTarget))
+            {
+                VAPILog.Warning($"Ai skill driver target should not be empty, null or whitespace!");
+            }
+        }
+
+        public AISkillDriverAimVectorModifier() { }
+
+        public AISkillDriverAimVectorModifier(float aimVectorMaxSpeedMultiplier, float aimVectorDampTimeMultiplier, string aiSkillDriverTarget = "")
+        {
+            this.aiSkillDriverTarget = aiSkillDriverTarget;
+            this.aimVectorDampTimeMultiplier = aimVectorDampTimeMultiplier;
+            this.aimVectorMaxSpeedMultiplier = aimVectorMaxSpeedMultiplier;
+        }
+    }
+
+
+    [Serializable]
     public sealed class BaseAIDampModifier : IVariantMasterModifier
     {
         private struct BaseAIDampModifierResult : IDisposable
