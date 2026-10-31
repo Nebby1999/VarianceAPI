@@ -69,10 +69,11 @@ namespace VAPI
 
         public event Action? onVariantsUnapplied;
         public event Action<CharacterVariantDef[]>? onVariantsApplied;
-
+        private MSUContentBehaviour? _msuContentBehaviour;
         private void Awake()
         {
             characterBody = GetComponent<CharacterBody>();
+            _msuContentBehaviour = GetComponent<MSUContentBehaviour>();
 
             if (characterBody.modelLocator && characterBody.modelLocator.modelTransform)
             {
@@ -102,11 +103,6 @@ namespace VAPI
             {
                 OnSyncListDirty();
             }
-        }
-
-        private void Start()
-        {
-            characterBody.MarkAllStatsDirty();
         }
 
         public ReadOnlyArray<CharacterVariantDef> GetCharacterVariantDefs()
@@ -249,7 +245,20 @@ namespace VAPI
             {
                 AnnounceArrivalServer();
             }
-            
+
+            StartCoroutine(MarkStatsDirty());
+        }
+
+        private IEnumerator MarkStatsDirty()
+        {
+            //Call get stats interfaces from msu
+            if(_msuContentBehaviour != null)
+            {
+                _msuContentBehaviour.StartGetInterfaces();
+            }
+            //Await once
+            yield return null;
+            //by the time charbody's recalc stats run, we'll be on MSU's content behaviour system properly.
             characterBody.MarkAllStatsDirty();
         }
         private static readonly List<string> _possibleArrivalTokensShared = new List<string>();

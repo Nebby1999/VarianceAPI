@@ -78,7 +78,10 @@ namespace VAPI
 
         private void OnDestroy()
         {
-            Run.instance.networkRuleBookComponent.onRuleBookUpdated -= OnRulebookUpdated;
+            if(Run.instance && Run.instance.networkRuleBookComponent)
+            {
+                Run.instance.networkRuleBookComponent.onRuleBookUpdated -= OnRulebookUpdated;
+            }
             CharacterVariantMask.Return(availableVariants);
         }
 
