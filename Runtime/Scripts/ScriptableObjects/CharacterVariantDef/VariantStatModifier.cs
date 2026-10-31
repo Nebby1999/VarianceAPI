@@ -49,7 +49,7 @@ namespace VAPI
         public float regenMultiplier { get => _regenMultiplier; set => _regenMultiplier = Mathf.Max(0, value); }
         [Tooltip("The Regeneration multiplier for this vairant")]
         [SerializeField, Min(0)]
-        private float _regenMultiplier = 0;
+        private float _regenMultiplier = 1;
 
         [Tooltip("Flat bonus to the variant's shields, if negative it'll reduce it's shields")]
         public float shieldBonus = 0;
