@@ -239,6 +239,7 @@ namespace VAPI
         private float _aimVectorDampTimeMultiplier = 1f;
 
         public string aiSkillDriverTarget = "";
+        public SkillSlot targetSkillSlot;
 
         public object Clone()
         {
@@ -264,42 +265,41 @@ namespace VAPI
             if (master.AiComponents == null)
                 return null;
 
+            DisposableCollectionHelper helper = new DisposableCollectionHelper(true);
             for(int i = 0; i < master.AiComponents.Length; i++)
             {
                 var aiComponent = master.aiComponents[i];
                 foreach(var skillDriver in aiComponent.skillDrivers)
                 {
-                    if(skillDriver.customName != aiSkillDriverTarget)
+                    if(skillDriver.customName == aiSkillDriverTarget || skillDriver.skillSlot == targetSkillSlot)
                     {
-                        continue;
+
+                        var result = new AISkillDriverAimVectorModifierResult
+                        {
+                            originalAimVectorDampTimeOverrideValue = skillDriver.aimVectorDampTimeOverride,
+                            originalAimVectorMaxspeedOverrideValue = skillDriver.aimVectorMaxSpeedOverride,
+                            affectedAISkillDriver = skillDriver
+                        };
+                        helper.AddDisposable(result);
+
+                        //If there's no overrides set to the skill driver, initialize them by taking them from the AI component itself.
+                        if (skillDriver.aimVectorDampTimeOverride < 0)
+                        {
+                            skillDriver.aimVectorDampTimeOverride = aiComponent.aimVectorDampTime;
+                        }
+                        if (skillDriver.aimVectorMaxSpeedOverride < 0)
+                        {
+                            skillDriver.aimVectorMaxSpeedOverride = aiComponent.aimVectorMaxSpeed;
+                        }
+
+                        //apply multipliers to overrides then return the disposable
+                        skillDriver.aimVectorDampTimeOverride *= aimVectorDampTimeMultiplier;
+                        skillDriver.aimVectorMaxSpeedOverride *= aimVectorMaxSpeedMultiplier;
                     }
-
-                    var result = new AISkillDriverAimVectorModifierResult
-                    {
-                        originalAimVectorDampTimeOverrideValue = skillDriver.aimVectorDampTimeOverride,
-                        originalAimVectorMaxspeedOverrideValue = skillDriver.aimVectorMaxSpeedOverride,
-                        affectedAISkillDriver = skillDriver
-                    };
-
-                    //If there's no overrides set to the skill driver, initialize them by taking them from the AI component itself.
-                    if(skillDriver.aimVectorDampTimeOverride < 0)
-                    {
-                        skillDriver.aimVectorDampTimeOverride = aiComponent.aimVectorDampTime;
-                    }
-                    if(skillDriver.aimVectorMaxSpeedOverride < 0)
-                    {
-                        skillDriver.aimVectorMaxSpeedOverride = aiComponent.aimVectorMaxSpeed;
-                    }
-
-                    //apply multipliers to overrides then return the disposable
-                    skillDriver.aimVectorDampTimeOverride *= aimVectorDampTimeMultiplier;
-                    skillDriver.aimVectorMaxSpeedOverride *= aimVectorMaxSpeedMultiplier;
-
-                    return result;
                 }
             }
 
-            return null;
+            return helper;
         }
 
         public void Validate()
