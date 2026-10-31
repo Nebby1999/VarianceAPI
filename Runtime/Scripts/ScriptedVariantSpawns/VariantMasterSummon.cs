@@ -2,6 +2,7 @@
 using MonoMod.Utils;
 using RoR2;
 using RoR2.Items;
+using RoR2BepInExPack.Utilities;
 using System;
 
 namespace VAPI
@@ -17,6 +18,23 @@ namespace VAPI
     /// </summary>
     public sealed class VariantMasterSummon
     {
+        private static FixedConditionalWeakTable<MasterSummon, VariantMasterSummon> _masterSummonToVariantMasterSummon = new FixedConditionalWeakTable<MasterSummon, VariantMasterSummon>();
+
+        [SystemInitializer]
+        private static void Init()
+        {
+            MasterSummon.onServerMasterSummonGlobal += CallVariantMasterSummonMethodIfApplicable;
+        }
+
+        private static void CallVariantMasterSummonMethodIfApplicable(MasterSummon.MasterSummonReport obj)
+        {
+            var masterSummon = obj.masterSummon;
+            if(_masterSummonToVariantMasterSummon.TryGetValue(masterSummon, out var variantMasterSummon))
+            {
+                variantMasterSummon.OnMasterSummonReportGenerated(obj);
+            }
+        }
+
         /// <summary>
         /// The report of the VariantSummon
         /// </summary>
@@ -50,16 +68,16 @@ namespace VAPI
         /// </summary>
         public bool TryGetMasterSummon(out MasterSummon? masterSummon)
         {
-            if (_weakReference.IsAlive)
+            if (_weakReference?.IsAlive ?? false)
             {
                 masterSummon = (MasterSummon)_weakReference.Target;
                 return true;
             }
-            _weakReference.Target = null;
+            _weakReference = null;
             masterSummon = null;
             return false;
         }
-        private WeakReference _weakReference;
+        private WeakReference? _weakReference;
 
         /// <summary>
         /// The VariantDefs for the master
@@ -101,49 +119,24 @@ namespace VAPI
         /// </summary>
         public static event Action<VariantMasterSummonReport>? onServerVariantSummonGlobal;
 
-        /// <summary>
-        /// Performs the summon
-        /// </summary>
-        public void Perform()
-        {
-            if(TryGetMasterSummon(out MasterSummon? masterSummon))
-            {
-                masterSummon!.Perform();
-                return;
-            }
-            //Underlying master got collected, unsub and let us be collected eventually.
-            MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
-        }
-
         private void OnMasterSummonReportGenerated(MasterSummon.MasterSummonReport masterSummonReport)
         {
-            if(!TryGetMasterSummon(out MasterSummon? masterSummon))
+            //MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
+
+            VAPIUtils.TransformSpawnedInstanceIntoVariant(new VAPIUtils.TransformSpawnedInstanceIntoVariantArgs
             {
-                //Underlying master got collected, unsub and let us be collected eventually.
-                MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
-                return;
-            }
+                spawnedInstance = masterSummonReport.summonMasterInstance.gameObject,
+                variantDefs = variantDefs,
+                baseDeathRewards = summonerDeathRewards,
+                deathRewardsCoefficient = deathRewardsCoefficient,
+                supressArrivalMessage = supressArrivalMessage,
+                noGoldExpModifications = noGoldExpModifications,
+                noItemRewards = noItemReward,
+            });
 
-            //If the master summon that just happened is the one stored in this, unhook from the event and turn it into a variant.
-            if(masterSummonReport.masterSummon == masterSummon)
-            {
-                //MasterSummon.onServerMasterSummonGlobal -= OnMasterSummonReportGenerated;
-
-                VAPIUtils.TransformSpawnedInstanceIntoVariant(new VAPIUtils.TransformSpawnedInstanceIntoVariantArgs
-                {
-                    spawnedInstance = masterSummonReport.summonMasterInstance.gameObject,
-                    variantDefs = variantDefs,
-                    baseDeathRewards = summonerDeathRewards,
-                    deathRewardsCoefficient = deathRewardsCoefficient,
-                    supressArrivalMessage = supressArrivalMessage,
-                    noGoldExpModifications = noGoldExpModifications,
-                    noItemRewards = noItemReward,
-                });
-
-                var report = new VariantMasterSummonReport(masterSummonReport, variantDefs);
-                onSummonPerformed?.Invoke(report);
-                onServerVariantSummonGlobal?.Invoke(report);
-            }
+            var report = new VariantMasterSummonReport(masterSummonReport, variantDefs);
+            onSummonPerformed?.Invoke(report);
+            onServerVariantSummonGlobal?.Invoke(report);
         }
 
         /// <summary>
@@ -152,8 +145,17 @@ namespace VAPI
         /// <param name="masterSummon">The master summon, from which once performed, will be turned into a variant</param>
         public VariantMasterSummon(MasterSummon masterSummon)
         {
-            _weakReference = new WeakReference(masterSummon);
-            MasterSummon.onServerMasterSummonGlobal += OnMasterSummonReportGenerated;
+            _masterSummonToVariantMasterSummon.Add(masterSummon, this);
+
+            count++;
+            VAPILog.Message($"VariantMasterSummon created (count:{count})");
+        }
+        private static int count;
+        ~VariantMasterSummon()
+        {
+            int prevCount = count;
+            count--;
+            VAPILog.Message($"VariantMasterSummon finalized (prevCount:{prevCount}|count:{count}");
         }
     }
 }

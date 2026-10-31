@@ -89,11 +89,8 @@ namespace VAPI
         private void OnCharacterSpawnedServer(SpawnCard.SpawnResult spawnCardResult)
         {
             //If the spawn request that just happened is the one stored in this, unhook from the event and turn the result into a variant
-
             if(spawnCardResult.spawnRequest == spawnRequest)
             {
-                spawnRequest.onSpawnedServer -= OnCharacterSpawnedServer;
-
                 VAPIUtils.TransformSpawnedInstanceIntoVariant(new VAPIUtils.TransformSpawnedInstanceIntoVariantArgs
                 {
                     spawnedInstance = spawnCardResult.spawnedInstance,
@@ -118,11 +115,17 @@ namespace VAPI
         {
             this.spawnRequest = spawnRequest;
             spawnRequest.onSpawnedServer += OnCharacterSpawnedServer;
+            count++;
+            VAPILog.Message($"VariantDirectorSpawnRequest created (count:{count})");
         }
+
+        private static int count;
 
         ~VariantDirectorSpawnRequest()
         {
-            spawnRequest.onSpawnedServer -= OnCharacterSpawnedServer;
+            int prevCount = count;
+            count--;
+            VAPILog.Message($"VariantDirectorSpawnRequest finalized (prevCount:{prevCount}|count:{count}");
         }
     }
 }

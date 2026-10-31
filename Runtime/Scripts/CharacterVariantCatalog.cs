@@ -809,7 +809,7 @@ namespace VAPI
 
             for(int i = 0; i < aiCount; i++)
             {
-                variantMasterSummon.Perform();
+                masterSummon.Perform();
             }
         }
 
