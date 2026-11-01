@@ -27,14 +27,14 @@ namespace VAPI
             /// <summary>
             /// The <see cref="CharacterVariantDef"/>s that the character has
             /// </summary>
-            public readonly CharacterVariantDef[] variantDefs;
+            public readonly CharacterVariantDef[]? variantDefs;
 
             /// <summary>
             /// Constructor
             /// </summary>
             /// <param name="spawnResult">The base <see cref="SpawnCard.SpawnResult"/> from the DirectorSpawnREquest</param>
             /// <param name="variantDefs">The character's variant defs</param>
-            public VariantDirectorSpawnResult(SpawnCard.SpawnResult spawnResult, CharacterVariantDef[] variantDefs)
+            public VariantDirectorSpawnResult(SpawnCard.SpawnResult spawnResult, CharacterVariantDef[]? variantDefs)
             {
                 this.spawnResult = spawnResult;
                 this.variantDefs = variantDefs;
@@ -49,7 +49,7 @@ namespace VAPI
         /// <summary>
         /// The VariantDefs for the character
         /// </summary>
-        public CharacterVariantDef[] variantDefs = Array.Empty<CharacterVariantDef>();
+        public CharacterVariantDef[]? variantDefs;
 
         /// <summary>
         /// The death rewards from the requester, if supplied the summon will have the same gold and experience reward

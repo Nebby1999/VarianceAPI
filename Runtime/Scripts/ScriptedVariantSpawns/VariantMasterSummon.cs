@@ -48,7 +48,7 @@ namespace VAPI
             /// <summary>
             /// The <see cref="CharacterVariantDef"/>s that the summon has
             /// </summary>
-            public readonly CharacterVariantDef[] summonInstanceVariants;
+            public readonly CharacterVariantDef[]? summonInstanceVariants;
 
             /// <summary>
             /// Constructor
@@ -65,7 +65,7 @@ namespace VAPI
         /// <summary>
         /// The VariantDefs for the master
         /// </summary>
-        public CharacterVariantDef[] variantDefs = Array.Empty<CharacterVariantDef>();
+        public CharacterVariantDef[]? variantDefs;
 
         /// <summary>
         /// The death rewards from the summoner, if supplied the summon will have the same gold and experience reward

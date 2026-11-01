@@ -178,7 +178,6 @@ namespace VAPI
                         deathRewardsCoefficient = 1,
                         noGoldExpModifications = true,
                         noItemReward = true,
-                        variantDefs = null
                     };
                 }
                 return masterSummon;

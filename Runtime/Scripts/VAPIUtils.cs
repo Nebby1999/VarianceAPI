@@ -120,7 +120,7 @@ namespace VAPI
             bool noGoldExpModifications = args.noGoldExpModifications ?? false;
             bool noItemRewards = args.noItemRewards ?? false;
 
-            if (spawnedInstance == null || variantDefs == null)
+            if (spawnedInstance == null)
                 return;
 
             if (!NetworkServer.active)
@@ -145,8 +145,11 @@ namespace VAPI
 
             if(spawnedBodyInstance.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
             {
-                bodyVariantController.SetCharacterVariantDefsServer(variantDefs);
-                bodyVariantController.doNotRollForVariants = true;
+                if(variantDefs != null)
+                {
+                    bodyVariantController.SetCharacterVariantDefsServer(variantDefs);
+                    bodyVariantController.doNotRollForVariants = true;
+                }
                 bodyVariantController.supressArrivalMessageServer = supressArrivalMessage;
             }
 
