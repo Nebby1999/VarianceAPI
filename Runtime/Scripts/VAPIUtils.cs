@@ -145,12 +145,12 @@ namespace VAPI
 
             if(spawnedBodyInstance.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
             {
+                bodyVariantController.supressArrivalMessageServer = supressArrivalMessage;
                 if(variantDefs != null)
                 {
                     bodyVariantController.SetCharacterVariantDefsServer(variantDefs);
                     bodyVariantController.doNotRollForVariants = true;
                 }
-                bodyVariantController.supressArrivalMessageServer = supressArrivalMessage;
             }
 
             if (spawnedBodyInstance.TryGetComponent<VariantDeathRewards>(out var variantDeathRewards))
