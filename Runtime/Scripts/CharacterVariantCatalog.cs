@@ -301,7 +301,8 @@ namespace VAPI
         /// </summary>
         public static ResourceAvailability catalogAvailability;
 
-        public static List<CharacterVariantDef>? RetrieveDependantSpawnVariants(CharacterVariantDef dependee)
+        public static List<CharacterVariantDef>? RetrieveDependantSpawnVariants(CharacterVariantIndex characterVariantIndex) => RetrieveDependantSpawnVariants(GetCharacterVariantDef(characterVariantIndex));
+        public static List<CharacterVariantDef>? RetrieveDependantSpawnVariants(CharacterVariantDef? dependee)
         {
             if(dependee == null || _dependeeVariantToDependantVariants.TryGetValue(dependee, out var dependants) == false)
             {
