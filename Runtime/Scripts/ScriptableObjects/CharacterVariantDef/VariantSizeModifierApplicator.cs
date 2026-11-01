@@ -47,7 +47,7 @@ namespace VAPI
             }
 
             //Don't do anything if size coefficient is just 1
-            if(Mathf.Approximately(_computedSizeCoefficient, 1))
+            if (Mathf.Approximately(_computedSizeCoefficient, 1))
             {
                 return;
             }
@@ -61,20 +61,27 @@ namespace VAPI
 
             float realCoefficient = _computedSizeCoefficient;
 
+            bool decreaseInsteadOfIncrease = false;
             //If the computed size coefficient is greater than 1, then we need to increase the scale. With a value of 1.1 we dont wanna increase size by 110%, but rather just 10%.
             //If it's less, we dont need to reduce it by 1.
-            if(_computedSizeCoefficient >= 1)
+            if (_computedSizeCoefficient >= 1)
             {
                 realCoefficient -= 1;
+                decreaseInsteadOfIncrease = false;
+            }
+            else
+            {
+                realCoefficient = _computedSizeCoefficient;
+                decreaseInsteadOfIncrease = true;
             }
 
             //A coefficient of 1.1 would turn into a scale increase percentage of 10. One of 0.5 would turn into a scale reduction percentage of 50;
-            int scalePercentage = Mathf.FloorToInt(realCoefficient * 100);
+            int scalePercentage = decreaseInsteadOfIncrease ? 100 - Mathf.FloorToInt(realCoefficient * 100) : Mathf.FloorToInt(realCoefficient * 100);
 
-            _usedBuffDef = _computedSizeCoefficient > 1 ? VAPIContent.Buffs.VAPIIncreaseScale.asset! : VAPIContent.Buffs.VAPIDecreaseScale.asset!;
+            _usedBuffDef = decreaseInsteadOfIncrease ? VAPIContent.Buffs.VAPIDecreaseScale.asset! : VAPIContent.Buffs.VAPIIncreaseScale.asset!;
             _buffStacks = scalePercentage;
 
-            if(NetworkServer.active)
+            if (NetworkServer.active)
                 _characterBody.SetBuffCount(_usedBuffDef.buffIndex, _buffStacks);
         }
 
