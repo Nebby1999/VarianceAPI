@@ -541,7 +541,12 @@ namespace VAPI
             yield return sortedVariants;
         }
 
-        private static void FilterCharacterVariantProviders(Stage obj)
+        public static void ForceVariantAvailabilityRecalculation()
+        {
+            FilterCharacterVariantProviders(null);
+        }
+
+        private static void FilterCharacterVariantProviders(Stage? obj)
         {
             for (int i = 0; i < _characterVariantProviders!.Length; i++)
             {

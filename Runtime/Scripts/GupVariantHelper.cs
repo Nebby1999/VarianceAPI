@@ -87,12 +87,23 @@ namespace VAPI
             if (!baseSplitDeath.characterBody.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
                 return toReturn;
 
+            bool noItemReward = false;
+            bool noGoldExpModifications = false;
+
+            if(baseSplitDeath.characterBody.TryGetComponent<VariantDeathRewards>(out var variantDeathRewards))
+            {
+                noItemReward = variantDeathRewards.noItemRewardServer;
+                noGoldExpModifications = variantDeathRewards.noGoldExpModificationsServer;
+            }
+
             //Wrap the master summon with the variant summon, which will ensure the Geep/Gip gets turned into a variant.
             VariantMasterSummon wrapper = new VariantMasterSummon(toReturn.masterSummon)
             {
                 deathRewardsCoefficient = 0.3f,
                 summonerDeathRewards = baseSplitDeath.characterBody.GetComponent<DeathRewards>(),
-                variantDefs = GetVariantDefs(bodyVariantController.GetCharacterVariantDefs(), toReturn.masterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex)
+                variantDefs = GetVariantDefs(bodyVariantController.GetCharacterVariantDefs(), toReturn.masterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex),
+                noGoldExpModifications = noGoldExpModifications,
+                noItemReward = noItemReward,
             };
             return toReturn;
         }

@@ -189,6 +189,21 @@ namespace VAPI
             return CloneForOtherBody(args);
         }
 
+        public static CharacterVariantDef? CloneIntoOverloadingWorm(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
+        {
+            CloneForOtherBodyArgs args = new CloneForOtherBodyArgs
+            {
+                src = def,
+                makeHidden = makeHidden,
+                resultAvailableOnlyIfSrcAvailable = resultAvailableOnlyIfSrcAvailable,
+                cloneSuffix = "Overloading",
+                requiredSrcBodyName = nameof(RoR2Content.BodyPrefabs.MagmaWormBody),
+                targetBodyName = nameof(RoR2Content.BodyPrefabs.ElectricWormBody)
+            };
+
+            return CloneForOtherBody(args);
+        }
+
         private struct ScavData
         {
             public string cloneSuffix;
