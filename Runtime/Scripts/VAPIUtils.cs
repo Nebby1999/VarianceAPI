@@ -118,14 +118,14 @@ namespace VAPI
         public static void TransformSpawnedInstanceIntoVariant(TransformSpawnedInstanceIntoVariantArgs args)
         {
             GameObject? spawnedInstance = args.spawnedInstance;
-            CharacterVariantDef[]? variantDefs = args.preassignedVariantDefs;
+            CharacterVariantDef[]? preAssignedVariantDefs = args.preassignedVariantDefs;
             DeathRewards? baseDeathRewards = args.baseDeathRewards;
             float deathRewardsCoefficient = args.deathRewardsCoefficient ?? 1;
             bool supressArrivalMessage = args.supressArrivalMessage ?? false;
             bool noGoldExpModifications = args.noGoldExpModifications ?? false;
             bool noItemRewards = args.noItemRewards ?? false;
-            bool variantsAreAdditive = args.preassignedVariantDefsAreAdditive ?? false;
-            float spawnManagerMultiplier = args.spawnManagerMultiplier ?? 1;
+            bool preAssignedVariantDefsAreAdditive = args.preassignedVariantDefsAreAdditive ?? false;
+            float? spawnManagerMultiplier = args.spawnManagerMultiplier ?? 1;
 
             if (spawnedInstance == null)
                 return;
@@ -154,9 +154,19 @@ namespace VAPI
             {
                 bodyVariantController.supressArrivalMessageServer = supressArrivalMessage;
 
-                if(variantDefs != null)
+                /*
+                 * Create the pre assigned spawn data struct, assign our multiplier.
+                 * If the pre assigned array is meant to be additive, add it to the data, then assign the data to the controller.
+                 * 
+                 * Finally, if the variant def array is not null and they're not additive, set them directly.
+                 */
+
+                PreAssignedSpawnData preAssignedSpawnData = new PreAssignedSpawnData { spawnRateMultiplier = spawnManagerMultiplier, additiveVariantDefs = preAssignedVariantDefsAreAdditive ? preAssignedVariantDefs : null };
+                bodyVariantController.preAssignedSpawnDataServer = preAssignedSpawnData;
+
+                if(preAssignedVariantDefs != null && !preAssignedVariantDefsAreAdditive)
                 {
-                    bodyVariantController.SetCharacterVariantDefsServer(variantDefs);
+                    bodyVariantController.SetCharacterVariantDefsServer(preAssignedVariantDefs);
                     bodyVariantController.doNotRollForVariants = true;
                 }
             }

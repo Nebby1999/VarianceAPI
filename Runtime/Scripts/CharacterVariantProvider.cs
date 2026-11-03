@@ -68,6 +68,13 @@ namespace VAPI
             }
         }
 
+        public enum RollType
+        { 
+            Default,
+            Unique,
+            NonUnique
+        }
+
         /// <summary>
         /// Arguments for rolling the <see cref="CharacterVariantDef"/> for a character
         /// </summary>
@@ -82,6 +89,10 @@ namespace VAPI
             /// A multiplier applied to the spawn chance of the variant
             /// </summary>
             public float? spawnChanceMultiplier;
+
+            public RollType? rollType;
+
+            public CharacterVariantDef[]? additiveVariantDefs;
         }
 
         /// <summary>
@@ -92,17 +103,84 @@ namespace VAPI
         /// <param name="args">The arguments for rolling the variants</param>
         public CharacterVariantDef[] RollVariantDefs(RollVariantDefsArgs args)
         {
-            if(filteredUniqueVariants.Count > 0 && RollUniques(args.rng, args.spawnChanceMultiplier ?? 1f, out CharacterVariantDef? uniqueResult))
+            Xoroshiro128Plus rng = args.rng;
+            float spawnChanceMultiplier = args.spawnChanceMultiplier ?? 1f;
+            RollType rollType = args.rollType ?? RollType.Default;
+            CharacterVariantDef[]? additiveVariantDefs = args.additiveVariantDefs;
+
+            CharacterVariantDef[] resultFromProcedure;
+            switch(rollType)
             {
-                return new CharacterVariantDef[] { uniqueResult! };
+                case RollType.Default:
+                    DefaultRollProcedure(rng, spawnChanceMultiplier, out resultFromProcedure);
+                    break;
+                case RollType.Unique:
+                    UniqueRollProcedure(rng, spawnChanceMultiplier, out resultFromProcedure);
+                    break;
+                case RollType.NonUnique:
+                    NonUniqueRollProcedure(rng, spawnChanceMultiplier, out resultFromProcedure);
+                    break;
+                default:
+                    resultFromProcedure = Array.Empty<CharacterVariantDef>();
+                    break;
             }
 
-            if(filteredNonUniqueVariants.Count > 0 && RollNonUniques(args.rng, args.spawnChanceMultiplier ?? 1f, out CharacterVariantDef[]? results))
+            if(additiveVariantDefs == null)
             {
-                return results!;
+                return resultFromProcedure;
             }
 
-            return Array.Empty<CharacterVariantDef>();
+            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var resultWithAdditives);
+            resultWithAdditives.AddRange(additiveVariantDefs);
+
+            foreach(var result in resultFromProcedure)
+            {
+                if(!resultWithAdditives.Contains(result))
+                {
+                    resultWithAdditives.Add(result);
+                }
+            }
+
+            return resultWithAdditives.ToArray();
+        }
+
+        private void DefaultRollProcedure(Xoroshiro128Plus rng, float spawnChanceMultiplier, out CharacterVariantDef[] resultFromProcedure)
+        {
+            if (filteredUniqueVariants.Count > 0 && RollUniques(rng, spawnChanceMultiplier, out CharacterVariantDef? uniqueResult))
+            {
+                resultFromProcedure = new CharacterVariantDef[] { uniqueResult! };
+                return;
+            }
+
+            if (filteredNonUniqueVariants.Count > 0 && RollNonUniques(rng, spawnChanceMultiplier, out CharacterVariantDef[]? results))
+            {
+                resultFromProcedure = results!;
+                return;
+            }
+
+            resultFromProcedure = Array.Empty<CharacterVariantDef>();
+        }
+
+        private void UniqueRollProcedure(Xoroshiro128Plus rng, float spawnChanceMultiplier, out CharacterVariantDef[] resultFromProcedure)
+        {
+            if (filteredUniqueVariants.Count > 0 && RollUniques(rng, spawnChanceMultiplier, out CharacterVariantDef? uniqueResult))
+            {
+                resultFromProcedure = new CharacterVariantDef[] { uniqueResult! };
+                return;
+            }
+
+            resultFromProcedure = Array.Empty<CharacterVariantDef>();
+        }
+
+        private void NonUniqueRollProcedure(Xoroshiro128Plus rng, float spawnChanceMultiplier, out CharacterVariantDef[] resultFromProcedure)
+        {
+            if (filteredNonUniqueVariants.Count > 0 && RollNonUniques(rng, spawnChanceMultiplier, out CharacterVariantDef[]? results))
+            {
+                resultFromProcedure = results!;
+                return;
+            }
+
+            resultFromProcedure = Array.Empty<CharacterVariantDef>();
         }
 
         private readonly WeightedSelection<int> uniqueVariantIndexSelector = new WeightedSelection<int>();

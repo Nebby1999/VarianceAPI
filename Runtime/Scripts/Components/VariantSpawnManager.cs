@@ -130,6 +130,8 @@ namespace VAPI
             public CharacterVariantProvider? variantProvider;
             public CharacterBodyVariantController? bodyController;
             public CharacterMasterVariantStorage? masterVariantStorage;
+            public CharacterVariantDef[]? additiveVariantDefs;
+            public float? spawnRateMultiplier;
         }
 
         private void OnBodyStart(CharacterBody body)
@@ -151,6 +153,13 @@ namespace VAPI
                     }
                 case BodyStartProcedure.RollVariants:
                     {
+                        var args = new CharacterVariantProvider.RollVariantDefsArgs
+                        {
+                            rng = variantSpawnRng!,
+                            spawnChanceMultiplier = 1 * (GetSpawnRateMultiplier() * (values.spawnRateMultiplier ?? 1)),
+                            additiveVariantDefs = values.additiveVariantDefs,
+                            rollType = values.additiveVariantDefs == null ? CharacterVariantProvider.RollType.Default : CharacterVariantProvider.RollType.NonUnique,
+                        };
                         CharacterVariantDef[] rolledVariants = values.variantProvider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
                         values.bodyController!.SetCharacterVariantDefsServer(rolledVariants);
                         return;
@@ -194,6 +203,13 @@ namespace VAPI
             {
                 retrievedValues.masterVariantStorage = variantStorage;
                 return BodyStartProcedure.SetFromStorage;
+            }
+
+            if(bodyVariantController.HasPreAssignedSpawnData())
+            {
+                var preSpawnData = bodyVariantController.ConsumePreAssignedSpawnData();
+                retrievedValues.additiveVariantDefs = preSpawnData.additiveVariantDefs;
+                retrievedValues.spawnRateMultiplier = preSpawnData.spawnRateMultiplier;
             }
 
             return BodyStartProcedure.RollVariants;

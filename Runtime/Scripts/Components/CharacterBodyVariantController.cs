@@ -13,10 +13,10 @@ using Object = UnityEngine.Object;
 
 namespace VAPI
 {
-    public struct PreSpawnMetadata
+    public struct PreAssignedSpawnData
     {
-        public CharacterVariantDef[] additiveVariantDefs;
-        public float spawnRateMultiplier;
+        public CharacterVariantDef[]? additiveVariantDefs;
+        public float? spawnRateMultiplier;
     }
     /// <summary>
     /// A <see cref="NetworkBehaviour"/> used to apply variants at a Body level.
@@ -70,22 +70,28 @@ namespace VAPI
         [SyncVar]
         private bool _noVariantsApplied;
 
-        public PreSpawnMetadata? preSpawnMetadataServer
+        public PreAssignedSpawnData ConsumePreAssignedSpawnData()
         {
-            [Server]
-            get
+            if(!HasPreAssignedSpawnData())
             {
-                var value = _preSpawnMetadataServer;
-                _preSpawnMetadataServer = null;
-                return value;
+                return default;
             }
+
+            var value = _preAssignedSpawnDataServer!.Value;
+            _preAssignedSpawnDataServer = null;
+            return value;
+        }
+        public bool HasPreAssignedSpawnData() => _preAssignedSpawnDataServer.HasValue;
+
+        public PreAssignedSpawnData? preAssignedSpawnDataServer
+        {
             [Server]
             set
             {
-                _preSpawnMetadataServer = value;
+                _preAssignedSpawnDataServer = value;
             }
         }
-        private PreSpawnMetadata? _preSpawnMetadataServer;
+        private PreAssignedSpawnData? _preAssignedSpawnDataServer;
 
         private CharacterVariantMask _appliedVariantMask;
 
