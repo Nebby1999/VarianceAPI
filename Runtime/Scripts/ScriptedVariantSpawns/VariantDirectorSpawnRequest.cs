@@ -52,6 +52,18 @@ namespace VAPI
         public CharacterVariantDef[]? variantDefs;
 
         /// <summary>
+        /// If true, <see cref="variantDefs"/> will be considered "Additive".
+        /// <br></br>
+        /// The variant spawn manager will still roll for variants, but it is guaranteed that the spawned variant has the variant defs in the array.
+        /// </summary>
+        public bool variantsAreAdditive;
+
+        /// <summary>
+        /// The SpawnManager's process for rolling variants will multiply all spawn rates by this value.
+        /// </summary>
+        public float spawnManagerMultiplier = 1;
+
+        /// <summary>
         /// The death rewards from the requester, if supplied the summon will have the same gold and experience reward
         /// </summary>
         public DeathRewards? requesterDeathRewards;
@@ -94,12 +106,14 @@ namespace VAPI
                 VAPIUtils.TransformSpawnedInstanceIntoVariant(new VAPIUtils.TransformSpawnedInstanceIntoVariantArgs
                 {
                     spawnedInstance = spawnCardResult.spawnedInstance,
-                    variantDefs = variantDefs,
+                    preassignedVariantDefs = variantDefs,
                     supressArrivalMessage = supressArrivalMessage,
                     baseDeathRewards = requesterDeathRewards,
                     deathRewardsCoefficient = deathRewardsCoefficient,
                     noItemRewards = noItemReward,
                     noGoldExpModifications = noGoldExpModifications,
+                    preassignedVariantDefsAreAdditive = variantsAreAdditive,
+                    spawnManagerMultiplier = spawnManagerMultiplier,
                 });
                 var variantSpawnResult = new VariantDirectorSpawnResult(spawnCardResult, variantDefs);
                 onSpawnPerformed?.Invoke(variantSpawnResult);

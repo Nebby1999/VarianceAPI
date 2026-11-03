@@ -74,12 +74,8 @@ namespace VAPI
         {
             if(body.TryGetComponent<CharacterBodyVariantController>(out var characterBodyVariantController))
             {
-                var variantDefs = characterBodyVariantController.GetCharacterVariantDefs();
-                for(int i = 0; i < variantDefs.Length; i++)
-                {
-                    CharacterVariantDef variantDef = variantDefs[i];
-                    bodyName = variantDef.variantNameProvider?.GetVariantName(bodyName) ?? bodyName;
-                }
+                //Return the cachedVariantName from the controller, when variants are applied it creates the new character string.
+                return characterBodyVariantController.cachedVariantName;
             }
             return bodyName;
         }

@@ -13,6 +13,11 @@ using Object = UnityEngine.Object;
 
 namespace VAPI
 {
+    public struct PreSpawnMetadata
+    {
+        public CharacterVariantDef[] additiveVariantDefs;
+        public float spawnRateMultiplier;
+    }
     /// <summary>
     /// A <see cref="NetworkBehaviour"/> used to apply variants at a Body level.
     /// <para></para>
@@ -63,7 +68,24 @@ namespace VAPI
             }
         }
         [SyncVar]
-        public bool _noVariantsApplied;
+        private bool _noVariantsApplied;
+
+        public PreSpawnMetadata? preSpawnMetadataServer
+        {
+            [Server]
+            get
+            {
+                var value = _preSpawnMetadataServer;
+                _preSpawnMetadataServer = null;
+                return value;
+            }
+            [Server]
+            set
+            {
+                _preSpawnMetadataServer = value;
+            }
+        }
+        private PreSpawnMetadata? _preSpawnMetadataServer;
 
         private CharacterVariantMask _appliedVariantMask;
 
@@ -378,6 +400,39 @@ namespace VAPI
                 _applyVisualModifiersAfterSkinCoroutine = ApplyVisualModifiersAfterSkin(visualModifiers);
                 StartCoroutine(_applyVisualModifiersAfterSkinCoroutine);
             }
+
+            RecalculateBodyName(characterVariants);
+        }
+
+        public string cachedVariantName { get; private set; }
+        private void RecalculateBodyName(ReadOnlyArray<CharacterVariantDef> appliedVariants)
+        {
+            string baseName = Language.GetString(characterBody.baseNameToken);
+
+            if(appliedVariants.Length == 0)
+            {
+                cachedVariantName = baseName;
+                return;
+            }
+
+            using var _0 = ListPool<CharacterVariantDef>.RentCollection(out var sortedVariants);
+            sortedVariants.AddRange(appliedVariants);
+            sortedVariants.Sort((a, b) =>
+            {
+                bool aIsOverride = a.variantNameProvider is VariantNameOverride;
+                bool bIsOverride = b.variantNameProvider is VariantNameOverride;
+
+                return bIsOverride.CompareTo(aIsOverride);
+            });
+
+            foreach(var variant in sortedVariants)
+            {
+                if(variant.variantNameProvider != null)
+                {
+                    baseName = variant.variantNameProvider.GetVariantName(baseName);
+                }
+            }
+            cachedVariantName = baseName;
         }
 
         private void UnapplyBodyModifications()

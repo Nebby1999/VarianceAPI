@@ -102,23 +102,30 @@ namespace VAPI
         public struct TransformSpawnedInstanceIntoVariantArgs
         {
             public GameObject? spawnedInstance;
-            public CharacterVariantDef[]? variantDefs;
+
+            public bool? supressArrivalMessage;
+            
+            public CharacterVariantDef[]? preassignedVariantDefs;
+            public bool? preassignedVariantDefsAreAdditive;
+            public float? spawnManagerMultiplier;
+            
             public DeathRewards? baseDeathRewards;
             public float? deathRewardsCoefficient;
             public bool? noItemRewards;
             public bool? noGoldExpModifications;
-            public bool? supressArrivalMessage;
         }
 
         public static void TransformSpawnedInstanceIntoVariant(TransformSpawnedInstanceIntoVariantArgs args)
         {
             GameObject? spawnedInstance = args.spawnedInstance;
-            CharacterVariantDef[]? variantDefs = args.variantDefs;
+            CharacterVariantDef[]? variantDefs = args.preassignedVariantDefs;
             DeathRewards? baseDeathRewards = args.baseDeathRewards;
             float deathRewardsCoefficient = args.deathRewardsCoefficient ?? 1;
             bool supressArrivalMessage = args.supressArrivalMessage ?? false;
             bool noGoldExpModifications = args.noGoldExpModifications ?? false;
             bool noItemRewards = args.noItemRewards ?? false;
+            bool variantsAreAdditive = args.preassignedVariantDefsAreAdditive ?? false;
+            float spawnManagerMultiplier = args.spawnManagerMultiplier ?? 1;
 
             if (spawnedInstance == null)
                 return;
@@ -146,6 +153,7 @@ namespace VAPI
             if(spawnedBodyInstance.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
             {
                 bodyVariantController.supressArrivalMessageServer = supressArrivalMessage;
+
                 if(variantDefs != null)
                 {
                     bodyVariantController.SetCharacterVariantDefsServer(variantDefs);

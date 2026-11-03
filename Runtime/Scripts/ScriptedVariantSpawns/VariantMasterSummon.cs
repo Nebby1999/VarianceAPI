@@ -55,7 +55,7 @@ namespace VAPI
             /// </summary>
             /// <param name="masterSummonReport">The base master summon report</param>
             /// <param name="summonInstanceVariants">The summon's character variant defs</param>
-            public VariantMasterSummonReport(MasterSummon.MasterSummonReport masterSummonReport, CharacterVariantDef[] summonInstanceVariants)
+            public VariantMasterSummonReport(MasterSummon.MasterSummonReport masterSummonReport, CharacterVariantDef[]? summonInstanceVariants)
             {
                 this.masterSummonReport = masterSummonReport;
                 this.summonInstanceVariants = summonInstanceVariants;
@@ -66,6 +66,18 @@ namespace VAPI
         /// The VariantDefs for the master
         /// </summary>
         public CharacterVariantDef[]? variantDefs;
+
+        /// <summary>
+        /// If true, <see cref="variantDefs"/> will be considered "Additive".
+        /// <br></br>
+        /// The variant spawn manager will still roll for variants, but it is guaranteed that the spawned variant has the variant defs in the array.
+        /// </summary>
+        public bool variantsAreAdditive;
+
+        /// <summary>
+        /// The SpawnManager's process for rolling variants will multiply all spawn rates by this value.
+        /// </summary>
+        public float spawnManagerMultiplier = 1;
 
         /// <summary>
         /// The death rewards from the summoner, if supplied the summon will have the same gold and experience reward
@@ -109,12 +121,14 @@ namespace VAPI
             VAPIUtils.TransformSpawnedInstanceIntoVariant(new VAPIUtils.TransformSpawnedInstanceIntoVariantArgs
             {
                 spawnedInstance = masterSummonReport.summonMasterInstance.gameObject,
-                variantDefs = variantDefs,
+                preassignedVariantDefs = variantDefs,
                 baseDeathRewards = summonerDeathRewards,
                 deathRewardsCoefficient = deathRewardsCoefficient,
                 supressArrivalMessage = supressArrivalMessage,
                 noGoldExpModifications = noGoldExpModifications,
                 noItemRewards = noItemReward,
+                preassignedVariantDefsAreAdditive = variantsAreAdditive,
+                spawnManagerMultiplier = spawnManagerMultiplier,
             });
 
             var report = new VariantMasterSummonReport(masterSummonReport, variantDefs);
