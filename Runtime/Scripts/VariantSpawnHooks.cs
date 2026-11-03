@@ -61,7 +61,7 @@ namespace VAPI
                     //I dont think this will be garbage collected immediatly so... :wario:
                     new VariantMasterSummon(masterSummon)
                     {
-                        variantDefs = variants
+                        preassignedVariantDefs = variants
                     };
                 }
                 //Return the master summon
@@ -124,7 +124,7 @@ namespace VAPI
                     //I dont think this will be garbage collected immediatly so... :wario:
                     new VariantMasterSummon(summon)
                     {
-                        variantDefs = variants
+                        preassignedVariantDefs = variants
                     };
                 }
                 //Return the master summon

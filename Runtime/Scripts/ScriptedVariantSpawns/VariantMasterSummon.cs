@@ -65,14 +65,14 @@ namespace VAPI
         /// <summary>
         /// The VariantDefs for the master
         /// </summary>
-        public CharacterVariantDef[]? variantDefs;
+        public CharacterVariantDef[]? preassignedVariantDefs;
 
         /// <summary>
-        /// If true, <see cref="variantDefs"/> will be considered "Additive".
+        /// If true, <see cref="preassignedVariantDefs"/> will be considered "Additive".
         /// <br></br>
         /// The variant spawn manager will still roll for variants, but it is guaranteed that the spawned variant has the variant defs in the array.
         /// </summary>
-        public bool variantsAreAdditive;
+        public bool preassignedVariantDefsAreAdditive;
 
         /// <summary>
         /// The SpawnManager's process for rolling variants will multiply all spawn rates by this value.
@@ -121,17 +121,17 @@ namespace VAPI
             VAPIUtils.TransformSpawnedInstanceIntoVariant(new VAPIUtils.TransformSpawnedInstanceIntoVariantArgs
             {
                 spawnedInstance = masterSummonReport.summonMasterInstance.gameObject,
-                preassignedVariantDefs = variantDefs,
+                preassignedVariantDefs = preassignedVariantDefs,
                 baseDeathRewards = summonerDeathRewards,
                 deathRewardsCoefficient = deathRewardsCoefficient,
                 supressArrivalMessage = supressArrivalMessage,
                 noGoldExpModifications = noGoldExpModifications,
                 noItemRewards = noItemReward,
-                preassignedVariantDefsAreAdditive = variantsAreAdditive,
+                preassignedVariantDefsAreAdditive = preassignedVariantDefsAreAdditive,
                 spawnManagerMultiplier = spawnManagerMultiplier,
             });
 
-            var report = new VariantMasterSummonReport(masterSummonReport, variantDefs);
+            var report = new VariantMasterSummonReport(masterSummonReport, preassignedVariantDefs);
             onSummonPerformed?.Invoke(report);
             onServerVariantSummonGlobal?.Invoke(report);
         }

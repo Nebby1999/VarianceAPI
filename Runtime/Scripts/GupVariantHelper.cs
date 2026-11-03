@@ -101,7 +101,7 @@ namespace VAPI
             {
                 deathRewardsCoefficient = 0.3f,
                 summonerDeathRewards = baseSplitDeath.characterBody.GetComponent<DeathRewards>(),
-                variantDefs = GetVariantDefs(bodyVariantController.GetCharacterVariantDefs(), toReturn.masterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex),
+                preassignedVariantDefs = GetVariantDefs(bodyVariantController.GetCharacterVariantDefs(), toReturn.masterSummon.masterPrefab, baseSplitDeath.characterBody.bodyIndex),
                 noGoldExpModifications = noGoldExpModifications,
                 noItemReward = noItemReward,
             };

@@ -788,7 +788,7 @@ namespace VAPI
             };
             VariantMasterSummon variantMasterSummon = new VariantMasterSummon(masterSummon)
             {
-                variantDefs = variantDefs.ToArray(),
+                preassignedVariantDefs = variantDefs.ToArray(),
             };
             variantMasterSummon.onSummonPerformed += (report) =>
             {
@@ -903,7 +903,7 @@ namespace VAPI
 
             VariantDirectorSpawnRequest spawnRequestVariant = new VariantDirectorSpawnRequest(spawnRequest)
             {
-                variantDefs = variantDefs.ToArray()
+                preassignedVariantDefs = variantDefs.ToArray()
             };
 
             bodySpawnCard.DoSpawn(args.senderBody.corePosition, Quaternion.identity, spawnRequest);
