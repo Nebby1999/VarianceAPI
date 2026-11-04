@@ -10,7 +10,7 @@ using Random = UnityEngine.Random;
 namespace VAPI
 {
     /// <summary>
-    /// Monobehaviour that handles death rewards for variants
+    /// A runtime component that's added to a Character that needs to drop rewards via VAPI's reward system. You do not need to add this component manually.
     /// </summary>
     [AddComponentMenu("")]
     public sealed class VariantDeathRewards : MonoBehaviour, IOnKilledServerReceiver
@@ -81,7 +81,14 @@ namespace VAPI
         /// </summary>
         public DeathRewards? deathRewards { get; private set; }
 
+        /// <summary>
+        /// Set on the server. If true, this variant will not drop any items
+        /// </summary>
         public bool noItemRewardServer;
+
+        /// <summary>
+        /// Set on the server. If true, this variant will not recieve any gold or experience modifiers
+        /// </summary>
         public bool noGoldExpModificationsServer;
 
         private float _pickupRewardChance;
@@ -233,6 +240,9 @@ namespace VAPI
             _pickupRewardChance = 0f;
         }
 
+        /// <summary>
+        /// Do not call this method manually.
+        /// </summary>
         public void OnKilledServer(DamageReport damageReport)
         {
             if (!characterBodyVariantController || noItemRewardServer || damageReport == null || damageReport.victimBody == null || damageReport.victimBody != characterBody || !VariantSpawnManager.instance || !Run.instance)

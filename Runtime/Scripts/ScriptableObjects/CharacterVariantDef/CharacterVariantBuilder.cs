@@ -14,7 +14,9 @@ namespace VAPI
     /// <br></br>
     /// Contains a variety of chaning methods to create the variants themselves.
     /// <para></para>
-    /// Keep in mind that all of VAPI 3.0's types for a CharacterVariantDef (Interfaces, Classes and Structs) should not be reused across diferent variants. As a result it is recommended to utilize this builder, as it will class said types' "Clone" method.
+    /// Keep in mind that all of VAPI 3.0's types for a CharacterVariantDef (Interfaces, Classes and Structs) should not be reused across diferent variants. As a result it is recommended to utilize this builder, as it will call said types' "Clone" method, ensuring that no instance is shared.
+    /// <br></br>
+    /// VarianceAPI cannot guarantee that an implementation of one of it's interfaces handles the application of multiple instances of a character or multiple instances of a variant, so this is enforced.
     /// </summary>
     public sealed class CharacterVariantDefBuilder
     {
@@ -27,6 +29,8 @@ namespace VAPI
 
         /// <summary>
         /// The name value for the CharacterVariantDef that will be built
+        /// <br></br>
+        /// This cannot be null, empty or whitespace
         /// </summary>
         public string characterVariantDefName
         {
@@ -42,7 +46,7 @@ namespace VAPI
         }
         private string _characterVariantDefName = "";
         /// <summary>
-        /// The target character for this variant
+        /// The target character for this variant, this cannot be null
         /// </summary>
         public CharacterVariantTarget targetBody = new CharacterVariantTarget();
 
@@ -57,7 +61,7 @@ namespace VAPI
         public bool isUnique = false;
 
         /// <summary>
-        /// Wether the variant is hidden or not by default, mainly used for VAPI's innate support for creating Ally variants (such as <see cref="VAPIUtils.CloneIntoBeetleGuardGland(CharacterVariantDef, bool, bool)"/>
+        /// Wether the variant is hidden or not by default. Hidden variants do not recieve config entries for their spawn rate or uniqueness values. They also don't show up in the Rulebook
         /// </summary>
         public bool isHidden = false;
 
@@ -86,7 +90,7 @@ namespace VAPI
         public string? arrivalToken = null;
 
         /// <summary>
-        /// The Spawn Condition for this variant, see <see cref="IVariantSpawnCondition"/> for more information
+        /// The Spawn Condition for this variant, see <see cref="IVariantSpawnCondition"/> for more information. Can be null
         /// </summary>
         public IVariantSpawnCondition? spawnCondition = null;
 
@@ -116,7 +120,7 @@ namespace VAPI
         public readonly List<VariantSkillReplacement> skillReplacements = new List<VariantSkillReplacement>();
 
         /// <summary>
-        /// A StatModifier for this variant, see <see cref="IVariantStatModifier"/> for more information
+        /// A StatModifier for this variant, can be left null. see <see cref="IVariantStatModifier"/> for more information
         /// </summary>
         public IVariantStatModifier? statModifier = null;
 
@@ -319,6 +323,7 @@ namespace VAPI
                 result.targetBody = (CharacterVariantTarget)targetBody.Clone();
                 result.variantTier = characterVariantTier;
                 result.isUnique = isUnique;
+                result.isHidden = isHidden;
                 result.spawnRate = spawnRate;
                 result.arrivalToken = arrivalToken ?? "";
                 result.spawnCondition = (IVariantSpawnCondition?)(spawnCondition?.Clone());

@@ -5,12 +5,16 @@ using UnityEngine;
 
 namespace VAPI
 {
-
+    /// <summary>
+    /// A runtime component that's added to a Character that needs to have a specific scale. You do not need to add this component manually.
+    /// <para></para>
+    /// Some vanilla characters have their model locators disabled or their autoUpdateModelTransform set to false, in scenarios where this is the case, VAPI adds this component to the character which will manually drive the size change.
+    /// </summary>
     [AddComponentMenu("")]
     public sealed class ModelLocatorSizeUpdater : MonoBehaviour
     {
-        ModelLocator _modelLocator;
-        public Vector3 _origScale;
+        private ModelLocator _modelLocator;
+        private Vector3 _origScale;
         private void Awake()
         {
             _modelLocator = GetComponent<ModelLocator>();

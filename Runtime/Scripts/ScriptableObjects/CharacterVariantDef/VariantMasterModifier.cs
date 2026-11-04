@@ -9,13 +9,31 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     /// <summary>
-    /// Called on both client and server
+    /// A <see cref="IVariantMasterModifier"/> is a <see cref="IValidatable"/> and <see cref="ICloneable"/> interface used to define new Master modifiers. These implementations can be serialized in the editor via the <see cref="SerializeReference"/> attribute.
+    /// <br></br>
+    /// Modifications are done via the <see cref="ModifyMaster(CharacterMaster)"/> method.
+    /// <br></br>
+    /// Must support cloning via the <see cref="ICloneable"/> implementation.
+    /// <para></para>
+    /// <b>Built In Master Modifiers</b>
+    /// <list type="bullet">
+    /// <item><see cref="UnstableAIModifier"/>: Reimplementation of VAPI 2.0's Unstable flag. Will make it so AI uses "low health" skill drivers even at max health</item>
+    /// <item><see cref="AlwaysSprintAIModifier"/>: Reimplementation of VAPI 2.0's Always Sprint flag. Will make it so AI is always sprinting</item>
+    /// <item><see cref="AISkillDriverAimVectorModifier"/>: Used to override the Aim Vector values for a specific skill driver</item>
+    /// <item><see cref="BaseAIDampModifier"/>: Used to modify the Aim Vectors of the BaseAI</item>
+    /// </list>
     /// </summary>
     public interface IVariantMasterModifier : IValidatable, ICloneable
     {
+        /// <summary>
+        /// Modify the <paramref name="master"/> here. This method should return a disposable object used to revert any changes applied to the master.
+        /// </summary>
         public IDisposable? ModifyMaster(CharacterMaster master);
     }
 
+    /// <summary>
+    /// Forces an AI to use it's "low health" skill drivers, even at max health.
+    /// </summary>
     [Serializable]
     public sealed class UnstableAIModifier : IVariantMasterModifier
     {
@@ -61,9 +79,13 @@ namespace VAPI
                 undoData.Clear();
             }
         }
+        [Tooltip("Overrides all minTargetHealthFraction on the skill drivers values with this value")]
         public float minTargetHealthFractionOverride = Mathf.NegativeInfinity;
+        [Tooltip("Overrides all maxTargetHealthFractionOverride on the skill drivers values with this value")]
         public float maxTargetHealthFractionOverride = Mathf.Infinity;
+        [Tooltip("Overrides all minUserHealthFractionOverride on the skill drivers values with this value")]
         public float minUserHealthFractionOverride = Mathf.NegativeInfinity;
+        [Tooltip("Overrides all maxUserHealthFractionOverride on the skill drivers values with this value")]
         public float maxUserHealthFractionOverride = Mathf.Infinity;
 
         public IDisposable? ModifyMaster(CharacterMaster master)
@@ -117,11 +139,17 @@ namespace VAPI
 
         public void Validate() { }
 
+        /// <summary>
+        /// Clones the metadata in this into a new instance of <see cref="UnstableAIModifier"/>
+        /// </summary>
         public object Clone()
         {
             return new UnstableAIModifier(minTargetHealthFractionOverride, maxTargetHealthFractionOverride, minUserHealthFractionOverride, maxUserHealthFractionOverride);
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public UnstableAIModifier(float minTargetHealthFractionOverride = Mathf.NegativeInfinity, float maxTargetHealthFractionOverride = Mathf.Infinity, float minUserHealthFractionOverride = Mathf.NegativeInfinity, float maxUserHealthFractionOverride = Mathf.Infinity)
         {
             this.minTargetHealthFractionOverride = minTargetHealthFractionOverride;
@@ -130,13 +158,19 @@ namespace VAPI
             this.maxUserHealthFractionOverride = maxUserHealthFractionOverride;
         }
 
+        /// <summary>
+        /// Parameterless Constructor
+        /// </summary>
         public UnstableAIModifier() { }
     }
 
+    /// <summary>
+    /// Forces an AI to always sprint.
+    /// </summary>
     [Serializable]
     public struct AlwaysSprintAIModifier : IVariantMasterModifier
     {
-        public struct AlwaysSprintAIModifierResult : IDisposable
+        private struct AlwaysSprintAIModifierResult : IDisposable
         {
             private struct SkillDriverSprint
             {
@@ -208,12 +242,20 @@ namespace VAPI
 
         public void Validate() { }
 
+        /// <summary>
+        /// Clones the metadata in this into a new instance of <see cref="UnstableAIModifier"/>
+        /// </summary>
         public object Clone()
         {
             return this;
         }
     }
 
+    /// <summary>
+    /// Changes a specific skill driver's aim vector modifiers.
+    /// <para></para>
+    /// If the specified skill driver doesnt have overrides for the values, the modifiers are applied using the BaseAI's values.
+    /// </summary>
     [Serializable]
     public sealed class AISkillDriverAimVectorModifier : IVariantMasterModifier
     {
@@ -230,17 +272,30 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Multiplier applied to the SkillDriver's aimVectorMaxSpeed.
+        /// </summary>
         public float aimVectorMaxSpeedMultiplier { get => _aimVectorMaxSpeedMultiplier; set => _aimVectorMaxSpeedMultiplier = Mathf.Max(0 + float.Epsilon, value); }
         [SerializeField, Min(0 + float.Epsilon)]
+        [Tooltip("Multiplier applied to the SkillDriver's aimVectorMaxSpeed.")]
         private float _aimVectorMaxSpeedMultiplier = 1f;
 
+        /// <summary>
+        /// Multiplier applied to the SkillDriver's aimVectorDampTime.
+        /// </summary>
         public float aimVectorDampTimeMultiplier { get => _aimVectorDampTimeMultiplier; set => _aimVectorDampTimeMultiplier = Mathf.Max(0 + float.Epsilon, value); }
         [SerializeField, Min(0 + float.Epsilon)]
+        [Tooltip("Multiplier applied to the SkillDriver's aimVectorDampTime.")]
         private float _aimVectorDampTimeMultiplier = 1f;
 
+        [Tooltip("The SkillDriver to modify")]
         public string aiSkillDriverTarget = "";
+        [Tooltip("if the skill driver uses this skill slot, it'll be modified")]
         public SkillSlot targetSkillSlot;
 
+        /// <summary>
+        /// Clones the metadata in this into a new instance of <see cref="AISkillDriverAimVectorModifier"/>
+        /// </summary>
         public object Clone()
         {
             return new AISkillDriverAimVectorModifier
@@ -310,17 +365,26 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public AISkillDriverAimVectorModifier() { }
 
-        public AISkillDriverAimVectorModifier(float aimVectorMaxSpeedMultiplier, float aimVectorDampTimeMultiplier, string aiSkillDriverTarget = "")
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public AISkillDriverAimVectorModifier(SkillSlot targetSlot, float aimVectorMaxSpeedMultiplier = 1, float aimVectorDampTimeMultiplier = 1, string aiSkillDriverTarget = "")
         {
+            this.targetSkillSlot = targetSlot;
             this.aiSkillDriverTarget = aiSkillDriverTarget;
             this.aimVectorDampTimeMultiplier = aimVectorDampTimeMultiplier;
             this.aimVectorMaxSpeedMultiplier = aimVectorMaxSpeedMultiplier;
         }
     }
 
-
+    /// <summary>
+    /// Changes an AI's aim vector modifiers
+    /// </summary>
     [Serializable]
     public sealed class BaseAIDampModifier : IVariantMasterModifier
     {
@@ -356,9 +420,15 @@ namespace VAPI
                 this.baseAIDampMultiplier = baseAIDampMultiplier;
             }
         }
+        [Tooltip("This value is added to aimVectorDampTime")]
         public float baseAIDampBonus = 0;
+
+        /// <summary>
+        /// This value is multiplied by aimVectorMaxSpeed
+        /// </summary>
         public float baseAIDampMultiplier { get => _baseAIDampMultiplier; set => _baseAIDampMultiplier = Mathf.Max(0 + float.Epsilon, value); }
         [SerializeField, Min(0 + float.Epsilon)]
+        [Tooltip("This value is multiplied by aimVectorMaxSpeed")]
         private float _baseAIDampMultiplier = 1;
         public IDisposable? ModifyMaster(CharacterMaster master)
         {
@@ -387,17 +457,26 @@ namespace VAPI
 
         public void Validate() { }
 
+        /// <summary>
+        /// Clones the metadata in this into a new instance of <see cref="BaseAIDampModifier"/>
+        /// </summary>
         public object Clone()
         {
             return new BaseAIDampModifier(baseAIDampBonus, _baseAIDampMultiplier);
         }
 
-        public BaseAIDampModifier(float _baseAIDampBonus, float _baseAIDampMultiplier)
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        public BaseAIDampModifier(float _baseAIDampBonus = 0, float _baseAIDampMultiplier = 1)
         {
             baseAIDampBonus = _baseAIDampBonus;
             baseAIDampMultiplier = _baseAIDampMultiplier;
         }
 
+        /// <summary>
+        /// Parameterless Constructor
+        /// </summary>
         public BaseAIDampModifier()
         {
 

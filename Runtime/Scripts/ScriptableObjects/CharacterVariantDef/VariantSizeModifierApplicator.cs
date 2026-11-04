@@ -21,6 +21,7 @@ namespace VAPI
 
         private ModelLocator? _modelLocator;
         private ModelLocatorSizeUpdater? _modelLocatorSizeUpdater;
+
         /// <summary>
         /// Disposes the size modifier, returning it to normal
         /// </summary>

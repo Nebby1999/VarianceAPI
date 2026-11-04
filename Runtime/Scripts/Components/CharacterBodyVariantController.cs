@@ -13,17 +13,36 @@ using Object = UnityEngine.Object;
 
 namespace VAPI
 {
+    /// <summary>
+    /// A struct that represents metadata assigned before spawning.
+    /// <br></br>
+    /// This is mainly utilized when a variant is spawned via <see cref="VariantMasterSummon"/>, <see cref="VariantDirectorSpawnRequest"/> or by using <see cref="VAPIUtils.TransformSpawnedInstanceIntoVariant(VAPIUtils.TransformSpawnedInstanceIntoVariantArgs)"/>.
+    /// </summary>
     public struct PreAssignedSpawnData
     {
+        /// <summary>
+        /// An array of CharacterVariantDefs to add to the final array of variants.
+        /// <br></br>
+        /// If not null and not empty, it is guaranteed that these variants will be applied to the body
+        /// </summary>
         public CharacterVariantDef[]? additiveVariantDefs;
+
+        /// <summary>
+        /// A spawn rate multiplier utilized by the <see cref="VariantSpawnManager"/>'s systems for rolling variants.
+        /// </summary>
         public float? spawnRateMultiplier;
     }
+
     /// <summary>
-    /// A <see cref="NetworkBehaviour"/> used to apply variants at a Body level.
+    /// The <see cref="CharacterBodyVariantController"/> is a NetworkBehaviour that manages the application and storage of <see cref="CharacterVariantDef"/> at the body level.
     /// <para></para>
-    /// When the <see cref="CharacterBody"/> spawns, if it has a master it will try to sync itself with the master's <see cref="CharacterMasterVariantStorage"/>. If this succeeds it'll utilize the variants stored in it.
+    /// This component is added automatically to any CharacterBody prefab that has CharacterVariantDefs, it is not necessary to add it manually.
+    /// <para></para>
+    /// Variants are mainly spawned via the <see cref="VariantSpawnManager"/>, done when the Body calls "Start"
     /// <br></br>
-    /// If this linking process fails, it'll roll it's own variants and store it in this component. This allows for the creation of masterless variants (For example, a goolake pot that leaves a tar pool on explosion)
+    /// When an array of <see cref="CharacterVariantDef"/> is assigned via <see cref="SetCharacterVariantDefsServer(CharacterVariantDef[])"/>, the controller will try and store this array in the <see cref="CharacterMasterVariantStorage"/> on the master. This in turn will apply any master modifications, and store the variants in case the body respawns.
+    /// <para></para>
+    /// If you want to "Script" a variant spawn, it is recommended to utilize <see cref="VariantMasterSummon"/> and <see cref="VariantDirectorSpawnRequest"/>. Alternatively you can use <see cref="VAPIUtils.TransformSpawnedInstanceIntoVariant(VAPIUtils.TransformSpawnedInstanceIntoVariantArgs)"/>.
     /// </summary>
     [AddComponentMenu("")]
     public sealed class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
@@ -31,12 +50,27 @@ namespace VAPI
         private CharacterVariantDef[] _fallbackCharacterVariantDefs = Array.Empty<CharacterVariantDef>();
         private SyncListCharacterVariantIndex _characterVariantIndices = new SyncListCharacterVariantIndex();
 
+        /// <summary>
+        /// Access to the <see cref="CharacterBody"/> sibling component
+        /// </summary>
         public CharacterBody characterBody { get; private set; }
+
+        /// <summary>
+        /// Access to the <see cref="CharacterDeathBehavior"/> sibling component, may be null
+        /// </summary>
         public CharacterDeathBehavior? characterDeathBehavior { get; private set; }
+
+        /// <summary>
+        /// Access to the <see cref="CharacterModel"/> for the body, may be null
+        /// </summary>
         public CharacterModel? characterModel { get; private set; }
 
         /// <summary>
-        /// The VariantSpawnManager will not roll for variants for this controller if this is true.
+        /// If true, the <see cref="VariantSpawnManager"/> will not roll for variants for this body.
+        /// <para></para>
+        /// <see cref="VariantMasterSummon"/>, <see cref="VariantDirectorSpawnRequest"/> and <see cref="VAPIUtils.TransformSpawnedInstanceIntoVariant(VAPIUtils.TransformSpawnedInstanceIntoVariantArgs)"/> have methods for setting this value.
+        /// <br></br>
+        /// The setter is server only.
         /// </summary>
         public bool doNotRollForVariants
         {
@@ -53,24 +87,36 @@ namespace VAPI
         [SyncVar]
         private bool _doNotRollForVariants;
 
+        /// <summary>
+        /// Server only boolean.
+        /// <br></br>
+        /// If true, when variants are applied to this body there will be no arrival message or sound effect transmitted.
+        /// <para></para>
+        /// <see cref="VariantMasterSummon"/>, <see cref="VariantDirectorSpawnRequest"/> and <see cref="VAPIUtils.TransformSpawnedInstanceIntoVariant(VAPIUtils.TransformSpawnedInstanceIntoVariantArgs)"/> have methods for setting this value.
+        /// </summary>
         public bool supressArrivalMessageServer { get; set; }
 
+        /// <summary>
+        /// Returns true if _any_ variant is applied to this body.
+        /// <br></br>
+        /// This strictly means that the underlying <see cref="CharacterVariantDef"/> array is not null, and not empty. If the underlying array is not null, but empty, this will return false.
+        /// </summary>
         public bool variantsApplied
         {
-            get => _noVariantsApplied;
+            get => _variantsApplied;
             [Server]
             set
             {
-                if(_noVariantsApplied != value)
+                if(_variantsApplied != value)
                 {
-                    _noVariantsApplied = value;
+                    _variantsApplied = value;
                 }
             }
         }
         [SyncVar]
-        private bool _noVariantsApplied;
+        private bool _variantsApplied;
 
-        public PreAssignedSpawnData ConsumePreAssignedSpawnData()
+        internal PreAssignedSpawnData ConsumePreAssignedSpawnData()
         {
             if(!HasPreAssignedSpawnData())
             {
@@ -81,8 +127,13 @@ namespace VAPI
             _preAssignedSpawnDataServer = null;
             return value;
         }
-        public bool HasPreAssignedSpawnData() => _preAssignedSpawnDataServer.HasValue;
+        internal bool HasPreAssignedSpawnData() => _preAssignedSpawnDataServer.HasValue;
 
+        /// <summary>
+        /// See <see cref="PreAssignedSpawnData"/> for more info.
+        /// <br></br>
+        /// The setter is server only
+        /// </summary>
         public PreAssignedSpawnData? preAssignedSpawnDataServer
         {
             [Server]
@@ -95,7 +146,22 @@ namespace VAPI
 
         private CharacterVariantMask _appliedVariantMask;
 
+        /// <summary>
+        /// Event fired when variants are unapplied for this character.
+        /// <para</para>
+        /// Fired on both Server and Client
+        /// <br></br>
+        /// This gets called twice, once when the body first spawns, and another time when the <see cref="CharacterVariantDef"/> array has been set.
+        /// </summary>
         public event Action? onVariantsUnapplied;
+
+        /// <summary>
+        /// Event fired when variants are applied for this character.
+        /// <para</para>
+        /// Fired on both Server and Client
+        /// <br></br>
+        /// This gets called twice, once when the body first spawns, and another time when the <see cref="CharacterVariantDef"/> array has been set.
+        /// </summary>
         public event Action<CharacterVariantDef[]>? onVariantsApplied;
         private MSUContentBehaviour? _msuContentBehaviour;
         private void Awake()
@@ -117,9 +183,23 @@ namespace VAPI
             _appliedVariantMask = CharacterVariantMask.Rent();
         }
 
+        /// <summary>
+        /// Returns true if <paramref name="characterVariantDef"/> is inside the Controller's internal <see cref="CharacterVariantMask"/>.
+        /// <br></br>
+        /// If <paramref name="characterVariantDef"/> is null, it returns false.
+        /// </summary>
         public bool IsVariantApplied(CharacterVariantDef? characterVariantDef) => IsVariantApplied(characterVariantDef ? characterVariantDef!.characterVariantIndex : CharacterVariantIndex.none);
+
+        /// <summary>
+        /// Returns true if <paramref name="variantIndex"/> is inside the Controller's internal <see cref="CharacterVariantMask"/>
+        /// <br></br>
+        /// If <paramref name="variantIndex"/> is out of bounds of the <see cref="CharacterVariantCatalog"/>, it returns false
+        /// </summary>
         public bool IsVariantApplied(CharacterVariantIndex variantIndex) => _appliedVariantMask.Contains(variantIndex);
 
+        /// <summary>
+        /// Do not call this method, left for networking purposes.
+        /// </summary>
         public override void OnStartClient()
         {
             base.OnStartClient();
@@ -133,6 +213,13 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Retrieves a <see cref="ReadOnlyArray{T}"/> of the <see cref="CharacterVariantDef"/> currently applied to this character.
+        /// <br></br>
+        /// If the character has a master, the retrieved value is from the <see cref="CharacterMasterVariantStorage"/>. Otherwise it's from the internal array stored in this controller.
+        /// <para></para>
+        /// This array is never null, keep in mind that it may be empty, an empty array is a valid state for the controller as it represents the abscense of variants.
+        /// </summary>
         public ReadOnlyArray<CharacterVariantDef> GetCharacterVariantDefs()
         {
             CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
@@ -145,6 +232,11 @@ namespace VAPI
             return _fallbackCharacterVariantDefs;
         }
 
+        /// <summary>
+        /// Retrieves the <see cref="CharacterMasterVariantStorage"/> for this body.
+        /// <para></para>
+        /// Returns null if the linking process fails, or if the body is flagged as <see cref="CharacterBody.BodyFlags.Masterless"/>
+        /// </summary>
         public CharacterMasterVariantStorage? GetCharacterMasterVariantStorage()
         {
             if (_characterMasterVariantStorage != null && _characterMasterVariantStorage.characterMaster && _characterMasterVariantStorage.characterMaster.GetBody() == characterBody)
@@ -171,8 +263,14 @@ namespace VAPI
         }
         private CharacterMasterVariantStorage? _characterMasterVariantStorage;
 
-        //public facing method, in VAPI it's called by the spawn manager and the Util method to turn something into a variant.
-        //Unless force set is set to true, it'll reject the operation if the storage has variants for the body
+
+        /// <summary>
+        /// Method used to set the <see cref="CharacterVariantDef"/> for this character.
+        /// <para></para>
+        /// It is recommended to use <see cref="VariantMasterSummon"/>, <see cref="VariantDirectorSpawnRequest"/> or <see cref="VAPIUtils.TransformSpawnedInstanceIntoVariant(VAPIUtils.TransformSpawnedInstanceIntoVariantArgs)"/> instead of utilizing this method directly.
+        /// <br></br>
+        /// The array is rejected if <see cref="variantsApplied"/> is true.
+        /// </summary>
         [Server]
         public void SetCharacterVariantDefsServer(CharacterVariantDef[] variantDefs)
         {
@@ -410,7 +508,12 @@ namespace VAPI
             RecalculateBodyName(characterVariants);
         }
 
-        public string cachedVariantName { get; private set; }
+        /// <summary>
+        /// The current variant name for this character.
+        /// <br></br>
+        /// This is calculated by running the <see cref="IVariantNameProvider"/> of the applied variants against the <see cref="characterBody"/>'s name token
+        /// </summary>
+        public string cachedVariantName { get; private set; } = "";
         private void RecalculateBodyName(ReadOnlyArray<CharacterVariantDef> appliedVariants)
         {
             string baseName = Language.GetString(characterBody.baseNameToken);

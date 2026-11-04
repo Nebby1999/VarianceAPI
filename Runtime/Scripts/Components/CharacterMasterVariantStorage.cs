@@ -9,6 +9,15 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     //This class is added dynamically by the CharacterBodyVariantController if the body has a master. it's added to CharacterMasters.
+    /// <summary>
+    /// The <see cref="CharacterMasterVariantStorage"/> is a MonoBehaviour that manages the application and storage of <see cref="CharacterVariantDef"/> at the master level.
+    /// <para></para>
+    /// This component is added automatically to any CharacterMaster prefab whose body prefab has the <see cref="CharacterBodyVariantController"/> component, it is not necessary to add it manually.
+    /// <br></br>
+    /// As the name implies, it's main purpose is to store the <see cref="CharacterVariantDef"/>s that are applied to the body. This way the variant is preserved when the body respawns or when being taken to a new stage.
+    /// <br></br>
+    /// Only one set of variant defs may be applied to the master at a time, if the Master's body index changes, the variants are unapplied.
+    /// </summary>
     [AddComponentMenu("")]
     public sealed class CharacterMasterVariantStorage : MonoBehaviour
     {
@@ -18,12 +27,26 @@ namespace VAPI
             public CharacterVariantDef[] storedVariants;
         }
 
+        /// <summary>
+        /// Access to the <see cref="CharacterMaster"/> sibling component
+        /// </summary>
 #pragma warning disable CS8618
         public CharacterMaster characterMaster { get; private set; }
 #pragma warning restore CS8618
 
+        /// <summary>
+        /// Event fired when variants are unapplied for this master.
+        /// <para></para>
+        /// Fired on both Server and Client
+        /// </summary>
         public event Action? onVariantsUnapplied;
-        public event Action? onVariantsApplied;
+
+        /// <summary>
+        /// Event fired when variants are applied for this master.
+        /// <para></para>
+        /// Fired on both Server and Client
+        /// </summary>
+        public event Action<CharacterVariantDef[]>? onVariantsApplied;
 
         private List<StorageMetadataEntry> _storageMetadataList = new List<StorageMetadataEntry>();
         private BodyIndex _bodyIndexOfAppliedVariants = BodyIndex.None;
@@ -48,6 +71,9 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Removes the Variant array storage for the character that <paramref name="bodyIndex"/> represents
+        /// </summary>
         public void RemoveVariantStorageForCharacter(in BodyIndex bodyIndex)
         {
             if (bodyIndex == BodyIndex.None)
@@ -60,6 +86,11 @@ namespace VAPI
             _storageMetadataList.RemoveAt(index);
         }
 
+        /// <summary>
+        /// Attempts to retrieve the <see cref="CharacterVariantDef"/> that are used for the body that <paramref name="bodyIndex"/> represents.
+        /// <para></para>
+        /// <paramref name="variantDefs"/> is null if this method returns false, if this method returns true then the array is not null, but may be empty.
+        /// </summary>
         public bool TryGetVariantsStoredForCharacter(in BodyIndex bodyIndex, out CharacterVariantDef[]? variantDefs)
         {
             variantDefs = null;
@@ -75,6 +106,9 @@ namespace VAPI
             return true;
         }
 
+        /// <summary>
+        /// Returns true if this Master Storage has variants for the body that <paramref name="bodyIndex"/> represents.
+        /// </summary>
         public bool HasVariantsForBody(BodyIndex bodyIndex) => GetVariantStorageIndex(bodyIndex) != -1;
 
         private void PushVariantsForCharacter(in BodyIndex bodyIndex, in CharacterVariantDef[] variantDefs)
@@ -151,7 +185,7 @@ namespace VAPI
 
             _bodyIndexOfAppliedVariants = bodyIndex;
 
-            onVariantsApplied?.Invoke();
+            onVariantsApplied?.Invoke(fallbackCharacterVariantDefs);
         }
 
         internal void UnapplyVariants()

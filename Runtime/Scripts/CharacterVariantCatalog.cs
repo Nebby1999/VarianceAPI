@@ -17,7 +17,7 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     /// <summary>
-    /// Index struct for <see cref="CharacterVariantIndex"/>
+    /// Index struct for <see cref="CharacterVariantIndex"/>. These are networked via a <see cref="NetworkCharacterVariantIndex"/>
     /// </summary>
     public struct CharacterVariantIndex : IEquatable<CharacterVariantIndex>
     {
@@ -77,13 +77,34 @@ namespace VAPI
         /// </summary>
         public static bool operator !=(CharacterVariantIndex a, CharacterVariantIndex b) => a.i != b.i;
 
+        /// <summary>
+        /// Returns true if <paramref name="a"/> is less than <paramref name="b"/>
+        /// </summary>
         public static bool operator <(CharacterVariantIndex a, CharacterVariantIndex b) => a.i < b.i;
+        /// <summary>
+        /// Returns true if <paramref name="a"/> is greater than <paramref name="b"/>
+        /// </summary>
         public static bool operator >(CharacterVariantIndex a, CharacterVariantIndex b) => a.i > b.i;
+        /// <summary>
+        /// Returns true if <paramref name="a"/> is less or equal to <paramref name="b"/>
+        /// </summary>
         public static bool operator <=(CharacterVariantIndex a, CharacterVariantIndex b) => a.i <= b.i;
+        /// <summary>
+        /// Returns true if <paramref name="a"/> is greater or equal to <paramref name="b"/>
+        /// </summary>
         public static bool operator >=(CharacterVariantIndex a, CharacterVariantIndex b) => a.i >= b.i;
+        /// <summary>
+        /// Incremental operator
+        /// </summary>
         public static CharacterVariantIndex operator ++(CharacterVariantIndex index) => new CharacterVariantIndex(index.i + 1);
+        /// <summary>
+        /// Decremental Operator
+        /// </summary>
         public static CharacterVariantIndex operator --(CharacterVariantIndex index) => new CharacterVariantIndex(index.i - 1);
 
+        /// <summary>
+        /// Returns a human readable representation of this index
+        /// </summary>
         public override string ToString()
         {
             var def = CharacterVariantCatalog.GetCharacterVariantDef(this);
@@ -136,8 +157,14 @@ namespace VAPI
         public override int GetHashCode() => (int)i;
     }
 
+    /// <summary>
+    /// A Mask of <see cref="CharacterVariantIndex"/>
+    /// </summary>
     public class CharacterVariantMask : ICollection<CharacterVariantIndex>, IEnumerable<CharacterVariantIndex>, IEnumerable
     {
+        /// <summary>
+        /// Enumerator
+        /// </summary>
         public struct Enumerator : IEnumerator<CharacterVariantIndex>, IEnumerator, IDisposable
         {
             public bool[] target;
@@ -179,51 +206,78 @@ namespace VAPI
             }
         }
 
-        public bool[] array;
-        public int Count => array.Length;
-        public bool IsReadOnly => false;
+        private bool[] _array;
 
+        /// <summary>
+        /// Returns the amount of variants
+        /// </summary>
+        public int Count => _array.Length;
+
+        bool ICollection<CharacterVariantIndex>.IsReadOnly => false;
+
+        /// <summary>
+        /// Parameterless constructor, this should not be used. Utilize <see cref="Rent()"/> or <see cref="Rent(out CharacterVariantMask)"/> instead.
+        /// </summary>
         public CharacterVariantMask()
         {
-            array = new bool[CharacterVariantCatalog.characterVariantCount];
+            _array = new bool[CharacterVariantCatalog.characterVariantCount];
         }
 
+        /// <summary>
+        /// Rents a <see cref="CharacterVariantMask"/> from the internal pool
+        /// </summary>
         public static CharacterVariantMask Rent()
         {
             return CollectionPool<CharacterVariantIndex, CharacterVariantMask>.RentCollection();
         }
 
+        /// <summary>
+        /// Rents a <see cref="CharacterVariantMask"/> from the internal pool.
+        /// <br></br>
+        /// Returns a disposable struct used to return the mask to the pool when it goes out of scope
+        /// </summary>
         public static CollectionPool<CharacterVariantIndex, CharacterVariantMask>.DisposableRental Rent(out CharacterVariantMask mask)
         {
             return CollectionPool<CharacterVariantIndex, CharacterVariantMask>.RentCollection(out mask);
         }
 
+        /// <summary>
+        /// Returns <paramref name="mask"/> to the internal collection
         public static void Return(CharacterVariantMask mask)
         {
-            if(mask.array.Length == CharacterVariantCatalog.characterVariantCount)
+            if(mask._array.Length == CharacterVariantCatalog.characterVariantCount)
             {
                 CollectionPool<CharacterVariantIndex, CharacterVariantMask>.ReturnCollection(mask);
             }
         }
 
+        /// <summary>
+        /// Returns true if <paramref name="characterVariantIndex"/> is set in this mask
+        /// </summary>
         public bool Contains(CharacterVariantIndex characterVariantIndex)
         {
-            return HG.ArrayUtils.GetSafe(array, ((int)characterVariantIndex));
+            return HG.ArrayUtils.GetSafe(_array, ((int)characterVariantIndex));
         }
 
+        /// <summary>
+        /// Adds <paramref name="characterVariantIndex"/> to this mask
+        /// </summary>
         public void Add(CharacterVariantIndex characterVariantIndex)
         {
-            if(ArrayUtils.IsInBounds(array, ((int)characterVariantIndex)))
+            if(ArrayUtils.IsInBounds(_array, ((int)characterVariantIndex)))
             {
-                array[((int)characterVariantIndex)] = true;
+                _array[((int)characterVariantIndex)] = true;
             }
         }
 
+        /// <summary>
+        /// Removes <paramref name="characterVariantIndex"/> from this mask
+        /// </summary>
         public bool Remove(CharacterVariantIndex characterVariantIndex)
         {
-            if(ArrayUtils.IsInBounds(array, ((int)characterVariantIndex)))
+            if(ArrayUtils.IsInBounds(_array, ((int)characterVariantIndex)))
             {
-                ref bool reference = ref array[((int)characterVariantIndex)];
+                ref bool reference = ref _array[((int)characterVariantIndex)];
                 bool result = reference;
                 reference = false;
                 return result;
@@ -231,38 +285,52 @@ namespace VAPI
             return false;
         }
 
+        /// <summary>
+        /// Clears the mask
+        /// </summary>
         public void Clear()
         {
-            ArrayUtils.SetAll(array, false);
+            ArrayUtils.SetAll(_array, false);
         }
 
+        /// <summary>
+        /// Copies this mask's data to <paramref name="array"/>
+        /// </summary>
         public void CopyTo(CharacterVariantIndex[] array, int arrayIndex)
         {
-            for (int i = 0; i < this.array.Length; i++)
+            for (int i = 0; i < this._array.Length; i++)
             {
-                if (this.array[i])
+                if (this._array[i])
                 {
                     array[arrayIndex++] = (CharacterVariantIndex)i;
                 }
             }
         }
 
+        /// <summary>
+        /// Clones this mask to <paramref name="other"/>
+        /// </summary>
         public void CloneTo(CharacterVariantMask other)
         {
             for(int i = 0; i < Count; i++)
             {
-                other.array[i] = array[i];
+                other._array[i] = _array[i];
             }
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Swap(CharacterVariantMask maskA, CharacterVariantMask maskB)
         {
-            ArrayUtils.SwapElements(maskA.array, maskB.array);
+            ArrayUtils.SwapElements(maskA._array, maskB._array);
         }
+
+        /// <summary>
+        /// Retrieves the enumerator for this mask.
+        /// </summary>
+        /// <returns></returns>
         public Enumerator GetEnumerator()
         {
-            return new Enumerator(array);
+            return new Enumerator(_array);
         }
 
         IEnumerator<CharacterVariantIndex> IEnumerable<CharacterVariantIndex>.GetEnumerator()
@@ -278,6 +346,10 @@ namespace VAPI
 
     /// <summary>
     /// Catalog for <see cref="CharacterVariantDef"/>s
+    /// <para></para>
+    /// This catalog also contains methods for interfacing with <see cref="CharacterVariantProvider"/>s, ways to retrieve dependant spawn variants and more.
+    /// <para></para>
+    /// If you need to run code after this catalog initializes, consider using <see cref="catalogAvailability"/>
     /// </summary>
     public static class CharacterVariantCatalog
     {
@@ -297,11 +369,26 @@ namespace VAPI
         private static CharacterVariantProvider?[] _characterVariantProviders = Array.Empty<CharacterVariantProvider>();
 
         /// <summary>
-        /// Catalog availability. Catalog initializes after <see cref="BodyCatalog"/>, <see cref="MasterCatalog"/> and <see cref="VariantPackManager"/>
+        /// Catalog availability. Catalog initializes after <see cref="BodyCatalog"/>, and <see cref="VariantPackManager"/>
         /// </summary>
         public static ResourceAvailability catalogAvailability;
 
+        /// <summary>
+        /// Retrieves a list of dependant spawn variants for <paramref name="characterVariantIndex"/>.
+        /// <br></br>
+        /// Retrieved list is null if <paramref name="characterVariantIndex"/> points to an invalid index, or if there are no dependant variants associated with <paramref name="characterVariantIndex"/>.
+        /// <br></br>
+        /// If not null, the list is taken from a <see cref="ListPool{TElement}"/> of <see cref="CharacterVariantDef"/>. consider returning the list to the pool manually once youre done with it.
+        /// </summary>
         public static List<CharacterVariantDef>? RetrieveDependantSpawnVariants(CharacterVariantIndex characterVariantIndex) => RetrieveDependantSpawnVariants(GetCharacterVariantDef(characterVariantIndex));
+
+        /// <summary>
+        /// Retrieves a list of dependant spawn variants for <paramref name="dependee"/>.
+        /// <br></br>
+        /// Retrieved list is null if <paramref name="dependee"/> is null, or if there are no dependant variants associated with <paramref name="dependee"/>.
+        /// <br></br>
+        /// If not null, the list is taken from a <see cref="ListPool{TElement}"/> of <see cref="CharacterVariantDef"/>. consider returning the list to the pool manually once youre done with it.
+        /// </summary>
         public static List<CharacterVariantDef>? RetrieveDependantSpawnVariants(CharacterVariantDef? dependee)
         {
             if(dependee == null || _dependeeVariantToDependantVariants.TryGetValue(dependee, out var dependants) == false)
@@ -344,7 +431,18 @@ namespace VAPI
             return _characterVariantNameToIndex.GetValueOrDefault(characterVariantDefName, CharacterVariantIndex.none);
         }
 
+        /// <summary>
+        /// Finds the <see cref="CharacterVariantProvider"/> for the <paramref name="bodyPrefab"/>.
+        /// <para></para>
+        /// Returns null if the body prefab is null, or if the body has no <see cref="CharacterVariantProvider"/>
+        /// </summary>
         public static CharacterVariantProvider? FindCharacterVariantProvider(GameObject? bodyPrefab) => FindCharacterVariantProvider(bodyPrefab != null ? bodyPrefab.GetComponent<CharacterBody>() : null);
+
+        /// <summary>
+        /// Finds the <see cref="CharacterVariantProvider"/> for the <paramref name="bodyComponent"/>.
+        /// <para></para>
+        /// Returns null if the body Component is null, or if the body has no <see cref="CharacterVariantProvider"/>
+        /// </summary>
         public static CharacterVariantProvider? FindCharacterVariantProvider(CharacterBody? bodyComponent) => GetCharacterVariantProvider(bodyComponent != null ? bodyComponent.bodyIndex : BodyIndex.None);
 
         /// <summary>
@@ -541,6 +639,9 @@ namespace VAPI
             yield return sortedVariants;
         }
 
+        /// <summary>
+        /// Forces all <see cref="CharacterVariantProvider"/> to recalculate their available variants.
+        /// </summary>
         public static void ForceVariantAvailabilityRecalculation()
         {
             FilterCharacterVariantProviders(null);

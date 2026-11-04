@@ -12,13 +12,17 @@ using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 
 namespace VAPI
-{
+{/*
     /// <summary>
     /// Issues?:
     /// 1. Modded bodies cannot use the transform path... this seems fine however, as we expose the index. If the address is empty then we can just hide or disable the transform path and force useIndex to be on.
     /// 2. Special "Mesh Replacement" enums from VAPI 2.0 are not implemented
     ///     These enums suck, both in concept and in terms of performance, technically speaking we can check if theyre still needed.
     ///     If we do still need them, the code from VAPI 2.0 only modified the bones array from the skinned mesh renderer, so we can use our disposable system to dispose of those changes and revert it back to how it's meant to be,
+    /// </summary>*/
+    
+    /// <summary>
+    /// The <see cref="CharacterVariantVisualModifier"/> is a "Skin like" system for applying visuals to a variant.
     /// </summary>
     [CreateAssetMenu(fileName = "new VariantVisualModifier", menuName = "VarianceAPI/VariantVisualModifier")]
     public sealed class CharacterVariantVisualModifier : CachedNameScriptableObject
@@ -48,16 +52,26 @@ namespace VAPI
                 }
             }
         }
+
+        /// <summary>
+        /// Represents a replacement of <typeparamref name="T"/> for a <see cref="Renderer"/>
+        /// </summary>
+        /// <typeparam name="T">The type of replacement</typeparam>
         [Serializable]
         public struct RendererTargetedReplacement<T> : ICloneable where T : UnityEngine.Object
         {
             [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), componentTypeRequirement = typeof(Renderer))]
+            [Tooltip("The tranform path to replace it's value, this must point to a GameObject that has a Renderer component.")]
             public string? transformPath;
+
+            [Tooltip("The renderer info index to replace it's value")]
             public int rendererIndex;
 
+            [Tooltip("Wether VAPI should prefer using the rendererIndex value rather than the transformPath value")]
             public bool useIndex;
             private bool _triedUpgrading;
 
+            [Tooltip("The replacement itself")]
             public T? replacement;
 
             internal void UpgradeTransformPathToRendererIndex(CharacterModel characterModel)
@@ -89,7 +103,7 @@ namespace VAPI
                 }
             }
 
-            public bool TryGetRenderer(CharacterModel characterModel, out Renderer? renderer)
+            internal bool TryGetRenderer(CharacterModel characterModel, out Renderer? renderer)
             {
                 renderer = null;
                 if (string.IsNullOrWhiteSpace(transformPath))
@@ -103,25 +117,36 @@ namespace VAPI
                 return child.TryGetComponent<Renderer>(out renderer);
             }
 
+            /// <summary>
+            /// Clones this renderer replacement
+            /// </summary>
+            /// <returns></returns>
             public object Clone()
             {
                 return this;
             }
         }
 
+        /// <summary>
+        /// Represents a replacement of color for a <see cref="Light"/>
+        /// </summary>
         [Serializable]
         public struct LightReplacement : ICloneable
         {
             [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = false, rootComponentType = typeof(CharacterModel), componentTypeRequirement = typeof(Light))]
+            [Tooltip("The tranform path to replace it's value, this must point to a GameObject that has a Light component.")]
             public string? transformPath;
+
+            [Tooltip("The light info index to replace it's color value")]
             public int lightIndex;
 
+            [Tooltip("Wether VAPI should prefer using the lightIndex value rather than the transformPath value")]
             public bool useIndex;
             private bool _triedUpgrading;
 
             public Color lightColor;
 
-            public bool TryGetLight(CharacterModel characterModel, out Light? light)
+            internal bool TryGetLight(CharacterModel characterModel, out Light? light)
             {
                 light = null;
                 if (string.IsNullOrWhiteSpace(transformPath))
@@ -164,31 +189,61 @@ namespace VAPI
                 }
             }
 
+            /// <summary>
+            /// Clones this light replacement
+            /// </summary>
+            /// <returns></returns>
             public object Clone()
             {
                 return this;
             }
         }
 
+        /// <summary>
+        /// Represents a prefab to instantiate on the variant.
+        /// </summary>
         [Serializable]
-        public struct PrefabInstantiationData : ICloneable
+        public sealed class PrefabInstantiationData : ICloneable
         {
+            [Tooltip("A direct reference to the prefab to instantiate")]
             public GameObject? prefabDirectReference;
-            public AssetReferenceGameObject? prefabAddress;
+            [Tooltip("An address reference to the prefab to instantiate")]
+            public AssetReferenceGameObject prefabAddress = new AssetReferenceGameObject("");
 
+            [Tooltip("The tranform path where the prefab will be instantiated")]
             [TransformPath(nameof(_vanillaTargetObject), allowSelectingRoot = true, rootComponentType = typeof(CharacterModel))]
-            public string? transformPath;
-            public string? childLocatorEntry;
+            public string transformPath = "";
 
+            [Tooltip("A child locator where the prefab will be instantiated")]
+            public string childLocatorEntry = "";
+
+            [Tooltip("Wether VAPI should prefer using the childLocatorEntry value rather than the transformPath value")]
             public bool useChildLocatorEntry;
 
+            [Tooltip("The local position for the instantiated prefab")]
             public Vector3 localPosition;
+            [Tooltip("The local rotation for the instantiated prefab")]
             public Vector3 localRotation;
-            public Vector3 localScale;
+            [Tooltip("The local scale for the instantiated prefab")]
+            public Vector3 localScale = Vector3.one;
 
+            /// <summary>
+            /// Clones this PrefabInstantiationData
+            /// </summary>
+            /// <returns></returns>
             public object Clone()
             {
-                return this;
+                return new PrefabInstantiationData
+                {
+                    prefabDirectReference = prefabDirectReference,
+                    prefabAddress = prefabAddress,
+                    transformPath = transformPath,
+                    childLocatorEntry = childLocatorEntry,
+                    useChildLocatorEntry = useChildLocatorEntry,
+                    localPosition = localPosition,
+                    localRotation = localRotation,
+                    localScale = localScale
+                };
             }
 
             internal GameObject? GetPrefabToInstantiate(out AsyncOperationHandle<GameObject>? loadedPrefabHandle)
@@ -233,17 +288,23 @@ namespace VAPI
         }
         #endregion
 
-        /// <summary>
-        /// The vanilla target object, this is utilized exclusively for editor time and it's not used in runtime. If you're creating variants at runtime do not fill this field.
-        /// </summary>
         [SerializeField, AddressableComponentRequirement(typeof(ModelSkinController), searchInChildren = true)]
+        [Tooltip("the vanilla target object, this is utilized exclusively for editor time and it's not used in runtime. If you're creating variants at runtime do not fill this field.")]
         public AssetReferenceGameObject _vanillaTargetObject = new AssetReferenceGameObject("");
 
+        [Tooltip("An array of material replacements")]
         public RendererTargetedReplacement<Material>[] materialReplacements = Array.Empty<RendererTargetedReplacement<Material>>();
+        [Tooltip("An array of mesh replacements")]
         public RendererTargetedReplacement<Mesh>[] meshReplacements = Array.Empty<RendererTargetedReplacement<Mesh>>();
+        [Tooltip("An array of light replacements")]
         public LightReplacement[] lightReplacements = Array.Empty<LightReplacement>();
+        [Tooltip("An array of prefabs to instantiate")]
         public PrefabInstantiationData[] prefabInstantiationDatas = Array.Empty<PrefabInstantiationData>();
 
+        /// <summary>
+        /// Applies the visual modifiers to <paramref name="characterModel"/>. Returns an <see cref="IDisposable"/> used to revert any changes done to the model.
+        /// </summary>
+        /// <param name="appliedMeshReplacements">Becomes true if any mesh replacement is applied.</param>
         public IDisposable ApplyVisualModifiers(CharacterModel characterModel, CharacterBodyVariantController characterBodyVariantController, out bool appliedMeshReplacements)
         {
             if(!characterModel.TryGetComponent<ModelSkinController>(out var mdlSkinController))
@@ -432,20 +493,44 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Struct for creating an instance of <see cref="CharacterVariantVisualModifier"/>
+        /// </summary>
         public struct CreateInstanceArgs
         {
+            /// <summary>
+            /// The name for the scriptable object, cannot be null.
+            /// </summary>
             public string name;
+
+            /// <summary>
+            /// A list of material replacements, can be null.
+            /// </summary>
             public List<RendererTargetedReplacement<Material>>? materialReplacements;
+
+            /// <summary>
+            /// A list of mesh replacements, can be null
+            /// </summary>
             public List<RendererTargetedReplacement<Mesh>>? meshReplacements;
+
+            /// <summary>
+            /// A list of light replacements, can be null
+            /// </summary>
             public List<LightReplacement>? lightReplacements;
+
+            /// <summary>
+            /// A list of prefabs to instantiate, can be null.
+            /// </summary>
             public List<PrefabInstantiationData>? prefabInstantiationDatas;
 
+            /// <summary>Chainable method. Sets <see cref="name"/> to <paramref name="_name"/></summary>
             public CreateInstanceArgs SetName(string _name)
             {
                 name = _name ?? throw new ArgumentNullException(nameof(_name));
                 return this;
             }
 
+            /// <summary>Chainable method. Adds <paramref name="replacement"/> to <see cref="materialReplacements"/></summary>
             public CreateInstanceArgs AddMaterialReplacement(RendererTargetedReplacement<Material> replacement)
             {
                 materialReplacements ??= new List<RendererTargetedReplacement<Material>>();
@@ -453,6 +538,7 @@ namespace VAPI
                 return this;
             }
 
+            /// <summary>Chainable method. Adds <paramref name="replacements"/> to <see cref="materialReplacements"/></summary>
             public CreateInstanceArgs AddMaterialReplacement(IEnumerable<RendererTargetedReplacement<Material>> replacements)
             {
                 materialReplacements ??= new List<RendererTargetedReplacement<Material>>();
@@ -460,6 +546,7 @@ namespace VAPI
                 return this;
             }
 
+            /// <summary>Chainable method. Adds <paramref name="replacement"/> to <see cref="meshReplacements"/></summary>
             public CreateInstanceArgs AddMeshReplacement(RendererTargetedReplacement<Mesh> replacement)
             {
                 meshReplacements ??= new List<RendererTargetedReplacement<Mesh>>();
@@ -467,6 +554,7 @@ namespace VAPI
                 return this;
             }
 
+            /// <summary>Chainable method. Adds <paramref name="replacements"/> to <see cref="meshReplacements"/></summary>
             public CreateInstanceArgs AddMeshReplacement(IEnumerable<RendererTargetedReplacement<Mesh>> replacements)
             {
                 meshReplacements ??= new List<RendererTargetedReplacement<Mesh>>();
@@ -474,6 +562,7 @@ namespace VAPI
                 return this;
             }
 
+            /// <summary>Chainable method. Adds <paramref name="replacement"/> to <see cref="lightReplacements"/></summary>
             public CreateInstanceArgs AddLightReplacement(LightReplacement replacement)
             {
                 lightReplacements ??= new List<LightReplacement>();
@@ -481,6 +570,7 @@ namespace VAPI
                 return this;
             }
 
+            /// <summary>Chainable method. Adds <paramref name="replacements"/> to <see cref="lightReplacements"/></summary>
             public CreateInstanceArgs AddLightReplacement(IEnumerable<LightReplacement> replacements)
             {
                 lightReplacements ??= new List<LightReplacement>();
@@ -488,6 +578,7 @@ namespace VAPI
                 return this;
             }
 
+            /// <summary>Chainable method. Adds <paramref name="data"/> to <see cref="prefabInstantiationDatas"/></summary>
             public CreateInstanceArgs AddPrefabInstantiationData(PrefabInstantiationData data)
             {
                 prefabInstantiationDatas ??= new List<PrefabInstantiationData>();
@@ -495,6 +586,7 @@ namespace VAPI
                 return this;
             }
 
+            /// <summary>Chainable method. Adds <paramref name="datas"/> to <see cref="prefabInstantiationDatas"/></summary>
             public CreateInstanceArgs AddPrefabInstantiationData(IEnumerable<PrefabInstantiationData> datas)
             {
                 prefabInstantiationDatas ??= new List<PrefabInstantiationData>();
@@ -503,6 +595,11 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Creates an instance of <see cref="CharacterVariantVisualModifier"/> based on <paramref name="args"/>'s values.
+        /// <para></para>
+        /// See <see cref="CreateInstanceArgs"/> for more info
+        /// </summary>
         public static CharacterVariantVisualModifier CreateInstance(CreateInstanceArgs args)
         {
             CharacterVariantVisualModifier result = CreateInstance<CharacterVariantVisualModifier>();
@@ -514,6 +611,9 @@ namespace VAPI
             return result;
         }
 
+        /// <summary>
+        /// Create an instance of <see cref="CharacterVariantVisualModifier"/> by cloning <paramref name="other"/> and assigning its name to <paramref name="newName"/>
+        /// </summary>
         public static CharacterVariantVisualModifier CreateInstance(CharacterVariantVisualModifier other, string newName)
         {
             CreateInstanceArgs args = new CreateInstanceArgs();

@@ -16,9 +16,11 @@ using VAPI.AddressReferencedAssets;
 namespace VAPI
 {
     /// <summary>
-    /// ScriptableObject class for CharacterVariants.
+    /// Main ScriptableObject that defines a Variant for a character. These are catalogued by the <see cref="CharacterVariantCatalog"/>.
     /// <br></br>
-    /// New ones can be created in code via the <see cref="CharacterVariantDefBuilder"/>, or by "Cloning" one using <see cref="CharacterVariantDef.CreateInstance(CharacterVariantDef, string)"/>
+    /// When a variant is added to the catalog via a <see cref="VariantPack"/>, and it's <see cref="targetBody"/> points to a valid <see cref="CharacterBody"/> prefab, the variant becomes available for spawning via the character's <see cref="CharacterVariantProvider"/>. This provider is later used for creating them in a run.
+    /// <para></para>
+    /// It is extremely recommended to create new ones in code via the <see cref="CharacterVariantDefBuilder"/>, or by cloning an existing one using <see cref="CharacterVariantDef.CreateInstance(CharacterVariantDef, string)"/>
     /// </summary>
     [CreateAssetMenu(fileName = "New CharacterVariantDef", menuName = "VarianceAPI/CharacterVariantDef")]
     public sealed class CharacterVariantDef : CachedNameScriptableObject
@@ -26,7 +28,7 @@ namespace VAPI
         /// <summary>
         /// The <see cref="CharacterVariantIndex"/> assigned to this variant def
         /// </summary>
-        public CharacterVariantIndex characterVariantIndex { get; internal set; }
+        public CharacterVariantIndex characterVariantIndex { get; internal set; } = CharacterVariantIndex.none;
 
         [Header("General Settings")]
         [Tooltip("A Target body for this variant. This variant will be available to this body.")]
@@ -40,7 +42,7 @@ namespace VAPI
         [Tooltip("Wether this variant is hidden from the RuleBook options. Hidden variants will also not get config entries for the uniqueness and spawn rate settings")]
         public bool isHidden;
 
-        [Tooltip("The spawn rate for this variant")]
+        [Tooltip("The spawn rate for this variant, 0 -> 100")]
         [Range(0, 100)]
         public float spawnRate;
 
@@ -49,7 +51,7 @@ namespace VAPI
 
         [Header("Spawn Conditions")]
         [SerializeReference, SubclassSelector]
-        [Tooltip("A spawn condition for this variant.")]
+        [Tooltip("A spawn condition for this variant. This may be left null")]
         public IVariantSpawnCondition? spawnCondition = null;
 
         [Header("Master Related")]
@@ -62,7 +64,7 @@ namespace VAPI
 
         [Header("Body Related")]
         [SerializeReference, SubclassSelector]
-        [Tooltip("A name provider for this variant, used to change the display name")]
+        [Tooltip("A name provider for this variant, used to change the display name. This may be null")]
         public IVariantNameProvider? variantNameProvider = null;
 
         [Tooltip("A death state override for this variant")]
@@ -72,16 +74,16 @@ namespace VAPI
         public VariantSkillReplacement[] skillReplacements = Array.Empty<VariantSkillReplacement>();
 
         [SerializeReference, SubclassSelector]
-        [Tooltip("A stat modifier for this variant, uses RecalculateStatsAPI internally")]
+        [Tooltip("A stat modifier for this variant, uses RecalculateStatsAPI internally. This may be null")]
         public IVariantStatModifier? statModifier = null;
 
         [Tooltip("A list of buffs for this variant")]
         public VariantBuffStorage variantBuffs = new VariantBuffStorage();
 
-        [Tooltip("The visuals for this variant")]
+        [Tooltip("The visuals for this variant. This may be null")]
         public CharacterVariantVisualModifier? visualModifier = null;
 
-        [Tooltip("A scale multiplier for this variant")]
+        [Tooltip("A scale multiplier for this variant. Cannot be less or equal to 0")]
         [Min(0 + float.Epsilon)]
         public float scaleMultiplier = 1f;
 
@@ -90,25 +92,27 @@ namespace VAPI
         public VariantComponentCollection additionalVariantComponents = new VariantComponentCollection();
 
         /// <summary>
-        /// The config file used to configure this variant. Set by the VariantPackManager
+        /// The config file used to configure this variant. Set by the VariantPackManager. This can be null.
+        /// <br></br>
+        /// If it exists, Configurations for this variant's <see cref="spawnRate"/> and <see cref="isUnique"/> will be created
         /// </summary>
         public ConfigFile? associatedConfigFile { get; internal set; }
 
-
         /// <summary>
-        /// The mod that added this Variant. Set by the VariantPackManager.
+        /// The mod that added this Variant. Set by the VariantPackManager. This is only null if the VariantPackManager has not initialized.
         /// </summary>
         public BepInPlugin? ownerPlugin { get; internal set; }
 
         /// <summary>
-        /// True if this <see cref="CharacterVariantDef"/> has at least one <see cref="CharacterVariantProvider"/> in the <see cref="CharacterVariantCatalog"/>.
+        /// True if at least one <see cref="CharacterVariantProvider"/> has this variant in it's internal collection.
         /// <br></br>
-        /// This is usually false when the variant is added to a VariantPack, but the <see cref="targetCharacter"/> resolves to an invalid CharacterBody or CharacterMaster component.
+        /// This is rarely false, a situation where this is false is where a variant is added to a <see cref="VariantPack"/>, but the <see cref="targetBody"/> resolves to a nonexistent Body Prefab. This is most commonly seen on Modded Variants.
         /// </summary>
         public bool hasProvider { get; internal set; }
 
         protected override void OnValidate()
         {
+            base.OnValidate();
             spawnCondition?.Validate();
             variantNameProvider?.Validate();
             statModifier?.Validate();

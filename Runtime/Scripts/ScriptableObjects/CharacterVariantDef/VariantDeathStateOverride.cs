@@ -1,15 +1,20 @@
+#nullable enable
 using EntityStates;
 using RoR2;
 using System;
+using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Struct that represents an override for a character's death state. Can be cloned
+    /// </summary>
     [Serializable]
     public struct VariantDeathStateOverride : ICloneable
     {
         private struct DisposableVariantDeathStateOverride : IDisposable
         {
-            private CharacterDeathBehavior _characterDeathBehaviour;
+            private CharacterDeathBehavior? _characterDeathBehaviour;
             private SerializableEntityStateType _originalDeathState;
 
             public DisposableVariantDeathStateOverride(CharacterDeathBehavior deathBehaviour, SerializableEntityStateType originalDeathState)
@@ -20,16 +25,21 @@ namespace VAPI
 
             public void Dispose()
             {
-                if(_characterDeathBehaviour)
+                if(_characterDeathBehaviour != null)
                 {
                     _characterDeathBehaviour.deathState = _originalDeathState;
                 }
             }
         }
 
+        [Tooltip("A death state to use when this variant dies.")]
         public SerializableEntityStateType deathStateOverride;
 
-        public IDisposable ApplyDeathStateOverride(CharacterDeathBehavior characterDeathBehaviour)
+        /// <summary>
+        /// Applies the <see cref="deathStateOverride"/> to <paramref name="characterDeathBehaviour"/>.
+        /// <br></br>
+        /// Returns null if <paramref name="characterDeathBehaviour"/> is null or <see cref="deathStateOverride"/> resulves to null. Otherwise returns a disposable object used to revert the death state change.
+        public IDisposable? ApplyDeathStateOverride(CharacterDeathBehavior characterDeathBehaviour)
         {
             if (characterDeathBehaviour == null)
                 return null;
@@ -43,6 +53,9 @@ namespace VAPI
             return result;
         }
 
+        /// <summary>
+        /// Clones the metadata in this into a new instance of <see cref="VariantComponentCollection"/>
+        /// </summary>
         public object Clone()
         {
             return new VariantDeathStateOverride
@@ -51,14 +64,25 @@ namespace VAPI
             };
         }
 
+        /// <summary>
+        /// Constructor. Sets the death state override to <paramref name="stateType"/>
+        /// </summary>
         public VariantDeathStateOverride(SerializableEntityStateType stateType)
         {
             deathStateOverride = stateType;
         }
+
+        /// <summary>
+        /// Constructor. Sets the death state override to <paramref name="typeName"/>
+        /// </summary>
         public VariantDeathStateOverride(string typeName)
         {
             deathStateOverride = new SerializableEntityStateType(typeName);
         }
+
+        /// <summary>
+        /// Constructor. Sets the death state override to <paramref name="stateType"/>
+        /// </summary>
         public VariantDeathStateOverride(Type stateType)
         {
             deathStateOverride = new SerializableEntityStateType(stateType);

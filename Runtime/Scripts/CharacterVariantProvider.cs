@@ -68,10 +68,22 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Defines a roll type to use.
+        /// </summary>
         public enum RollType
         { 
+            /// <summary>
+            /// Unique variants are rolled first, if no uniques are picked, then non uniques are rolled.
+            /// </summary>
             Default,
+            /// <summary>
+            /// Only roll unique variants
+            /// </summary>
             Unique,
+            /// <summary>
+            /// Only roll non unique variants
+            /// </summary>
             NonUnique
         }
 
@@ -90,8 +102,14 @@ namespace VAPI
             /// </summary>
             public float? spawnChanceMultiplier;
 
+            /// <summary>
+            /// The <see cref="RollType"/> to use, defaults to <see cref="RollType.Default"/>
+            /// </summary>
             public RollType? rollType;
 
+            /// <summary>
+            /// an array of VariantDefs that are guaranteed to be included on the final array.
+            /// </summary>
             public CharacterVariantDef[]? additiveVariantDefs;
         }
 

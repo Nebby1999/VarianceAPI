@@ -6,11 +6,10 @@ using UnityEngine;
 
 namespace VAPI
 {
-    //This class is also very neat, the constructor registers to DirectorSpawnREquest's event, and the deconstructor will unregister.
-    //As soon as a DirectorSpawnRequest happens, and the spawn request that happeend is the one stored in this instance, it'll turn it into a vairant.
-
     /// <summary>
-    /// A <see cref="DirectorSpawnRequest"/> class encapsulator that will turn the spawned character into a variant
+    /// A <see cref="DirectorSpawnRequest"/> class encapsulator that will turn the spawned character into a variant.
+    /// <para></para>
+    /// This is done by subscribing to the <see cref="DirectorSpawnRequest.onSpawnedServer"/>, and then applying any variants and modifiers.
     /// </summary>
     public sealed class VariantDirectorSpawnRequest
     {

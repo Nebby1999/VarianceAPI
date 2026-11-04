@@ -14,7 +14,7 @@ using UnityEngine;
 namespace VAPI
 {
     /// <summary>
-    /// Interface for implementing a custom Spawn Condition for a Variant.
+    /// A <see cref="IVariantSpawnCondition"/> is a <see cref="IValidatable"/> and <see cref="ICloneable"/> interface used to define spawn conditions for Variants. These implementations can be serialized in the editor via the <see cref="SerializeReference"/> arrtibute.
     /// <br></br>
     /// If <see cref="IsAvailable"/> resolves to true, then the Variant can spawn. This is called each time the Stage changes in the run.
     /// <br></br>
@@ -23,6 +23,7 @@ namespace VAPI
     /// <b>Built in spawn conditions:</b>
     /// <list type="bullet">
     /// <item><see cref="BasicSpawnCondition"/>: The Reimplementation of VAPI2.0's VariantSpawnCondition.</item>
+    /// <item><see cref="VariantDependantCondition"/>: A dependant condition, the variant can only spawn if <see cref="VariantDependantCondition.dependantVariantDef"/> can also spawn. This is used mainly by the <see cref="VariantCloning"/> class.</item>
     /// </list>
     /// </summary>
     public interface IVariantSpawnCondition : IValidatable, ICloneable
@@ -118,7 +119,7 @@ namespace VAPI
         public AddressReferencedExpansionDef[] requiredExpansionDefs = Array.Empty<AddressReferencedExpansionDef>();
 
         /// <summary>
-        /// Returns true if the variant is available using these spawn conditions.
+        /// Returns true if the variant is available using these spawn conditions. Override this method if you're inheriting from this
         /// <br></br>
         /// Requires the following methods to return true:
         /// <list type="bullet">
@@ -245,6 +246,9 @@ namespace VAPI
         }
 
         #region Constructors
+        /// <summary>
+        /// Creates na instance of BasicSpawnCondition with min stages required for completion
+        /// </summary>
         public static BasicSpawnCondition MinStages(int minStageCompletions)
         {
             return new BasicSpawnCondition(minStageCompletions, null, null, null, null, null);
@@ -315,26 +319,30 @@ namespace VAPI
         }
 
         /// <summary>
-        /// Constructor
+        /// PArameterless Constructor
         /// </summary>
         public BasicSpawnCondition() { }
         #endregion
     }
 
     /// <summary>
-    /// A Spawn Condition that returns true if the <see cref="VariantDependantCondition.dependantVariantDef"/>'s availability also resolves to true.
+    /// A Spawn Condition that returns true if the <see cref="dependantVariantDef"/>'s availability also resolves to true.
     /// </summary>
     [Serializable]
     public struct VariantDependantCondition : IVariantSpawnCondition
     {
+        [Tooltip("The variant to check for it's availability.")]
         public CataloguedVariantReference dependantVariantDef;
 
         /// <summary>
         /// Wether the variant can spawn or not, this is checked before the <see cref="dependantVariantDef"/> isAvailable check is done.
         /// <br></br>
         /// This is used mostly for scenarios where we want to add a variant that depends on another variant's availability spawning, but want to control wether it can spawn or not via a config.
+        /// <para></para>
+        /// As a more direct example, The Original 30 and Nebby's Wrath set this value depending on a config to check wether "ally Variants" is set to true or false
         /// </summary>
         [HideInInspector]
+        [Tooltip("If this is true, the variant cannot spawn regarldess of the dependantVariantDef's availability")]
         public bool cannotSpawn;
 
         public UnlockableDef? requiredUnlock
@@ -363,6 +371,9 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Clones the metadata in this into a new instance of <see cref="VariantDependantCondition"/>
+        /// </summary>
         public object Clone()
         {
             return new VariantDependantCondition(dependantVariantDef);
@@ -390,18 +401,27 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public VariantDependantCondition(CataloguedVariantReference _dependantVariantDef)
         {
             dependantVariantDef = _dependantVariantDef;
             cannotSpawn = false;
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public VariantDependantCondition(string _dependantVariantDefName)
         {
             dependantVariantDef = new CataloguedVariantReference(_dependantVariantDefName);
             cannotSpawn = false;
         }
 
+        /// <summary>
+        /// Constructor
+        /// </summary>
         public VariantDependantCondition(CharacterVariantDef _dependantVariantDef)
         {
             dependantVariantDef = new CataloguedVariantReference(_dependantVariantDef);

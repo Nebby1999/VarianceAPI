@@ -18,13 +18,15 @@ namespace VAPI
     public enum CharacterVariantTierIndex
     {
         /// <summary>
-        /// Represents ain invalid index
+        /// Represents an invalid index
         /// </summary>
         None = -1,
     }
 
     /// <summary>
     /// Catalog for <see cref="CharacterVariantTierDef"/>
+    /// <para></para>
+    /// If you need to run code after this catalog initializes, consider using <see cref="catalogAvailability"/>
     /// </summary>
     public static class CharacterVariantTierCatalog
     {
@@ -129,8 +131,8 @@ namespace VAPI
                     key = "Gold Multiplier",
                     description = "The Gold Multiplier for this Tier.",
                     configFile = tierDef.associatedConfigFile,
-                    modName = tierDef.ownerPlugin.Name,
-                    modGUID = tierDef.ownerPlugin.GUID,
+                    modName = tierDef.ownerPlugin!.Name,
+                    modGUID = tierDef.ownerPlugin!.GUID,
                     sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
                     sliderConfig = new SliderConfig
                     {
@@ -242,7 +244,7 @@ namespace VAPI
                         FormatString = "{0:0.0}",
                         min = 0,
                         max = 100,
-                        checkIfDisabled = () => VAPIConfig._enableRewards
+                        checkIfDisabled = () => !VAPIConfig._enableRewards
                     },
                 }.WithConfigChange(f =>
                 {

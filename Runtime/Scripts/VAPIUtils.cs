@@ -99,22 +99,60 @@ namespace VAPI
             return copy;
         }
 
+        /// <summary>
+        /// Struct used for the arguments of <see cref="TransformSpawnedInstanceIntoVariant(TransformSpawnedInstanceIntoVariantArgs)"/>
+        /// </summary>
         public struct TransformSpawnedInstanceIntoVariantArgs
         {
+            /// <summary>
+            /// The spawned instance to turn into a variant
+            /// </summary>
             public GameObject? spawnedInstance;
 
+            /// <summary>
+            /// If true, the arrival messages and sfx are supressed. <b>Defaults to false</b>
+            /// </summary>
             public bool? supressArrivalMessage;
             
+            /// <summary>
+            /// An array of <see cref="CharacterVariantDef"/> to set to the body. If left null, the <see cref="VariantSpawnManager"/> will roll for the character's variants. <b>Defaults to null</b>
+            /// </summary>
             public CharacterVariantDef[]? preassignedVariantDefs;
+            /// <summary>
+            /// If true, the <see cref="preassignedVariantDefs"/> are considered additive. <see cref="VariantSpawnManager"/> will roll for variants to add on top of the ones preassigned. <b>Defaults to false</b>
+            /// </summary>
             public bool? preassignedVariantDefsAreAdditive;
+            /// <summary>
+            /// A multiplied that's applied on top of any existing spawn rate multipliers. <b>Defaults to 1</b>
+            /// </summary>
             public float? spawnManagerMultiplier;
             
+            /// <summary>
+            /// If supplied, the DeathRewards for the spawned variant will recieve this's gold and exp rewards. <b>Defaults to null</b>
+            /// </summary>
             public DeathRewards? baseDeathRewards;
+            /// <summary>
+            /// If <see cref="baseDeathRewards"/> is not null, the base gold and exp rewards are multiplied by this value. <b>Defaults to 1</b>
+            /// </summary>
             public float? deathRewardsCoefficient;
+            
+            /// <summary>
+            /// If true, the spawned variant will not drop items. <b>Defaults to false</b>
+            /// </summary>
             public bool? noItemRewards;
+
+            /// <summary>
+            /// If true, the spawned variant will not recieve any gold or exp modifications. <b>Defaults to false</b>
+            /// </summary>
             public bool? noGoldExpModifications;
         }
 
+        /// <summary>
+        /// Method utilized for transforming a newly spawned character into a Variant. Both <see cref="VariantMasterSummon"/> and <see cref="VariantDirectorSpawnRequest"/> utilize this method.
+        /// <br></br>
+        /// See <see cref="TransformSpawnedInstanceIntoVariantArgs"/> for more information
+        /// </summary>
+        /// <param name="args">The arguments for this method</param>
         public static void TransformSpawnedInstanceIntoVariant(TransformSpawnedInstanceIntoVariantArgs args)
         {
             GameObject? spawnedInstance = args.spawnedInstance;

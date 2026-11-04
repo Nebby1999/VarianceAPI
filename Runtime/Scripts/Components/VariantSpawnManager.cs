@@ -11,7 +11,13 @@ using static MSU.Config.ConfiguredVariable;
 namespace VAPI
 {
     /// <summary>
-    /// Class that manages the spawning of variants, this class is found within a Run behaviour thats only instantiated if <see cref="VAPIContent.VarianceAPI"/> is enabled.
+    /// The <see cref="VariantSpawnManager"/> is a Run Behaviour that handles the spawning of Variants.
+    /// <para></para>
+    /// This behaviour only exists if <see cref="VAPIContent.VarianceAPI"/> is enabled in the run.
+    /// <para></para>
+    /// This component subscribes to the body's start event to turn it into a variant. It has mainly <see cref="Xoroshiro128Plus"/> instances on the server to manage specific server related RNG.
+    /// <br></br>
+    /// If you do not wish for the VariantSpawnManager to handle the variants for a scripted summon, consider using <see cref="VariantMasterSummon"/> or <see cref="VariantDirectorSpawnRequest"/>.
     /// </summary>
     [RequireComponent(typeof(NetworkParent))]
     public sealed class VariantSpawnManager : MonoBehaviour
@@ -59,6 +65,9 @@ namespace VAPI
         /// </summary>
         public Xoroshiro128Plus? variantRewardRng { get; private set; }
 
+        /// <summary>
+        /// Returns true if <paramref name="variantIndex"/> is enabled in the run.
+        /// </summary>
         public bool IsVariantAvailable(CharacterVariantIndex variantIndex) => availableVariants.Contains(variantIndex);
 
         private void Awake()
@@ -99,7 +108,6 @@ namespace VAPI
 
         private void OnEnable()
         {
-            //CharacterMaster.onStartGlobal += OnMasterStart;
             CharacterBody.onBodyStartGlobal += OnBodyStart;
 
             SingletonHelper.Assign(ref _instance, this);
@@ -107,7 +115,6 @@ namespace VAPI
 
         private void OnDisable()
         {
-            //CharacterMaster.onStartGlobal -= OnMasterStart;
             CharacterBody.onBodyStartGlobal -= OnBodyStart;
 
             SingletonHelper.Unassign(ref _instance, this);
@@ -175,6 +182,7 @@ namespace VAPI
             }
         }
 
+        //This method retrieves the procedure for variant spawning, basically what the spawn manager needs to do depending on the metadata that the body and it's master contains
         private BodyStartProcedure GetProcedureForBody(CharacterBody body, out BodyStartProcedureRetrievedValues retrievedValues)
         {
             retrievedValues = default;

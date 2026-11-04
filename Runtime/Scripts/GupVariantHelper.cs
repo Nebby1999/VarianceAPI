@@ -26,7 +26,9 @@ namespace VAPI
         /// <summary>
         /// Adds a variant to the gup blacklist.
         /// <br></br>
-        /// If a Gup/Geep dies and has <paramref name="def"/> in it's variant defs, it will not be propagated to it's children
+        /// If a Gup/Geep dies and has <paramref name="def"/> in it's variant defs, it will not be propagated to it's children.
+        /// <para></para>
+        /// This is explicitly used by Nebby's Wrath's "Goop" variant, since it splits into Gups, we don't want those new gups to also be Goops to avoid an infinite goop problem
         /// </summary>
         /// <param name="def">The variant def to blacklist</param>
         public static void AddVariantToGupBlacklist(CharacterVariantDef def)

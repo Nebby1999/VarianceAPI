@@ -11,7 +11,9 @@ using UnityEngine.Networking;
 namespace VAPI
 {
     /// <summary>
-    /// Scriptable object that defines a Tier for variants.
+    /// Scriptable object that defines a Tier for variants. These are catalogued by the <see cref="CharacterVariantTierCatalog"/>.
+    /// <br></br>
+    /// The metadata in here mainly drives the reward system, alongside items and buffs that the variant should have due to being part of the tier.
     /// </summary>
     [CreateAssetMenu(fileName = "New VariantTierDef", menuName = "VarianceAPI/VariantTierDef")]
     public sealed class CharacterVariantTierDef : CachedNameScriptableObject
@@ -132,12 +134,14 @@ namespace VAPI
         public CharacterVariantTierIndex characterVariantTierIndex { get; internal set; }
 
         /// <summary>
-        /// The config file used to configure this variant tier. Set by the VariantPackManager
+        /// The config file used to configure this variant tier. Set by the VariantPackManager. This can be null.
+        /// <br></br>
+        /// If it exists, Configurations for this tier's <see cref="bonusArmor"/>, <see cref="experienceRewardCoefficient"/>, <see cref="goldRewardCoefficient"/>, <see cref="commonItemRewardChance"/>, <see cref="uncommonItemRewardChance"/>, <see cref="legendaryItemRewardChance"/> and <see cref="bossItemRewardChance"/> are generated.
         /// </summary>
         public ConfigFile? associatedConfigFile { get; internal set; }
 
         /// <summary>
-        /// The mod that added this Variant Tier. Set by the VariantPackManager.
+        /// The mod that added this Variant Tier. Set by the VariantPackManager. This is only null if the VariantPackManager has not initialized.
         /// </summary>
         public BepInPlugin? ownerPlugin { get; internal set; }
 

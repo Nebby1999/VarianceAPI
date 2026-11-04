@@ -10,6 +10,8 @@ namespace VAPI
     /// Represents a replacement for a Skill.
     /// <br></br>
     /// This class shouldn't be reused across multiple variants, call <see cref="Clone"/> instead of reusing.
+    /// <para></para>
+    /// If a skill replacement's SkillDef value is left null, a unique "unusable" skill is assigned to the slot instead.
     /// </summary>
     [Serializable]
     public sealed class VariantSkillReplacement : ICloneable
@@ -47,6 +49,10 @@ namespace VAPI
 
         /// <summary>
         /// Applies the skill replacements to the skill locator.
+        /// <para></para>
+        /// Returns null if <paramref name="skillLocator"/> is null, or if the GenericSkill cannot be resolved.
+        /// <br></br>
+        /// Otherwise, returns a disposable object used to revert the skill override.
         /// </summary>
         public IDisposable? ApplySkillReplacement(SkillLocator skillLocator)
         {
@@ -79,7 +85,7 @@ namespace VAPI
         }
 
         /// <summary>
-        /// Returns a clone of this.
+        /// Clones the metadata in this into a new instance of <see cref="VariantSkillReplacement"/>
         /// </summary>
         public object Clone()
         {

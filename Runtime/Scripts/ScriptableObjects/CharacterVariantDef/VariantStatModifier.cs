@@ -8,7 +8,7 @@ using UnityEngine;
 namespace VAPI
 {
     /// <summary>
-    /// An <see cref="ICloneable"/>, <see cref="IValidatable"/> interface used to modify the stats of a variant.
+    /// A <see cref="IVariantStatModifier"/> is a <see cref="IValidatable"/> and <see cref="ICloneable"/> interface used to define stat modifiers for a Variant. These implementations can be serialized in the editor via the <see cref="SerializeReference"/> attribute.
     /// <br></br>
     /// Utilizes R2API's RecalculateStats internally.
     /// <br></br>
@@ -21,6 +21,9 @@ namespace VAPI
     /// </summary>
     public interface IVariantStatModifier : IValidatable, ICloneable
     {
+        /// <summary>
+        /// Apply the stat modifiers of this to <paramref name="args"/>.
+        /// </summary>
         public void ApplyStatModifiers(R2API.RecalculateStatsAPI.StatHookEventArgs args, CharacterBody targetBody);
     }
 

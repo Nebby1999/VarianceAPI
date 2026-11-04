@@ -8,7 +8,7 @@ using UnityEngine;
 namespace VAPI
 {
     /// <summary>
-    /// Monobehaviour used to fire equipments from variants
+    /// Runtime Monobehaviour used to fire equipments from variants, you do not need to add this component manually.
     /// </summary>
     [AddComponentMenu("")]
     public sealed class VariantEquipmentHandler : MonoBehaviour
