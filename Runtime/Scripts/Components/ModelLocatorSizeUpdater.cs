@@ -31,6 +31,9 @@ namespace VAPI
 
         private void LateUpdate()
         {
+            if (!_modelLocator)
+                return;
+
             if(_modelLocator.enabled == false || _modelLocator.autoUpdateModelTransform == false)
             {
                 UpdateModelLocatorSize(Time.deltaTime);
@@ -39,6 +42,9 @@ namespace VAPI
 
         private void UpdateModelLocatorSize(float deltaTime)
         {
+            if (_modelLocator.modelTransform == null)
+                return;
+
             if (_modelLocator.modelScale != _modelLocator.desiredModelScale)
             {
                 _modelLocator.modelScale = _modelLocator.desiredModelScale;
