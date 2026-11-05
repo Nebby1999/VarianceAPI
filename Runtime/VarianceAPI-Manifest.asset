@@ -34,6 +34,7 @@ MonoBehaviour:
   Data:
   - {fileID: 114211852988908172}
   - {fileID: 114107831304456238}
+  - {fileID: 6668475336501597177}
   - {fileID: 114431642618062350}
   - {fileID: 114987763159783732}
   - {fileID: -544536280802138537}
@@ -131,6 +132,23 @@ MonoBehaviour:
   - <MSUBuildPathStreamingSoundbank>
   includeMetaFiles: 0
   files: []
+--- !u!114 &6668475336501597177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <MSUBuildPathPlugins>
+  includeMetaFiles: 0
+  files:
+  - {fileID: 4900000, guid: af11842c94fa99c44bde14d5d6456119, type: 3}
 --- !u!114 &8324102109481770816
 MonoBehaviour:
   m_ObjectHideFlags: 0

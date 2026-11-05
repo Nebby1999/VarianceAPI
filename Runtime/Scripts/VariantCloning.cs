@@ -18,6 +18,7 @@ namespace VAPI
         /// <summary>
         /// Clones a Lemurian variant into a Devoted Lemurian variant. Returns null if <paramref name="def"/> is null or not a lemurian variant.
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a Lemurian Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoDevotedLemurian(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
@@ -37,6 +38,7 @@ namespace VAPI
         /// <summary>
         /// Clones a LemurianBruiser variant into a Devoted Elder Lemurian variant. Returns null if <paramref name="def"/> is null or not an elder lemurian variant.
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a LemurianBruiser Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoDevotedLemurianBruiser(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
@@ -56,6 +58,7 @@ namespace VAPI
         /// <summary>
         /// Clones a BeetleGuard variant into a Beetle Guard Ally from the Queen's Gland item. Returns null if <paramref name="def"/> is null or not a Beetle Guard variant.
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a BeetleGuard Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoBeetleGuardGland(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
@@ -75,6 +78,7 @@ namespace VAPI
         /// <summary>
         /// Clones a RoboBallMini variant into a Delighted Probe variant. Returns null if <paramref name="def"/> is null or not a RoboBallMini variant
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a RoboBallMini Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoRoboBallGreenBuddy(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true) => CloneIntoRoboBallBuddyInternal(def, "Green", nameof(RoR2Content.BodyPrefabs.RoboBallGreenBuddyBody), makeHidden, resultAvailableOnlyIfSrcAvailable);
@@ -82,6 +86,7 @@ namespace VAPI
         /// <summary>
         /// Clones a RoboBallMini variant into a Quiet Probe variant. Returns null if <paramref name="def"/> is null or not a RoboBallMini variant
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a RoboBallMini Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoRoboBallRedBuddy(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true) => CloneIntoRoboBallBuddyInternal(def, "Red", nameof(RoR2Content.BodyPrefabs.RoboBallRedBuddyBody), makeHidden, resultAvailableOnlyIfSrcAvailable);
@@ -103,6 +108,7 @@ namespace VAPI
         /// <summary>
         /// Clones a MinorConstruct variant into a MinorConstructOnKill variant. Returns null if <paramref name="def"/> is null or not a MinorConstruct variant
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a MinorConstruct Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoMinorConstructOnKill(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
@@ -122,6 +128,7 @@ namespace VAPI
         /// <summary>
         /// Clones a Void Devastator variant into a Void Devastator Ally variant from the Newly Hatched Zoea item. Returns null if <paramref name="def"/> is null or not a VoidMegaCrab variant
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a VoidMegaCrab Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoVoidMegaCrabAlly(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
@@ -141,6 +148,7 @@ namespace VAPI
         /// <summary>
         /// Clones a Void Jailer variant into a Void Jailer Ally variant from the Newly Hatched Zoea item. Returns null if <paramref name="def"/> is null or not a VoidJailer variant
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a VoidJailer Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoVoidJailerAlly(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
@@ -160,6 +168,7 @@ namespace VAPI
         /// <summary>
         /// Clones a Void Reaver variant into a Void Reaver Ally variant from the Newly Hatched Zoea item. Returns null if <paramref name="def"/> is null or not a Nullifier variant
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a Nullifier Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoNullifierAlly(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
@@ -179,6 +188,7 @@ namespace VAPI
         /// <summary>
         /// Clones a Lemurian variant into a Lemurian Polymorph variant. Returns null if <paramref name="def"/> is null or not a lemurian variant.
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a Lemurian Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoLemurianPolymorph(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
@@ -198,6 +208,7 @@ namespace VAPI
         /// <summary>
         /// Clones a Lesser Wisp variant into a Soul Lesser Wisp variant. Returns null if <paramref name="def"/> is null or not a Lesser Wisp variant.
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a Wisp Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoWispSoul(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
@@ -218,6 +229,7 @@ namespace VAPI
         /// <summary>
         /// Clones a Solus Control Unit variant into an Alloy Worship Unit variant. Returns null if <paramref name="def"/> is null or not a Solus Control Unit variant.
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a RoboBallBoss Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         public static CharacterVariantDef? CloneIntoSuperRoboBallBoss(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
@@ -238,6 +250,7 @@ namespace VAPI
         /// <summary>
         /// Clones a MinorConstruct variant into a MinorConstructAttachable variant. Returns null if <paramref name="def"/> is null or not a MinorConstruct variant.
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a MinorConstruct Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         [Obsolete("This method exists but remains untested, use with caution. Obsolete status may be removed if the cloning process ends up being safe")]
@@ -259,6 +272,7 @@ namespace VAPI
         /// <summary>
         /// Clones a MagmaWorm variant into an OverloadingWorm variant. Returns null if <paramref name="def"/> is null or not a MagmaWorm variant.
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a MagmaWorm Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         /// <returns></returns>
@@ -365,6 +379,7 @@ namespace VAPI
         /// <summary>
         /// Clones a Scavenger variant into an LunarScavenger variant. Returns null if <paramref name="def"/> is null or not a Scavenger variant.
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a Scav Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         /// <returns></returns>
@@ -373,6 +388,7 @@ namespace VAPI
         /// <summary>
         /// Clones a Scavenger variant into an SanctumScavenger variant. Returns null if <paramref name="def"/> is null or not a Scavenger variant.
         /// </summary>
+        /// <param name="def">The source VariantDef, must point to a Scav Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
         /// <returns></returns>
@@ -436,7 +452,7 @@ namespace VAPI
             public bool? makeHidden;
 
             /// <summary>
-            /// If true, the cloned variant will only be available if <paramref name="def"/> is also available.. <b>Defaults to true</b>
+            /// If true, the cloned variant will only be available if <see cref="src"/> is also available. <b>Defaults to true</b>
             /// </summary>
             public bool? resultAvailableOnlyIfSrcAvailable;
         }

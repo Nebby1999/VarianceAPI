@@ -304,6 +304,8 @@ namespace VAPI
         /// <summary>
         /// Applies the visual modifiers to <paramref name="characterModel"/>. Returns an <see cref="IDisposable"/> used to revert any changes done to the model.
         /// </summary>
+        /// <param name="characterModel">The model being modified</param>
+        /// <param name="characterBodyVariantController">The variant controller calling this method</param>
         /// <param name="appliedMeshReplacements">Becomes true if any mesh replacement is applied.</param>
         public IDisposable ApplyVisualModifiers(CharacterModel characterModel, CharacterBodyVariantController characterBodyVariantController, out bool appliedMeshReplacements)
         {

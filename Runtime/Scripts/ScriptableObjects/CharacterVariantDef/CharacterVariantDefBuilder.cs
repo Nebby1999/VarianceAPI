@@ -137,7 +137,7 @@ namespace VAPI
         /// <summary>
         /// The scale multiplier for this variant, value cannot be NaN, Infinity or Subnormal.
         /// <para></para>
-        /// Ensures value cannot be <= to 0.
+        /// Ensures value cannot be less or equal to 0.
         /// </summary>
         public float scaleMultiplier
         {

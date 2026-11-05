@@ -148,7 +148,7 @@ namespace VAPI
 
         /// <summary>
         /// Event fired when variants are unapplied for this character.
-        /// <para</para>
+        /// <para></para>
         /// Fired on both Server and Client
         /// <br></br>
         /// This gets called twice, once when the body first spawns, and another time when the <see cref="CharacterVariantDef"/> array has been set.
@@ -157,7 +157,7 @@ namespace VAPI
 
         /// <summary>
         /// Event fired when variants are applied for this character.
-        /// <para</para>
+        /// <para></para>
         /// Fired on both Server and Client
         /// <br></br>
         /// This gets called twice, once when the body first spawns, and another time when the <see cref="CharacterVariantDef"/> array has been set.

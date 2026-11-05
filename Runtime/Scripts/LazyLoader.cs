@@ -3,9 +3,9 @@
 namespace VAPI
 {
     /// <summary>
-    /// A Struct that lazily loads an asset of type <see cref="T"/> from within VarianceAPI's Asset Bundle.
+    /// A Struct that lazily loads an asset of type <typeparamref name="T"/> from within VarianceAPI's Asset Bundle.
     /// <br></br>
-    /// Only interact with these structs if <see cref="VAPIAssets"/> has initialized, otherwise an exception will be thrown when you try to load the asset.
+    /// Only interact with these structs if <see cref="VAPIAssets"/> has initialized, otherwise an exception will be thrown when you try to load the asset. You can ensure this exception is not thrown by using <see cref="VAPIAssets.assetsAvailability"/>
     /// </summary>
     /// <typeparam name="T">The type of asset to load</typeparam>
     public struct LazyLoader<T> where T : UnityEngine.Object

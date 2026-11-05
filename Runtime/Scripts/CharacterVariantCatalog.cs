@@ -53,12 +53,12 @@ namespace VAPI
         public static explicit operator CharacterVariantIndex(int value) => new CharacterVariantIndex(value);
 
         /// <summary>
-        /// Returns true if <paramref name="other"/> and <see cref="this"/> have the same indices
+        /// Returns true if <paramref name="other"/> and this have the same indices
         /// </summary>
         public bool Equals(CharacterVariantIndex other) => i == other.i;
 
         /// <summary>
-        /// Returns true if <paramref name="obj"/> is a boxed <see cref="CharacterVariantIndex"/>, and it has the same index as <see cref="this"/>
+        /// Returns true if <paramref name="obj"/> is a boxed <see cref="CharacterVariantIndex"/>, and it has the same index as this
         /// </summary>
         public override bool Equals(object obj) => obj is CharacterVariantIndex other && Equals(other);
 
@@ -142,12 +142,12 @@ namespace VAPI
         }
 
         /// <summary>
-        /// Returns true if the <see cref="NetworkCharacterVariantIndex"/> passed in <paramref name="other"/> has the same index as <see cref="this"/>
+        /// Returns true if the <see cref="NetworkCharacterVariantIndex"/> passed in <paramref name="other"/> has the same index as this
         /// </summary>
         public bool Equals(NetworkCharacterVariantIndex other) => i == other.i;
 
         /// <summary>
-        /// Returns true if the <paramref name="obj"/> is a boxed <see cref="NetworkCharacterVariantIndex"/>, and it's index is equal to <see cref="this"/>'s index
+        /// Returns true if the <paramref name="obj"/> is a boxed <see cref="NetworkCharacterVariantIndex"/>, and it's index is equal to this's index
         /// </summary>
         public override bool Equals(object obj) => obj is CharacterVariantIndex other && Equals(other);
 
@@ -243,6 +243,7 @@ namespace VAPI
 
         /// <summary>
         /// Returns <paramref name="mask"/> to the internal collection
+        /// </summary>
         public static void Return(CharacterVariantMask mask)
         {
             if(mask._array.Length == CharacterVariantCatalog.characterVariantCount)

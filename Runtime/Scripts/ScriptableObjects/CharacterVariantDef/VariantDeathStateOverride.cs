@@ -39,6 +39,7 @@ namespace VAPI
         /// Applies the <see cref="deathStateOverride"/> to <paramref name="characterDeathBehaviour"/>.
         /// <br></br>
         /// Returns null if <paramref name="characterDeathBehaviour"/> is null or <see cref="deathStateOverride"/> resulves to null. Otherwise returns a disposable object used to revert the death state change.
+        /// </summary>
         public IDisposable? ApplyDeathStateOverride(CharacterDeathBehavior characterDeathBehaviour)
         {
             if (characterDeathBehaviour == null)

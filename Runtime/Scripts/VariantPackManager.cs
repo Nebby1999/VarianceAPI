@@ -156,7 +156,7 @@ namespace VAPI
         /// <br></br>
         /// Returns <see cref="VariantPackIndex.None"/> if no pack contains the specified tierDef
         /// </summary>
-        /// <param name="tierDef">The <see cref="CharacterVarCharacterVariantTierDefiantDef"/> to retrieve it's Pack</param>
+        /// <param name="tierDef">The <see cref="CharacterVariantTierDef"/> to retrieve it's Pack</param>
         public static VariantPackIndex FindVariantPackIndex(CharacterVariantTierDef? tierDef)
         {
             ThrowIfUnavailable();
