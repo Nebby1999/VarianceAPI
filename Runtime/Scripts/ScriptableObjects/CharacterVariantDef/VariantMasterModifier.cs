@@ -23,6 +23,7 @@ namespace VAPI
     /// <item><see cref="AlwaysSprintAIModifier"/>: Reimplementation of VAPI 2.0's Always Sprint flag. Will make it so AI is always sprinting</item>
     /// <item><see cref="AISkillDriverAimVectorModifier"/>: Used to override the Aim Vector values for a specific skill driver</item>
     /// <item><see cref="BaseAIDampModifier"/>: Used to modify the Aim Vectors of the BaseAI</item>
+    /// <item><see cref="ReplaceSkillDrivers"/>: Used to replace an AI's Skill Drivers with new ones</item>
     /// </list>
     /// </summary>
     public interface IVariantMasterModifier : IValidatable, ICloneable
@@ -482,6 +483,102 @@ namespace VAPI
         public BaseAIDampModifier()
         {
 
+        }
+    }
+
+    /// <summary>
+    /// Replaces an AI's Skill Drivers
+    /// </summary>
+    [Serializable]
+    public struct ReplaceSkillDrivers : IVariantMasterModifier
+    {
+        private struct DisposableSkillDriverReplacement : IDisposable
+        {
+            public AISkillDriver[] _origSkillDrivers;
+            public BaseAI _modifiedBaseAI;
+
+            public GameObject _customSkillDriversContainer;
+
+            public void Dispose()
+            {
+                if(_modifiedBaseAI)
+                {
+                    _modifiedBaseAI.ReplaceSkillDrivers(_origSkillDrivers);
+                }
+
+                if(_customSkillDriversContainer)
+                {
+                    UnityEngine.Object.Destroy(_customSkillDriversContainer);
+                }
+            }
+        }
+
+        [Tooltip("The GameObject prefab that contains the new skill drivers for the AI")]
+        public GameObject skillDriversPrefab;
+
+        /// <summary>
+        /// Clones the metadata in this into a new instance of <see cref="ReplaceSkillDrivers"/>
+        /// </summary>
+        public object Clone()
+        {
+            return new ReplaceSkillDrivers
+            {
+                skillDriversPrefab = skillDriversPrefab
+            };
+        }
+
+        public IDisposable? ModifyMaster(CharacterMaster master)
+        {
+            if(master == null || skillDriversPrefab == null || !NetworkServer.active)
+            {
+                return null;
+            }
+
+            if(!master.TryGetComponent<BaseAI>(out var modifiedBaseAI))
+            {
+                return null;
+            }
+
+            if(!skillDriversPrefab.TryGetComponent<AISkillDriver>(out _))
+            {
+                return null;
+            }
+
+            GameObject customSkillDriversContainer = UnityEngine.Object.Instantiate(skillDriversPrefab);
+            customSkillDriversContainer.transform.SetParent(master.transform);
+            AISkillDriver[] origSkillDrivers = modifiedBaseAI.skillDrivers;
+            modifiedBaseAI.ReplaceSkillDrivers(customSkillDriversContainer.GetComponents<AISkillDriver>());
+
+            return new DisposableSkillDriverReplacement
+            {
+                _origSkillDrivers = origSkillDrivers,
+                _modifiedBaseAI = modifiedBaseAI,
+                _customSkillDriversContainer = customSkillDriversContainer
+            };
+        }
+
+        public void Validate()
+        {
+            if(skillDriversPrefab == null)
+            {
+                VAPILog.Warning($"Cannot have a null skillDriversPrefab on a ReplaceSkillDrivers Master Modifier");
+                return;
+            }
+
+            if(skillDriversPrefab.TryGetComponent<AISkillDriver>(out _))
+            {
+                VAPILog.Warning($"Assigned skillDriverPrefab has no AISkillDrivers");
+                return;
+            }
+        }
+
+        /// <summary>
+        /// Constructor
+        /// </summary>
+        /// <param name="_skillDriversPrefab">The skill drivers to use</param>
+        public ReplaceSkillDrivers(GameObject _skillDriversPrefab)
+        {
+            skillDriversPrefab = _skillDriversPrefab;
         }
     }
 }

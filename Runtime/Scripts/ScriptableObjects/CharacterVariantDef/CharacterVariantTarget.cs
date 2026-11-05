@@ -95,6 +95,7 @@ namespace VAPI
         /// <summary>
         /// Constructor. Sets the targetBody for this instance via <paramref name="_targetBody"/>
         /// </summary>
+        /// <param name="_targetBody">The target body to use</param>
         public CharacterVariantTarget(AddressReferencedBody _targetBody)
         {
             targetBody = _targetBody;
@@ -102,13 +103,15 @@ namespace VAPI
         }
 
         /// <summary>
-        /// Constructor. Encapsulates <paramref name="_bodyName"/> inside a <see cref="AddressReferencedBody"/> then calls <see cref="CharacterVariantTarget.CharacterVariantTarget(AddressReferencedBody)"/>
+        /// Constructor. Encapsulates <paramref name="_addressOrCatalogName"/> inside a <see cref="AddressReferencedBody"/> then calls <see cref="CharacterVariantTarget.CharacterVariantTarget(AddressReferencedBody)"/>
         /// </summary>
-        public CharacterVariantTarget(string _bodyName) : this(new AddressReferencedBody(_bodyName)) { }
+        /// <param name="_addressOrCatalogName">The body's name</param>
+        public CharacterVariantTarget(string _addressOrCatalogName) : this(new AddressReferencedBody(_addressOrCatalogName)) { }
 
         /// <summary>
         /// Constructor. Encapsulates <paramref name="_bodyPrefab"/> inside a <see cref="AddressReferencedBody"/> then calls <see cref="CharacterVariantTarget.CharacterVariantTarget(AddressReferencedBody)"/>
         /// </summary>
+        /// <param name="_bodyPrefab">The body to use</param>
         public CharacterVariantTarget(GameObject _bodyPrefab) : this(new AddressReferencedBody(_bodyPrefab)) { }
 
         /// <summary>

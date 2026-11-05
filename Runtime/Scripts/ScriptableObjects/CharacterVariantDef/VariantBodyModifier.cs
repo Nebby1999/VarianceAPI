@@ -2,6 +2,7 @@
 using RoR2;
 using System;
 using UnityEngine;
+using VAPI.AddressReferencedAssets;
 
 namespace VAPI
 {
@@ -25,6 +26,9 @@ namespace VAPI
         public IDisposable? ModifyBody(CharacterBody body);
     }
 
+    /// <summary>
+    /// Loads an existing Character's Soundbank
+    /// </summary>
     [Serializable]
     public struct LoadCharacterSoundbank : IVariantBodyModifier
     {
@@ -40,7 +44,13 @@ namespace VAPI
             }
         }
 
+        [Tooltip("The Character's soundbank to load")]
         public CharacterVariantTarget loadFromBody;
+
+
+        /// <summary>
+        /// Clones the metadata in this into a new instance of <see cref="LoadCharacterSoundbank"/>
+        /// </summary>
         public object Clone()
         {
             return new LoadCharacterSoundbank { loadFromBody = (CharacterVariantTarget)loadFromBody.Clone() };
@@ -69,6 +79,35 @@ namespace VAPI
 
         public void Validate()
         {
+        }
+
+        /// <summary>
+        /// Constructor. Sets the loadFromBody for this instance via <paramref name="addressOrCatalogName"/>
+        /// </summary>
+        /// <param name="addressOrCatalogName">The body address or catalog name to use</param>
+        public LoadCharacterSoundbank(string addressOrCatalogName) : this(new AddressReferencedBody(addressOrCatalogName)) { }
+
+        /// <summary>
+        /// Constructor. Sets the loadFromBody for this instance via <paramref name="bodyPrefab"/>
+        /// </summary>
+        /// <param name="bodyPrefab">The body prefab name to use</param>
+        public LoadCharacterSoundbank(GameObject bodyPrefab) : this(new AddressReferencedBody(bodyPrefab)) { }
+
+
+        /// <summary>
+        /// Constructor. Sets the loadFromBody for this instance via <paramref name="bodyReference"/>
+        /// </summary>
+        /// <param name="bodyReference">The body reference to use</param>
+        public LoadCharacterSoundbank(AddressReferencedBody bodyReference) : this(new CharacterVariantTarget(bodyReference)) { }
+
+
+        /// <summary>
+        /// Constructor. Sets the loadFromBody for this instance via <paramref name="characterTarget"/>
+        /// </summary>
+        /// <param name="characterTarget">The target character to use</param>
+        public LoadCharacterSoundbank(CharacterVariantTarget characterTarget)
+        {
+            loadFromBody = characterTarget;
         }
     }
 }
