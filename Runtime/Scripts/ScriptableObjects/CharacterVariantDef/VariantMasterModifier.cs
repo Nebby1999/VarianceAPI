@@ -4,7 +4,9 @@ using RoR2.CharacterAI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
+using VAPI.AddressReferencedAssets;
 
 namespace VAPI
 {
@@ -480,6 +482,53 @@ namespace VAPI
         public BaseAIDampModifier()
         {
 
+        }
+    }
+
+    [Serializable]
+    public struct LoadCharacterSoundbank : IVariantMasterModifier
+    {
+        private struct DisposableCharacterBankLoad : IDisposable
+        {
+            public AkBank loadedBankComponent;
+            public void Dispose()
+            {
+                if(loadedBankComponent)
+                {
+                    UnityEngine.Object.Destroy(loadedBankComponent);
+                }
+            }
+        }
+
+        public CharacterVariantTarget loadFromBody;
+        public object Clone()
+        {
+            return new LoadCharacterSoundbank { loadFromBody = (CharacterVariantTarget)loadFromBody.Clone() };
+        }
+
+        public IDisposable? ModifyMaster(CharacterMaster master)
+        {
+            if(loadFromBody == null || !loadFromBody.TryLoadCharacterComponent(out var characterBody))
+            {
+                return null;
+            }
+
+            if(!characterBody!.TryGetComponent<AkBank>(out var origBank))
+            {
+                return null;
+            }
+
+            var masterAkBank = master.gameObject.AddComponent<AkBank>();
+            masterAkBank.data.WwiseObjectReference = origBank.data.WwiseObjectReference;
+
+            return new DisposableCharacterBankLoad
+            {
+                loadedBankComponent = masterAkBank
+            };
+        }
+
+        public void Validate()
+        {
         }
     }
 }

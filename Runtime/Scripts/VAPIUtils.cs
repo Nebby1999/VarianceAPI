@@ -235,6 +235,21 @@ namespace VAPI
 
             return characterVariantDef.spawnCondition?.IsAvailable() ?? true;
         }
+
+        public static AssetReferenceT<T> CloneAssetReferenceT<T>(AssetReferenceT<T>? assetRef) where T : UnityEngine.Object
+        {
+            if(assetRef == null)
+            {
+                return new AssetReferenceT<T>("");
+            }
+
+            var guid = assetRef.AssetGUID;
+            var subObjectName = assetRef.SubObjectName;
+
+            var result = new AssetReferenceT<T>(guid);
+            result.SubObjectName = subObjectName;
+            return result;
+        }
     }
 
     /// <summary>
