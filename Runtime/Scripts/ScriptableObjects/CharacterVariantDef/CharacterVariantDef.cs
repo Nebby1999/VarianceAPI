@@ -63,6 +63,11 @@ namespace VAPI
         public VariantInventoryDefinition inventoryDefinition = new VariantInventoryDefinition();
 
         [Header("Body Related")]
+
+        [SerializeReference, SubclassSelector]
+        [Tooltip("An array of body modifiers for this variant")]
+        public IVariantBodyModifier[] bodyModifiers = Array.Empty<IVariantBodyModifier>();
+
         [SerializeReference, SubclassSelector]
         [Tooltip("A name provider for this variant, used to change the display name. This may be null")]
         public IVariantNameProvider? variantNameProvider = null;
@@ -166,6 +171,15 @@ namespace VAPI
             variantDef.masterModifiers = masterModifiers.ToArray();
             variantDef.inventoryDefinition = (VariantInventoryDefinition)other.inventoryDefinition.Clone();
 
+            List<IVariantBodyModifier> bodyModifiers = new List<IVariantBodyModifier>();
+            foreach(var otherBodyModifier in other.bodyModifiers)
+            {
+                if(otherBodyModifier != null)
+                {
+                    bodyModifiers.Add((IVariantBodyModifier)otherBodyModifier.Clone());
+                }
+            }
+            variantDef.bodyModifiers = bodyModifiers.ToArray();
             if(other.variantNameProvider != null)
             {
                 variantDef.variantNameProvider = (IVariantNameProvider?)other.variantNameProvider.Clone();

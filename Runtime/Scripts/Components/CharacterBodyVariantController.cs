@@ -460,6 +460,12 @@ namespace VAPI
                     _disposableCollectionHelper.AddDisposable(variantTierDef.ModifyBody(characterBody));
                 }
 
+                //Apply body modifiers
+                foreach(var bodyModifier in characterVariantDef.bodyModifiers)
+                {
+                    _disposableCollectionHelper.AddDisposable(bodyModifier.ModifyBody(characterBody));
+                }
+
                 //Apply buffs
                 _disposableCollectionHelper.AddDisposable(characterVariantDef.variantBuffs.ApplyBuffs(characterBody));
 

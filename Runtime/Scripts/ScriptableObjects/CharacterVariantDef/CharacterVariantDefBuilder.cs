@@ -105,6 +105,11 @@ namespace VAPI
         public VariantInventoryDefinition? inventoryDefinition = new VariantInventoryDefinition();
 
         /// <summary>
+        /// A list of <see cref="IVariantBodyModifier"/>s for this variant, see said interface for more information
+        /// </summary>
+        public readonly List<IVariantBodyModifier> bodyModifiers = new List<IVariantBodyModifier>();
+
+        /// <summary>
         /// The name provider for this variant, can be left null. See <see cref="IVariantNameProvider"/> for more information
         /// </summary>
         public IVariantNameProvider? nameProvider = null;
@@ -222,6 +227,20 @@ namespace VAPI
             return this;
         }
 
+        /// <summary>Chainable method, adds <paramref name="modifier"/> to <see cref="bodyModifiers"/></summary>
+        public CharacterVariantDefBuilder AddBodyModifier(IVariantBodyModifier modifier)
+        {
+            if(modifier == null)
+            {
+                VAPILog.Warning($"Cannot add a null VariantBodyModifier!");
+            }
+            else
+            {
+                bodyModifiers.Add(modifier);
+            }
+            return this;
+        }
+
         /// <summary>Chainable method, sets <see cref="nameProvider"/> to <paramref name="_nameProvider"/></summary>
         public CharacterVariantDefBuilder SetNameProvider(IVariantNameProvider? _nameProvider)
         {
@@ -335,6 +354,13 @@ namespace VAPI
                 }
 
                 result.inventoryDefinition = (VariantInventoryDefinition)(inventoryDefinition != null ? inventoryDefinition.Clone() : new VariantInventoryDefinition());
+
+                HG.ArrayUtils.EnsureCapacity(ref result.bodyModifiers, bodyModifiers.Count);
+                for(int i = 0; i < bodyModifiers.Count; i++)
+                {
+                    result.bodyModifiers[i] = (IVariantBodyModifier)bodyModifiers[i].Clone();
+                }
+
                 result.variantNameProvider = (IVariantNameProvider?)(nameProvider?.Clone());
                 result.deathStateOverride = (VariantDeathStateOverride)deathStateOverride.Clone();
                 
@@ -375,7 +401,13 @@ namespace VAPI
                     throw new CharacterVariantDefBuilderException($"The MasterModifier at index {i} is null. This is not allowed.");
             }
 
-            for(int i = 0; i < skillReplacements.Count; i++)
+            for (int i = 0; i < bodyModifiers.Count; i++)
+            {
+                if (bodyModifiers[i] == null)
+                    throw new CharacterVariantDefBuilderException($"The BodyModifier at index {i} is null. This is not allowed.");
+            }
+
+            for (int i = 0; i < skillReplacements.Count; i++)
             {
                 if (skillReplacements[i] == null)
                     throw new CharacterVariantDefBuilderException($"The SkillReplacement at index {i} is null. This is not allowed.");
