@@ -125,6 +125,10 @@ namespace VAPI
             {
                 masterModifier?.Validate();
             }
+            foreach(var bodyModifier in bodyModifiers)
+            {
+                bodyModifier?.Validate();
+            }
         }
 
         /// <summary>

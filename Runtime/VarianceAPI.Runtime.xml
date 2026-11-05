@@ -1173,6 +1173,11 @@
             The inventory definition for this variant, can be left null.
             </summary>
         </member>
+        <member name="F:VAPI.CharacterVariantDefBuilder.bodyModifiers">
+            <summary>
+            A list of <see cref="T:VAPI.IVariantBodyModifier"/>s for this variant, see said interface for more information
+            </summary>
+        </member>
         <member name="F:VAPI.CharacterVariantDefBuilder.nameProvider">
             <summary>
             The name provider for this variant, can be left null. See <see cref="T:VAPI.IVariantNameProvider"/> for more information
@@ -1238,6 +1243,9 @@
         </member>
         <member name="M:VAPI.CharacterVariantDefBuilder.SetVariantInventoryDefinition(VAPI.VariantInventoryDefinition)">
             <summary>Chainable method, Sets <see cref="F:VAPI.CharacterVariantDefBuilder.inventoryDefinition"/> to <paramref name="_inventoryDefinition"/></summary>
+        </member>
+        <member name="M:VAPI.CharacterVariantDefBuilder.AddBodyModifier(VAPI.IVariantBodyModifier)">
+            <summary>Chainable method, adds <paramref name="modifier"/> to <see cref="F:VAPI.CharacterVariantDefBuilder.bodyModifiers"/></summary>
         </member>
         <member name="M:VAPI.CharacterVariantDefBuilder.SetNameProvider(VAPI.IVariantNameProvider)">
             <summary>Chainable method, sets <see cref="F:VAPI.CharacterVariantDefBuilder.nameProvider"/> to <paramref name="_nameProvider"/></summary>
@@ -1313,16 +1321,19 @@
             <summary>
             Constructor. Sets the targetBody for this instance via <paramref name="_targetBody"/>
             </summary>
+            <param name="_targetBody">The target body to use</param>
         </member>
         <member name="M:VAPI.CharacterVariantTarget.#ctor(System.String)">
             <summary>
-            Constructor. Encapsulates <paramref name="_bodyName"/> inside a <see cref="T:VAPI.AddressReferencedAssets.AddressReferencedBody"/> then calls <see cref="M:VAPI.CharacterVariantTarget.#ctor(VAPI.AddressReferencedAssets.AddressReferencedBody)"/>
+            Constructor. Encapsulates <paramref name="_addressOrCatalogName"/> inside a <see cref="T:VAPI.AddressReferencedAssets.AddressReferencedBody"/> then calls <see cref="M:VAPI.CharacterVariantTarget.#ctor(VAPI.AddressReferencedAssets.AddressReferencedBody)"/>
             </summary>
+            <param name="_addressOrCatalogName">The body's name</param>
         </member>
         <member name="M:VAPI.CharacterVariantTarget.#ctor(UnityEngine.GameObject)">
             <summary>
             Constructor. Encapsulates <paramref name="_bodyPrefab"/> inside a <see cref="T:VAPI.AddressReferencedAssets.AddressReferencedBody"/> then calls <see cref="M:VAPI.CharacterVariantTarget.#ctor(VAPI.AddressReferencedAssets.AddressReferencedBody)"/>
             </summary>
+            <param name="_bodyPrefab">The body to use</param>
         </member>
         <member name="M:VAPI.CharacterVariantTarget.#ctor">
             <summary>
@@ -1454,6 +1465,59 @@
             <summary>
             Validate the data in this
             </summary>
+        </member>
+        <member name="T:VAPI.IVariantBodyModifier">
+            <summary>
+            A <see cref="T:VAPI.IVariantBodyModifier"/> is a <see cref="T:VAPI.IValidatable"/> and <see cref="T:System.ICloneable"/> interface used to define new Body modifiers. These implementations can be serialized in the editor via the <see cref="T:UnityEngine.SerializeReference"/> attribute.
+            <br></br>
+            Modifications are done via the <see cref="!:ModifyBody(CharacterMaster)"/> method.
+            <br></br>
+            Must support cloning via the <see cref="T:System.ICloneable"/> implementation.
+            <para></para>
+            <b>Built In Body Modifiers</b>
+            <list type="bullet">
+            <item><see cref="T:VAPI.LoadCharacterSoundbank"/>: Used to load an existing character's soundbank.</item>
+            </list>
+            </summary>
+        </member>
+        <member name="M:VAPI.IVariantBodyModifier.ModifyBody(RoR2.CharacterBody)">
+            <summary>
+            Modify the <paramref name="body"/> here. This method should return a disposable object used to revert any changes applied to the body.
+            </summary>
+        </member>
+        <member name="T:VAPI.LoadCharacterSoundbank">
+            <summary>
+            Loads an existing Character's Soundbank
+            </summary>
+        </member>
+        <member name="M:VAPI.LoadCharacterSoundbank.Clone">
+            <summary>
+            Clones the metadata in this into a new instance of <see cref="T:VAPI.LoadCharacterSoundbank"/>
+            </summary>
+        </member>
+        <member name="M:VAPI.LoadCharacterSoundbank.#ctor(System.String)">
+            <summary>
+            Constructor. Sets the loadFromBody for this instance via <paramref name="addressOrCatalogName"/>
+            </summary>
+            <param name="addressOrCatalogName">The body address or catalog name to use</param>
+        </member>
+        <member name="M:VAPI.LoadCharacterSoundbank.#ctor(UnityEngine.GameObject)">
+            <summary>
+            Constructor. Sets the loadFromBody for this instance via <paramref name="bodyPrefab"/>
+            </summary>
+            <param name="bodyPrefab">The body prefab name to use</param>
+        </member>
+        <member name="M:VAPI.LoadCharacterSoundbank.#ctor(VAPI.AddressReferencedAssets.AddressReferencedBody)">
+            <summary>
+            Constructor. Sets the loadFromBody for this instance via <paramref name="bodyReference"/>
+            </summary>
+            <param name="bodyReference">The body reference to use</param>
+        </member>
+        <member name="M:VAPI.LoadCharacterSoundbank.#ctor(VAPI.CharacterVariantTarget)">
+            <summary>
+            Constructor. Sets the loadFromBody for this instance via <paramref name="characterTarget"/>
+            </summary>
+            <param name="characterTarget">The target character to use</param>
         </member>
         <member name="T:VAPI.IVariantBuffInfoTimedApplication">
             <summary>
@@ -1739,6 +1803,7 @@
             <item><see cref="T:VAPI.AlwaysSprintAIModifier"/>: Reimplementation of VAPI 2.0's Always Sprint flag. Will make it so AI is always sprinting</item>
             <item><see cref="T:VAPI.AISkillDriverAimVectorModifier"/>: Used to override the Aim Vector values for a specific skill driver</item>
             <item><see cref="T:VAPI.BaseAIDampModifier"/>: Used to modify the Aim Vectors of the BaseAI</item>
+            <item><see cref="T:VAPI.ReplaceSkillDrivers"/>: Used to replace an AI's Skill Drivers with new ones</item>
             </list>
             </summary>
         </member>
@@ -1833,6 +1898,22 @@
             <summary>
             Parameterless Constructor
             </summary>
+        </member>
+        <member name="T:VAPI.ReplaceSkillDrivers">
+            <summary>
+            Replaces an AI's Skill Drivers
+            </summary>
+        </member>
+        <member name="M:VAPI.ReplaceSkillDrivers.Clone">
+            <summary>
+            Clones the metadata in this into a new instance of <see cref="T:VAPI.ReplaceSkillDrivers"/>
+            </summary>
+        </member>
+        <member name="M:VAPI.ReplaceSkillDrivers.#ctor(UnityEngine.GameObject)">
+            <summary>
+            Constructor
+            </summary>
+            <param name="_skillDriversPrefab">The skill drivers to use</param>
         </member>
         <member name="T:VAPI.IVariantNameProvider">
             <summary>
