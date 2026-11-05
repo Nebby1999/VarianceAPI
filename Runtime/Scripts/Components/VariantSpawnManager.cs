@@ -3,6 +3,7 @@ using MSU;
 using MSU.Config;
 using RiskOfOptions.OptionConfigs;
 using RoR2;
+using RoR2.ConVar;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
@@ -22,6 +23,15 @@ namespace VAPI
     [RequireComponent(typeof(NetworkParent))]
     public sealed class VariantSpawnManager : MonoBehaviour
     {
+        private static readonly ConVarFlags _flags =
+#if DEBUG
+            ConVarFlags.None
+#else
+            ConVarFlags.Cheat
+#endif
+            ;
+
+        private static BoolConVar _logSpawnManager = new BoolConVar("vapi_cv_logspawnmanager", _flags, "0", "Enables logging for the VariantSpawnManager");
         /// <summary>
         /// The config for the Artifact of Variance's multiplier
         /// </summary>
@@ -74,6 +84,7 @@ namespace VAPI
         {
             Run.instance.networkRuleBookComponent.onRuleBookUpdated += OnRulebookUpdated;
             availableVariants = CharacterVariantMask.Rent();
+            Log("Awake");
         }
 
         private void OnRulebookUpdated(NetworkRuleBook book)
@@ -82,6 +93,7 @@ namespace VAPI
             {
                 RuleBook ruleBook = book.ruleBook;
                 ruleBook.GenerateCharacterVariantMask(availableVariants);
+                Log($"Rulebook Updated");
             }
         }
 
@@ -92,13 +104,16 @@ namespace VAPI
                 Run.instance.networkRuleBookComponent.onRuleBookUpdated -= OnRulebookUpdated;
             }
             CharacterVariantMask.Return(availableVariants);
+            Log("Destroyed");
         }
 
         private void Start()
         {
             if(NetworkServer.active)
             {
-                variantRng = new Xoroshiro128Plus(Run.instance.seed);
+                ulong seed = Run.instance.seed;
+                variantRng = new Xoroshiro128Plus(seed);
+                Log($"VariantRNG Seed: {seed}");
                 variantSpawnRng = new Xoroshiro128Plus(variantRng.nextUlong);
                 variantRewardRng = new Xoroshiro128Plus(variantRng.nextUlong);
             }
@@ -111,6 +126,7 @@ namespace VAPI
             CharacterBody.onBodyStartGlobal += OnBodyStart;
 
             SingletonHelper.Assign(ref _instance, this);
+            Log("Disabled");
         }
 
         private void OnDisable()
@@ -118,6 +134,7 @@ namespace VAPI
             CharacterBody.onBodyStartGlobal -= OnBodyStart;
 
             SingletonHelper.Unassign(ref _instance, this);
+            Log("Enabled");
         }
 
         private float GetSpawnRateMultiplier()
@@ -167,7 +184,9 @@ namespace VAPI
                             additiveVariantDefs = values.additiveVariantDefs,
                             rollType = values.additiveVariantDefs == null ? CharacterVariantProvider.RollType.Default : CharacterVariantProvider.RollType.NonUnique,
                         };
+                        Log($"Rolling Variants for {body} with the following arguments:\r\n{args.ToString()}");
                         CharacterVariantDef[] rolledVariants = values.variantProvider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
+                        Log($"Assigning {rolledVariants.Length} variants to {body}");
                         values.bodyController!.SetCharacterVariantDefsServer(rolledVariants);
                         return;
                     }
@@ -187,29 +206,39 @@ namespace VAPI
         {
             retrievedValues = default;
             if (!body)
+            {
                 return BodyStartProcedure.Return;
+            }
 
             CharacterVariantProvider? retrievedProvider = CharacterVariantCatalog.GetCharacterVariantProvider(body.bodyIndex);
             if (retrievedProvider == null)
+            {
+                Log($"Returning BodyStartProcedure.Return as {body.name} has no CharacterVariantProvider");
                 return BodyStartProcedure.Return;
+            }
 
             retrievedValues.variantProvider = retrievedProvider;
 
             if(!body.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
             {
                 VAPILog.Warning($"CharacterBody {body} has a CharacterVariantProvider, but the body prefab lacks the variant controller! this shouldnt be possible!");
+                Log($"Returning BodyStartProcedure.Return as {body.name} has no CharacterBodyVariantController");
                 return BodyStartProcedure.Return;
             }
 
             retrievedValues.bodyController = bodyVariantController;
 
             if (bodyVariantController.doNotRollForVariants)
+            {
+                Log($"Returning BodyStartProcedure.Return as {bodyVariantController}'s doNotRollForVariants is set to true");
                 return BodyStartProcedure.Return;
+            }
 
             CharacterMasterVariantStorage? variantStorage = bodyVariantController.GetCharacterMasterVariantStorage();
             if(variantStorage != null && variantStorage.HasVariantsForBody(body.bodyIndex))
             {
                 retrievedValues.masterVariantStorage = variantStorage;
+                Log($"Returning BodyStartProcedure.SetFromStorage as {body.name}'s master has a CharacterMasterVariantStorage with variants for {BodyCatalog.GetBodyName(body.bodyIndex)}");
                 return BodyStartProcedure.SetFromStorage;
             }
 
@@ -220,7 +249,16 @@ namespace VAPI
                 retrievedValues.spawnRateMultiplier = preSpawnData.spawnRateMultiplier;
             }
 
+            Log($"Returning BodyStartProcedure.RollVariants for {body.name}");
             return BodyStartProcedure.RollVariants;
+        }
+
+        private void Log(object data)
+        {
+            if(_logSpawnManager.value)
+            {
+                VAPILog.Message($"[{gameObject.name}.VariantSpawnManager]: {data}");
+            }
         }
     }
 }

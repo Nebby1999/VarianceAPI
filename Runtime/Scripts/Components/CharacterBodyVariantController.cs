@@ -10,6 +10,7 @@ using UnityEngine;
 using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 using Object = UnityEngine.Object;
+using RoR2.ConVar;
 
 namespace VAPI
 {
@@ -47,6 +48,16 @@ namespace VAPI
     [AddComponentMenu("")]
     public sealed class CharacterBodyVariantController : NetworkBehaviour, IBodyStatArgModifier
     {
+        private static readonly ConVarFlags _flags =
+#if DEBUG
+            ConVarFlags.None
+#else
+            ConVarFlags.Cheat
+#endif
+            ;
+
+        private static BoolConVar _logBodyController = new BoolConVar("vapi_cv_logbodycontroller", _flags, "0", "Enables logging for the CharacterBodyVariantController");
+
         private CharacterVariantDef[] _fallbackCharacterVariantDefs = Array.Empty<CharacterVariantDef>();
         private SyncListCharacterVariantIndex _characterVariantIndices = new SyncListCharacterVariantIndex();
 
@@ -80,6 +91,7 @@ namespace VAPI
             {
                 if (_doNotRollForVariants != value)
                 {
+                    Log($"Setting doNotRollForVariants to {value}");
                     _doNotRollForVariants = value;
                 }
             }
@@ -123,6 +135,7 @@ namespace VAPI
                 return default;
             }
 
+            Log($"Consuming preassigned spawn data");
             var value = _preAssignedSpawnDataServer!.Value;
             _preAssignedSpawnDataServer = null;
             return value;
@@ -139,6 +152,7 @@ namespace VAPI
             [Server]
             set
             {
+                Log("Setting Preassigned spawn data");
                 _preAssignedSpawnDataServer = value;
             }
         }
@@ -181,6 +195,7 @@ namespace VAPI
 
             _characterVariantIndices.Callback = SyncListCallback;
             _appliedVariantMask = CharacterVariantMask.Rent();
+            Log("Awake");
         }
 
         /// <summary>
@@ -195,7 +210,15 @@ namespace VAPI
         /// <br></br>
         /// If <paramref name="variantIndex"/> is out of bounds of the <see cref="CharacterVariantCatalog"/>, it returns false
         /// </summary>
-        public bool IsVariantApplied(CharacterVariantIndex variantIndex) => _appliedVariantMask.Contains(variantIndex);
+        public bool IsVariantApplied(CharacterVariantIndex variantIndex)
+        {
+            bool result = _appliedVariantMask.Contains(variantIndex);
+            if(!result)
+            {
+                Log($"{variantIndex} is not applied");
+            }
+            return result;
+        }
 
         /// <summary>
         /// Do not call this method, left for networking purposes.
@@ -204,6 +227,7 @@ namespace VAPI
         {
             base.OnStartClient();
 
+            Log("On Start Client");
             //When the client starts, the indices should already be set on the server.
             //If the indices' count doesnt match our fallback array, we need to trigger a sync list dirty.
             //this can happen when going to a new stage while a variant's master is set to "DontDestroyOnLoad", without this call they'll be variants in the host but look normal on the clients.
@@ -225,9 +249,11 @@ namespace VAPI
             CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
             if (storage != null && storage.TryGetVariantsStoredForCharacter(characterBody.bodyIndex, out var variantDefs))
             {
+                Log($"Retrieving CharacterVariantDefs from MasterStorage");
                 return variantDefs!;
             }
 
+            Log($"Retrieving CharacterVariantDefs from internal array");
             //Storage null, return our array
             return _fallbackCharacterVariantDefs;
         }
@@ -241,7 +267,6 @@ namespace VAPI
         {
             if (_characterMasterVariantStorage != null && _characterMasterVariantStorage.characterMaster && _characterMasterVariantStorage.characterMaster.GetBody() == characterBody)
             {
-
                 return _characterMasterVariantStorage;
             }
 
@@ -295,7 +320,7 @@ namespace VAPI
         {
             if(variantDefs.Length > 0)
             {
-                VAPILog.Message($"{this} is becoming a variant!");
+                Log($"This is becoming a variant. with {variantDefs.Length} variants applied");
             }
 
             _characterVariantIndices.Clear();
@@ -340,11 +365,13 @@ namespace VAPI
             CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
             if(storage != null) 
             {
+                Log("Unapplying variants on master");
                 storage.UnapplyVariants();
             }
 
             onVariantsUnapplied?.Invoke();
 
+            Log($"Clearing applied variant mask and retrieving new variants from synclist");
             //Clear the applied variant mask
             _appliedVariantMask.Clear();
             
@@ -361,6 +388,7 @@ namespace VAPI
 
             if (storage != null)
             {
+                Log($"Applying variants on master");
                 storage.ApplyVariants(characterBody.bodyIndex, _fallbackCharacterVariantDefs);
             }
 
@@ -396,6 +424,8 @@ namespace VAPI
             {
                 return;
             }
+
+            Log($"Announcing Arrival");
 
             _possibleArrivalTokensShared.Clear();
             _possibleSpawnSoundsShared.Clear();
@@ -456,6 +486,7 @@ namespace VAPI
                 //Apply tier body modifiers
                 if (characterVariantDef.variantTier)
                 {
+                    Log($"Applying {characterVariantDef.cachedName}'s Tier's Modifiers (tier:{(characterVariantDef.variantTier ? characterVariantDef.variantTier?.cachedName : "None")})");
                     CharacterVariantTierDef variantTierDef = characterVariantDef.variantTier!;
                     _disposableCollectionHelper.AddDisposable(variantTierDef.ModifyBody(characterBody));
                 }
@@ -463,10 +494,12 @@ namespace VAPI
                 //Apply body modifiers
                 foreach(var bodyModifier in characterVariantDef.bodyModifiers)
                 {
-                    _disposableCollectionHelper.AddDisposable(bodyModifier.ModifyBody(characterBody));
+                    Log($"Applying {characterVariantDef.cachedName}'s {(bodyModifier == null ? "NULL" : bodyModifier.GetType().Name)} Master Modifier");
+                    _disposableCollectionHelper.AddDisposable(bodyModifier?.ModifyBody(characterBody));
                 }
 
                 //Apply buffs
+                Log($"Applying {characterVariantDef.cachedName}'s VariantBuffStorage");
                 _disposableCollectionHelper.AddDisposable(characterVariantDef.variantBuffs.ApplyBuffs(characterBody));
 
                 //Apply skills
@@ -474,6 +507,7 @@ namespace VAPI
                 {
                     foreach (var skillReplacement in characterVariantDef.skillReplacements)
                     {
+                        Log($"Applying {characterVariantDef.cachedName} skill replacement for {characterBody.skillLocator.GetOrFindSkill(skillReplacement.slot, skillReplacement.slotName)}");
                         _disposableCollectionHelper.AddDisposable(skillReplacement.ApplySkillReplacement(characterBody.skillLocator));
                     }
                 }
@@ -481,15 +515,18 @@ namespace VAPI
                 //Apply death state override
                 if (characterDeathBehavior)
                 {
+                    Log($"Applying {characterVariantDef.cachedName} character death behaviour");
                     _disposableCollectionHelper.AddDisposable(characterVariantDef.deathStateOverride.ApplyDeathStateOverride(characterDeathBehavior));
                 }
 
                 //Add Body Components
+                Log($"Applying {characterVariantDef.cachedName}'s body components");
                 _disposableCollectionHelper.AddDisposable(characterVariantDef.additionalVariantComponents.ApplyComponents(characterBody));
 
                 if (characterModel)
                 {
                     //Add CharacterModel Components
+                    Log($"Applying {characterVariantDef.cachedName}'s model components");
                     _disposableCollectionHelper.AddDisposable(characterVariantDef.additionalVariantComponents.ApplyComponents(characterModel!));
 
                     //Store visual modifiers in the list, we will apply these in a coroutine since we need to await for the Skin to be applied.
@@ -502,6 +539,7 @@ namespace VAPI
 
             //Apply scale modifiers
             var scaleModifier = new VariantSizeModifierApplicator(characterBody, characterVariants);
+            Log($"Applying scale modifier");
             scaleModifier.Apply();
             _disposableCollectionHelper.AddDisposable(scaleModifier);
 
@@ -562,6 +600,7 @@ namespace VAPI
             {
                 StopCoroutine(_mdlSkinControllerApplySkinCoroutine);
             }
+            Log($"Body modifications disposed");
         }
 
         /// <summary>
@@ -587,6 +626,7 @@ namespace VAPI
                 yield return waitForEndOfFrame;
             }
 
+            Log($"Applying visual modifiers");
             bool shouldUpdateIDRS = false;
             foreach (var visualModifier in visualModifiers)
             {
@@ -629,6 +669,14 @@ namespace VAPI
             onVariantsApplied = null;
             onVariantsUnapplied = null;
             CharacterVariantMask.Return(_appliedVariantMask);
+        }
+
+        private void Log(object data)
+        {
+            if (_logBodyController.value)
+            {
+                VAPILog.Message($"[{gameObject.name}.CharacterBodyVariantController]: {data}");
+            }
         }
     }
 }

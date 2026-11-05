@@ -21,6 +21,11 @@ namespace VAPI
                 {
                     LoadAsset();
                 }
+
+                if(!_asset)
+                {
+                    VAPILog.Warning($"Unable to load {_assetName} from VAPI's Assetbundle!");
+                }
                 return _asset;
             }
         }

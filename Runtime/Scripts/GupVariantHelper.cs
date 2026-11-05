@@ -5,6 +5,7 @@ using MonoMod.Cil;
 using RoR2;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace VAPI
@@ -48,8 +49,15 @@ namespace VAPI
         /// <param name="gipVariant">The Gip character variant def</param>
         public static void AddGupVariantRelation(CharacterVariantDef gupVariant, CharacterVariantDef geepVariant, CharacterVariantDef gipVariant)
         {
-            _gupToGeepVariantRelation.TryAdd(gupVariant, geepVariant);
-            _geepToGipVariantRelation.TryAdd(geepVariant, gipVariant);
+            if(_gupToGeepVariantRelation.TryAdd(gupVariant, geepVariant) == false)
+            {
+                VAPILog.Warning($"Unable to add a Gup Variant Relation from {gupVariant} to {geepVariant}. As there's already a pre-existing relation between {gupVariant} and {_gupToGeepVariantRelation[gupVariant]}");
+            }
+
+            if(_geepToGipVariantRelation.TryAdd(geepVariant, gipVariant) == false)
+            {
+                VAPILog.Warning($"Unable to add a Gup Variant Relation from {geepVariant} to {gipVariant}. As there's already a pre-existing relation between {geepVariant} and {_geepToGipVariantRelation[geepVariant]}");
+            }
         }
 
         /*
@@ -128,29 +136,45 @@ namespace VAPI
             {
                 //Do not pass this VariantDef
                 if (_blacklistedVariants.Contains(variantDef))
+                {
+                    LogMessage($"Not passing {variantDef} from {masterPrefabToSplitTo} to {BodyCatalog.GetBodyName(splittingBodyIndex)} as it's blacklisted.");
                     continue;
+                }
 
                 //If it's splitting into more of itself, add the variantDef directly.
                 if(splittingResultBodyIndex == splittingBodyIndex)
                 {
+                    LogMessage($"Passing over {variantDef} from {masterPrefabToSplitTo} to {BodyCatalog.GetBodyName(splittingBodyIndex)}");
                     getVariantDefsBuffer.Add(variantDef);
                     continue;
                 }
 
                 if(_gupToGeepVariantRelation.TryGetValue(variantDef, out var geepVariantDef))
                 {
+                    LogMessage($"Passing over {geepVariantDef} from {masterPrefabToSplitTo} to {BodyCatalog.GetBodyName(splittingBodyIndex)}");
                     getVariantDefsBuffer.Add(geepVariantDef);
                     continue;
                 }
 
                 if(_geepToGipVariantRelation.TryGetValue(variantDef, out var gipVariantDef))
                 {
+                    LogMessage($"Passing over {gipVariantDef} from {masterPrefabToSplitTo} to {BodyCatalog.GetBodyName(splittingBodyIndex)}");
                     getVariantDefsBuffer.Add(gipVariantDef);
                     continue;
                 }
             }
 
+            LogMessage($"Passing over {getVariantDefsBuffer.Count} variants from {masterPrefabToSplitTo} to {BodyCatalog.GetBodyName(splittingBodyIndex)}");
             return getVariantDefsBuffer.ToArray();
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
         }
     }
 }

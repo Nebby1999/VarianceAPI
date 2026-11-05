@@ -106,7 +106,7 @@ namespace VAPI
         /// <summary>
         /// The mod that added this Variant. Set by the VariantPackManager. This is only null if the VariantPackManager has not initialized.
         /// </summary>
-        public BepInPlugin? ownerPlugin { get; internal set; }
+        public BaseUnityPlugin? ownerPlugin { get; internal set; }
 
         /// <summary>
         /// True if at least one <see cref="CharacterVariantProvider"/> has this variant in it's internal collection.

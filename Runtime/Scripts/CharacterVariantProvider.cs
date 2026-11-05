@@ -18,7 +18,9 @@ namespace VAPI
         public int totalVariantCount => allVariants.Length;
 
         /// <summary>
-        /// A ReadOnlyArray of all the variants stored in this provider
+        /// A ReadOnlyArray of all the variants stored in this provider. Keep in mind that these are not filtered by availability.
+        /// <br></br>
+        /// If you wish to get variants by their current availability, check <see cref="filteredUniqueVariants"/> and <see cref="filteredNonUniqueVariants"/> respectively.
         /// </summary>
         public ReadOnlyArray<CharacterVariantDef> allVariants => _allVariants;
         private readonly CharacterVariantDef[] _allVariants;
@@ -111,6 +113,23 @@ namespace VAPI
             /// an array of VariantDefs that are guaranteed to be included on the final array.
             /// </summary>
             public CharacterVariantDef[]? additiveVariantDefs;
+
+            public override string ToString()
+            {
+                using var _ = HG.StringBuilderPool.RentStringBuilder(out var sb);
+                sb.AppendLine($"SpawnChance Multiplier: {spawnChanceMultiplier ?? 1}");
+                sb.AppendLine($"RollType: {rollType ?? RollType.Default}");
+                sb.AppendLine($"Additive Variants: {(additiveVariantDefs == null ? "None" : "")}");
+
+                if(additiveVariantDefs != null)
+                {
+                    foreach(var variant in additiveVariantDefs )
+                    {
+                        sb.AppendLine(variant.cachedName);
+                    }
+                }
+                return sb.ToString();
+            }
         }
 
         /// <summary>
@@ -139,8 +158,9 @@ namespace VAPI
                     NonUniqueRollProcedure(rng, spawnChanceMultiplier, out resultFromProcedure);
                     break;
                 default:
+                    VAPILog.Warning($"RollType {rollType} is not supported, returning empty array.");
                     resultFromProcedure = Array.Empty<CharacterVariantDef>();
-                    break;
+                    return resultFromProcedure;
             }
 
             if(additiveVariantDefs == null)

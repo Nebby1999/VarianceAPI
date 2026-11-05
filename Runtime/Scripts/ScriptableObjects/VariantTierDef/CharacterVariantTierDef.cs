@@ -143,7 +143,7 @@ namespace VAPI
         /// <summary>
         /// The mod that added this Variant Tier. Set by the VariantPackManager. This is only null if the VariantPackManager has not initialized.
         /// </summary>
-        public BepInPlugin? ownerPlugin { get; internal set; }
+        public BaseUnityPlugin? ownerPlugin { get; internal set; }
 
         internal IDisposable? ModifyBody(CharacterBody characterBody)
         {

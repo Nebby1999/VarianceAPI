@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UObject = UnityEngine.Object;
 
@@ -89,13 +90,13 @@ namespace VAPI
             if (assetsAvailability.available)
                 yield break;
 
-            VAPILog.Info($"Initializing Assets...");
-
             var loadRoutine = LoadAssetBundle();
             while (loadRoutine.MoveNext())
             {
                 yield return null;
             }
+
+            LogMessage("VAPI Assetbundle Loaded");
 
 
             var coroutine = ParallelCoroutine.RequestFromPool();
@@ -106,8 +107,11 @@ namespace VAPI
             while (coroutine.MoveNext())
                 yield return null;
 
+            LogMessage($"Shaders Finished");
+
             ParallelCoroutine.ReturnToPool(coroutine);
 
+            VAPILog.Info($"VAPIAssets Initialized");
             assetsAvailability.MakeAvailable(); //Make available
         }
 
@@ -137,6 +141,23 @@ namespace VAPI
             {
                 throw new InvalidOperationException("Cannot call VAPIAssets methods before VAPIMain intializes it! consider subscribing to it's assetsAvailability.");
             }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
         }
     }
 

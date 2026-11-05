@@ -1,6 +1,7 @@
 #nullable enable
 using HG;
 using RoR2;
+using RoR2.ConVar;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -21,6 +22,15 @@ namespace VAPI
     [AddComponentMenu("")]
     public sealed class CharacterMasterVariantStorage : MonoBehaviour
     {
+        private static readonly ConVarFlags _flags =
+#if DEBUG
+            ConVarFlags.None
+#else
+            ConVarFlags.Cheat
+#endif
+            ;
+
+        private static BoolConVar _logMasterStorage = new BoolConVar("vapi_cv_logmasterstorage", _flags, "0", "Enables logging for the CharacterMasterVariantStorage");
         private struct StorageMetadataEntry
         {
             public BodyIndex relatedBodyIndex;
@@ -55,6 +65,7 @@ namespace VAPI
         {
             characterMaster = GetComponent<CharacterMaster>();
             characterMaster.onBodyStart += OnBodyStart;
+            Log("Awake");
         }
 
         //If the index were using is different from the index of applied variants, unapply them.
@@ -67,6 +78,7 @@ namespace VAPI
                 {
                     VAPILog.Info($"{this} switched from {BodyCatalog.GetBodyName(_bodyIndexOfAppliedVariants) ?? "None"} to {BodyCatalog.GetBodyName(obj.bodyIndex)}. Unapplying variants.");
                 }
+                Log($"Unapplying Variants as {obj}'s body index doesnt match {BodyCatalog.GetBodyName(_bodyIndexOfAppliedVariants)}");
                 UnapplyVariants();
             }
         }
@@ -83,6 +95,7 @@ namespace VAPI
             if (index == -1)
                 return;
 
+            Log($"Removing the stored variants for body {BodyCatalog.GetBodyName(bodyIndex)}");
             _storageMetadataList.RemoveAt(index);
         }
 
@@ -100,16 +113,28 @@ namespace VAPI
 
             int variantStorageListIndex = GetVariantStorageIndex(bodyIndex);
             if (variantStorageListIndex == -1)
+            {
+                Log($"There are no variants stored for body {BodyCatalog.GetBodyName(bodyIndex)}");
                 return false;
+            }
 
             variantDefs = _storageMetadataList[variantStorageListIndex].storedVariants;
+            Log($"Retrieved a total of {variantDefs.Length} for body {BodyCatalog.GetBodyName(bodyIndex)}");
             return true;
         }
 
         /// <summary>
         /// Returns true if this Master Storage has variants for the body that <paramref name="bodyIndex"/> represents.
         /// </summary>
-        public bool HasVariantsForBody(BodyIndex bodyIndex) => GetVariantStorageIndex(bodyIndex) != -1;
+        public bool HasVariantsForBody(BodyIndex bodyIndex)
+        {
+            bool result = GetVariantStorageIndex(bodyIndex) != -1;
+            if(!result)
+            {
+                Log($"There's no Variants for body {BodyCatalog.GetBodyName(bodyIndex)}");
+            }
+            return result;
+        } 
 
         private void PushVariantsForCharacter(in BodyIndex bodyIndex, in CharacterVariantDef[] variantDefs)
         {
@@ -123,12 +148,14 @@ namespace VAPI
             //Add to the storage as is
             if (variantStorageListIndex == -1)
             {
+                Log($"Adding a new storage entry for {BodyCatalog.GetBodyName(bodyIndex)} with {variantDefs.Length} variants.");
                 _storageMetadataList.Add(new StorageMetadataEntry { relatedBodyIndex = bodyIndex, storedVariants = variantDefs });
                 return;
             }
 
             UnapplyVariants();
             //Override list
+            Log($"Overriding existing storage for {BodyCatalog.GetBodyName(bodyIndex)} with {variantDefs.Length} variants.");
             _storageMetadataList[variantStorageListIndex] = new StorageMetadataEntry { relatedBodyIndex = bodyIndex, storedVariants = variantDefs };
         }
 
@@ -163,12 +190,14 @@ namespace VAPI
                 //Apply Tier data.
                 if (variantDef.variantTier)
                 {
+                    Log($"Applying {variantDef.cachedName}'s Tier's Modifiers (tier:{(!variantDef.variantTier ? "None" : variantDef.variantTier!.cachedName)})");
                     //Modify master returns if not server
                     _disposableCollectionHelper.AddDisposable(variantDef.variantTier!.ModifyMaster(characterMaster));
                 }
 
                 //Apply channeled items && equipment info
                 //Inventory definition returns if not server
+                Log($"Applying {variantDef.cachedName}'s inventory definition");
                 _disposableCollectionHelper.AddDisposable(variantDef.inventoryDefinition.ApplyToInventory(characterMaster.inventory));
 
                 //Apply modifiers
@@ -176,15 +205,17 @@ namespace VAPI
                 {
                     //Base API modifiers return if not server
                     IVariantMasterModifier? modifier = fallbackCharacterVariantDefs[i].masterModifiers[j];
+                    Log($"Applying {variantDef.cachedName}'s {(modifier == null ? "NULL" : modifier.GetType().Name)} Master Modifier");
                     _disposableCollectionHelper.AddDisposable(variantDef.masterModifiers[j]?.ModifyMaster(characterMaster));
                 }
 
                 //Apply components, the collection only adds components depending on the network context.
+                Log($"Applying {variantDef.cachedName}'s master components");
                 _disposableCollectionHelper.AddDisposable(variantDef.additionalVariantComponents.ApplyComponents(characterMaster));
             }
 
             _bodyIndexOfAppliedVariants = bodyIndex;
-
+            Log($"Finished applying variants");
             onVariantsApplied?.Invoke(fallbackCharacterVariantDefs);
         }
 
@@ -196,7 +227,15 @@ namespace VAPI
             //Set the body index of applied variants to none
             _bodyIndexOfAppliedVariants = BodyIndex.None;
 
+            Log($"All Variants have been unapplied");
             onVariantsUnapplied?.Invoke();
+        }
+        private void Log(object data)
+        {
+            if (_logMasterStorage.value)
+            {
+                VAPILog.Message($"[{gameObject.name}.CharacterMasterVariantStorage]: {data}");
+            }
         }
     }
 }

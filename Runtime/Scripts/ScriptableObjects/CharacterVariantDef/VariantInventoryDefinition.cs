@@ -4,6 +4,7 @@ using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -21,6 +22,9 @@ namespace VAPI
         [Tooltip("the amount")]
         public int count;
 
+        private ItemCountPair? _itemCountPair;
+        private bool _itemDefFailedToLoad;
+
         /// <summary>
         /// Tries to retrieve the equivalent <see cref="ItemCountPair"/> for this.
         /// <br></br>
@@ -28,17 +32,34 @@ namespace VAPI
         /// </summary>
         public bool TryGetItemCountPair(out ItemCountPair asItemCountPair)
         {
+            if(_itemCountPair.HasValue)
+            {
+                asItemCountPair = _itemCountPair.Value;
+                return true;
+            }
+
+
             asItemCountPair = default;
+            if(_itemDefFailedToLoad)
+            {
+                return false;
+            }
+
             if(itemDef == null)
             {
+                _itemDefFailedToLoad = true;
                 return false;
             }
 
             ItemDef item = itemDef.LoadAssetNow();
             if (!item)
+            {
+                _itemDefFailedToLoad = true;
                 return false;
+            }
 
-            asItemCountPair = new ItemCountPair { itemDef = item, count = count };
+            _itemCountPair = new ItemCountPair { itemDef = item, count = count };
+            asItemCountPair = _itemCountPair.Value;
             return true;
         }
 
@@ -97,9 +118,14 @@ namespace VAPI
                 if (!_modifiedInventory)
                     return;
 
-                if(_channeledItemCountPairs != null)
+                _modifiedInventory.InventoryChangedHandler(DisposeInventoryModifications);
+            }
+
+            private void DisposeInventoryModifications(Inventory _modifiedInventory)
+            {
+                if (_channeledItemCountPairs != null)
                 {
-                    for(int i = 0; i < _channeledItemCountPairs.Length; i++)
+                    for (int i = 0; i < _channeledItemCountPairs.Length; i++)
                     {
                         _modifiedInventory.RemoveItemChanneled(_channeledItemCountPairs[i].itemDef.itemIndex, _channeledItemCountPairs[i].count);
                     }
@@ -176,41 +202,51 @@ namespace VAPI
                 return null;
 
             _itemCountPairBuilder.Clear();
-            for(int i = 0; i < itemsToGrant.Length; i++)
-            {
-                if (!itemsToGrant[i].TryGetItemCountPair(out var itemCountPair))
-                {
-                    continue;
-                }
-                _itemCountPairBuilder.Add(itemCountPair);
-
-                targetInventory.GiveItemChanneled(itemCountPair.itemDef.itemIndex, itemCountPair.count);
-            }
-
             EquipmentDef? equipmentDef = null;
-            if(equipmentInfo.equipmentDef != null && equipmentInfo.equipmentDef.IsInvalid == false)
+            
+            targetInventory.InventoryChangedHandler((inv) =>
             {
-                equipmentDef = equipmentInfo.equipmentDef.LoadAssetNow();
-                if(equipmentDef)
+                for (int i = 0; i < itemsToGrant.Length; i++)
                 {
-                    var activeslot = targetInventory.activeEquipmentSlot;
-                    for (uint i = 0; i <= targetInventory.GetEquipmentSetCount(activeslot); i++)
+                    if (!itemsToGrant[i].TryGetItemCountPair(out var itemCountPair))
                     {
-                        var indexForSlot = targetInventory.GetEquipment(activeslot, i).equipmentIndex;
-                        if (indexForSlot == EquipmentIndex.None || indexForSlot == equipmentDef.equipmentIndex)
+                        LogWarning($"AddressableItemCountPair at index {i} failed to transform into an ItemCountPair.");
+                        continue;
+                    }
+                    _itemCountPairBuilder.Add(itemCountPair);
+
+                    targetInventory.GiveItemChanneled(itemCountPair.itemDef.itemIndex, itemCountPair.count);
+                }
+
+                if (equipmentInfo.equipmentDef != null && equipmentInfo.equipmentDef.IsInvalid == false)
+                {
+                    equipmentDef = equipmentInfo.equipmentDef.LoadAssetNow();
+                    if (equipmentDef)
+                    {
+                        var activeslot = targetInventory.activeEquipmentSlot;
+                        for (uint i = 0; i <= targetInventory.GetEquipmentSetCount(activeslot); i++)
                         {
-                            targetInventory.SetEquipmentIndexForSlot(equipmentDef.equipmentIndex, activeslot, i);
-                            break;
+                            var indexForSlot = targetInventory.GetEquipment(activeslot, i).equipmentIndex;
+                            if (indexForSlot == EquipmentIndex.None || indexForSlot == equipmentDef.equipmentIndex)
+                            {
+                                targetInventory.SetEquipmentIndexForSlot(equipmentDef.equipmentIndex, activeslot, i);
+                                break;
+                            }
+                        }
+
+                        if (equipmentInfo.canTriggerEquipment)
+                        {
+                            VariantEquipmentHandler handler = targetInventory.EnsureComponent<VariantEquipmentHandler>();
+                            handler.AddEquipmentData(equipmentDef.equipmentIndex, equipmentInfo.aiMaxUseHealthFraction, equipmentInfo.aiMaxUseDistance, equipmentInfo.timeBetweenEquipmentSwitches);
                         }
                     }
-
-                    if (equipmentInfo.canTriggerEquipment)
+                    else
                     {
-                        VariantEquipmentHandler handler = targetInventory.EnsureComponent<VariantEquipmentHandler>();
-                        handler.AddEquipmentData(equipmentDef.equipmentIndex, equipmentInfo.aiMaxUseHealthFraction, equipmentInfo.aiMaxUseDistance, equipmentInfo.timeBetweenEquipmentSwitches);
+                        LogWarning($"AddressableEquipmentInfo failed to load it's EquipmentDef");
                     }
                 }
-            }
+            });
+            
 
             return new DisposableVariantInventoryDefintionModification(targetInventory, _itemCountPairBuilder.ToArray(), equipmentDef);
         }
@@ -242,5 +278,13 @@ namespace VAPI
         }
         public VariantInventoryDefinition() { }
         #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
+        }
     }
 }

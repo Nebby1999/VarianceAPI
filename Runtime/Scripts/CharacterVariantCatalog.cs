@@ -8,7 +8,6 @@ using RoR2.CharacterAI;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Linq;
 using System.Runtime.CompilerServices;
 using System.Text;
 using UnityEngine;
@@ -394,6 +393,7 @@ namespace VAPI
         {
             if(dependee == null || _dependeeVariantToDependantVariants.TryGetValue(dependee, out var dependants) == false)
             {
+                LogWarning($"{dependee} has no Dependant Spawn Variants");
                 return null;
             }
 
@@ -411,7 +411,14 @@ namespace VAPI
         public static CharacterVariantDef? GetCharacterVariantDef(CharacterVariantIndex index)
         {
             ThrowIfUnavailable();
-            return HG.ArrayUtils.GetSafe(_characterVariantDefs!, (int)index);
+
+            if(HG.ArrayUtils.TryGetSafe(_characterVariantDefs, (int)index, out var def))
+            {
+                return def;
+            }
+
+            LogWarning($"VariantIndex {index} is out of bounds, returning null.");
+            return null;
         }
 
         /// <summary>
@@ -426,10 +433,17 @@ namespace VAPI
 
             if(string.IsNullOrWhiteSpace(characterVariantDefName))
             {
+                LogWarning($"Cannot find a CharacterVariantIndex with an empty name, returning CharacterVariantIndex.none");
                 return CharacterVariantIndex.none;
             }
 
-            return _characterVariantNameToIndex.GetValueOrDefault(characterVariantDefName, CharacterVariantIndex.none);
+            if(_characterVariantNameToIndex.TryGetValue(characterVariantDefName, out var index))
+            {
+                return index;
+            }
+
+            LogWarning($"There's no CharacterVariantDef with the name {characterVariantDefName}, returning CharacterVariantIndex.none");
+            return CharacterVariantIndex.none;
         }
 
         /// <summary>
@@ -456,8 +470,13 @@ namespace VAPI
         {
             ThrowIfUnavailable();
 
-            //The providers array is mapped to body indices, so using get safe will get that body's variants.
-            return HG.ArrayUtils.GetSafe(_characterVariantProviders, (int)bodyIndex);
+            if(HG.ArrayUtils.TryGetSafe(_characterVariantProviders, (int)bodyIndex, out var provider))
+            {
+                return provider;
+            }
+
+            LogWarning($"Body {BodyCatalog.GetBodyName(bodyIndex)} has no provider");
+            return null;
         }
 
 
@@ -498,11 +517,18 @@ namespace VAPI
 
                 try
                 {
+                    if(def.additionalVariantComponents == null || (def.additionalVariantComponents.variantComponents?.Length == 0))
+                    {
+                        continue;
+                    }
+
+                    LogMessage($"Initializing variant components for {def.cachedName}");
                     def.additionalVariantComponents?.Initialize();
                 }
                 catch(Exception ex)
                 {
                     VAPILog.Error($"Failed to initialize variant components for {def}: {ex}");
+                    MSU.InitializationExceptionWatcher.AddException(ex, def.ownerPlugin);
                 }
             }
 
@@ -545,12 +571,14 @@ namespace VAPI
                 {
                     variantDef.characterVariantIndex = index;
                     _characterVariantNameToIndex.Add(variantDef.cachedName, variantDef.characterVariantIndex);
+
+                    LogMessage($"CharacterVariantDef {variantDef.cachedName} added to the CharacterVariantCatalog");
                 }
 
                 //Checking if this variant will be assigned to a provider.
                 //If the target body fails to load or is invalid, we'll still add it to the catalog to keep the indices consistent.
 
-                //target metadata is invallid. no provider.
+                //target metadata is invalid. no provider.
                 if(!variantDef.targetBody.IsKeyValid())
                 {
                     providerlessVariants.Add(variantDef);
@@ -599,6 +627,8 @@ namespace VAPI
                 {
                     characterBody.gameObject.EnsureComponent<VariantDeathRewards>();
                 }
+
+                LogMessage($"Added components to {characterBody.gameObject.name}");
             }
 
             //We now need to add the master storage to the master prefabs.
@@ -613,6 +643,7 @@ namespace VAPI
                     bodyToVariants.ContainsKey(body.bodyIndex)) || masterPrefab.TryGetComponent<PlayerCharacterMasterController>(out _))
                 {
                     masterPrefab.AddComponent<CharacterMasterVariantStorage>();
+                    LogMessage($"Added storage component to {masterPrefab.gameObject.name}");
                 }
             }
 
@@ -654,6 +685,7 @@ namespace VAPI
             {
                 _characterVariantProviders[i]?.FilterVariants();
             }
+            VAPILog.Info($"CharacterVariantProviders have been filtered");
         }
 
         private static void ConfigureVariant(CharacterVariantDef variantDef)
@@ -670,8 +702,8 @@ namespace VAPI
                     key = $"{variantDef.cachedName} Spawn Rate",
                     description = $"Chance for the {variantDef.cachedName} variant to spawn. (Percentage, 0-100)",
                     configFile = variantDef.associatedConfigFile,
-                    modGUID = variantDef.ownerPlugin!.GUID,
-                    modName = variantDef.ownerPlugin!.Name,
+                    modGUID = variantDef.ownerPlugin!.Info.Metadata.GUID,
+                    modName = variantDef.ownerPlugin!.Info.Metadata.Name,
                     sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
                     sliderConfig = new RiskOfOptions.OptionConfigs.SliderConfig
                     {
@@ -691,8 +723,8 @@ namespace VAPI
                     key = $"{variantDef.cachedName} Uniqueness",
                     description = $"Wether or not {variantDef.cachedName} is Unique. Unique variants cannot merge with other ones.",
                     configFile = variantDef.associatedConfigFile,
-                    modGUID = variantDef.ownerPlugin!.GUID,
-                    modName = variantDef.ownerPlugin!.Name,
+                    modGUID = variantDef.ownerPlugin!.Info.Metadata.GUID,
+                    modName = variantDef.ownerPlugin!.Info.Metadata.Name,
                 }.WithConfigChange(b =>
                 {
                     variantDef.isUnique = b;
@@ -702,6 +734,7 @@ namespace VAPI
             catch(Exception e)
             {
                 VAPILog.Error($"Error Configuring Variant {variantDef}: {e}");
+                MSU.InitializationExceptionWatcher.AddException(e, variantDef.ownerPlugin);
             }
         }
 
@@ -1100,6 +1133,24 @@ namespace VAPI
             }
         }
         #endregion
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
+        }
     }
 
     public static partial class Extensions

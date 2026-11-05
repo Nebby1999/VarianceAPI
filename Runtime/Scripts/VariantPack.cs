@@ -24,7 +24,7 @@ namespace VAPI
         /// <summary>
         /// Access to the plugin that added the pack
         /// </summary>
-        public BepInPlugin ownerPlugin => src.ownerPlugin;
+        public BaseUnityPlugin ownerPlugin => src.ownerPlugin;
 
         /// <summary>
         /// Access to the pack's tier config, may be null.
@@ -105,7 +105,7 @@ namespace VAPI
         /// <summary>
         /// The plugin that added this pack
         /// </summary>
-        public readonly BepInPlugin ownerPlugin;
+        public readonly BaseUnityPlugin ownerPlugin;
 
         /// <summary>
         /// The config file for this pack's tiers, can be null
@@ -190,7 +190,7 @@ namespace VAPI
             descriptionToken = _descriptionToken ?? throw new ArgumentNullException(nameof(_descriptionToken));
             packIcon = _packIcon ?? throw new ArgumentNullException(nameof(_packIcon));
 
-            ownerPlugin = _ownerPlugin?.Info?.Metadata ?? throw new ArgumentNullException(nameof(_ownerPlugin));
+            ownerPlugin = _ownerPlugin ?? throw new ArgumentNullException(nameof(_ownerPlugin));
             tierConfig = _tierConfig;
             variantConfig = _variantConfig;
         }
@@ -201,7 +201,7 @@ namespace VAPI
         /// If you decided to publicize VAPI, DO NOT utilize this constructor!
         /// </summary>
         /// <exception cref="ArgumentNullException">When any of the non nullable arguments are null</exception>
-        internal VariantPack(string _identifier, Sprite _packIcon, ConfigFile _tierConfig, BepInPlugin _ownerPlugin)
+        internal VariantPack(string _identifier, Sprite _packIcon, ConfigFile _tierConfig, BaseUnityPlugin _ownerPlugin)
         {
             identifier = _identifier ?? throw new ArgumentNullException(nameof(_identifier), "Nebby is kinda silly");
             packIcon = _packIcon ?? throw new ArgumentNullException(nameof(_packIcon), "Nebby is kinda silly");

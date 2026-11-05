@@ -6,6 +6,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 
 namespace VAPI
 {
@@ -66,14 +67,13 @@ namespace VAPI
         /// Throws an <see cref="InvalidOperationException"/> if the manager has already initialized
         /// </summary>
         /// <param name="variantPack">The VariantPack to add</param>
-        public static void AddVariantPack(VariantPack? variantPack)
+        public static void AddVariantPack(VariantPack variantPack)
         {
             ThrowIfAvailable();
 
             if(variantPack == null)
             {
-                VAPILog.Error($"VariantPack cannot be null!");
-                return;
+                throw new ArgumentNullException(nameof(variantPack));
             }
 
             _unregisteredPacks.Add(variantPack);
@@ -94,6 +94,8 @@ namespace VAPI
             {
                 return _readOnlyVariantPacks[(int)index];
             }
+
+            LogWarning($"PackIndex {index} is out of bounds, returning default(ReadOnlyVariantPack)");
             return default;
         }
 
@@ -106,7 +108,19 @@ namespace VAPI
         public static VariantPackIndex FindVariantPackIndex(string variantPackIdentifier)
         {
             ThrowIfUnavailable();
-            return _identifierToPackIndex.GetValueOrDefault(variantPackIdentifier, VariantPackIndex.None);
+            if(string.IsNullOrWhiteSpace(variantPackIdentifier))
+            {
+                LogWarning($"Cannot find a VariantPackIndex with an empty identifier, returning VariantPackIndex.None");
+                return VariantPackIndex.None;
+            }
+
+            if(_identifierToPackIndex.TryGetValue(variantPackIdentifier, out var index))
+            {
+                return index;
+            }
+
+            LogWarning($"There's no VariantPack with the identifier {variantPackIdentifier}. Returning VariantPackIndex.None");
+            return VariantPackIndex.None;
         }
 
         /// <summary>
@@ -140,6 +154,8 @@ namespace VAPI
                     return _registeredPacks[i].variantPackIndex;
                 }
             }
+
+            LogWarning($"{variantDef} does not belong to any VariantPack, returning VariantPackIndex.None");
             return VariantPackIndex.None;
         }
 
@@ -173,26 +189,32 @@ namespace VAPI
                     return _registeredPacks[i].variantPackIndex;
                 }
             }
+
+            LogWarning($"{tierDef} does not belong to any VariantPack, returning VariantPackIndex.None");
             return VariantPackIndex.None;
         }
         #endregion
 
         [SystemInitializer]
-        private static void Initialize()
+        private static IEnumerator Initialize()
         {
             //Order them by identifier
             _unregisteredPacks.OrderBy(variantPack => variantPack.identifier);
+
+            yield return null;
 
             int packCount = _unregisteredPacks.Count;
             _registeredPacks = new VariantPack[packCount];
             List<ReadOnlyVariantPack> readOnlyVariantPacks = new List<ReadOnlyVariantPack>();
 
-            using var _ = ListPool<CharacterVariantDef>.RentCollection(out var variantDefs);
+            ListPool<CharacterVariantDef>.RentCollection(out var variantDefs);
             List<CharacterVariantTierDef> tierDefs = new List<CharacterVariantTierDef>();
 
             //Iterate and assign indices
-            for(VariantPackIndex packIndex = 0; (int)packIndex < packCount; packIndex++)
+            for (VariantPackIndex packIndex = 0; (int)packIndex < packCount; packIndex++)
             {
+                yield return null;
+
                 VariantPack pack = _unregisteredPacks[(int)packIndex];
 
                 //assign index to pack, add to manager
@@ -202,28 +224,32 @@ namespace VAPI
                 readOnlyVariantPacks.Add(new ReadOnlyVariantPack(pack));
 
                 //Set the mod's icon in ROO
-                ModSettingsManager.SetModIcon(pack.packIcon, pack.ownerPlugin.GUID, pack.ownerPlugin.Name);
-                ModSettingsManager.SetModDescription(pack.descriptionToken, pack.ownerPlugin.GUID, pack.ownerPlugin.Name);
+                ModSettingsManager.SetModIcon(pack.packIcon, pack.ownerPlugin.Info.Metadata.GUID, pack.ownerPlugin.Info.Metadata.Name);
+                ModSettingsManager.SetModDescription(pack.descriptionToken, pack.ownerPlugin.Info.Metadata.GUID, pack.ownerPlugin.Info.Metadata.Name);
 
                 //Associate each variant and tier with the specified config files, add them to the manager
-                foreach(var variant in pack.characterVariantDefs)
+                foreach (var variant in pack.characterVariantDefs)
                 {
                     variant.associatedConfigFile = pack.variantConfig;
                     variant.ownerPlugin = pack.ownerPlugin;
                     variantDefs.Add(variant);
                 }
 
-                foreach(var tier in pack.characterVariantTierDefs)
+                foreach (var tier in pack.characterVariantTierDefs)
                 {
                     tier.associatedConfigFile = pack.tierConfig;
                     tier.ownerPlugin = pack.ownerPlugin;
                     tierDefs.Add(tier);
                 }
+
+                LogMessage($"VariantPack {pack.identifier} added to VariantPackManager");
             }
 
             _characterVariantDefs = variantDefs.ToArray();
             _characterVariantTierDefs = tierDefs.ToArray();
             _readOnlyVariantPacks = readOnlyVariantPacks.ToArray();
+
+            ListPool<CharacterVariantDef>.ReturnCollection( variantDefs );
 
             VAPILog.Info("VariantPackManager Initialized.");
             managerAvailability.MakeAvailable();
@@ -243,6 +269,23 @@ namespace VAPI
             {
                 throw new InvalidOperationException($"Too late! the PackManager is already initialized and this method cannot be called.");
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
         }
     }
 }

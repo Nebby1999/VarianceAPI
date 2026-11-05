@@ -74,6 +74,9 @@ namespace VAPI
                 for(int i = 0; i < undoData.Count; i++)
                 {
                     AISkillDriver skillDriver = undoData[i].skillDriver;
+                    if (!skillDriver)
+                        continue;
+
                     skillDriver.minTargetHealthFraction = undoData[i].minTargetHealthFractionOriginal;
                     skillDriver.maxTargetHealthFraction = undoData[i].maxTargetHealthFractionOriginal;
                     skillDriver.minUserHealthFraction = undoData[i].minUserHealthFractionOriginal;
@@ -98,6 +101,9 @@ namespace VAPI
 
             if (master.aiComponents == null)
             {
+#if DEBUG
+                VAPILog.Warning($"Not applying UnstableAI modifier as the master is not an AI");
+#endif
                 return null;
             }
 
@@ -210,6 +216,9 @@ namespace VAPI
 
             if (master.aiComponents == null)
             {
+#if DEBUG
+                VAPILog.Warning($"Not applying AlwaysSprintAI modifier as the master is not an AI");
+#endif
                 return null;
             }
 
@@ -314,14 +323,20 @@ namespace VAPI
             if (!NetworkServer.active)
                 return null;
 
-            if (string.IsNullOrWhiteSpace(aiSkillDriverTarget))
+            if (string.IsNullOrWhiteSpace(aiSkillDriverTarget) && targetSkillSlot == SkillSlot.None)
             {
-                VAPILog.Info($"Cannot apply AISkillDriverAimVectorModifier as the aiSkillDriverTarget field is null, empty or whitespace.");
+                VAPILog.Warning($"Cannot apply AISkillDriverAimVectorModifier. The target skill driver string is null, empty or whitespace and the targetSkillSlot enum is none");
                 return null;
             }
 
             if (master.AiComponents == null)
+            {
+
+#if DEBUG
+                VAPILog.Warning($"Not applying UnstableAI modifier as the master is not an AI");
+#endif
                 return null;
+            }
 
             DisposableCollectionHelper helper = new DisposableCollectionHelper(true);
             for(int i = 0; i < master.AiComponents.Length; i++)
@@ -362,9 +377,9 @@ namespace VAPI
 
         public void Validate()
         {
-            if(string.IsNullOrWhiteSpace(aiSkillDriverTarget))
+            if(string.IsNullOrWhiteSpace(aiSkillDriverTarget) && targetSkillSlot == SkillSlot.None)
             {
-                VAPILog.Warning($"Ai skill driver target should not be empty, null or whitespace!");
+                VAPILog.Warning($"Ai skill driver target should not be empty, null or whitespace when the targetSkillSlot is set to SkillSlot.None!");
             }
         }
 
@@ -439,7 +454,12 @@ namespace VAPI
                 return null;
 
             if (master.AiComponents == null)
+            {
+#if DEBUG
+                VAPILog.Warning($"Not applying UnstableAI modifier as the master is not an AI");
+#endif
                 return null;
+            }
 
             var result = new BaseAIDampModifierResult(baseAIDampBonus, _baseAIDampMultiplier);
 
@@ -529,18 +549,33 @@ namespace VAPI
 
         public IDisposable? ModifyMaster(CharacterMaster master)
         {
-            if(master == null || skillDriversPrefab == null || !NetworkServer.active)
+            if (!NetworkServer.active)
+                return null;
+
+            if (!master)
+                return null;
+
+            if(skillDriversPrefab == null)
             {
+#if DEBUG
+                VAPILog.Warning($"Not applying ReplaceSkillDrivers modifier as there's no skillDriversPrefab assigned");
+#endif
                 return null;
             }
 
             if(!master.TryGetComponent<BaseAI>(out var modifiedBaseAI))
             {
+#if DEBUG
+                VAPILog.Warning($"Not applying ReplaceSkillDrivers modifier as the master is not an AI");
+#endif
                 return null;
             }
 
             if(!skillDriversPrefab.TryGetComponent<AISkillDriver>(out _))
             {
+#if DEBUG
+                VAPILog.Warning($"Not applying ReplaceSkillDrivers modifier as the skillDriversPrefab has no AISkillDriver components");
+#endif
                 return null;
             }
 

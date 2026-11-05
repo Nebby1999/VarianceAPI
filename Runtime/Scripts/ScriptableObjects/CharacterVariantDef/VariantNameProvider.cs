@@ -130,6 +130,9 @@ namespace VAPI
         {
             if(string.IsNullOrWhiteSpace(formatToken))
             {
+#if DEBUG
+                VAPILog.Warning($"VariantNameFormatter's formatToken value is null, empty or whitespace!");
+#endif
                 return input;
             }
 
@@ -139,7 +142,13 @@ namespace VAPI
         /// <summary>
         /// Validate method
         /// </summary>
-        public void Validate() { }
+        public void Validate()
+        {
+            if(string.IsNullOrWhiteSpace(formatToken))
+            {
+                VAPILog.Warning($"formatToken cannot be null, empty or whitespace");
+            }
+        }
     }
 
     [Serializable]
@@ -159,11 +168,20 @@ namespace VAPI
         {
             if(string.IsNullOrWhiteSpace(prefixToken))
             {
+#if DEBUG
+                VAPILog.Warning($"VariantNamePrefix's prefixToken value is null, empty or whitespace!");
+#endif
                 return input;
             }
             return string.Format("{0} {1}", Language.GetString(prefixToken), input);
         }
-        public void Validate() { }
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(prefixToken))
+            {
+                VAPILog.Warning($"prefixToken cannot be null, empty or whitespace");
+            }
+        }
     }
 
     [Serializable]
@@ -183,12 +201,21 @@ namespace VAPI
         {
             if (string.IsNullOrWhiteSpace(suffixToken))
             {
+#if DEBUG
+                VAPILog.Warning($"VariantNameSuffix's suffixToken value is null, empty or whitespace!");
+#endif
                 return input;
             }
 
             return string.Format("{0} {1}", input, Language.GetString(suffixToken));
         }
-        public void Validate() { }
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(suffixToken))
+            {
+                VAPILog.Warning($"suffixToken cannot be null, empty or whitespace");
+            }
+        }
     }
 
     [Serializable]
@@ -208,10 +235,19 @@ namespace VAPI
         {
             if(string.IsNullOrWhiteSpace(overrideToken))
             {
+#if DEBUG
+                VAPILog.Warning($"VariantNameOverride's overrideToken value is null, empty or whitespace!");
+#endif
                 return input;
             }
             return Language.GetString(overrideToken);
         }
-        public void Validate() { }
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(overrideToken))
+            {
+                VAPILog.Warning($"overrideToken cannot be null, empty or whitespace");
+            }
+        }
     }
 }

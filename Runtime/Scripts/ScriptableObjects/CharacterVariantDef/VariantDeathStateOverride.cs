@@ -47,7 +47,15 @@ namespace VAPI
 
             Type type = deathStateOverride.stateType;
             if (type == null)
+            {
+#if DEBUG
+                if(!string.IsNullOrWhiteSpace(deathStateOverride.typeName))
+                {
+                    VAPILog.Warning($"SerializableEntityStateType {deathStateOverride.typeName} resolved to a null Type.");
+                }
+#endif
                 return null;
+            }
 
             var result = new DisposableVariantDeathStateOverride(characterDeathBehaviour, characterDeathBehaviour.deathState);
             characterDeathBehaviour.deathState = deathStateOverride;

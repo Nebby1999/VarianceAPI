@@ -166,10 +166,16 @@ namespace VAPI
             float? spawnManagerMultiplier = args.spawnManagerMultiplier ?? 1;
 
             if (spawnedInstance == null)
+            {
+                LogWarning($"Unable to transform spawned instance into variant, spawnedInstance is null");
                 return;
+            }
 
             if (!NetworkServer.active)
+            {
+                LogWarning($"TransformSpawnedInstanceIntoVariant called on Client");
                 return;
+            }
 
             if(spawnedInstance.TryGetComponent<CharacterBody>(out CharacterBody spawnedBodyInstance) == false)
             {
@@ -180,7 +186,10 @@ namespace VAPI
             }
 
             if (!spawnedBodyInstance)
+            {
+                LogWarning($"Unable to transform {spawnedInstance} into a variant, spawnedInstance does not have a body");
                 return;
+            }
 
             if(baseDeathRewards != null && spawnedBodyInstance.TryGetComponent<DeathRewards>(out var deathRewards))
             {
@@ -233,7 +242,15 @@ namespace VAPI
                 return false;
             }
 
-            return characterVariantDef.spawnCondition?.IsAvailable() ?? true;
+            try
+            {
+                return characterVariantDef.spawnCondition?.IsAvailable() ?? true;
+            }
+            catch(Exception ex)
+            {
+                VAPILog.Error($"Unable to call {characterVariantDef}'s spawn condition as it threw an exception. Variant will not be available.\r\n{ex}");
+                return false;
+            }
         }
 
         public static AssetReferenceT<T> CloneAssetReferenceT<T>(AssetReferenceT<T>? assetRef) where T : UnityEngine.Object
@@ -249,6 +266,33 @@ namespace VAPI
             var result = new AssetReferenceT<T>(guid);
             result.SubObjectName = subObjectName;
             return result;
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogError(object data)
+        {
+#if DEBUG
+            VAPILog.Error(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
         }
     }
 

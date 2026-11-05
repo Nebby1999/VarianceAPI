@@ -8,6 +8,7 @@ using RoR2.ContentManagement;
 using RoR2.ExpansionManagement;
 using RoR2.Skills;
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
@@ -155,14 +156,19 @@ namespace VAPI
 
         public IEnumerator LoadStaticContentAsync(LoadStaticContentAsyncArgs args)
         {
-            contentPack.identifier = identifier;
+            args.ReportProgress(0);
 
+            VAPILog.Info($"Loading VarianceAPI Content");
+
+            contentPack.identifier = identifier;
             //Initialize Assets, then Config
             IEnumerator initialization = InitializeAssetsAndConfig();
             while(initialization.MoveNext())
             {
                 yield return null;
             }
+
+            args.ReportProgress(0.25f);
 
             //Populate VAPI Content Pack
             var packPopulation = PopulateContentPack();
@@ -171,6 +177,8 @@ namespace VAPI
                 yield return null;
             }
 
+            args.ReportProgress(0.5f);
+
             //Populate Base VariantPack
             var variantPackPopulation = PopulateVariantPack();
             while(variantPackPopulation.MoveNext())
@@ -178,13 +186,19 @@ namespace VAPI
                 yield return null;
             }
 
+            args.ReportProgress(0.75f);
+
             var infiniteTower = InfiniteTower.Init();
             while(!infiniteTower.IsDone())
             {
                 yield return null;
             }
 
-            VariantPackManager.AddVariantPack(variantPack);
+            args.ReportProgress(1f);
+
+            VariantPackManager.AddVariantPack(variantPack!);
+
+            VAPILog.Info($"VarianceAPI Content Load has Finished");
         }
 
         private IEnumerator InitializeAssetsAndConfig()
@@ -204,6 +218,8 @@ namespace VAPI
             {
                 yield return null;
             }
+
+            LogMessage($"Finished loading assets and language. Initialized configs");
 
             ParallelCoroutine.ReturnToPool(parallelProgressCoroutine);
         }
@@ -253,6 +269,8 @@ namespace VAPI
             //Assign the "GoToMain" icon to the no skill icon
             var skillDef = skillDefLoad.assets![0];
             skillDef.icon = noSkillIconLoad.Result;
+
+            LogMessage($"Finished populating VarianceAPI's ContentPack");
         }
 
         private IEnumerator PopulateVariantPack()
@@ -272,8 +290,10 @@ namespace VAPI
             ParallelCoroutine.ReturnToPool(parallelCoroutine);
 
             //Initialize the pack
-            variantPack = new VariantPack(identifier, iconRequest.asset!, VAPIConfig.rewardsConfig!, VAPIMain.instance!.Info.Metadata);
+            variantPack = new VariantPack(identifier, iconRequest.asset!, VAPIConfig.rewardsConfig!, VAPIMain.instance!);
             variantPack.characterVariantTierDefs.Add(variantTierDefRequest.assets!);
+
+            LogMessage($"Finished populating VarianceAPI's VariantPack");
         }
         public IEnumerator GenerateContentPackAsync(GetContentPackAsyncArgs args)
         {
@@ -299,6 +319,15 @@ namespace VAPI
         private void AddSelf(ContentManager.AddContentPackProviderDelegate addContentPackProviderDelegate)
         {
             addContentPackProviderDelegate(this);
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
         }
 
         internal VAPIContent()

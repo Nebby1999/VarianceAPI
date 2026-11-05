@@ -1,6 +1,7 @@
 #nullable enable
 using HG;
 using RoR2;
+using RoR2.ConVar;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
@@ -15,6 +16,16 @@ namespace VAPI
     [AddComponentMenu("")]
     public sealed class VariantDeathRewards : MonoBehaviour, IOnKilledServerReceiver
     {
+        private static readonly ConVarFlags _flags =
+#if DEBUG
+            ConVarFlags.None
+#else
+            ConVarFlags.Cheat
+#endif
+            ;
+
+        private static BoolConVar _logDeathRewards = new BoolConVar("vapi_cv_logdeathrewards", _flags, "0", "Enables logging for the VariantDeathRewards");
+
         private sealed class ChanceWithCount
         {
             public float highestBaseChanceObserved = float.NegativeInfinity;
@@ -99,6 +110,7 @@ namespace VAPI
             deathRewards = GetComponent<DeathRewards>();
             characterBody = GetComponent<CharacterBody>();
             characterBodyVariantController = GetComponent<CharacterBodyVariantController>();
+            Log($"Awake");
         }
 
         private void OnEnable()
@@ -107,6 +119,7 @@ namespace VAPI
             {
                 characterBodyVariantController.onVariantsUnapplied += OnVariantsUnapplied;
                 characterBodyVariantController.onVariantsApplied += OnVariantsApplied;
+                Log($"Subscribed to events on CharacterBodyVariantController");
             }
         }
 
@@ -116,6 +129,7 @@ namespace VAPI
             {
                 characterBodyVariantController.onVariantsUnapplied -= OnVariantsUnapplied;
                 characterBodyVariantController.onVariantsApplied -= OnVariantsApplied;
+                Log($"Unsubscribed to events on CharacterBodyVariantController");
             }
         }
 
@@ -124,7 +138,10 @@ namespace VAPI
         private void OnVariantsApplied(CharacterVariantDef[] variants)
         {
             if (variants.Length == 0)
+            {
+                Log($"No variants applied, not doing modifications");
                 return;
+            }
 
             float highestGoldMultiplier = float.NegativeInfinity;
             float highestExpMultiplier = float.NegativeInfinity;
@@ -137,6 +154,7 @@ namespace VAPI
             {
                 if (!variant.variantTier)
                 {
+                    Log($"{variant.cachedName} has no tier, ignoring.");
                     continue;
                 }
 
@@ -181,6 +199,7 @@ namespace VAPI
             //No variants have tiers, so abort application of rewards
             if (variantTierCount == 0)
             {
+                Log("No variants have tiers, aborting reward application");
                 return;
             }
 
@@ -231,6 +250,23 @@ namespace VAPI
             }
 
             _pickupRewardChance = totalChanceForItemPickup;
+            Log($"VariantDeathRewards application finished:\r\n" +
+                $"finalGoldMultiplier: {(noGoldExpModificationsServer ? 1 : finalGoldMultiplier)}\r\n" +
+                $"finalExpMultiplier: {(noGoldExpModificationsServer ? 1 : finalExpMultiplier)}\r\n" +
+                $"pickupRewardChance: {(noItemRewardServer ? 0 : totalChanceForItemPickup)}\r\n" +
+                $"pickupTierWeights: {(noItemRewardServer ? "None" : GetPickupTierWeights())}");
+        }
+
+        private string GetPickupTierWeights()
+        {
+            using var _ = HG.StringBuilderPool.RentStringBuilder(out var sb);
+
+            for(int i = 0; i < _pickupTierRewardSelection.Count; i++)
+            {
+                var choice = _pickupTierRewardSelection.GetChoice(i);
+                sb.AppendLine($"{choice.value}: {choice.weight}");
+            }
+            return sb.ToString();
         }
 
         private void OnVariantsUnapplied()
@@ -238,6 +274,7 @@ namespace VAPI
             _disposeModifiers?.Dispose();
             _pickupTierRewardSelection.Clear();
             _pickupRewardChance = 0f;
+            Log($"Unapplied and discarded modifiers");
         }
 
         /// <summary>
@@ -245,12 +282,22 @@ namespace VAPI
         /// </summary>
         public void OnKilledServer(DamageReport damageReport)
         {
-            if (!characterBodyVariantController || noItemRewardServer || damageReport == null || damageReport.victimBody == null || damageReport.victimBody != characterBody || !VariantSpawnManager.instance || !Run.instance)
+            if(!noItemRewardServer)
+            {
+                Log($"Not dropping reward as this has been marked for no item rewards");
+            }
+            if (!characterBodyVariantController || damageReport == null || damageReport.victimBody == null || damageReport.victimBody != characterBody || !VariantSpawnManager.instance || !Run.instance)
+            {
+                Log($"Not dropping reward as there's no CharacterBodyVariantController or not enough information on the killing damageReport");
                 return;
+            }
 
             var variantDefs = characterBodyVariantController.GetCharacterVariantDefs();
             if (variantDefs.Length == 0)
+            {
+                Log("Not dropping item as there's no variants applied");
                 return;
+            }
 
             //Utilize the attacker master, prioritize owner if it exists
             CharacterMaster? attackerMaster = damageReport.attackerMaster;
@@ -261,6 +308,7 @@ namespace VAPI
 
             if (!attackerMaster)
             {
+                Log($"Not dropping item as there's no attacker master");
                 return;
             }
 
@@ -268,6 +316,7 @@ namespace VAPI
 
             if (_pickupTierRewardSelection.Count <= 0)
             {
+                Log($"Not dropping item as the pickupTierRewardSelection has no options");
                 return;
             }
 
@@ -279,12 +328,14 @@ namespace VAPI
                 var chanceInRealm = VAPIConfig._hiddenRealmsRollChance!.value;
                 if (chanceInRealm <= 0)
                 {
+                    Log($"Not droppint item as items cannot spawn on hidden realms");
                     return;
                 }
 
                 bool canDropItemOnHiddenRealm = Util.CheckRoll(chanceInRealm, luck, attackerMaster);
                 if (!canDropItemOnHiddenRealm)
                 {
+                    Log($"Not dropping item as the {chanceInRealm}% chance for item in hidden realms failed");
                     return;
                 }
             }
@@ -292,6 +343,7 @@ namespace VAPI
             //If this check roll doesnt pass, then return, no reward for u
             if (!Util.CheckRoll(_pickupRewardChance, luck, attackerMaster))
             {
+                Log($"Not dropping item as items as the {_pickupRewardChance}% chance for item drop has failed.");
                 return;
             }
 
@@ -346,6 +398,14 @@ namespace VAPI
 #pragma warning disable CS0612 // Type or member is obsolete
             PickupDropletController.CreatePickupDroplet(pickupIndex, position, velocity);
 #pragma warning restore CS0612 // Type or member is obsolete
+        }
+
+        private void Log(object data)
+        {
+            if (_logDeathRewards.value)
+            {
+                VAPILog.Message($"[{gameObject.name}.VariantDeathRewards]: {data}");
+            }
         }
     }
 }

@@ -91,6 +91,11 @@ namespace VAPI
             return new CharacterVariantTarget(VAPIUtils.CloneAddressReferencedAsset<AddressReferencedBody, GameObject>(targetBody));
         }
 
+        public override string ToString()
+        {
+            return targetBody.ToString();
+        }
+
         #region Constructors
         /// <summary>
         /// Constructor. Sets the targetBody for this instance via <paramref name="_targetBody"/>

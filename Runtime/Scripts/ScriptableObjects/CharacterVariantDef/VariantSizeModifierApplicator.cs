@@ -3,6 +3,7 @@ using HG;
 using KinematicCharacterController;
 using RoR2;
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -44,12 +45,14 @@ namespace VAPI
         {
             if (_characterBody == null)
             {
+                LogWarning($"Unable to apply a size modifier of {_computedSizeCoefficient} as there's no characterBody");
                 return;
             }
 
             //Don't do anything if size coefficient is just 1
             if (Mathf.Approximately(_computedSizeCoefficient, 1))
             {
+                LogMessage($"Not applying size coefficient of {_computedSizeCoefficient} as it's approximately 1");
                 return;
             }
 
@@ -58,6 +61,7 @@ namespace VAPI
             if (_modelLocator != null && (_modelLocator.enabled == false || _modelLocator.autoUpdateModelTransform == false))
             {
                 _modelLocatorSizeUpdater = _modelLocator.gameObject.AddComponent<ModelLocatorSizeUpdater>();
+                LogMessage($"Added the ModelLocatorSizeUpdater to {_characterBody.gameObject}");
             }
 
             float realCoefficient = _computedSizeCoefficient;
@@ -105,13 +109,17 @@ namespace VAPI
             foreach(var variantDef in variantDefs)
             {
                 if (variantDef.scaleMultiplier <= 0)
+                {
+                    LogWarning($"VariantDef {variantDef.cachedName} has a scaleMultiplier that's less or equal to 0. This will be ignored.");
                     continue;
+                }
 
                 sizeMultiplier *= variantDef.scaleMultiplier;
             }
 
             if(float.IsInfinity(sizeMultiplier))
             {
+                LogWarning($"SizeModifier for {targetBody} with {variantDefs.Length} variants computed to an infinity size multiplier! setting size coefficient to 1");
                 _computedSizeCoefficient = 1;
                 return;
             }
@@ -122,6 +130,21 @@ namespace VAPI
             {
                 _modelLocator = mdlLocator;
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
+        }
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
         }
     }
 }

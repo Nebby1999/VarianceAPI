@@ -1,7 +1,8 @@
 #nullable enable
-using RoR2.Skills;
 using RoR2;
+using RoR2.Skills;
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace VAPI
@@ -62,12 +63,13 @@ namespace VAPI
             GenericSkill? genericSkillTarget = null;
             genericSkillTarget = skillLocator.GetOrFindSkill(slot, slotName);
 
+            SkillDef overrideSkillDef = GetOverrideSkillDef();
             if(!genericSkillTarget)
             {
+                LogWarning($"Unable to apply skill {overrideSkillDef} to {skillLocator.gameObject} as the GenericSkill was unable to be found.");
                 return null;
             }
 
-            SkillDef overrideSkillDef = GetOverrideSkillDef();
             DisposableSkillOverride disposableOverride = new DisposableSkillOverride(genericSkillTarget!, this, overrideSkillDef, GenericSkill.SkillOverridePriority.Replacement);
             genericSkillTarget!.SetSkillOverride(disposableOverride.source, disposableOverride.overrideSkillDef, disposableOverride.priority);
 
@@ -122,5 +124,13 @@ namespace VAPI
         /// Parameterless Constructor
         /// </summary>
         public VariantSkillReplacement() { }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
+        }
     }
 }

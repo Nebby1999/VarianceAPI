@@ -80,6 +80,8 @@ namespace VAPI
                 wavePrefab = _wavePrefab,
                 weight = 1f
             };
+
+            VAPILog.Info($"Added Artifact of Variance wave to Infinite Tower");
         }
 
         private static void FinishPrefab(GameObject prefab, GameObject wispWave)

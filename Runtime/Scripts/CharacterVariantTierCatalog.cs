@@ -2,12 +2,14 @@
 using BepInEx.Configuration;
 using HG;
 using HG.Coroutines;
+using MSU;
 using MSU.Config;
 using RiskOfOptions.OptionConfigs;
 using RoR2;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine.Networking;
 
 namespace VAPI
@@ -56,6 +58,13 @@ namespace VAPI
         public static CharacterVariantTierDef? GetCharacterVariantTierDef(CharacterVariantTierIndex index)
         {
             ThrowIfUnavailable();
+
+            if(HG.ArrayUtils.TryGetSafe(_characterVariantTierDefs!, (int)index, out CharacterVariantTierDef result))
+            {
+                return result;
+            }
+
+            LogWarning($"TierIndex {index} is out of bounds, returning null.");
             return HG.ArrayUtils.GetSafe(_characterVariantTierDefs!, (int)index);
         }
 
@@ -71,9 +80,16 @@ namespace VAPI
 
             if(string.IsNullOrWhiteSpace(characterVariantTierName))
             {
+                LogWarning($"Cannot find a CharacterVariantTierIndex with an empty name, returning CharacterVariantTierIndex.None");
                 return CharacterVariantTierIndex.None;
             }
 
+            if(_characterVariantTierNametoIndex.TryGetValue(characterVariantTierName, out var index))
+            {
+                return index;
+            }
+
+            LogWarning($"There's no CharacterVariantTierDef with the name {characterVariantTierName}, returning CharacterVariantTierIndex.None");
             return _characterVariantTierNametoIndex.GetValueOrDefault(characterVariantTierName, CharacterVariantTierIndex.None);
         }
 
@@ -82,7 +98,7 @@ namespace VAPI
         {
             _characterVariantTierNametoIndex.Clear();
 
-            using (var coroutineWithResult = CoroutineWithResult<CharacterVariantTierDef[]>.Rent(RegisterTierDefs(VariantPackManager.characterVariantTierDefs)))
+            using (var coroutineWithResult = HG.Coroutines.CoroutineWithResult<CharacterVariantTierDef[]>.Rent(RegisterTierDefs(VariantPackManager.characterVariantTierDefs)))
             {
                 while(coroutineWithResult.MoveNext())
                 {
@@ -116,6 +132,8 @@ namespace VAPI
 
                 tierDef.characterVariantTierIndex = index;
                 _characterVariantTierNametoIndex.Add(tierDef.cachedName, index);
+
+                LogMessage($"CharacterVariantTierDef {tierDef.cachedName} added to the CharacterVariantTierCatalog");
             }
 
             yield return sortedTiers;
@@ -131,8 +149,8 @@ namespace VAPI
                     key = "Gold Multiplier",
                     description = "The Gold Multiplier for this Tier.",
                     configFile = tierDef.associatedConfigFile,
-                    modName = tierDef.ownerPlugin!.Name,
-                    modGUID = tierDef.ownerPlugin!.GUID,
+                    modName = tierDef.ownerPlugin!.Info.Metadata.Name,
+                    modGUID = tierDef.ownerPlugin!.Info.Metadata.GUID,
                     sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
                     sliderConfig = new SliderConfig
                     {
@@ -152,8 +170,8 @@ namespace VAPI
                     key = "Experience Multiplier",
                     description = "The Experience Multiplier for this Tier",
                     configFile = tierDef.associatedConfigFile,
-                    modName = tierDef.ownerPlugin.Name,
-                    modGUID = tierDef.ownerPlugin.GUID,
+                    modName = tierDef.ownerPlugin.Info.Metadata.Name,
+                    modGUID = tierDef.ownerPlugin.Info.Metadata.GUID,
                     sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
                     sliderConfig = new SliderConfig
                     {
@@ -173,8 +191,8 @@ namespace VAPI
                     key = "Common Item Drop Chance",
                     description = "The Chance for variants of this Tier to drop a Common Item",
                     configFile = tierDef.associatedConfigFile,
-                    modName = tierDef.ownerPlugin.Name,
-                    modGUID = tierDef.ownerPlugin.GUID,
+                    modName = tierDef.ownerPlugin.Info.Metadata.Name,
+                    modGUID = tierDef.ownerPlugin.Info.Metadata.GUID,
                     sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
                     sliderConfig = new SliderConfig
                     {
@@ -194,8 +212,8 @@ namespace VAPI
                     key = "Uncommon Item Drop Chance",
                     description = "The Chance for variants of this Tier to drop an Uncommon Item",
                     configFile = tierDef.associatedConfigFile,
-                    modName = tierDef.ownerPlugin.Name,
-                    modGUID = tierDef.ownerPlugin.GUID,
+                    modName = tierDef.ownerPlugin.Info.Metadata.Name,
+                    modGUID = tierDef.ownerPlugin.Info.Metadata.GUID,
                     sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
                     sliderConfig = new SliderConfig
                     {
@@ -215,8 +233,8 @@ namespace VAPI
                     key = "Red Item Drop Chance",
                     description = "The Chance for variants of this Tier to drop a Red Item",
                     configFile = tierDef.associatedConfigFile,
-                    modName = tierDef.ownerPlugin.Name,
-                    modGUID = tierDef.ownerPlugin.GUID,
+                    modName = tierDef.ownerPlugin.Info.Metadata.Name,
+                    modGUID = tierDef.ownerPlugin.Info.Metadata.GUID,
                     sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
                     sliderConfig = new SliderConfig
                     {
@@ -236,8 +254,8 @@ namespace VAPI
                     key = "Boss Item Drop Chance",
                     description = "The Chance for Champion Variants of this Tier to drop it's Boss Item",
                     configFile = tierDef.associatedConfigFile,
-                    modName = tierDef.ownerPlugin.Name,
-                    modGUID = tierDef.ownerPlugin.GUID,
+                    modName = tierDef.ownerPlugin.Info.Metadata.Name,
+                    modGUID = tierDef.ownerPlugin.Info.Metadata.GUID,
                     sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
                     sliderConfig = new SliderConfig
                     {
@@ -257,8 +275,8 @@ namespace VAPI
                     key = "Tier Armor Bonus",
                     description = "Armor bonus applied to variants with this Tier, This value stacks additively when a Character has multiple CharacterVariantDefs applied.",
                     configFile = tierDef.associatedConfigFile,
-                    modName = tierDef.ownerPlugin.Name,
-                    modGUID = tierDef.ownerPlugin.GUID,
+                    modName = tierDef.ownerPlugin.Info.Metadata.Name,
+                    modGUID = tierDef.ownerPlugin.Info.Metadata.GUID,
                     sliderType = ConfiguredFloat.SliderTypeEnum.Normal,
                     sliderConfig = new SliderConfig
                     {
@@ -273,6 +291,7 @@ namespace VAPI
             catch(Exception e)
             {
                 VAPILog.Error($"Error configuring tier {tierDef}: {e}");
+                InitializationExceptionWatcher.AddException(e, tierDef.ownerPlugin);
             }
         }
 
@@ -282,6 +301,23 @@ namespace VAPI
             {
                 throw new InvalidOperationException("Cannot access CharacterVariantTierCatalog when it's not available, consider subscribing to the catalogAvailability.");
             }
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
         }
     }
 

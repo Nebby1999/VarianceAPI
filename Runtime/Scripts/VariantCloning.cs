@@ -1,10 +1,11 @@
 #nullable enable
+using HG;
 using RoR2;
+using RoR2BepInExPack.GameAssetPathsBetter;
 using System;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
-using RoR2BepInExPack.GameAssetPathsBetter;
-using HG;
 
 namespace VAPI
 {
@@ -489,7 +490,7 @@ namespace VAPI
                 return null;
             }
 
-            VAPILog.Info($"Creating a clone Variant from {src} (originalBody={bodyName}|newBody={targetBodyName}). Be sure to add it to your VariantPack!");
+            LogMessage($"Creating a clone Variant from {src} (originalBody={bodyName}|newBody={targetBodyName}). Be sure to add it to your VariantPack!");
             return CreateClone(src, cloneSuffix, new CharacterVariantTarget(targetBodyName), makeHidden, resultAvailableOnlyIfSrcAvailable);
         }
 
@@ -521,7 +522,7 @@ namespace VAPI
         {
             if (string.IsNullOrWhiteSpace(cloneSuffix))
             {
-                VAPILog.Warning($"A clone for {src} is being made, but the cloneSuffix is null or whitespace! Appending current date time ticks as the suffix.");
+                LogWarning($"A clone for {src} is being made, but the cloneSuffix is null or whitespace! Appending current date time ticks as the suffix.");
                 cloneSuffix = DateTime.Now.Ticks.ToString();
             }
             CharacterVariantDef copy = CharacterVariantDef.CreateInstance(src, $"{cloneSuffix}{src.cachedName}");
@@ -533,6 +534,33 @@ namespace VAPI
                 copy.spawnCondition = new VariantDependantCondition(src);
             }
             return copy;
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogError(object data)
+        {
+#if DEBUG
+            VAPILog.Error(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
         }
     }
 }

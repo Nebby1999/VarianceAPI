@@ -49,6 +49,8 @@ namespace VAPI
 
 
             SystemInitializerInjector.InjectDependency<RuleBook>(typeof(VAPIRuleBook));
+
+            VAPILog.Info($"VarianceAPI Awake called");
         }
 
         /// <summary>

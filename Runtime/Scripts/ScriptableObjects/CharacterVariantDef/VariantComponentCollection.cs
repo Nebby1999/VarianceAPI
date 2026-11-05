@@ -5,6 +5,7 @@ using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -75,17 +76,42 @@ namespace VAPI
 
                 Type componentType = (Type)serializableSystemType;
                 if (componentType == null)
+                {
+                    VAPILog.Warning($"SerializableSystemType at index {i} failed to resolve into a Type.");
                     continue;
+                }
 
                 if (!componentType.IsSubclassOf(typeof(VariantComponent)))
+                {
+                    VAPILog.Warning($"SerializableSystemType at index {i} does not represent a VariantComponent");
                     continue;
+                }
+
+                if(componentType.IsAbstract)
+                {
+                    VAPILog.Warning($"SerializableSystemType at index {i} represents a VariantComponent that's abstract, this is not allowed.");
+                    continue;
+                }
 
                 VariantComponent.TargetComponentObjectAttribute? attribute = componentType.GetCustomAttribute<VariantComponent.TargetComponentObjectAttribute>();
                 if (attribute == null)
+                {
+                    VAPILog.Warning($"SerializableSystemType at index {i} represents a VariantComponent Type that lacks a TargetComponentObjectAttribute. This is not allowed.");
                     continue;
+                }
 
                 var targetObject = attribute.targetObject;
 
+                if(attribute.useOnClient == false && attribute.useOnServer == false)
+                {
+                    VAPILog.Warning($"SerialiableSystemType at index {i} represents a VariantComponent Type. However it's TargetComponentObjectAttribute has useOnClient and useOnServer set to false! This component will not be added to objects at all.");
+                    continue;
+                }
+
+                if (attribute.useOnServer || attribute.useOnClient)
+                {
+                    _initializationSharedComponents.Add(new ComponentTypeData { targetObject = targetObject, componentType = componentType });
+                }
                 if(attribute.useOnServer)
                 {
                     _initializationServerComponents.Add(new ComponentTypeData { targetObject = targetObject, componentType = componentType });
@@ -93,10 +119,6 @@ namespace VAPI
                 if(attribute.useOnClient)
                 {
                     _initializationClientComponents.Add(new ComponentTypeData { targetObject = targetObject, componentType = componentType });
-                }
-                if (attribute.useOnServer || attribute.useOnClient)
-                {
-                    _initializationSharedComponents.Add(new ComponentTypeData { targetObject = targetObject, componentType = componentType });
                 }
             }
 

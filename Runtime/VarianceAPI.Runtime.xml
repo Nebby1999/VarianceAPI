@@ -442,7 +442,9 @@
         </member>
         <member name="P:VAPI.CharacterVariantProvider.allVariants">
             <summary>
-            A ReadOnlyArray of all the variants stored in this provider
+            A ReadOnlyArray of all the variants stored in this provider. Keep in mind that these are not filtered by availability.
+            <br></br>
+            If you wish to get variants by their current availability, check <see cref="P:VAPI.CharacterVariantProvider.filteredUniqueVariants"/> and <see cref="P:VAPI.CharacterVariantProvider.filteredNonUniqueVariants"/> respectively.
             </summary>
         </member>
         <member name="F:VAPI.CharacterVariantProvider.associatedBodyIndex">
@@ -3337,7 +3339,7 @@
             <param name="_variantConfig">The ConfigFile for configuring this VariantPack's Variants. If left null, the Variants in this VariantPack cannot be configured</param>
             <exception cref="T:System.ArgumentNullException">When any of the non-nullable arguments are null</exception>
         </member>
-        <member name="M:VAPI.VariantPack.#ctor(System.String,UnityEngine.Sprite,BepInEx.Configuration.ConfigFile,BepInEx.BepInPlugin)">
+        <member name="M:VAPI.VariantPack.#ctor(System.String,UnityEngine.Sprite,BepInEx.Configuration.ConfigFile,BepInEx.BaseUnityPlugin)">
             <summary>
             Internal constructor for the Base API's VariantPack, which includes the Common, Uncommon, Rare and Legendary Tiers.
             <br></br>

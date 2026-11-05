@@ -3,6 +3,7 @@ using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -74,6 +75,9 @@ namespace VAPI
         [Tooltip("An implementation for applying buffs as a timed buff, can be left null.")]
         public IVariantBuffInfoTimedApplication? timedApplicationImpl;
 
+        private BuffCountPair? _buffCountPair;
+        private bool _buffDefFailedToLoad;
+
         /// <summary>
         /// Tries to compute a <see cref="BuffCountPair"/> out of the metadata in this <see cref="VariantBuffInfo"/>
         /// <br></br>
@@ -81,15 +85,34 @@ namespace VAPI
         /// </summary>
         public bool TryGetBuffCountPair(out BuffCountPair asBuffCountPair)
         {
+            if(_buffCountPair.HasValue)
+            {
+                asBuffCountPair = _buffCountPair.Value;
+                return true;
+            }
+
             asBuffCountPair = default;
-            if (buffDef == null)
+            
+            if(_buffDefFailedToLoad)
+            {
                 return false;
+            }
+
+            if (buffDef == null)
+            {
+                _buffDefFailedToLoad = true;
+                return false;
+            }
 
             BuffDef buff = buffDef.LoadAssetNow();
             if (!buff)
+            {
+                _buffDefFailedToLoad = true;
                 return false;
+            }
 
-            asBuffCountPair = new BuffCountPair { buffDef = buff, buffCount = count };
+            _buffCountPair = new BuffCountPair { buffDef = buff, buffCount = count };
+            asBuffCountPair = _buffCountPair.Value;
             return true;
         }
 
@@ -179,6 +202,7 @@ namespace VAPI
             {
                 if (!buffInfos[i].TryGetBuffCountPair(out var buffCountPair))
                 {
+                    LogWarning($"VariantBuffInfo at index {i} failed to retrieve it's BuffCountPair.");
                     continue;
                 }
 
@@ -239,5 +263,13 @@ namespace VAPI
         /// </summary>
         public VariantBuffStorage() { }
         #endregion
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
+        }
     }
 }

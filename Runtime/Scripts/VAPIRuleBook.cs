@@ -1,13 +1,14 @@
-using RoR2.ExpansionManagement;
+using HG;
 using R2API;
 using RoR2;
+using RoR2.ExpansionManagement;
 using System;
 using System.Collections.Generic;
-using UnityEngine;
-using VAPI.AddressReferencedAssets;
-using HG;
 using System.Linq;
+using System.Runtime.CompilerServices;
+using UnityEngine;
 using UnityEngine.Networking;
+using VAPI.AddressReferencedAssets;
 
 namespace VAPI
 {
@@ -42,6 +43,7 @@ namespace VAPI
             _varianceArtifactRuleDef = RuleCatalog.FindRuleDef("Artifacts.Variance");
 
             RoR2.Language.onCurrentLanguageChanged += RecomputeTokenValues;
+            VAPILog.Info($"VAPI Rulebook initialized");
         }
 
         private static void RecomputeTokenValues()
@@ -55,6 +57,7 @@ namespace VAPI
                 ruleDef.FindChoice("On").tooltipNameToken = variantName;
                 ruleDef.FindChoice("Off").tooltipNameToken = variantName;
             }
+            LogMessage($"Finished recomputing token values");
         }
 
         private static void AddVariantPackCategory()
@@ -85,6 +88,7 @@ namespace VAPI
                 category = categoryDef,
                 categoryIndex = RuleCatalogExtras.AddCategory(categoryDef)
             };
+            LogMessage($"Added VariantPackCategory");
         }
 
         private static void AddVariantPackRules()
@@ -118,7 +122,10 @@ namespace VAPI
 
                 //Do not add rule to the hidden packs, which is the main API pack
                 if (variantPack.isHidden)
+                {
+                    LogMessage($"Skipping creating a RuleDef for {variantPack.identifier} as it's hidden");
                     continue;
+                }
 
                 RuleDef packRule = CreateRuleDefFromVariantPack(variantPack.src);
                 RuleCatalogExtras.AddRuleToCatalog(packRule, _variantPackCategory.categoryIndex);
@@ -176,6 +183,7 @@ namespace VAPI
                 category = categoryDef,
                 categoryIndex = RuleCatalogExtras.AddCategory(categoryDef)
             };
+            LogMessage($"Added VariantCategory");
         }
 
         private static void AddVariantRules()
@@ -223,6 +231,7 @@ namespace VAPI
                 var def = CharacterVariantCatalog.registeredCharacterVariantDefs[i];
                 if(!def.hasProvider)
                 {
+                    LogMessage($"Skipping creating a RuleDef for {def} as it has no provider");
                     continue;
                 }
 
@@ -347,6 +356,33 @@ namespace VAPI
             {
                 choiceDef.requiredChoiceDefs.Add(expansion.enabledChoice);
             }
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogError(object data)
+        {
+#if DEBUG
+            VAPILog.Error(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
         }
     }
 

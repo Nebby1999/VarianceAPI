@@ -60,20 +60,26 @@ namespace VAPI
         {
             if (loadFromBody == null || !loadFromBody.TryLoadCharacterComponent(out var characterBody))
             {
+#if DEBUG
+                VAPILog.Warning($"Not loading character sound bank as {loadFromBody} failed to resolve into a CharacterBody");
+#endif
                 return null;
             }
 
             if (!characterBody!.TryGetComponent<AkBank>(out var origBank))
             {
+#if DEBUG
+                VAPILog.Warning($"Not applying LoadCharacterSoundBank as {characterBody} has no AkBank component");
+#endif
                 return null;
             }
 
-            var masterAkBank = body.gameObject.AddComponent<AkBank>();
-            masterAkBank.data.WwiseObjectReference = origBank.data.WwiseObjectReference;
+            var bodyAkBank = body.gameObject.AddComponent<AkBank>();
+            bodyAkBank.data.WwiseObjectReference = origBank.data.WwiseObjectReference;
 
             return new DisposableCharacterBankLoad
             {
-                loadedBankComponent = masterAkBank
+                loadedBankComponent = bodyAkBank
             };
         }
 
