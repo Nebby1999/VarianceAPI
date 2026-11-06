@@ -38,7 +38,6 @@ namespace VAPI
         public static ConfigFile? generalConfig { get; private set; }
         [AutoConfig]
         internal static ConfiguredBool? _showVariantRuleCategory, _enableArtifactOfVariance, _activateMeshReplacementSystem, _sendArrivalMessages, _playArrivalSFX, _modifyGupDeathStates;
-        [AutoConfig]
         internal static ConfiguredColor? _variantHealthBarColor;
 
         /// <summary>
@@ -101,7 +100,7 @@ namespace VAPI
                 }
             }.WithConfigChange(b =>
             {
-                var ruleDef = VAPIRuleBook._varianceArtifactRuleDef;
+                var ruleDef = Rules.RuleCatalogAdditions.varianceArtifactRuleDef;
                 ruleDef.FindChoice("On").excludeByDefault = !b;
                 ruleDef.FindChoice("Off").excludeByDefault = !b;
 
@@ -160,8 +159,10 @@ namespace VAPI
                 section = "General",
                 key = "Variant Healthbar Color",
                 description = "The Healthbar Color for Variants",
-                configFile = generalConfig
-            };
+                configFile = generalConfig,
+                modGUID = VAPIMain.GUID,
+                modName = VAPIMain.MOD_NAME,
+            }.DoConfigure();
 
             _enableRewards = new ConfiguredBool(true)
             {

@@ -4,6 +4,7 @@ using BepInEx.Configuration;
 using RoR2;
 using RoR2.ContentManagement;
 using System;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace VAPI
@@ -13,6 +14,30 @@ namespace VAPI
     /// </summary>
     public readonly struct ReadOnlyVariantPack
     {
+        public struct IdentifierComparer : IEqualityComparer<ReadOnlyVariantPack>
+        {
+            public bool Equals(ReadOnlyVariantPack x, ReadOnlyVariantPack y)
+            {
+                if(!x.isValid || !y.isValid)
+                {
+                    return false;
+                }
+
+                string xIdentifier = x.identifier;
+                string yIdentifier = y.identifier;
+
+                return string.Equals(xIdentifier, yIdentifier);
+            }
+
+            public int GetHashCode(ReadOnlyVariantPack obj)
+            {
+                if(!obj.isValid)
+                {
+                    return -1;
+                }
+                return obj.identifier.GetHashCode();
+            }
+        }
         //Access only to us.
         internal readonly VariantPack src;
 
@@ -81,9 +106,9 @@ namespace VAPI
         public VariantPackIndex variantPackIndex => src.variantPackIndex;
 
         /// <summary>
-        /// Returns if this pack is hidden, internal use only
+        /// Returns if this pack is hidden from the rulebook
         /// </summary>
-        internal readonly bool isHidden => src._isHidden;
+        internal readonly bool isHidden => src.isHidden;
 
         /// <summary>
         /// Constructor. Throws a <see cref="ArgumentNullException"/> if <paramref name="src"/> is null.
@@ -153,21 +178,20 @@ namespace VAPI
         public readonly NamedAssetCollection<CharacterVariantDef> characterVariantDefs = new NamedAssetCollection<CharacterVariantDef>(ContentPack.getScriptableObjectName);
 
         /// <summary>
-        /// Wether this pack is hidden from the rulebook, internal use only
+        /// Wether this pack is hidden from the rulebook
         /// </summary>
-        internal readonly bool _isHidden;
+        public readonly bool isHidden;
 
         /// <summary>
         /// Your VariantPack's unique index, used for networking purposes and general housekeeping
         /// </summary>
         public VariantPackIndex variantPackIndex => _packIndex;
+        internal VariantPackIndex _packIndex;
 
         /// <summary>
         /// Your VariantPack's enabled choice in the rulebook, this is null up until VarianceAPI's rulebook class initializes
         /// </summary>
         public RuleChoiceDef? packEnabledChoice { get; internal set; }
-
-        internal VariantPackIndex _packIndex;
 
         /// <summary>
         /// Constructor for creating a Variant Pack
@@ -180,8 +204,9 @@ namespace VAPI
         /// <param name="_ownerPlugin">The plugin that's adding this VariantPack</param>
         /// <param name="_tierConfig">The ConfigFile for configuring this VariantPack's tiers. If left null, the Tiers in this VariantPack cannot be configured</param>
         /// <param name="_variantConfig">The ConfigFile for configuring this VariantPack's Variants. If left null, the Variants in this VariantPack cannot be configured</param>
+        /// <param name="_isHidden">Wether the VariantPack is hidden from the rulebook display, this shouldnt really be set to true, unless you're creating a Pack that contains exclusively tiers</param>
         /// <exception cref="ArgumentNullException">When any of the non-nullable arguments are null</exception>
-        public VariantPack(string _identifier, string _nameToken, string _tooltipToken, string _descriptionToken, Sprite _packIcon, BaseUnityPlugin _ownerPlugin, ConfigFile? _tierConfig, ConfigFile? _variantConfig)
+        public VariantPack(string _identifier, string _nameToken, string _tooltipToken, string _descriptionToken, Sprite _packIcon, BaseUnityPlugin _ownerPlugin, ConfigFile? _tierConfig, ConfigFile? _variantConfig, bool _isHidden = false)
         {
             identifier = _identifier ?? throw new ArgumentNullException(nameof(_identifier));
 
@@ -193,21 +218,7 @@ namespace VAPI
             ownerPlugin = _ownerPlugin ?? throw new ArgumentNullException(nameof(_ownerPlugin));
             tierConfig = _tierConfig;
             variantConfig = _variantConfig;
-        }
-
-        /// <summary>
-        /// Internal constructor for the Base API's VariantPack, which includes the Common, Uncommon, Rare and Legendary Tiers.
-        /// <br></br>
-        /// If you decided to publicize VAPI, DO NOT utilize this constructor!
-        /// </summary>
-        /// <exception cref="ArgumentNullException">When any of the non nullable arguments are null</exception>
-        internal VariantPack(string _identifier, Sprite _packIcon, ConfigFile _tierConfig, BaseUnityPlugin _ownerPlugin)
-        {
-            identifier = _identifier ?? throw new ArgumentNullException(nameof(_identifier), "Nebby is kinda silly");
-            packIcon = _packIcon ?? throw new ArgumentNullException(nameof(_packIcon), "Nebby is kinda silly");
-            tierConfig = _tierConfig ?? throw new ArgumentNullException(nameof(_tierConfig), "Nebby is kinda silly");
-            ownerPlugin = _ownerPlugin ?? throw new ArgumentNullException(nameof(_ownerPlugin), "Nebby is kinda silly");
-            _isHidden = true;
+            isHidden = _isHidden;
         }
     }
 }

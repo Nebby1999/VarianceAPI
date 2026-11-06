@@ -9,11 +9,12 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
 using VAPI.AddressReferencedAssets;
+using VAPI.Rules;
 
 namespace VAPI
 {
-    //Does this need to be injected into the rulebook?
-    internal static class VAPIRuleBook
+    /*//Does this need to be injected into the rulebook?
+    internal static class VAPIRuleBook_OLD
     {
         private struct CategoryWithIndex
         {
@@ -97,7 +98,7 @@ namespace VAPI
             {
                 RuleDef rule = new RuleDef($"VariantPacks.{variantPack.identifier}", variantPack.nameToken);
 
-                VAPIRuleChoiceDef onchoice = VAPIRuleChoiceDef.CreateAndAddToRule(rule, "On");
+                VAPIRuleChoiceDef onchoice = null;//VAPIRuleChoiceDef.CreateAndAddToRule(rule, "On");
                 onchoice.sprite = variantPack.packIcon;
                 onchoice.tooltipNameToken = variantPack.nameToken;
                 onchoice.tooltipBodyToken = variantPack.descriptionToken;
@@ -106,7 +107,7 @@ namespace VAPI
                 variantPack.packEnabledChoice = onchoice;
                 rule.MakeNewestChoiceDefault();
 
-                VAPIRuleChoiceDef offChoice = VAPIRuleChoiceDef.CreateAndAddToRule(rule, "Off");
+                VAPIRuleChoiceDef offChoice = null;//VAPIRuleChoiceDef.CreateAndAddToRule(rule, "Off");
                 offChoice.spritePath = "Textures/MiscIcons/texUnlockIcon";
                 offChoice.tooltipNameToken = variantPack.nameToken;
                 offChoice.tooltipNameColor = ColorCatalog.GetColor(ColorCatalog.ColorIndex.Unaffordable);
@@ -197,7 +198,7 @@ namespace VAPI
                 rule.displayToken = inGameVariantName;
                 rule.hideLobbyDisplay = characterVariantDef.isHidden;
 
-                VAPIRuleChoiceDef onChoice = VAPIRuleChoiceDef.CreateAndAddToRule(rule, "On");
+                VAPIRuleChoiceDef onChoice = null;//VAPIRuleChoiceDef.CreateAndAddToRule(rule, "On");
                 onChoice.sprite = icon;
                 onChoice.tooltipNameToken = inGameVariantName;
                 onChoice.tooltipBodyToken = "VAPI_RULE_VARIANT_ON_DESCRIPTION";
@@ -209,7 +210,7 @@ namespace VAPI
 
                 rule.MakeNewestChoiceDefault();
 
-                VAPIRuleChoiceDef offChoice = VAPIRuleChoiceDef.CreateAndAddToRule(rule, "Off");
+                VAPIRuleChoiceDef offChoice = null;//VAPIRuleChoiceDef.CreateAndAddToRule(rule, "Off");
                 offChoice.spritePath = "Textures/MiscIcons/texUnlockIcon";
                 offChoice.tooltipNameToken = inGameVariantName;
                 offChoice.tooltipNameColor = ColorCatalog.GetColor(ColorCatalog.ColorIndex.Unaffordable);
@@ -386,25 +387,5 @@ namespace VAPI
         }
     }
 
-    internal sealed class VAPIRuleChoiceDef : ExtendedRuleChoiceDef
-    {
-        public CharacterVariantIndex variantIndex = CharacterVariantIndex.none;
-
-        public VariantPackIndex variantPackIndex = VariantPackIndex.None;
-
-        public RuleChoiceDef tiedPackEnabledChoice;
-
-        public static VAPIRuleChoiceDef CreateAndAddToRule(RuleDef ruleDef, string choiceName, object extraData = null, bool excludeByDefault = false)
-        {
-            VAPIRuleChoiceDef ruleChoice = new VAPIRuleChoiceDef();
-            ruleChoice.ruleDef = ruleDef;
-            ruleChoice.localName = choiceName;
-            ruleChoice.globalName = ruleDef.globalName + "." + choiceName;
-            ruleChoice.extraData = extraData;
-            ruleChoice.excludeByDefault = excludeByDefault;
-            ruleDef.choices.Add(ruleChoice);
-            return ruleChoice;
-        }
-    }
-
+    */
 }
