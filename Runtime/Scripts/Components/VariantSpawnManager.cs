@@ -92,7 +92,8 @@ namespace VAPI
             if(book != null)
             {
                 RuleBook ruleBook = book.ruleBook;
-                ruleBook.GenerateCharacterVariantMask(availableVariants);
+                //TODO: Uncomment this
+                //ruleBook.GenerateCharacterVariantMask(availableVariants);
                 Log($"Rulebook Updated");
             }
         }
