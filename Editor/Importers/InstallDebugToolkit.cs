@@ -1,4 +1,5 @@
-﻿using ThunderKit.Integrations.Thunderstore;
+﻿#if THUNDERKIT_INSTALLED
+using ThunderKit.Integrations.Thunderstore;
 
 namespace VAPI.Editor.Importers
 {
@@ -13,3 +14,4 @@ namespace VAPI.Editor.Importers
         public override string Description => "Installs DebugToolKit. Required for VAPI's debug commands to function properly";
     }
 }
+#endif

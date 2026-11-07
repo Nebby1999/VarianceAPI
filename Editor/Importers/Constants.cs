@@ -1,4 +1,5 @@
-﻿namespace VAPI.Editor.Importers
+﻿#if THUNDERKIT_INSTALLED
+namespace VAPI.Editor.Importers
 {
     using TKPriority = ThunderKit.Common.Constants.Priority;
     public static class Constants
@@ -9,3 +10,4 @@
         }
     }
 }
+#endif

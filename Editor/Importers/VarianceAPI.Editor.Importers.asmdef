@@ -1,5 +1,6 @@
 {
-    "name": "VarianceAP.Editor.Importers",
+    "name": "VarianceAPI.Editor.Importers",
+    "rootNamespace": "",
     "references": [
         "BsDiff",
         "ThunderKit.Core",
@@ -17,6 +18,17 @@
     "precompiledReferences": [],
     "autoReferenced": true,
     "defineConstraints": [],
-    "versionDefines": [],
+    "versionDefines": [
+        {
+            "name": "com.passivepicasso.thunderkit",
+            "expression": "9.0.0",
+            "define": "THUNDERKIT_INSTALLED"
+        },
+        {
+            "name": "com.mackysoft.serializereference-extensions",
+            "expression": "2.1.0",
+            "define": "MACKYSOFT_INSTALLED"
+        }
+    ],
     "noEngineReferences": false
 }
