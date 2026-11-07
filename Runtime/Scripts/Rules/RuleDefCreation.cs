@@ -33,7 +33,7 @@ namespace VAPI.Rules
             return ruleDef;
         }
 
-        internal static RuleDef CreateRuleDefForVariant(VAPIRuleCategoryDef categoryForBodyComponentVariants, CharacterVariantDef variant, bool hideLobbyDisplay, VAPIRuleChoiceDef requiredChoice)
+        public static RuleDef CreateRuleDefForVariant(VAPIRuleCategoryDef categoryForBodyComponentVariants, CharacterVariantDef variant, bool hideLobbyDisplay, VAPIRuleChoiceDef requiredChoice)
         {
             CharacterBody targetBody = variant.targetBody.LoadCharacterComponent()!;
             VariantPackIndex associatedPackIndex = VariantPackManager.FindVariantPackIndex(variant);
@@ -48,6 +48,7 @@ namespace VAPI.Rules
             onChoice.tooltipBodyToken = "VAPI_RULE_VARIANT_ON_DESCRIPTION";
             onChoice.variantIndex = variant.characterVariantIndex;
             onChoice.tiedPackEnabledChoice = VariantPackManager.GetVariantPack(associatedPackIndex).packEnabledChoice;
+            onChoice.tooltipNameColor = targetBody.bodyColor;
             AssignRequirementsToVariantChoice(onChoice, variant, requiredChoice);
 
             ruleDef.MakeNewestChoiceDefault();
@@ -57,13 +58,11 @@ namespace VAPI.Rules
             offChoice.tooltipBodyToken = "VAPI_RULE_VARIANT_OFF_DESCRIPTION";
             offChoice.getTooltipName = RuleChoiceDef.GetOffTooltipNameFromToken;
             offChoice.variantIndex = variant.characterVariantIndex;
-            offChoice.tiedPackEnabledChoice = VariantPackManager.GetVariantPack(associatedPackIndex).packEnabledChoice;
-            AssignRequirementsToVariantChoice(offChoice, variant, requiredChoice);
 
             return ruleDef;
         }
 
-        internal static RuleDef CreateRuleDefForBody(VAPIRuleCategoryDef bodyVariantsCategory, CharacterBody bodyComponent, bool hideLobbyDisplay)
+        public static RuleDef CreateRuleDefForBody(VAPIRuleCategoryDef bodyVariantsCategory, CharacterBody bodyComponent, bool hideLobbyDisplay)
         {
             Sprite icon = GetCharacterSprite(bodyComponent);
             string ingameName = GetInGameName(bodyComponent, null);
@@ -73,7 +72,8 @@ namespace VAPI.Rules
 
             VAPIRuleChoiceDef onChoice = VAPIRuleChoiceDef.CreateAndAddToRule(ruleDef, true, icon, null);
             onChoice.tooltipNameToken = ingameName;
-            onChoice.tooltipBodyToken = "Variants for this body will naturally spawn on the run";
+            onChoice.tooltipBodyToken = "VAPI_RULE_BODYVARIANTS_ON";
+            onChoice.extraData = bodyComponent;
             if(requiredExpansion != null)
             {
                 onChoice.requiredExpansionDefs.Add(requiredExpansion);
@@ -85,12 +85,8 @@ namespace VAPI.Rules
             VAPIRuleChoiceDef offChoice = VAPIRuleChoiceDef.CreateAndAddToRule(ruleDef, false, null, null);
             offChoice.tooltipNameToken = ingameName;
             offChoice.getTooltipName = RuleChoiceDef.GetOffTooltipNameFromToken;
-            offChoice.tooltipBodyToken = "Variants for this body will not naturally spawn on the run";
-            if(requiredExpansion != null)
-            {
-                offChoice.requiredExpansionDefs.Add(requiredExpansion);
-                offChoice.requiredChoiceDefs.Add(requiredExpansion.enabledChoice);
-            }
+            offChoice.tooltipBodyToken = "VAPI_RULE_BODYVARIANTS_OFF";
+            offChoice.extraData = bodyComponent;
 
             return ruleDef;
         }
@@ -101,7 +97,6 @@ namespace VAPI.Rules
             {
                 hideLobbyDisplay = hideLobbyDisplay,
             };
-            RuleCatalogExtras.AddRuleToCatalog(ruleDef, targetCategory.ruleCategoryIndex);
             return ruleDef;
         }
 
@@ -193,7 +188,7 @@ namespace VAPI.Rules
 
         private static Sprite GetMysteryIconSprite() => Addressables.LoadAssetAsync<Sprite>(RoR2BepInExPack.GameAssetPathsBetter.RoR2_Base_Common_MiscIcons.texUnlockIcon_png_texUnlockIcon_).WaitForCompletion();
 
-        private static string GetInGameName(CharacterBody? body, CharacterVariantDef? variantDef)
+        public static string GetInGameName(CharacterBody? body, CharacterVariantDef? variantDef)
         {
             if (body == null)
                 return "???";

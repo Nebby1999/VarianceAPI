@@ -33,7 +33,6 @@ namespace VAPI.Rules
             {
                 ruleChoice.spritePath = "Textures/MiscIcons/texUnlockIcon";
             }
-
             ruleDef.choices.Add(ruleChoice);
             return ruleChoice;
         }

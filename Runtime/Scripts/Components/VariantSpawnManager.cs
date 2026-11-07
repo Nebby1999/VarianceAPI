@@ -7,6 +7,7 @@ using RoR2.ConVar;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
+using VAPI.Rules;
 using static MSU.Config.ConfiguredVariable;
 
 namespace VAPI
@@ -92,8 +93,7 @@ namespace VAPI
             if(book != null)
             {
                 RuleBook ruleBook = book.ruleBook;
-                //TODO: Uncomment this
-                //ruleBook.GenerateCharacterVariantMask(availableVariants);
+                ruleBook.GenerateCharacterVariantMask(availableVariants);
                 Log($"Rulebook Updated");
             }
         }

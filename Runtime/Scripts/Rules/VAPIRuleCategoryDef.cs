@@ -10,6 +10,8 @@ namespace VAPI.Rules
         public int ruleCategoryIndex;
         public string baseNameForRules = "";
 
+        public BodyIndex associatedBodyIndex = BodyIndex.None;
+
         public static VAPIRuleCategoryDef CreateRuleCategory(string token, string baseNameForRules, Func<bool> hiddenTest)
         {
             string baseToken = $"VAPI_RULE_HEADER_{token}";

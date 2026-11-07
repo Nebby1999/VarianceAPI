@@ -3,6 +3,7 @@ using RoR2;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace VAPI.Rules
@@ -22,11 +23,9 @@ namespace VAPI.Rules
 
         //Allows for the disabling of entire variants for a body, clicking an icon as is opens a sub-category with the variants
         public static VAPIRuleCategoryDef bodyVariantsCategory;
-
         //Map of the Body to the actual variant categories for that body's variants
         public static Dictionary<BodyIndex, VAPIRuleCategoryDef> bodyToVariantCategories = new Dictionary<BodyIndex, VAPIRuleCategoryDef>();
-
-        public static Dictionary<ReadOnlyVariantPack, RuleDef> variantPackToRule = new Dictionary<ReadOnlyVariantPack, RuleDef>(new ReadOnlyVariantPack.IdentifierComparer());
+        public static Dictionary<BodyIndex, RuleDef> bodyIndexToRule = new Dictionary<BodyIndex, RuleDef>();
         public static Dictionary<CharacterVariantIndex, RuleDef> variantToRule = new Dictionary<CharacterVariantIndex, RuleDef>();
 
         public static RuleChoiceDef varianceAPIExpansionEnabledRuleChoiceDef;
@@ -63,12 +62,51 @@ namespace VAPI.Rules
             {
                 yield return null;
             }
-
         }
 
         private static void RecomputeTokenValues()
         {
+            foreach (var (variantIndex, ruleDef) in variantToRule)
+            {
+                CharacterVariantDef variantDef = CharacterVariantCatalog.GetCharacterVariantDef(variantIndex);
+                string variantName = RuleDefCreation.GetInGameName(variantDef.targetBody.LoadCharacterComponent(), variantDef);
 
+                ruleDef.displayToken = variantName;
+                ruleDef.FindChoice("On").tooltipNameToken = variantName;
+                ruleDef.FindChoice("Off").tooltipNameToken = variantName;
+            }
+
+            foreach(var (bodyIndex, ruleDef) in bodyIndexToRule)
+            {
+                CharacterBody bodyComponent = BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
+                string bodyName = RuleDefCreation.GetInGameName(bodyComponent, null);
+
+                ruleDef.displayToken = bodyName;
+                ruleDef.FindChoice("On").tooltipNameToken = bodyName;
+                ruleDef.FindChoice("Off").tooltipNameToken = bodyName;
+            }
+
+            LogMessage($"Finished recomputing token values");
+        }
+
+        public static void GenerateCharacterVariantMask(this RuleBook ruleBook, CharacterVariantMask variantMask)
+        {
+            variantMask.Clear();
+            foreach(var (variantIndex, rule) in variantToRule)
+            {
+                ExtendedRuleChoiceDef onChoice = (ExtendedRuleChoiceDef)rule.FindChoice("On");
+
+                //Don't add variants that are explicitly disabled
+                if (ruleBook.IsChoiceActive(onChoice) == false)
+                {
+                    VAPILog.Warning($"Skipping {variantIndex} as it's not active");
+                    continue;
+                }
+
+                //Variant is enabled, and the dependencies are active, add
+                VAPILog.Info($"Adding {variantIndex}");
+                variantMask.Add(variantIndex);
+            }
         }
 
         private static IEnumerator AddVariantPackCategoryAndRules()
@@ -76,7 +114,7 @@ namespace VAPI.Rules
             yield return null;
 
             variantPackCategory = VAPIRuleCategoryDef.CreateRuleCategory("VARIANTPACKS", "VariantPacks", VariantPackCategoryHiddenTest);
-
+            LogMessage("Added VariantPack Category");
 
             yield return null;
 
@@ -87,7 +125,8 @@ namespace VAPI.Rules
                 yield return null;
 
                 RuleDef packRule = RuleDefCreation.CreateRuleDefFromVariantPack(variantPackCategory, variantPack, variantPack.isHidden);
-                variantPackToRule.Add(variantPack, packRule);
+                RuleCatalogExtras.AddRuleToCatalog(packRule, variantPackCategory.ruleCategoryIndex);
+                LogMessage($"Added RuleDef for {variantPack.identifier} (isHidden={variantPack.isHidden})");
             }
         }
 
@@ -97,6 +136,7 @@ namespace VAPI.Rules
 
             bodyVariantsCategory = VAPIRuleCategoryDef.CreateRuleCategory("VARIANTS", "Variants", BodyVariantsCategoryHiddenTest);
 
+            LogMessage($"Added Character Variant Group Category");
             //We will iterate thru the body components
             foreach(var bodyComponent in BodyCatalog.allBodyPrefabBodyBodyComponents)
             {
@@ -109,11 +149,17 @@ namespace VAPI.Rules
 
                 //Since this body has variants, add it to the bodyVariantsCategory
                 //We will mark it as not hidden if it has at least one non hidden variant.
-                RuleDef bodyVariantsEnabledRuleDef = RuleDefCreation.CreateRuleDefForBody(bodyVariantsCategory, bodyComponent, HasAllVariantsHidden(variantProviderForBody));
+                bool isHidden = HasAllVariantsHidden(variantProviderForBody);
+                RuleDef bodyVariantsEnabledRuleDef = RuleDefCreation.CreateRuleDefForBody(bodyVariantsCategory, bodyComponent, isHidden);
+                RuleCatalogExtras.AddRuleToCatalog(bodyVariantsEnabledRuleDef, bodyVariantsCategory.ruleCategoryIndex);
+                LogMessage($"Added Rule for {bodyComponent.name} Variant Groups (isHidden={isHidden})");
+                bodyIndexToRule.Add(bodyComponent.bodyIndex, bodyVariantsEnabledRuleDef);
 
                 //We dont want the categories to be hidden, doing so makes it impossible to submit rules as is.
                 var categoryForBodyComponentVariants = VAPIRuleCategoryDef.CreateRuleCategory("BODY_VARIANTS", $"BodyVariants.{bodyComponent.name}", RuleCatalog.HiddenTestFalse);
                 categoryForBodyComponentVariants.displayToken = bodyComponent.baseNameToken;
+                categoryForBodyComponentVariants.associatedBodyIndex = bodyComponent.bodyIndex;
+                LogMessage($"Created Per Body Variant Category for {bodyComponent.name}");
 
                 bodyToVariantCategories.Add(bodyComponent.bodyIndex, categoryForBodyComponentVariants);
 
@@ -124,7 +170,9 @@ namespace VAPI.Rules
 
                     //We want to include the Body's "global toggle for variants" as one of the required choices that need to be on
                     RuleDef variantRule = RuleDefCreation.CreateRuleDefForVariant(categoryForBodyComponentVariants, variant, variant.isHidden, (VAPIRuleChoiceDef)bodyVariantsEnabledRuleDef.FindChoice("On"));
+                    RuleCatalogExtras.AddRuleToCatalog(variantRule, categoryForBodyComponentVariants.ruleCategoryIndex);
                     variantToRule.Add(variant.characterVariantIndex, variantRule);
+                    LogMessage($"Added Rule for {variant.cachedName} (isHidden={isHidden})");
                 }
             }
         }
@@ -183,6 +231,32 @@ namespace VAPI.Rules
                 return false;
 
             return true;
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogMessage(object data)
+        {
+#if DEBUG
+            VAPILog.Message(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogError(object data)
+        {
+#if DEBUG
+            VAPILog.Error(data);
+#endif
+        }
+
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        private static void LogWarning(object data)
+        {
+#if DEBUG
+            VAPILog.Warning(data);
+#endif
         }
     }
 }
