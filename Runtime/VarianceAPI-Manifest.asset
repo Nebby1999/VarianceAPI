@@ -1,0 +1,168 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &-4467616490986340797
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <MSUBuildPath>
+  includeMetaFiles: 0
+  files:
+  - {fileID: 2800000, guid: e90939f7f3d0fc94d9bc37fe7a5f033b, type: 3}
+  - {fileID: 4900000, guid: cc51a6c2c1cfb4f4c9563fb18275f5ae, type: 3}
+  - {fileID: 4900000, guid: babfad9a7e672394a9b6d850c5e36a54, type: 3}
+  - {fileID: 4900000, guid: b286aa87c7e2d0b43b0ebc731de1aeda, type: 3}
+  - {fileID: 102900000, guid: 8cdf139ea2036084a9a3081ba67dff21, type: 3}
+--- !u!114 &-3892906877110538616
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e563561e08b6a3642a487177f5cfbb37, type: 3}
+  m_Name: VarianceAPI-Manifest
+  m_EditorClassIdentifier: 
+  Data:
+  - {fileID: 114211852988908172}
+  - {fileID: 114107831304456238}
+  - {fileID: 6668475336501597177}
+  - {fileID: 114431642618062350}
+  - {fileID: 114987763159783732}
+  - {fileID: -544536280802138537}
+  - {fileID: 8324102109481770816}
+  - {fileID: -4467616490986340797}
+  identity: {fileID: 114211852988908172}
+  QuickAccess: 1
+--- !u!114 &-544536280802138537
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <MSUBuildPathStreamingLanguage>
+  includeMetaFiles: 0
+  files:
+  - {fileID: 102900000, guid: 891d8d984af3d3e4e86cbbc1a030d55f, type: 3}
+--- !u!114 &114107831304456238
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2b7e13dda513544419a89926bd12ad8a, type: 3}
+  m_Name: AssemblyDefinitions
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <MSUBuildPathPlugins>
+  definitions:
+  - {fileID: 5897886265953266890, guid: 9bbc8568e233b0d41b769e135a975fc4, type: 3}
+--- !u!114 &114211852988908172
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f22bb7fd1d3b56a48bc52f8e407901d6, type: 3}
+  m_Name: ManifestIdentity
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <ManifestPluginStaging>
+  Author: Nebby
+  Name: VarianceAPI
+  Description: VarianceAPI allows you to create Variants for CharacterBodies, Variants
+    can have different textures, lights, skills, and more.
+  Version: 3.0.0
+  Dependencies:
+  - {fileID: 11400000, guid: 5ceb1d8ed3af40d4d806e9756b403649, type: 2}
+  - {fileID: 11400000, guid: 613d4ca030e90a832defdb35afe5393b, type: 2}
+  - {fileID: 11400000, guid: a644a53693d44639c70550096ce74b93, type: 2}
+--- !u!114 &114431642618062350
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 17d1008b78cb6e846889b7778282fbef, type: 3}
+  m_Name: AssetBundleDefinitions
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <MSUBuildPathAssets>
+  assetBundles:
+  - assetBundleName: vapiassets
+    assets:
+    - {fileID: 102900000, guid: a672e81047dba2d4ea227050244ac94b, type: 3}
+--- !u!114 &114987763159783732
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <MSUBuildPathStreamingSoundbank>
+  includeMetaFiles: 0
+  files: []
+--- !u!114 &6668475336501597177
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4b243ff405b33b94dbf5b6775dd9aa33, type: 3}
+  m_Name: Files
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <MSUBuildPathPlugins>
+  includeMetaFiles: 0
+  files:
+  - {fileID: 4900000, guid: af11842c94fa99c44bde14d5d6456119, type: 3}
+--- !u!114 &8324102109481770816
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a82fec78ebc734d9ad1346cd40b5f9, type: 3}
+  m_Name: ThunderstoreData
+  m_EditorClassIdentifier: 
+  StagingPaths:
+  - <MSUBuildPath>
+  url: https://github.com/Nebby1999/VarianceAPI

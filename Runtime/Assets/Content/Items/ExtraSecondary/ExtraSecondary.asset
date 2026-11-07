@@ -1,0 +1,38 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: -1284244208, guid: 951ce57ad999ac1f040a4dceb5f8b763, type: 3}
+  m_Name: ExtraSecondary
+  m_EditorClassIdentifier: 
+  deprecatedTier: 5
+  _itemTierDef: {fileID: 0}
+  nameToken: VAPI_ITEM_EXTRASECONDARY_NAME
+  pickupToken: VAPI_ITEM_EXTRASECONDARY_PICKUP
+  descriptionToken: VAPI_ITEM_EXTRASECONDARY_DESC
+  loreToken: VAPI_ITEM_EXTRASECONDARY_LORE
+  unlockableDef: {fileID: 0}
+  pickupModelPrefab: {fileID: 0}
+  pickupModelReference:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+  pickupIconSprite: {fileID: 21300000, guid: ad83cbcb78211dc46ab1cb22be875035, type: 3}
+  pickupIconSpriteReference:
+    m_AssetGUID: 
+    m_SubObjectName: 
+    m_SubObjectType: 
+  itemPickupSpawnSound: 
+  itemPickupDestroySound: 
+  isConsumed: 0
+  hidden: 0
+  canRemove: 0
+  tags: 040000002d0000002c0000000b0000000c0000000d0000000f0000001600000017000000180000002400000026000000
+  requiredExpansion: {fileID: 11400000, guid: c6bb5aefe30f0ff449f147c467e0db10, type: 2}

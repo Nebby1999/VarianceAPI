@@ -1,0 +1,69 @@
+using MSU;
+using RoR2;
+#nullable enable
+
+namespace VAPI
+{
+    /// <summary>
+    /// Class with hooks related to the built in buffs and items from VAPI
+    /// </summary>
+    internal static class ItemBuffHooks
+    {
+        [SystemInitializer]
+        private static void Initializer()
+        {
+            R2API.RecalculateStatsAPI.GetStatCoefficients += ApplyVAPIItemBuffEffects;
+            On.RoR2.UI.HealthBar.UpdateBarInfos += MakeHealthBarGreen;
+        }
+
+        private static void MakeHealthBarGreen(On.RoR2.UI.HealthBar.orig_UpdateBarInfos orig, RoR2.UI.HealthBar self)
+        {
+            orig(self);
+            if(self.source && self.source.body && self.source.body.HasItem(VAPIContent.Items.GreenHealthbar.asset))
+            {
+                self.barInfoCollection.trailingOverHealthbarInfo.color = VAPIConfig._variantHealthBarColor;
+            }
+        }
+
+        private static void ApplyVAPIItemBuffEffects(RoR2.CharacterBody sender, R2API.RecalculateStatsAPI.StatHookEventArgs args)
+        {
+            int linearArmorBonusCount = sender.GetBuffCount(VAPIContent.Buffs.VAPILinearArmorBonus.asset!);
+
+            args.armorAdd += linearArmorBonusCount;
+
+            int globalCDRCount = sender.GetItemCount(VAPIContent.Items.GlobalCDR.asset!);
+            args.allSkills.cooldownMultiplier *= 1 - (globalCDRCount * 0.01f);
+
+            int extraPrimaryCount = sender.GetItemCount(VAPIContent.Items.ExtraPrimary.asset!);
+            int primaryCDRCount = sender.GetItemCount(VAPIContent.Items.PrimaryCDR.asset!);
+            args.primarySkill.bonusStockAdd += extraPrimaryCount;
+            args.primarySkill.cooldownMultiplier *= 1 - (primaryCDRCount * 0.01f);
+
+            int extraSecondaryCount = sender.GetItemCount(VAPIContent.Items.ExtraSecondary.asset!);
+            int secondaryCRDCount = sender.GetItemCount(VAPIContent.Items.SecondaryCDR.asset!);
+            args.secondarySkill.bonusStockAdd += extraSecondaryCount;
+            args.secondarySkill.cooldownMultiplier *= 1 - (secondaryCRDCount * 0.01f);
+
+            int extraUtilityCount = sender.GetItemCount(VAPIContent.Items.ExtraUtility.asset!);
+            int utilityCDRCount = sender.GetItemCount(VAPIContent.Items.UtilityCDR.asset!);
+            args.utilitySkill.bonusStockAdd += extraUtilityCount;
+            args.utilitySkill.cooldownMultiplier *= 1 - (utilityCDRCount * 0.01f);
+
+            int extraSpecialCount = sender.GetItemCount(VAPIContent.Items.ExtraSpecial.asset!);
+            int specialCDRCount = sender.GetItemCount(VAPIContent.Items.SpecialCDR.asset!);
+            args.specialSkill.bonusStockAdd += extraSpecialCount;
+            args.specialSkill.cooldownMultiplier *= 1 - (specialCDRCount * 0.01f);
+
+            int plus1CritCount = sender.GetItemCount(VAPIContent.Items.Plus1Crit.asset!);
+            args.critAdd += plus1CritCount;
+
+            int increaseScaleCount = sender.GetBuffCount(VAPIContent.Buffs.VAPIIncreaseScale.asset!);
+            int decreaseScaleCount = sender.GetBuffCount(VAPIContent.Buffs.VAPIDecreaseScale.asset!);
+
+            float increaseScaleCoefficient = ((float)increaseScaleCount) * 0.01f;
+            float decreaseScaleCoefficient = ((float)decreaseScaleCount) * 0.01f;
+            args.desiredScaleTotalMult *= 1 + increaseScaleCoefficient;
+            args.desiredScaleTotalMult /= 1 + decreaseScaleCoefficient;
+        }
+    }
+}

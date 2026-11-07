@@ -1,0 +1,6 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement name="RootForContextMenu">
+        <uie:ObjectField label="Character Variant Def" name="CharacterVariantDef" allow-scene-objects="false" class="unity-base-field__aligned" />
+        <ui:TextField picking-mode="Ignore" label="Catalogued Variant Name" name="CataloguedVariantName" class="unity-base-field__aligned" />
+    </ui:VisualElement>
+</ui:UXML>

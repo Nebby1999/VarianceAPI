@@ -1,27 +1,33 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using UnityEditor;
-using System;
 using RoR2;
+using RoR2.Editor;
+using System;
+using UnityEditor;
+using UnityEditor.UIElements;
+using UnityEngine.UIElements;
 
 namespace VAPI.Editor.PropertyDrawers
 {
-    [CustomPropertyDrawer(typeof(VariantDef.VariantSkillReplacement))]
-    public class VariantSkillReplacementDrawer : PropertyDrawer
+    [CustomPropertyDrawer(typeof(VariantSkillReplacement))]
+    public class VariantSkillReplacementDrawer : VAPIPropertyDrawer<VariantSkillReplacement>
     {
-        public override void OnGUI(Rect position, SerializedProperty property, GUIContent label)
+        protected override void FinishUI(VisualElement rootVisualElement, SerializedProperty serializedProperty)
         {
-            EditorGUI.BeginProperty(position, label, property);
+            rootVisualElement.Q<PropertyField>().BindProperty(serializedProperty.FindPropertyRelative(nameof(VariantSkillReplacement.skillDef)));
 
-            var fieldRect = new Rect(position.x, position.y, position.width * 0.75f, position.height);
-            EditorGUI.PropertyField(fieldRect, property.FindPropertyRelative("skillDef"));
+            var slotNameTextField = rootVisualElement.Q<TextField>();
+            slotNameTextField.BindProperty(serializedProperty.FindPropertyRelative(nameof(VariantSkillReplacement.slotName)));
 
-            var slotProp = property.FindPropertyRelative("skillSlot");
-            var enumRect = new Rect(fieldRect.xMax, fieldRect.y, position.width * 0.25f, position.height);
-            slotProp.intValue = (int)(SkillSlot)EditorGUI.EnumPopup(enumRect, (SkillSlot)slotProp.intValue);
-
-            EditorGUI.EndProperty();
+            var slotEnumField = rootVisualElement.Q<EnumField>();
+            slotEnumField.RegisterValueChangedCallback(e =>
+            {
+                Enum val = e.newValue;
+                if (val == null)
+                {
+                    val = e.previousValue;
+                }
+                slotNameTextField?.SetDisplay(((SkillSlot)val) == SkillSlot.None);
+            });
+            slotEnumField.BindProperty(serializedProperty.FindPropertyRelative(nameof(VariantSkillReplacement.slot)));
         }
     }
 }

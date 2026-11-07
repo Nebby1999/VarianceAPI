@@ -1,0 +1,11 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement name="Root">
+        <uie:PropertyField name="EquipmentDef" />
+        <ui:Toggle label="Can Trigger Equipment" name="CanTriggerEquipment" class="unity-base-field__aligned" />
+        <ui:VisualElement name="CanTriggerEquipmentInfo" style="flex-direction: column;">
+            <uie:FloatField label="AI Max Use HP Fraction" value="42.2" name="AIMaxUseHealthFraction" class="unity-base-field__aligned" />
+            <uie:FloatField label="AI Max Use Distance" value="42.2" name="AIMaxUseDistance" class="unity-base-field__aligned" />
+            <uie:FloatField label="Time Between Equipment Switches" value="42.2" name="TimeBetweenEquipmentSwitches" class="unity-base-field__aligned" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

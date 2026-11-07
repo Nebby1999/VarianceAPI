@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement name="Root" style="flex-direction: row;">
+        <uie:PropertyField name="ItemDef" style="flex-grow: 1;" />
+        <ui:VisualElement style="flex-direction: row;">
+            <ui:Label text="Count:" display-tooltip-when-elided="true" name="CountLabel" style="margin-right: 4px;" />
+            <uie:IntegerField value="0" name="Count" style="min-width: 85px; max-height: 18px;" />
+        </ui:VisualElement>
+    </ui:VisualElement>
+</ui:UXML>

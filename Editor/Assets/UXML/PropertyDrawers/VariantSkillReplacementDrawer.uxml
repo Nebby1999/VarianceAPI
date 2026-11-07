@@ -1,0 +1,9 @@
+<ui:UXML xmlns:ui="UnityEngine.UIElements" xmlns:uie="UnityEditor.UIElements" editor-extension-mode="True">
+    <ui:VisualElement name="Root">
+        <ui:VisualElement name="SkillDefSlotContainer" style="flex-direction: row;">
+            <uie:PropertyField name="SkillDef" style="flex-grow: 1;" />
+            <uie:EnumField value="Center" name="Slot" style="min-width: 81px;" />
+        </ui:VisualElement>
+        <ui:TextField picking-mode="Ignore" label="Slot Name" name="SlotName" class="unity-base-field__aligned" />
+    </ui:VisualElement>
+</ui:UXML>

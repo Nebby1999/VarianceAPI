@@ -1,0 +1,253 @@
+#nullable enable
+using Mono.Cecil.Cil;
+using MonoMod.Cil;
+using RoR2;
+using System;
+
+namespace VAPI
+{
+    internal static class VariantNameProviderHooks
+    {
+        [SystemInitializer]
+        private static void Init()
+        {
+            IL.RoR2.Util.GetBestBodyName += GetBestBodyVariantName;
+        }
+
+        /*
+         * We want to modify the name of the variant without directly overriding the character name string, so we're hooking GetBestBodyName.
+         * 
+         * Target is to put the cursor before the characterBody.isElite statement.
+	     * if ((bool)characterBody)
+	     * {
+	     * <---- ILHook goes here
+		 *    if (characterBody.isElite)
+		 *    {
+		 *       BuffIndex[] eliteBuffIndices = BuffCatalog.eliteBuffIndices;
+	     *       foreach (BuffIndex buffIndex in eliteBuffIndices)
+		 *       {
+		 *   	    if (characterBody.HasBuff(buffIndex))
+		 *		    {
+		 *              text2 = Language.GetStringFormatted(BuffCatalog.GetBuffDef(buffIndex).eliteDef.modifierToken, text2);
+		 *          }
+		 *       }
+		 *    }
+         */
+        private static void GetBestBodyVariantName(MonoMod.Cil.ILContext il)
+        {
+            var cursor = new ILCursor(il);
+
+            //We first deduce the text2 variable from the code.
+            //text2 = Language.GetStringFormatted(...);
+            int text2LocIndex = -1;
+            bool text2LocIndexObtained = cursor.TryGotoNext(x => x.MatchCallOrCallvirt<Language>(nameof(Language.GetStringFormatted))) &&
+                cursor.TryGotoNext(x => x.MatchStloc(out text2LocIndex));
+            if (!text2LocIndexObtained)
+            {
+                VAPILog.Fatal($"Failed to ILHook RoR2.Util.GetBestBodyName()! Unable to deduce \"text2\" local variable index. VariantNameProviders will not work!");
+                return;
+            }
+
+            //The we go to `if(characterBody.isElite)` to deduce the body variable, if we match, proceed with the rest of the hook.
+            int characterBodyLocIndex = -1;
+            cursor.Index = 0;
+            bool characterBodyLocIndexObtained = cursor.TryGotoNext(x => x.MatchLdloc(out characterBodyLocIndex),
+                x => x.MatchCallOrCallvirt<CharacterBody>($"get_{nameof(CharacterBody.isElite)}"));
+            if (!characterBodyLocIndexObtained)
+            {
+                VAPILog.Fatal("Failed to hook RoR2.Util.GetBestBodyName()! Unable to deduce \"characterBody\" local variable index. VariantNameProviders will not work!");
+                return;
+            }
+
+            //Emit CharacterBody and Text2 values.
+            cursor.Emit(OpCodes.Ldloc, characterBodyLocIndex);
+            cursor.Emit(OpCodes.Ldloc, text2LocIndex);
+
+            //Emit delegate
+            cursor.EmitDelegate<Func<CharacterBody, string, string>>(FormatVariantName);
+
+            //Store new text in text2
+            cursor.Emit(OpCodes.Stloc, text2LocIndex);
+        }
+
+        private static string FormatVariantName(CharacterBody body, string bodyName)
+        {
+            if(body.TryGetComponent<CharacterBodyVariantController>(out var characterBodyVariantController))
+            {
+                //Return the cachedVariantName from the controller, when variants are applied it creates the new character string.
+                return characterBodyVariantController.cachedVariantName;
+            }
+            return bodyName;
+        }
+    }
+
+    /// <summary>
+    /// Interface for implementing a name for a Variant.
+    /// <br></br>
+    /// Done via the <see cref="GetVariantName(string)"/> method.
+    /// <br></br>
+    /// Must support cloning via the <see cref="ICloneable"/> implementation.
+    /// <para></para>
+    /// <b>Built in name providers:</b>
+    /// <list type="bullet">
+    /// <item><see cref="VariantNameFormatter"/>: Uses a format token to retrieve the variant name</item>
+    /// <item><see cref="VariantNamePrefix"/>: Reimplementation of VAPI2.0's VariantNameOverride utilizing the "Prefix" override type.</item>
+    /// <item><see cref="VariantNameSuffix"/>: Reimplementation of VAPI2.0's VariantNameOverride utilizing the "Suffix" override type.</item>
+    /// <item><see cref="VariantNameOverride"/>: Reimplementation of VAPI2.0's VariantNameOverride utilizing the "Complete" override type</item>
+    /// </list>
+    /// </summary>
+    public interface IVariantNameProvider : IValidatable, ICloneable
+    {
+        public string GetVariantName(string input);
+    }
+
+    /// <summary>
+    /// A <see cref="IVariantNameProvider"/> that provides a name utilizing a format token.
+    /// </summary>
+    [Serializable]
+    public struct VariantNameFormatter : IVariantNameProvider
+    {
+        /// <summary>
+        /// The format token to utilize
+        /// </summary>
+        public string? formatToken;
+
+        /// <summary>
+        /// Returns a clone of this
+        /// </summary>
+        public object Clone()
+        {
+            return new VariantNameFormatter
+            {
+                formatToken = new string(formatToken)
+            };
+        }
+
+        /// <summary>
+        /// Calls <see cref="Language.GetStringFormatted(string, object[])"/>, first argument is <see cref="formatToken"/> value, second argument is <paramref name="input"/>
+        /// </summary>
+        public string GetVariantName(string input)
+        {
+            if(string.IsNullOrWhiteSpace(formatToken))
+            {
+#if DEBUG
+                VAPILog.Warning($"VariantNameFormatter's formatToken value is null, empty or whitespace!");
+#endif
+                return input;
+            }
+
+            return Language.GetStringFormatted(Language.GetString(formatToken), input);
+        }
+
+        /// <summary>
+        /// Validate method
+        /// </summary>
+        public void Validate()
+        {
+            if(string.IsNullOrWhiteSpace(formatToken))
+            {
+                VAPILog.Warning($"formatToken cannot be null, empty or whitespace");
+            }
+        }
+    }
+
+    [Serializable]
+    public struct VariantNamePrefix : IVariantNameProvider
+    {
+        public string? prefixToken;
+
+        public object Clone()
+        {
+            return new VariantNamePrefix
+            {
+                prefixToken = new string(prefixToken)
+            };
+        }
+
+        public string GetVariantName(string input)
+        {
+            if(string.IsNullOrWhiteSpace(prefixToken))
+            {
+#if DEBUG
+                VAPILog.Warning($"VariantNamePrefix's prefixToken value is null, empty or whitespace!");
+#endif
+                return input;
+            }
+            return string.Format("{0} {1}", Language.GetString(prefixToken), input);
+        }
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(prefixToken))
+            {
+                VAPILog.Warning($"prefixToken cannot be null, empty or whitespace");
+            }
+        }
+    }
+
+    [Serializable]
+    public struct VariantNameSuffix : IVariantNameProvider
+    {
+        public string? suffixToken;
+
+        public object Clone()
+        {
+            return new VariantNameSuffix
+            {
+                suffixToken = new string(suffixToken)
+            };
+        }
+
+        public string GetVariantName(string input)
+        {
+            if (string.IsNullOrWhiteSpace(suffixToken))
+            {
+#if DEBUG
+                VAPILog.Warning($"VariantNameSuffix's suffixToken value is null, empty or whitespace!");
+#endif
+                return input;
+            }
+
+            return string.Format("{0} {1}", input, Language.GetString(suffixToken));
+        }
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(suffixToken))
+            {
+                VAPILog.Warning($"suffixToken cannot be null, empty or whitespace");
+            }
+        }
+    }
+
+    [Serializable]
+    public struct VariantNameOverride : IVariantNameProvider
+    {
+        public string? overrideToken;
+
+        public object Clone()
+        {
+            return new VariantNameOverride
+            {
+                overrideToken = new string(overrideToken)
+            };
+        }
+
+        public string GetVariantName(string input)
+        {
+            if(string.IsNullOrWhiteSpace(overrideToken))
+            {
+#if DEBUG
+                VAPILog.Warning($"VariantNameOverride's overrideToken value is null, empty or whitespace!");
+#endif
+                return input;
+            }
+            return Language.GetString(overrideToken);
+        }
+        public void Validate()
+        {
+            if (string.IsNullOrWhiteSpace(overrideToken))
+            {
+                VAPILog.Warning($"overrideToken cannot be null, empty or whitespace");
+            }
+        }
+    }
+}
