@@ -1,8 +1,11 @@
 # VarianceAPI - API for creating CharacterVariants for Risk of Rain 2.
 
+![](MarkdownFiles~/Readme/VAPIIcon.png)
+
 VarianceAPI is a complete rewrite of Rob's Monster Variants concept, alongside merging of the Monster Variants + addon features.
 
 VarianceAPI allows the creation of CharacterVariantDefs, complex runtime modifiers that modify a character in real time.
+
 
 ## The purpose of this Github Repository
 
@@ -14,25 +17,15 @@ VarianceAPI is a passion project from Nebby. as such, he works in his free time 
 
 VarianceAPI will forever be free to use and never gated behind paywalls, however, donations are incredibly appreciated.
 
-[![ko-fi](https://raw.githubusercontent.com/TeamMoonstorm/MoonstormSharedUtils/main/Docs/Readme/SupportNebby.png)](https://ko-fi.com/nebby1999)
+[![ko-fi](MarkdownFiles~/Readme/KofiButton.png)](https://ko-fi.com/nebby1999)
 
 ## Official Variant Packs
 
 (Note: click the icon to open a new tab to the variant pack)
 | Icon/URL | Name | Description |
 |--|--|--|
-| [![TO30Icon](https://ccdn.thunderstore.io/live/repository/icons/Nebby-VariantPack_TheOriginal30-2.2.1.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_TheOriginal30) | The Original 30 | The Original Thirty Variants developed by Rob, ported and modified to VarianceAPI. |
-| [![NWIcon](https://ccdn.thunderstore.io/live/repository/icons/Nebby-VariantPack_NebbysWrath-2.1.2.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_NebbysWrath/) | Nebby's Wrath | 87 Variants spread across Base Game, Survivors of the Void, Seekers of the Storm and Alloyed Collective enemies. |
-
-## Endorsed VariantPacks
-
-Variant Packs endorsed by Nebby to be High Quality
-
-(Note: click the icon to open a new tab to the variant pack)
-
-| Icon/URL | Name | Description |
-|--|--|--|
-|[![ShbonesIcon](https://gcdn.thunderstore.io/live/repository/icons/shbones-ShbonesVariants-0.0.2.png.128x128_q95.png)](https://thunderstore.io/package/shbones/ShbonesVariants/)| Shbones Variants | Adds new monster variants to the game using Nebby's VarianceAPI. |
+| [![TO30Icon](MarkdownFiles~/Readme/TO30Icon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_TheOriginal30) | The Original 30 | The Original Thirty Variants developed by Rob, ported and modified to VarianceAPI. |
+| [![NWIcon](MarkdownFiles~/Readme/NWIcon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_NebbysWrath/) | Nebby's Wrath | 87 Variants spread across Base Game, Survivors of the Void, Seekers of the Storm and Alloyed Collective enemies. |
 
 ## Special Thanks
 
@@ -46,3 +39,5 @@ Variant Packs endorsed by Nebby to be High Quality
 * Rob for creating Monster Variants.
 * Papa zach for creating the Artifact & Expansion Icons
 * Mackysoft for letting me use and redistribute his "SerializeReferenceExtensions" package.
+* GrooveSalad for his ExpansionManager code, which was used as a base to create the variant rulebook categories
+* MysticalChicken and Zenithrium for feedback regarding tokens

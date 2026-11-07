@@ -16,9 +16,11 @@ MonoBehaviour:
   - <MSUBuildPath>
   includeMetaFiles: 0
   files:
+  - {fileID: 2800000, guid: e90939f7f3d0fc94d9bc37fe7a5f033b, type: 3}
   - {fileID: 4900000, guid: cc51a6c2c1cfb4f4c9563fb18275f5ae, type: 3}
   - {fileID: 4900000, guid: babfad9a7e672394a9b6d850c5e36a54, type: 3}
-  - {fileID: 2800000, guid: 17e7291e3ba22bf44987a915ddf8eed0, type: 3}
+  - {fileID: 4900000, guid: b286aa87c7e2d0b43b0ebc731de1aeda, type: 3}
+  - {fileID: 102900000, guid: 8cdf139ea2036084a9a3081ba67dff21, type: 3}
 --- !u!114 &-3892906877110538616
 MonoBehaviour:
   m_ObjectHideFlags: 0

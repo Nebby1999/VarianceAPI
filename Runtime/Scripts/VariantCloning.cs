@@ -254,7 +254,6 @@ namespace VAPI
         /// <param name="def">The source VariantDef, must point to a MinorConstruct Variant</param>
         /// <param name="makeHidden">If true, the cloned variant will be hidden from the rulebook and will not recieve spawning and uniqueness configurations</param>
         /// <param name="resultAvailableOnlyIfSrcAvailable">If true, the cloned variant will only be available if <paramref name="def"/> is also available.</param>
-        [Obsolete("This method exists but remains untested, use with caution. Obsolete status may be removed if the cloning process ends up being safe")]
         public static CharacterVariantDef? CloneIntoMinorConstructAttachable(CharacterVariantDef def, bool makeHidden = true, bool resultAvailableOnlyIfSrcAvailable = true)
         {
             CloneForOtherBodyArgs args = new CloneForOtherBodyArgs
