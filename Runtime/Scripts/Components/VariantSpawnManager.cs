@@ -4,7 +4,6 @@ using MSU.Config;
 using RiskOfOptions.OptionConfigs;
 using RoR2;
 using RoR2.ConVar;
-using System;
 using UnityEngine;
 using UnityEngine.Networking;
 using VAPI.Rules;
@@ -90,7 +89,7 @@ namespace VAPI
 
         private void OnRulebookUpdated(NetworkRuleBook book)
         {
-            if(book != null)
+            if (book != null)
             {
                 RuleBook ruleBook = book.ruleBook;
                 ruleBook.GenerateCharacterVariantMask(availableVariants);
@@ -100,7 +99,7 @@ namespace VAPI
 
         private void OnDestroy()
         {
-            if(Run.instance && Run.instance.networkRuleBookComponent)
+            if (Run.instance && Run.instance.networkRuleBookComponent)
             {
                 Run.instance.networkRuleBookComponent.onRuleBookUpdated -= OnRulebookUpdated;
             }
@@ -110,7 +109,7 @@ namespace VAPI
 
         private void Start()
         {
-            if(NetworkServer.active)
+            if (NetworkServer.active)
             {
                 ulong seed = Run.instance.seed;
                 variantRng = new Xoroshiro128Plus(seed);
@@ -170,7 +169,7 @@ namespace VAPI
 
             BodyStartProcedure procedure = GetProcedureForBody(body, out BodyStartProcedureRetrievedValues values);
 
-            switch(procedure)
+            switch (procedure)
             {
                 case BodyStartProcedure.Return:
                     {
@@ -193,7 +192,7 @@ namespace VAPI
                     }
                 case BodyStartProcedure.SetFromStorage:
                     {
-                        if(values.masterVariantStorage!.TryGetVariantsStoredForCharacter(body.bodyIndex, out var variants))
+                        if (values.masterVariantStorage!.TryGetVariantsStoredForCharacter(body.bodyIndex, out var variants))
                         {
                             values.bodyController!.SetCharacterVariantDefsServer(variants!);
                         }
@@ -220,7 +219,7 @@ namespace VAPI
 
             retrievedValues.variantProvider = retrievedProvider;
 
-            if(!body.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
+            if (!body.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
             {
                 VAPILog.Warning($"CharacterBody {body} has a CharacterVariantProvider, but the body prefab lacks the variant controller! this shouldnt be possible!");
                 Log($"Returning BodyStartProcedure.Return as {body.name} has no CharacterBodyVariantController");
@@ -236,14 +235,14 @@ namespace VAPI
             }
 
             CharacterMasterVariantStorage? variantStorage = bodyVariantController.GetCharacterMasterVariantStorage();
-            if(variantStorage != null && variantStorage.HasVariantsForBody(body.bodyIndex))
+            if (variantStorage != null && variantStorage.HasVariantsForBody(body.bodyIndex))
             {
                 retrievedValues.masterVariantStorage = variantStorage;
                 Log($"Returning BodyStartProcedure.SetFromStorage as {body.name}'s master has a CharacterMasterVariantStorage with variants for {BodyCatalog.GetBodyName(body.bodyIndex)}");
                 return BodyStartProcedure.SetFromStorage;
             }
 
-            if(bodyVariantController.HasPreAssignedSpawnData())
+            if (bodyVariantController.HasPreAssignedSpawnData())
             {
                 var preSpawnData = bodyVariantController.ConsumePreAssignedSpawnData();
                 retrievedValues.additiveVariantDefs = preSpawnData.additiveVariantDefs;
@@ -256,7 +255,7 @@ namespace VAPI
 
         private void Log(object data)
         {
-            if(_logSpawnManager.value)
+            if (_logSpawnManager.value)
             {
                 VAPILog.Message($"[{gameObject.name}.VariantSpawnManager]: {data}");
             }

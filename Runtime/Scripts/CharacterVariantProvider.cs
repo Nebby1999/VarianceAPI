@@ -50,16 +50,16 @@ namespace VAPI
             _filteredNonUniqueVariants.Clear();
             _filteredUniqueVariants.Clear();
 
-            for(int i = 0; i < totalVariantCount; i++)
+            for (int i = 0; i < totalVariantCount; i++)
             {
                 var variant = _allVariants[i];
 
-                if(!variant.IsAvailable())
+                if (!variant.IsAvailable())
                 {
                     continue;
                 }
 
-                if(variant.isUnique)
+                if (variant.isUnique)
                 {
                     _filteredUniqueVariants.Add(variant);
                 }
@@ -74,7 +74,7 @@ namespace VAPI
         /// Defines a roll type to use.
         /// </summary>
         public enum RollType
-        { 
+        {
             /// <summary>
             /// Unique variants are rolled first, if no uniques are picked, then non uniques are rolled.
             /// </summary>
@@ -114,6 +114,9 @@ namespace VAPI
             /// </summary>
             public CharacterVariantDef[]? additiveVariantDefs;
 
+            /// <summary>
+            /// Returns a human readable representation of the current arguments
+            /// </summary>
             public override string ToString()
             {
                 using var _ = HG.StringBuilderPool.RentStringBuilder(out var sb);
@@ -121,9 +124,9 @@ namespace VAPI
                 sb.AppendLine($"RollType: {rollType ?? RollType.Default}");
                 sb.AppendLine($"Additive Variants: {(additiveVariantDefs == null ? "None" : "")}");
 
-                if(additiveVariantDefs != null)
+                if (additiveVariantDefs != null)
                 {
-                    foreach(var variant in additiveVariantDefs )
+                    foreach (var variant in additiveVariantDefs)
                     {
                         sb.AppendLine(variant.cachedName);
                     }
@@ -146,7 +149,7 @@ namespace VAPI
             CharacterVariantDef[]? additiveVariantDefs = args.additiveVariantDefs;
 
             CharacterVariantDef[] resultFromProcedure;
-            switch(rollType)
+            switch (rollType)
             {
                 case RollType.Default:
                     DefaultRollProcedure(rng, spawnChanceMultiplier, out resultFromProcedure);
@@ -163,7 +166,7 @@ namespace VAPI
                     return resultFromProcedure;
             }
 
-            if(additiveVariantDefs == null)
+            if (additiveVariantDefs == null)
             {
                 return resultFromProcedure;
             }
@@ -171,9 +174,9 @@ namespace VAPI
             using var _ = ListPool<CharacterVariantDef>.RentCollection(out var resultWithAdditives);
             resultWithAdditives.AddRange(additiveVariantDefs);
 
-            foreach(var result in resultFromProcedure)
+            foreach (var result in resultFromProcedure)
             {
-                if(!resultWithAdditives.Contains(result))
+                if (!resultWithAdditives.Contains(result))
                 {
                     resultWithAdditives.Add(result);
                 }
@@ -228,7 +231,7 @@ namespace VAPI
             uniqueVariantIndexSelector.Clear();
 
             float notUniqueChance = 0;
-            for(int i = 0; i < filteredUniqueVariants.Count; i++)
+            for (int i = 0; i < filteredUniqueVariants.Count; i++)
             {
                 CharacterVariantDef variant = filteredUniqueVariants[i];
                 float spawnChance = variant.spawnRate * spawnChanceMultiplier;
@@ -255,7 +258,7 @@ namespace VAPI
                 if (spawnRate <= 0)
                     continue;
 
-                if(spawnRng.RangeFloat(0, 100) <= spawnRate)
+                if (spawnRng.RangeFloat(0, 100) <= spawnRate)
                 {
                     notUniquesPick.Add(variant);
                 }

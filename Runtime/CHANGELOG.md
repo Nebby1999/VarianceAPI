@@ -1,3 +1,8 @@
+# '3.0.1' - Hotfix
+
+* Fixed an issue where the API would try to configure a variant's spawn are and uniqueness even when there was no provider, causing a NRE.
+* Ran code cleanup on the project
+
 # '3.0.0' - Long Term Support
 
 * This release marks the first LTS support for VarianceAPI.

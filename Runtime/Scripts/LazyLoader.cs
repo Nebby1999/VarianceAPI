@@ -17,12 +17,12 @@ namespace VAPI
         {
             get
             {
-                if(_asset == null)
+                if (_asset == null)
                 {
                     LoadAsset();
                 }
 
-                if(!_asset)
+                if (!_asset)
                 {
                     VAPILog.Warning($"Unable to load {_assetName} from VAPI's Assetbundle!");
                 }
@@ -38,7 +38,7 @@ namespace VAPI
         }
 
         /// <summary>
-        /// Explicitly converts this into <see cref="T"/>
+        /// Explicitly converts this into <typeparamref name="T"/>
         /// <br></br>
         /// May be null if the asset doesnt exist
         /// </summary>

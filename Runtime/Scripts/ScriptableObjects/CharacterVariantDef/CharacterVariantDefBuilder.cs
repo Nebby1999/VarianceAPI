@@ -5,7 +5,6 @@ using RoR2.Skills;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using VAPI.AddressReferencedAssets;
 
 namespace VAPI
 {
@@ -37,7 +36,7 @@ namespace VAPI
             get => _characterVariantDefName;
             set
             {
-                if(string.IsNullOrWhiteSpace(value))
+                if (string.IsNullOrWhiteSpace(value))
                 {
                     throw new ArgumentException("The characterVariantDefName cannot be null, whitespace or empty.");
                 }
@@ -75,7 +74,7 @@ namespace VAPI
             get => _spawnRate;
             set
             {
-                if(!float.IsNormal(value))
+                if (!float.IsNormal(value))
                 {
                     throw new Exception("SpawnRate cannot be NaN, Infinity or Subnormal");
                 }
@@ -149,7 +148,7 @@ namespace VAPI
             get => _scaleMultiplier;
             set
             {
-                if(!float.IsNormal(value))
+                if (!float.IsNormal(value))
                 {
                     throw new Exception("scaleMultiplier cannot be NaN, Infinity or Subnormal");
                 }
@@ -209,7 +208,7 @@ namespace VAPI
         /// <summary>Chainable method, adds <paramref name="modifier"/> to <see cref="masterModifiers"/></summary>
         public CharacterVariantDefBuilder AddMasterModifier(IVariantMasterModifier modifier)
         {
-            if(modifier == null)
+            if (modifier == null)
             {
                 VAPILog.Warning($"Cannot add a null VariantMasterModifier!");
             }
@@ -230,7 +229,7 @@ namespace VAPI
         /// <summary>Chainable method, adds <paramref name="modifier"/> to <see cref="bodyModifiers"/></summary>
         public CharacterVariantDefBuilder AddBodyModifier(IVariantBodyModifier modifier)
         {
-            if(modifier == null)
+            if (modifier == null)
             {
                 VAPILog.Warning($"Cannot add a null VariantBodyModifier!");
             }
@@ -325,7 +324,7 @@ namespace VAPI
                 if (createdVariant != null)
                     def = createdVariant;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 //catch it and log... say that it wont be caught but that's false lol. we do a little gaslighting
                 VAPILog.Error($"Exception caught in CharacterVariantDefBuilder. This exception wont be caught in release builds. {e}");
@@ -348,7 +347,7 @@ namespace VAPI
                 result.spawnCondition = (IVariantSpawnCondition?)(spawnCondition?.Clone());
 
                 HG.ArrayUtils.EnsureCapacity(ref result.masterModifiers, masterModifiers.Count);
-                for(int i = 0; i < masterModifiers.Count; i++)
+                for (int i = 0; i < masterModifiers.Count; i++)
                 {
                     result.masterModifiers[i] = (IVariantMasterModifier)masterModifiers[i].Clone();
                 }
@@ -356,16 +355,16 @@ namespace VAPI
                 result.inventoryDefinition = (VariantInventoryDefinition)(inventoryDefinition != null ? inventoryDefinition.Clone() : new VariantInventoryDefinition());
 
                 HG.ArrayUtils.EnsureCapacity(ref result.bodyModifiers, bodyModifiers.Count);
-                for(int i = 0; i < bodyModifiers.Count; i++)
+                for (int i = 0; i < bodyModifiers.Count; i++)
                 {
                     result.bodyModifiers[i] = (IVariantBodyModifier)bodyModifiers[i].Clone();
                 }
 
                 result.variantNameProvider = (IVariantNameProvider?)(nameProvider?.Clone());
                 result.deathStateOverride = (VariantDeathStateOverride)deathStateOverride.Clone();
-                
+
                 HG.ArrayUtils.EnsureCapacity(ref result.skillReplacements, skillReplacements.Count);
-                for(int i = 0; i < skillReplacements.Count; i++)
+                for (int i = 0; i < skillReplacements.Count; i++)
                 {
                     result.skillReplacements[i] = (VariantSkillReplacement)skillReplacements[i].Clone();
                 }
@@ -378,7 +377,7 @@ namespace VAPI
 
                 return result;
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 throw new CharacterVariantDefBuilderException("Exception during CharacterVariantDefBuilder.", e);
             }
@@ -386,16 +385,16 @@ namespace VAPI
 
         private void ValidateRequiredFields()
         {
-            if(string.IsNullOrWhiteSpace(characterVariantDefName))
+            if (string.IsNullOrWhiteSpace(characterVariantDefName))
                 throw new CharacterVariantDefBuilderException("characterVariantDefName may not be null, empty or whitespace");
 
             if (!targetBody.IsKeyValid())
                 throw new CharacterVariantDefBuilderException("The targetBody needs to have a valid reference to a Body. These may be an Address, Prefab Name for Catalog Querying, or Direct Reference.");
 
-            if(!float.IsNormal(spawnRate))
+            if (!float.IsNormal(spawnRate))
                 throw new CharacterVariantDefBuilderException($"The spawnRate is not a normal value. (value={spawnRate})");
 
-            for(int i = 0; i < masterModifiers.Count; i++)
+            for (int i = 0; i < masterModifiers.Count; i++)
             {
                 if (masterModifiers[i] == null)
                     throw new CharacterVariantDefBuilderException($"The MasterModifier at index {i} is null. This is not allowed.");

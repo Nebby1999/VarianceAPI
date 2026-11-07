@@ -1,10 +1,7 @@
 ﻿
 using R2API.AddressReferencedAssets;
-using RoR2;
 using System;
 using UnityEngine;
-using UnityEngine.Networking;
-using VAPI.Legacy.Components;
 
 namespace VAPI.Legacy
 {

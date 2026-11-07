@@ -1,4 +1,3 @@
-using RoR2.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
 using UnityEngine;

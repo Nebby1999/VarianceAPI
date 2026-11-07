@@ -89,7 +89,7 @@ namespace VAPI
         /// VAPI's Built in <see cref="ItemDef"/>
         /// </summary>
         public static class Items
-        { 
+        {
             /// <summary>
             /// Reference to an <see cref="ItemDef"/> that changes a Character's health bar to green by default. Loads on demand
             /// </summary>
@@ -163,7 +163,7 @@ namespace VAPI
             contentPack.identifier = identifier;
             //Initialize Assets, then Config
             IEnumerator initialization = InitializeAssetsAndConfig();
-            while(initialization.MoveNext())
+            while (initialization.MoveNext())
             {
                 yield return null;
             }
@@ -172,7 +172,7 @@ namespace VAPI
 
             //Populate VAPI Content Pack
             var packPopulation = PopulateContentPack();
-            while(packPopulation.MoveNext())
+            while (packPopulation.MoveNext())
             {
                 yield return null;
             }
@@ -181,7 +181,7 @@ namespace VAPI
 
             //Populate Base VariantPack
             var variantPackPopulation = PopulateVariantPack();
-            while(variantPackPopulation.MoveNext())
+            while (variantPackPopulation.MoveNext())
             {
                 yield return null;
             }
@@ -189,7 +189,7 @@ namespace VAPI
             args.ReportProgress(0.75f);
 
             var infiniteTower = InfiniteTower.Init();
-            while(!infiniteTower.IsDone())
+            while (!infiniteTower.IsDone())
             {
                 yield return null;
             }
@@ -204,7 +204,7 @@ namespace VAPI
         private IEnumerator InitializeAssetsAndConfig()
         {
             var assetsInit = VAPIAssets.Initialize();
-            while(assetsInit.MoveNext())
+            while (assetsInit.MoveNext())
             {
                 yield return null;
             }
@@ -213,8 +213,8 @@ namespace VAPI
 
             parallelProgressCoroutine.Add(new VAPIConfig().InitializeAsync(VAPIMain.instance!));
             parallelProgressCoroutine.Add(LanguageFileLoader.AddLanguageFilesFromModAsync(VAPIMain.instance, "languages")); //Configure VAPI and add language tokens
-        
-            while(parallelProgressCoroutine.MoveNext())
+
+            while (parallelProgressCoroutine.MoveNext())
             {
                 yield return null;
             }
@@ -301,11 +301,11 @@ namespace VAPI
             args.ReportProgress(1f);
             yield break;
         }
-        
+
         public IEnumerator FinalizeAsync(FinalizeAsyncArgs args)
         {
             using VAPIAssetRequest<ArtifactCode> request = VAPIAssets.LoadAssetAsync<ArtifactCode>("VarianceCode");
-            while(!request.isComplete)
+            while (!request.isComplete)
             {
                 yield return null;
             }

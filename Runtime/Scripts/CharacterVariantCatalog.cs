@@ -162,33 +162,45 @@ namespace VAPI
     public class CharacterVariantMask : ICollection<CharacterVariantIndex>, IEnumerable<CharacterVariantIndex>, IEnumerable
     {
         /// <summary>
-        /// Enumerator
+        /// Enumerator for CharacterVariantMask
         /// </summary>
         public struct Enumerator : IEnumerator<CharacterVariantIndex>, IEnumerator, IDisposable
         {
-            public bool[] target;
+            private bool[] _target;
 
+            /// <summary>
+            /// The current CharacterVariantIndex that was enumerated
+            /// </summary>
             public CharacterVariantIndex Current { get; set; }
 
             object IEnumerator.Current => Current;
 
+            /// <summary>
+            /// Constructor
+            /// </summary>
+            /// <param name="array">The array being enumerated</param>
             public Enumerator(bool[] array)
             {
                 Current = CharacterVariantIndex.none;
-                target = array;
+                _target = array;
             }
 
+            /// <summary>
+            /// Dispose method
+            /// </summary>
             public void Dispose()
             {
-                throw new NotImplementedException();
             }
 
+            /// <summary>
+            /// Moves to the next CharacterVariantIndex
+            /// </summary>
             public bool MoveNext()
             {
                 CharacterVariantIndex characterVariantCount = (CharacterVariantIndex)CharacterVariantCatalog.characterVariantCount;
-                while(Current < characterVariantCount)
+                while (Current < characterVariantCount)
                 {
-                    if (target[(int)Current])
+                    if (_target[(int)Current])
                     {
                         return true;
                     }
@@ -199,6 +211,9 @@ namespace VAPI
                 return false;
             }
 
+            /// <summary>
+            /// Resets the enumerator
+            /// </summary>
             public void Reset()
             {
                 Current = CharacterVariantIndex.none;
@@ -245,7 +260,7 @@ namespace VAPI
         /// </summary>
         public static void Return(CharacterVariantMask mask)
         {
-            if(mask._array.Length == CharacterVariantCatalog.characterVariantCount)
+            if (mask._array.Length == CharacterVariantCatalog.characterVariantCount)
             {
                 CollectionPool<CharacterVariantIndex, CharacterVariantMask>.ReturnCollection(mask);
             }
@@ -264,7 +279,7 @@ namespace VAPI
         /// </summary>
         public void Add(CharacterVariantIndex characterVariantIndex)
         {
-            if(ArrayUtils.IsInBounds(_array, ((int)characterVariantIndex)))
+            if (ArrayUtils.IsInBounds(_array, ((int)characterVariantIndex)))
             {
                 _array[((int)characterVariantIndex)] = true;
             }
@@ -275,7 +290,7 @@ namespace VAPI
         /// </summary>
         public bool Remove(CharacterVariantIndex characterVariantIndex)
         {
-            if(ArrayUtils.IsInBounds(_array, ((int)characterVariantIndex)))
+            if (ArrayUtils.IsInBounds(_array, ((int)characterVariantIndex)))
             {
                 ref bool reference = ref _array[((int)characterVariantIndex)];
                 bool result = reference;
@@ -312,12 +327,17 @@ namespace VAPI
         /// </summary>
         public void CloneTo(CharacterVariantMask other)
         {
-            for(int i = 0; i < Count; i++)
+            for (int i = 0; i < Count; i++)
             {
                 other._array[i] = _array[i];
             }
         }
 
+        /// <summary>
+        /// Swaps the values from <paramref name="maskA"/> to <paramref name="maskB"/>
+        /// </summary>
+        /// <param name="maskA">The mask to swap it's values to <paramref name="maskB"/></param>
+        /// <param name="maskB">The mask to swap it's values to <paramref name="maskA"/></param>
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Swap(CharacterVariantMask maskA, CharacterVariantMask maskB)
         {
@@ -391,7 +411,7 @@ namespace VAPI
         /// </summary>
         public static List<CharacterVariantDef>? RetrieveDependantSpawnVariants(CharacterVariantDef? dependee)
         {
-            if(dependee == null || _dependeeVariantToDependantVariants.TryGetValue(dependee, out var dependants) == false)
+            if (dependee == null || _dependeeVariantToDependantVariants.TryGetValue(dependee, out var dependants) == false)
             {
                 LogWarning($"{dependee} has no Dependant Spawn Variants");
                 return null;
@@ -412,7 +432,7 @@ namespace VAPI
         {
             ThrowIfUnavailable();
 
-            if(HG.ArrayUtils.TryGetSafe(_characterVariantDefs, (int)index, out var def))
+            if (HG.ArrayUtils.TryGetSafe(_characterVariantDefs, (int)index, out var def))
             {
                 return def;
             }
@@ -431,13 +451,13 @@ namespace VAPI
         {
             ThrowIfUnavailable();
 
-            if(string.IsNullOrWhiteSpace(characterVariantDefName))
+            if (string.IsNullOrWhiteSpace(characterVariantDefName))
             {
                 LogWarning($"Cannot find a CharacterVariantIndex with an empty name, returning CharacterVariantIndex.none");
                 return CharacterVariantIndex.none;
             }
 
-            if(_characterVariantNameToIndex.TryGetValue(characterVariantDefName, out var index))
+            if (_characterVariantNameToIndex.TryGetValue(characterVariantDefName, out var index))
             {
                 return index;
             }
@@ -470,7 +490,7 @@ namespace VAPI
         {
             ThrowIfUnavailable();
 
-            if(HG.ArrayUtils.TryGetSafe(_characterVariantProviders, (int)bodyIndex, out var provider))
+            if (HG.ArrayUtils.TryGetSafe(_characterVariantProviders, (int)bodyIndex, out var provider))
             {
                 return provider;
             }
@@ -486,9 +506,9 @@ namespace VAPI
         {
             _characterVariantNameToIndex.Clear();
 
-            using(var coroutineWithResult = CoroutineWithResult<CharacterVariantDef[]>.Rent(RegisterVariantDefs(VariantPackManager.characterVariantDefs)))
+            using (var coroutineWithResult = CoroutineWithResult<CharacterVariantDef[]>.Rent(RegisterVariantDefs(VariantPackManager.characterVariantDefs)))
             {
-                while(coroutineWithResult.MoveNext())
+                while (coroutineWithResult.MoveNext())
                 {
                     yield return null;
                 }
@@ -496,15 +516,15 @@ namespace VAPI
                 _characterVariantDefs = coroutineWithResult.result;
             }
 
-            for(int i = 0; i < _characterVariantDefs!.Length; i++)
+            for (int i = 0; i < _characterVariantDefs!.Length; i++)
             {
                 var def = _characterVariantDefs[i];
 
                 //If we get a def that's hidden, and the def has a dependant availability condition, then we need to make sure the config data from the dependee gets passed to the dependant.
-                if(def.isHidden && def.spawnCondition is VariantDependantCondition dependantCondition)
+                if (def.isHidden && def.spawnCondition is VariantDependantCondition dependantCondition)
                 {
                     var dependee = dependantCondition.dependantVariantDef.GetCharacterVariantDef();
-                    if(dependee != null)
+                    if (dependee != null)
                     {
                         _dependeeVariantToDependantVariants.TryAdd(dependee, new List<CharacterVariantDef>());
                         _dependeeVariantToDependantVariants[dependee].Add(def);
@@ -517,7 +537,7 @@ namespace VAPI
 
                 try
                 {
-                    if(def.additionalVariantComponents == null || (def.additionalVariantComponents.variantComponents?.Length == 0))
+                    if (def.additionalVariantComponents == null || (def.additionalVariantComponents.variantComponents?.Length == 0))
                     {
                         continue;
                     }
@@ -525,7 +545,7 @@ namespace VAPI
                     LogMessage($"Initializing variant components for {def.cachedName}");
                     def.additionalVariantComponents?.Initialize();
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     VAPILog.Error($"Failed to initialize variant components for {def}: {ex}");
                     MSU.InitializationExceptionWatcher.AddException(ex, def.ownerPlugin);
@@ -533,7 +553,7 @@ namespace VAPI
             }
 
             //Once we have the dependee dictionary done, that's when we config
-            for(int i = 0; i < _characterVariantDefs.Length; i++)
+            for (int i = 0; i < _characterVariantDefs.Length; i++)
             {
                 var def = _characterVariantDefs[i];
                 ConfigureVariant(def);
@@ -560,10 +580,10 @@ namespace VAPI
             //A list of variants without providers, these are caused by invalid target characters (direct ref null, address is invalid, or doesnt resolve to an actual body)
             List<CharacterVariantDef> providerlessVariants = ListPool<CharacterVariantDef>.RentCollection();
 
-            for(int i = 0; i < sortedVariants.Length; i++)
+            for (int i = 0; i < sortedVariants.Length; i++)
             {
                 yield return null;
-                
+
                 CharacterVariantIndex index = (CharacterVariantIndex)i;
                 CharacterVariantDef variantDef = sortedVariants[i];
 
@@ -579,28 +599,28 @@ namespace VAPI
                 //If the target body fails to load or is invalid, we'll still add it to the catalog to keep the indices consistent.
 
                 //target metadata is invalid. no provider.
-                if(!variantDef.targetBody.IsKeyValid())
+                if (!variantDef.targetBody.IsKeyValid())
                 {
                     providerlessVariants.Add(variantDef);
                     AddToCatalog();
                     continue;
                 }
                 //target metadata is valid, but doesnt resolve to a body. No provider
-                if(!variantDef.targetBody.TryLoadCharacterComponent(out var characterBody))
+                if (!variantDef.targetBody.TryLoadCharacterComponent(out var characterBody))
                 {
                     providerlessVariants.Add(variantDef);
                     AddToCatalog();
                     continue;
                 }
                 //Invalid body index. no provider
-                if(characterBody!.bodyIndex == BodyIndex.None)
+                if (characterBody!.bodyIndex == BodyIndex.None)
                 {
                     providerlessVariants.Add(variantDef);
                     AddToCatalog();
                     continue;
                 }
                 //Add the body's index to the dictionary, this dictionary is later used to create the provider.
-                if(!bodyToVariants.ContainsKey(characterBody!.bodyIndex))
+                if (!bodyToVariants.ContainsKey(characterBody!.bodyIndex))
                 {
                     bodyToVariants.Add(characterBody.bodyIndex, ListPool<CharacterVariantDef>.RentCollection());
                 }
@@ -615,7 +635,7 @@ namespace VAPI
             //Finalize initialization
             //Map for BodyIndex to provider, faster lookups.
             CharacterVariantProvider?[] characterVariantProviders = new CharacterVariantProvider?[BodyCatalog.bodyCount];
-            foreach(var (bodyIndex, variantDefs) in bodyToVariants)
+            foreach (var (bodyIndex, variantDefs) in bodyToVariants)
             {
                 yield return null;
                 //Create the providers for the body
@@ -623,7 +643,7 @@ namespace VAPI
 
                 CharacterBody characterBody = BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
                 characterBody.gameObject.EnsureComponent<CharacterBodyVariantController>(); //Ensure our component, add death rewards if enabled.
-                if(VAPIConfig._enableRewards)
+                if (VAPIConfig._enableRewards)
                 {
                     characterBody.gameObject.EnsureComponent<VariantDeathRewards>();
                 }
@@ -632,14 +652,14 @@ namespace VAPI
             }
 
             //We now need to add the master storage to the master prefabs.
-            foreach(var masterPrefab in MasterCatalog.masterPrefabs)
+            foreach (var masterPrefab in MasterCatalog.masterPrefabs)
             {
                 //If the master has a body prefab, and the body prefab has a body, and the body to variants dictionary has it's body prefab's body index, add the storage.
                 //if that chain fails, check if the master prefab has the player character master controller, if so, add the storage anyways.
 
-                if((masterPrefab.TryGetComponent<CharacterMaster>(out var master) && 
-                    master.bodyPrefab && 
-                    master.bodyPrefab.TryGetComponent<CharacterBody>(out var body) && 
+                if ((masterPrefab.TryGetComponent<CharacterMaster>(out var master) &&
+                    master.bodyPrefab &&
+                    master.bodyPrefab.TryGetComponent<CharacterBody>(out var body) &&
                     bodyToVariants.ContainsKey(body.bodyIndex)) || masterPrefab.TryGetComponent<PlayerCharacterMasterController>(out _))
                 {
                     masterPrefab.AddComponent<CharacterMasterVariantStorage>();
@@ -649,12 +669,12 @@ namespace VAPI
 
             VAPILog.Info($"Created providers and added the necessary behaviours to bodies and masters");
             _characterVariantProviders = characterVariantProviders;
-            if(providerlessVariants.Count > 0)
+            if (providerlessVariants.Count > 0)
             {
-                using(HG.StringBuilderPool.RentStringBuilder(out var sb))
+                using (HG.StringBuilderPool.RentStringBuilder(out var sb))
                 {
                     sb.AppendLine($"The following variants did not resolve a valid CharacterBody, and as a result, have no CharacterVariantProviders. They're still added to the catalog but they won't be spawned by the built in systems. If they're meant to be for a vanilla charater, consider validating the AddressReferencedBody you're using. If it's for a modded character, consider adding the VariantDef only if the mod is present, and checking that the catalog key for AddressReferencedBody is typed correctly:");
-                    foreach(var variant in providerlessVariants)
+                    foreach (var variant in providerlessVariants)
                     {
                         sb.AppendLine(variant.ToString());
                     }
@@ -662,7 +682,7 @@ namespace VAPI
                 }
             }
 
-            foreach(var (_, list) in bodyToVariants)
+            foreach (var (_, list) in bodyToVariants)
             {
                 ListPool<CharacterVariantDef>.ReturnCollection(list);
             }
@@ -691,6 +711,10 @@ namespace VAPI
         private static void ConfigureVariant(CharacterVariantDef variantDef)
         {
             if (variantDef.isHidden)
+                return;
+
+            //Do not configure providerless variants, as this will throw a null reference exception
+            if (variantDef.hasProvider == false)
                 return;
 
             try
@@ -731,7 +755,7 @@ namespace VAPI
                     UpdateDependentDefUniqueness(variantDef);
                 }).DoConfigure();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 VAPILog.Error($"Error Configuring Variant {variantDef}: {e}");
                 MSU.InitializationExceptionWatcher.AddException(e, variantDef.ownerPlugin);
@@ -740,9 +764,9 @@ namespace VAPI
 
         private static void UpdateDependentDefSpawnRates(CharacterVariantDef dependee)
         {
-            if(_dependeeVariantToDependantVariants.TryGetValue(dependee, out var variantDefs))
+            if (_dependeeVariantToDependantVariants.TryGetValue(dependee, out var variantDefs))
             {
-                foreach(var variantDef in variantDefs)
+                foreach (var variantDef in variantDefs)
                 {
                     variantDef.spawnRate = dependee.spawnRate;
                 }
@@ -751,9 +775,9 @@ namespace VAPI
 
         private static void UpdateDependentDefUniqueness(CharacterVariantDef dependee)
         {
-            if(_dependeeVariantToDependantVariants.TryGetValue(dependee, out var variantDefs))
+            if (_dependeeVariantToDependantVariants.TryGetValue(dependee, out var variantDefs))
             {
-                foreach(var variantDef in variantDefs)
+                foreach (var variantDef in variantDefs)
                 {
                     variantDef.isUnique = dependee.isUnique;
                 }
@@ -762,7 +786,7 @@ namespace VAPI
 
         private static void ThrowIfUnavailable()
         {
-            if(!catalogAvailability.available)
+            if (!catalogAvailability.available)
             {
                 throw new InvalidOperationException("Cannot access CharacterVariantCatalog when it's not available, consider subscribing to the catalogAvailability.");
             }
@@ -778,9 +802,9 @@ namespace VAPI
             stringBuilder.AppendLine("Bodies with Variants:");
             stringBuilder.AppendLine("---------------------");
 
-            foreach(CharacterVariantProvider characterVariantProvider in _characterVariantProviders!)
+            foreach (CharacterVariantProvider characterVariantProvider in _characterVariantProviders!)
             {
-                if(characterVariantProvider == null || characterVariantProvider.associatedBodyIndex == BodyIndex.None)
+                if (characterVariantProvider == null || characterVariantProvider.associatedBodyIndex == BodyIndex.None)
                 {
                     continue;
                 }
@@ -798,7 +822,7 @@ namespace VAPI
         {
             ThrowIfUnavailable();
 
-            if(args.Count == 0)
+            if (args.Count == 0)
             {
                 Debug.Log("No arguments given.");
                 return;
@@ -806,14 +830,14 @@ namespace VAPI
 
             string bodyName = args[0];
             BodyIndex bodyIndex = VAPIUtils.GetBodyIndex(bodyName);
-            if(bodyIndex == BodyIndex.None)
+            if (bodyIndex == BodyIndex.None)
             {
                 Debug.Log($"No body could be found with the name {bodyName}. To get a list of bodies that have variants use \"vapi_list_bodies\".");
                 return;
             }
 
             CharacterVariantProvider? provider = GetCharacterVariantProvider(bodyIndex);
-            if(provider == null)
+            if (provider == null)
             {
                 Debug.Log($"The provided body does not have a CharacterVariantProvider. To get a list of bodies that have variants use \"vapi_list_bodies\".");
                 return;
@@ -822,7 +846,7 @@ namespace VAPI
             StringBuilder stringBuilder = HG.StringBuilderPool.RentStringBuilder();
             stringBuilder.AppendLine($"{BodyCatalog.GetBodyPrefab(bodyIndex).name}'s Variants");
             stringBuilder.AppendLine("-------------------------------------------------------");
-            for(int i = 0; i < provider.totalVariantCount; i++)
+            for (int i = 0; i < provider.totalVariantCount; i++)
             {
                 CharacterVariantDef variantDef = provider.allVariants[i];
                 stringBuilder.AppendLine($"[{i}] = {variantDef.cachedName}");
@@ -831,7 +855,7 @@ namespace VAPI
             HG.StringBuilderPool.ReturnStringBuilder(stringBuilder);
         }
 
-        [ConCommand(commandName = "vapi_spawn_ai", flags= ConVarFlags.ExecuteOnServer, helpText = "Spawns a specific master with a specific set of variant defs.\n" +
+        [ConCommand(commandName = "vapi_spawn_ai", flags = ConVarFlags.ExecuteOnServer, helpText = "Spawns a specific master with a specific set of variant defs.\n" +
             "Mandatory Arguments:\n" +
             "[0] = masterName\n" +
             "[1] = CharacterVariantDef name list. (Encapsulate in \"\". Separate by \",\". Spaces are allowed.)\n" +
@@ -842,26 +866,26 @@ namespace VAPI
             "\"team:\" Which team is the variant in (team:monster)")]
         private static void CCVapiSpawnAI(ConCommandArgs args)
         {
-            if(!VariantSpawnManager.instance)
+            if (!VariantSpawnManager.instance)
             {
                 Debug.LogWarning($"VarianceAPI's Variant Spawning commands are not available when the VarianceAPI expansion is disabled.");
                 return;
             }
 
-            if(args.Count == 0)
+            if (args.Count == 0)
             {
                 Debug.Log("No Arguments Given.");
                 return;
             }
 
-            if(!args.senderBody)
+            if (!args.senderBody)
             {
                 Debug.Log($"Sender must have a body");
                 return;
             }
 
             MasterCatalog.MasterIndex masterIndex = VAPIUtils.GetMasterIndex(args[0]);
-            if(masterIndex == MasterCatalog.MasterIndex.none)
+            if (masterIndex == MasterCatalog.MasterIndex.none)
             {
                 Debug.Log("Could not find master.");
                 return;
@@ -869,7 +893,7 @@ namespace VAPI
             var characterMaster = MasterCatalog.GetMasterPrefab(masterIndex).GetComponent<CharacterMaster>();
 
             var provider = FindCharacterVariantProvider(characterMaster.bodyPrefab);
-            if(provider == null)
+            if (provider == null)
             {
                 Debug.Log($"CharacterMaster with name {args[0]} does not have a CharacterVariantProvider");
                 return;
@@ -880,11 +904,11 @@ namespace VAPI
 
             using var _ = ListPool<CharacterVariantDef>.RentCollection(out var variantDefs);
             var availableVariants = provider.allVariants;
-            foreach(string variantName in variantDefNames)
+            foreach (string variantName in variantDefNames)
             {
-                foreach(var variantDef in availableVariants)
+                foreach (var variantDef in availableVariants)
                 {
-                    if(variantDef.cachedName.Contains(variantName, StringComparison.OrdinalIgnoreCase))
+                    if (variantDef.cachedName.Contains(variantName, StringComparison.OrdinalIgnoreCase))
                     {
                         variantDefs.Add(variantDef);
                         break;
@@ -898,9 +922,9 @@ namespace VAPI
 
             var senderBody = args.senderBody;
             Vector3 location = args.sender.master.GetBody().transform.position;
-            if(senderBody.TryGetComponent<InputBankTest>(out var inputBankTest))
+            if (senderBody.TryGetComponent<InputBankTest>(out var inputBankTest))
             {
-                if(Physics.Raycast(inputBankTest.GetAimRay(), out RaycastHit raycastHit, 1024, LayerIndex.world.mask))
+                if (Physics.Raycast(inputBankTest.GetAimRay(), out RaycastHit raycastHit, 1024, LayerIndex.world.mask))
                 {
                     location = raycastHit.point;
                 }
@@ -928,19 +952,19 @@ namespace VAPI
             variantMasterSummon.onSummonPerformed += (report) =>
             {
                 var master = report.masterSummonReport.summonMasterInstance;
-                if(equipmentIndex != EquipmentIndex.None)
+                if (equipmentIndex != EquipmentIndex.None)
                 {
                     master.inventory.SetEquipmentIndex(equipmentIndex, false);
                     EliteDef eliteDef = EliteCatalog.GetEliteDefFromEquipmentIndex(equipmentIndex);
-                    if(eliteDef)
+                    if (eliteDef)
                     {
                         master.inventory.GiveItemPermanent(RoR2Content.Items.BoostHp, Mathf.RoundToInt((eliteDef.healthBoostCoefficient - 1) * 10));
                         master.inventory.GiveItemPermanent(RoR2Content.Items.BoostDamage, Mathf.RoundToInt(eliteDef.damageBoostCoefficient - 1) * 10);
                     }
                 }
-                if(noAI)
+                if (noAI)
                 {
-                    foreach(var ai in master.aiComponents)
+                    foreach (var ai in master.aiComponents)
                     {
                         UnityEngine.Object.Destroy(ai);
                     }
@@ -948,7 +972,7 @@ namespace VAPI
                 }
             };
 
-            for(int i = 0; i < aiCount; i++)
+            for (int i = 0; i < aiCount; i++)
             {
                 masterSummon.Perform();
             }
@@ -979,7 +1003,7 @@ namespace VAPI
             }
 
             BodyIndex bodyIndex = VAPIUtils.GetBodyIndex(args[0]);
-            if(bodyIndex == BodyIndex.None)
+            if (bodyIndex == BodyIndex.None)
             {
                 Debug.Log("No body could be found with that name");
                 return;
@@ -987,14 +1011,14 @@ namespace VAPI
 
             CharacterBody bodyPrefab = BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
 
-            if(!bodyPrefab.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless))
+            if (!bodyPrefab.bodyFlags.HasFlag(CharacterBody.BodyFlags.Masterless))
             {
                 Debug.Log($"Cannot spawn {bodyPrefab} as a variant via vapi_spawn_body as it's not flagged as a masterless body. Utilize vapi_spawn_ai instead.");
                 return;
             }
 
             var provider = GetCharacterVariantProvider(bodyIndex);
-            if(provider == null)
+            if (provider == null)
             {
                 Debug.Log($"CharacterBody with name {args[0]} does not have a CharacterVariantProvider");
                 return;
@@ -1065,7 +1089,7 @@ namespace VAPI
             }
 
             BodyIndex body = VAPIUtils.GetBodyIndex(args[0]);
-            if(body == BodyIndex.None)
+            if (body == BodyIndex.None)
             {
                 Debug.Log("No body could be found with that name");
                 return;
@@ -1080,14 +1104,14 @@ namespace VAPI
                 return;
             }
 
-            if(!args.sender)
+            if (!args.sender)
             {
                 Debug.Log("Sender does not exist.");
                 return;
             }
 
             CharacterMaster senderMaster = args.senderMaster;
-            if(!senderMaster)
+            if (!senderMaster)
             {
                 Debug.Log("Sender Master does not exist.");
                 return;
@@ -1120,13 +1144,13 @@ namespace VAPI
             bool oldVal = stage1pod.value;
             stage1pod.SetBool(false);
 
-            if(senderMaster.TryGetComponent<CharacterMasterVariantStorage>(out var variantStorage))
+            if (senderMaster.TryGetComponent<CharacterMasterVariantStorage>(out var variantStorage))
             {
                 variantStorage.RemoveVariantStorageForCharacter(body);
             }
 
             var characterBody = senderMaster.Respawn(senderMaster.GetBody().footPosition, senderMaster.GetBody().transform.rotation, false);
-            if(characterBody && characterBody.TryGetComponent<CharacterBodyVariantController>(out var variantController))
+            if (characterBody && characterBody.TryGetComponent<CharacterBodyVariantController>(out var variantController))
             {
                 variantController.doNotRollForVariants = true;
                 variantController.SetCharacterVariantDefsServer(variantDefs.ToArray());

@@ -50,7 +50,7 @@ namespace VAPI
         /// Returns -1 if the manager is not initialized
         /// </summary>
         public static int variantPackCount => _registeredPacks?.Length ?? -1;
-        
+
         private static VariantPack[] _registeredPacks = Array.Empty<VariantPack>();
         private static Dictionary<string, VariantPackIndex> _identifierToPackIndex = new Dictionary<string, VariantPackIndex>();
 
@@ -71,7 +71,7 @@ namespace VAPI
         {
             ThrowIfAvailable();
 
-            if(variantPack == null)
+            if (variantPack == null)
             {
                 throw new ArgumentNullException(nameof(variantPack));
             }
@@ -90,7 +90,7 @@ namespace VAPI
         {
             ThrowIfUnavailable();
 
-            if(HG.ArrayUtils.IsInBounds(_readOnlyVariantPacks, (int)index))
+            if (HG.ArrayUtils.IsInBounds(_readOnlyVariantPacks, (int)index))
             {
                 return _readOnlyVariantPacks[(int)index];
             }
@@ -108,13 +108,13 @@ namespace VAPI
         public static VariantPackIndex FindVariantPackIndex(string variantPackIdentifier)
         {
             ThrowIfUnavailable();
-            if(string.IsNullOrWhiteSpace(variantPackIdentifier))
+            if (string.IsNullOrWhiteSpace(variantPackIdentifier))
             {
                 LogWarning($"Cannot find a VariantPackIndex with an empty identifier, returning VariantPackIndex.None");
                 return VariantPackIndex.None;
             }
 
-            if(_identifierToPackIndex.TryGetValue(variantPackIdentifier, out var index))
+            if (_identifierToPackIndex.TryGetValue(variantPackIdentifier, out var index))
             {
                 return index;
             }
@@ -141,13 +141,13 @@ namespace VAPI
         {
             ThrowIfUnavailable();
 
-            if(variantDef == null)
+            if (variantDef == null)
             {
                 VAPILog.Error($"CharacterVariantDef cannot be null!");
                 return VariantPackIndex.None;
             }
 
-            for(int i = 0; i < _registeredPacks.Length; i++)
+            for (int i = 0; i < _registeredPacks.Length; i++)
             {
                 if (_registeredPacks[i].characterVariantDefs.Contains(variantDef))
                 {
@@ -182,7 +182,7 @@ namespace VAPI
                 return VariantPackIndex.None;
             }
 
-            for(int i = 0; i < _registeredPacks.Length; i++)
+            for (int i = 0; i < _registeredPacks.Length; i++)
             {
                 if (_registeredPacks[i].characterVariantTierDefs.Contains(tierDef))
                 {
@@ -249,7 +249,7 @@ namespace VAPI
             _characterVariantTierDefs = tierDefs.ToArray();
             _readOnlyVariantPacks = readOnlyVariantPacks.ToArray();
 
-            ListPool<CharacterVariantDef>.ReturnCollection( variantDefs );
+            ListPool<CharacterVariantDef>.ReturnCollection(variantDefs);
 
             VAPILog.Info("VariantPackManager Initialized.");
             managerAvailability.MakeAvailable();
@@ -257,7 +257,7 @@ namespace VAPI
 
         private static void ThrowIfUnavailable()
         {
-            if(!managerAvailability.available)
+            if (!managerAvailability.available)
             {
                 throw new InvalidOperationException($"VariantPackManager is not initialized! Consider subscribing to it's managerAvailabilty.");
             }
@@ -265,7 +265,7 @@ namespace VAPI
 
         private static void ThrowIfAvailable()
         {
-            if(managerAvailability.available)
+            if (managerAvailability.available)
             {
                 throw new InvalidOperationException($"Too late! the PackManager is already initialized and this method cannot be called.");
             }

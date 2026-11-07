@@ -3,9 +3,6 @@ using BepInEx;
 using R2API.Utils;
 using RoR2;
 using System;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace VAPI
 {
@@ -32,7 +29,7 @@ namespace VAPI
         /// <summary>
         /// The Mod's version
         /// </summary>
-        public const string VERSION = "3.0.0";
+        public const string VERSION = "3.0.1";
 
         /// <summary>
         /// Access to the instance of VAPI's main class
@@ -57,7 +54,7 @@ namespace VAPI
         /// </summary>
         public static void ThrowIfUninitialized()
         {
-            if(!instance)
+            if (!instance)
             {
                 throw new InvalidOperationException("Do not interact with VarianceAPI before it's BaseUnityPlugin's Awake!!!");
             }

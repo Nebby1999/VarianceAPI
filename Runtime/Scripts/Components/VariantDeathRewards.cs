@@ -1,11 +1,9 @@
 #nullable enable
-using HG;
 using RoR2;
 using RoR2.ConVar;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 using Random = UnityEngine.Random;
 
 namespace VAPI
@@ -62,7 +60,7 @@ namespace VAPI
 
             public void Dispose()
             {
-                if(targetDeathRewards)
+                if (targetDeathRewards)
                 {
                     float modifiedGoldReward = targetDeathRewards!.goldReward;
                     float newGoldReward = modifiedGoldReward / utilizedGoldRewardCoefficient;
@@ -115,7 +113,7 @@ namespace VAPI
 
         private void OnEnable()
         {
-            if(characterBodyVariantController)
+            if (characterBodyVariantController)
             {
                 characterBodyVariantController.onVariantsUnapplied += OnVariantsUnapplied;
                 characterBodyVariantController.onVariantsApplied += OnVariantsApplied;
@@ -261,7 +259,7 @@ namespace VAPI
         {
             using var _ = HG.StringBuilderPool.RentStringBuilder(out var sb);
 
-            for(int i = 0; i < _pickupTierRewardSelection.Count; i++)
+            for (int i = 0; i < _pickupTierRewardSelection.Count; i++)
             {
                 var choice = _pickupTierRewardSelection.GetChoice(i);
                 sb.AppendLine($"{choice.value}: {choice.weight}");
@@ -282,7 +280,7 @@ namespace VAPI
         /// </summary>
         public void OnKilledServer(DamageReport damageReport)
         {
-            if(!noItemRewardServer)
+            if (!noItemRewardServer)
             {
                 Log($"Not dropping reward as this has been marked for no item rewards");
             }
@@ -387,9 +385,9 @@ namespace VAPI
             Vector3 velocity = (Vector3.up * 20) + (Vector3.right * Random.Range(1, 5) + (Vector3.forward * Random.Range(1, 5)));
             Vector3 position = victimBody.corePosition;
 
-            if(VAPIConfig._itemRewardsSpawnOnKiller)
+            if (VAPIConfig._itemRewardsSpawnOnKiller)
             {
-                if(killerBody)
+                if (killerBody)
                 {
                     position = killerBody.corePosition;
                 }

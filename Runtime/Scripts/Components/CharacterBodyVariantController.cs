@@ -3,14 +3,12 @@ using HG;
 using MSU;
 using R2API;
 using RoR2;
+using RoR2.ConVar;
 using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Networking;
-using Random = UnityEngine.Random;
-using Object = UnityEngine.Object;
-using RoR2.ConVar;
 
 namespace VAPI
 {
@@ -119,7 +117,7 @@ namespace VAPI
             [Server]
             set
             {
-                if(_variantsApplied != value)
+                if (_variantsApplied != value)
                 {
                     _variantsApplied = value;
                 }
@@ -130,7 +128,7 @@ namespace VAPI
 
         internal PreAssignedSpawnData ConsumePreAssignedSpawnData()
         {
-            if(!HasPreAssignedSpawnData())
+            if (!HasPreAssignedSpawnData())
             {
                 return default;
             }
@@ -213,7 +211,7 @@ namespace VAPI
         public bool IsVariantApplied(CharacterVariantIndex variantIndex)
         {
             bool result = _appliedVariantMask.Contains(variantIndex);
-            if(!result)
+            if (!result)
             {
                 Log($"{variantIndex} is not applied");
             }
@@ -231,7 +229,7 @@ namespace VAPI
             //When the client starts, the indices should already be set on the server.
             //If the indices' count doesnt match our fallback array, we need to trigger a sync list dirty.
             //this can happen when going to a new stage while a variant's master is set to "DontDestroyOnLoad", without this call they'll be variants in the host but look normal on the clients.
-            if(_characterVariantIndices.Count != _fallbackCharacterVariantDefs.Length)
+            if (_characterVariantIndices.Count != _fallbackCharacterVariantDefs.Length)
             {
                 OnSyncListDirty();
             }
@@ -306,7 +304,7 @@ namespace VAPI
                 return;
 
             //Only accept the incoming array if there are no variants applied.
-            if(variantsApplied == true)
+            if (variantsApplied == true)
             {
                 VAPILog.Warning($"Tried to set {this}'s variant defs, but there are already variants applied! Either set the array to an empty array first or do not try to override variants!.");
                 return;
@@ -318,7 +316,7 @@ namespace VAPI
         [Server]
         private void SetCharacterVariantDefsServerInternal(CharacterVariantDef[] variantDefs)
         {
-            if(variantDefs.Length > 0)
+            if (variantDefs.Length > 0)
             {
                 Log($"This is becoming a variant. with {variantDefs.Length} variants applied");
             }
@@ -328,7 +326,7 @@ namespace VAPI
             {
                 _characterVariantIndices.Add(variantDefs[i].characterVariantIndex);
             }
-            if(_characterVariantIndices.Count > 0)
+            if (_characterVariantIndices.Count > 0)
             {
                 _characterVariantIndices.Dirty(0);
                 variantsApplied = true;
@@ -346,7 +344,7 @@ namespace VAPI
         //2. The operation is "DIRTY" (this will effectively be apply variants)
         private void SyncListCallback(SyncList<NetworkCharacterVariantIndex>.Operation op, int itemIndex)
         {
-            switch(op)
+            switch (op)
             {
                 case SyncList<NetworkCharacterVariantIndex>.Operation.OP_CLEAR:
                 case SyncList<NetworkCharacterVariantIndex>.Operation.OP_DIRTY:
@@ -363,7 +361,7 @@ namespace VAPI
             UnapplyBodyModifications();
 
             CharacterMasterVariantStorage? storage = GetCharacterMasterVariantStorage();
-            if(storage != null) 
+            if (storage != null)
             {
                 Log("Unapplying variants on master");
                 storage.UnapplyVariants();
@@ -374,10 +372,10 @@ namespace VAPI
             Log($"Clearing applied variant mask and retrieving new variants from synclist");
             //Clear the applied variant mask
             _appliedVariantMask.Clear();
-            
+
             //Second, create new array and populate.
             _fallbackCharacterVariantDefs = new CharacterVariantDef[_characterVariantIndices.Count];
-            for(int i = 0; i < _characterVariantIndices.Count; i++)
+            for (int i = 0; i < _characterVariantIndices.Count; i++)
             {
                 _fallbackCharacterVariantDefs[i] = CharacterVariantCatalog.GetCharacterVariantDef(_characterVariantIndices[i])!;
                 _appliedVariantMask.Add(_characterVariantIndices[i]); //set the mask's value
@@ -395,7 +393,7 @@ namespace VAPI
             onVariantsApplied?.Invoke(_fallbackCharacterVariantDefs);
 
             //If we're not supressing the arrival, and the config lets us send them, send it.
-            if(NetworkServer.active && supressArrivalMessageServer == false && VAPIConfig._sendArrivalMessages)
+            if (NetworkServer.active && supressArrivalMessageServer == false && VAPIConfig._sendArrivalMessages)
             {
                 AnnounceArrivalServer();
             }
@@ -406,7 +404,7 @@ namespace VAPI
         private IEnumerator MarkStatsDirty()
         {
             //Call get stats interfaces from msu
-            if(_msuContentBehaviour != null)
+            if (_msuContentBehaviour != null)
             {
                 _msuContentBehaviour.StartGetInterfaces();
             }
@@ -420,7 +418,7 @@ namespace VAPI
         private void AnnounceArrivalServer()
         {
             //Get out if not the server
-            if(!NetworkServer.active)
+            if (!NetworkServer.active)
             {
                 return;
             }
@@ -433,22 +431,22 @@ namespace VAPI
             bool shouldAnnounceArrival = false;
             bool shouldPlaySFX = false;
 
-            for(int i = 0; i < _fallbackCharacterVariantDefs.Length; i++)
+            for (int i = 0; i < _fallbackCharacterVariantDefs.Length; i++)
             {
                 var def = _fallbackCharacterVariantDefs[i];
                 if (!def || def.variantTier == null)
                     continue;
 
-                if(def.variantTier.announceArrivalInChat)
+                if (def.variantTier.announceArrivalInChat)
                 {
                     shouldAnnounceArrival = true;
-                    if(!string.IsNullOrWhiteSpace(def.arrivalToken))
+                    if (!string.IsNullOrWhiteSpace(def.arrivalToken))
                     {
                         _possibleArrivalTokensShared.Add(def.arrivalToken);
                     }
                 }
 
-                if(def.variantTier.spawnedSoundEvent)
+                if (def.variantTier.spawnedSoundEvent)
                 {
                     shouldPlaySFX = true;
                     _possibleSpawnSoundsShared.Add(def.variantTier.spawnedSoundEvent!);
@@ -467,7 +465,7 @@ namespace VAPI
                 });
             }
 
-            if(shouldPlaySFX && _possibleSpawnSoundsShared.Count > 0)
+            if (shouldPlaySFX && _possibleSpawnSoundsShared.Count > 0)
             {
                 var spawnSFX = HG.ArrayUtils.GetRandom(_possibleSpawnSoundsShared);
                 EffectManager.SimpleSoundEffect(spawnSFX.index, characterBody.corePosition, true);
@@ -492,7 +490,7 @@ namespace VAPI
                 }
 
                 //Apply body modifiers
-                foreach(var bodyModifier in characterVariantDef.bodyModifiers)
+                foreach (var bodyModifier in characterVariantDef.bodyModifiers)
                 {
                     Log($"Applying {characterVariantDef.cachedName}'s {(bodyModifier == null ? "NULL" : bodyModifier.GetType().Name)} Master Modifier");
                     _disposableCollectionHelper.AddDisposable(bodyModifier?.ModifyBody(characterBody));
@@ -562,7 +560,7 @@ namespace VAPI
         {
             string baseName = Language.GetString(characterBody.baseNameToken);
 
-            if(appliedVariants.Length == 0)
+            if (appliedVariants.Length == 0)
             {
                 cachedVariantName = baseName;
                 return;
@@ -578,9 +576,9 @@ namespace VAPI
                 return bIsOverride.CompareTo(aIsOverride);
             });
 
-            foreach(var variant in sortedVariants)
+            foreach (var variant in sortedVariants)
             {
-                if(variant.variantNameProvider != null)
+                if (variant.variantNameProvider != null)
                 {
                     baseName = variant.variantNameProvider.GetVariantName(baseName);
                 }
@@ -609,7 +607,7 @@ namespace VAPI
         public void ModifyStatArguments(RecalculateStatsAPI.StatHookEventArgs args)
         {
             var variants = GetCharacterVariantDefs();
-            for(int i = 0; i < variants.Length; i++)
+            for (int i = 0; i < variants.Length; i++)
             {
                 var variant = variants[i];
                 variant.statModifier?.ApplyStatModifiers(args, characterBody);
@@ -634,7 +632,7 @@ namespace VAPI
                 shouldUpdateIDRS |= appliedMeshReplacements;
             }
 
-            if(shouldUpdateIDRS && characterModel != null && characterModel.body != null && characterModel.body.inventory != null)
+            if (shouldUpdateIDRS && characterModel != null && characterModel.body != null && characterModel.body.inventory != null)
             {
                 characterModel.DisableAllItemDisplays();
                 characterModel.UpdateItemDisplay(characterModel.body.inventory);

@@ -32,7 +32,7 @@ namespace VAPI
         /// </summary>
         public bool TryGetItemCountPair(out ItemCountPair asItemCountPair)
         {
-            if(_itemCountPair.HasValue)
+            if (_itemCountPair.HasValue)
             {
                 asItemCountPair = _itemCountPair.Value;
                 return true;
@@ -40,12 +40,12 @@ namespace VAPI
 
 
             asItemCountPair = default;
-            if(_itemDefFailedToLoad)
+            if (_itemDefFailedToLoad)
             {
                 return false;
             }
 
-            if(itemDef == null)
+            if (itemDef == null)
             {
                 _itemDefFailedToLoad = true;
                 return false;
@@ -203,7 +203,7 @@ namespace VAPI
 
             _itemCountPairBuilder.Clear();
             EquipmentDef? equipmentDef = null;
-            
+
             targetInventory.InventoryChangedHandler((inv) =>
             {
                 for (int i = 0; i < itemsToGrant.Length; i++)
@@ -246,7 +246,7 @@ namespace VAPI
                     }
                 }
             });
-            
+
 
             return new DisposableVariantInventoryDefintionModification(targetInventory, _itemCountPairBuilder.ToArray(), equipmentDef);
         }
@@ -258,7 +258,7 @@ namespace VAPI
         {
             VariantInventoryDefinition result = new VariantInventoryDefinition();
             HG.ArrayUtils.EnsureCapacity(ref result.itemsToGrant, itemsToGrant.Length);
-            for(int i = 0; i < result.itemsToGrant.Length; i++)
+            for (int i = 0; i < result.itemsToGrant.Length; i++)
             {
                 result.itemsToGrant[i] = (AddressableItemCountPair)itemsToGrant[i].Clone();
             }

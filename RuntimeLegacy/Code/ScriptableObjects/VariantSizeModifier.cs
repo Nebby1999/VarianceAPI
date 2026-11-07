@@ -1,5 +1,4 @@
-﻿using KinematicCharacterController;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace VAPI.Legacy

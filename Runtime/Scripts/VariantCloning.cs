@@ -1,7 +1,6 @@
 #nullable enable
 using HG;
 using RoR2;
-using RoR2BepInExPack.GameAssetPathsBetter;
 using System;
 using System.Runtime.CompilerServices;
 using UnityEngine;
@@ -405,14 +404,14 @@ namespace VAPI
                 requiredSrcBodyName = nameof(RoR2Content.BodyPrefabs.ScavBody)
             };
 
-            for(int i = 0; i < scavData.Length; i++)
+            for (int i = 0; i < scavData.Length; i++)
             {
                 CloneForOtherBodyArgs copy = args;
                 copy.cloneSuffix = scavData[i].cloneSuffix;
                 copy.targetBodyName = scavData[i].bodyName;
 
                 var clone = CloneForOtherBody(copy);
-                if(clone != null)
+                if (clone != null)
                 {
                     results.Add(clone);
                 }
@@ -471,19 +470,19 @@ namespace VAPI
             bool makeHidden = args.makeHidden ?? true;
             bool resultAvailableOnlyIfSrcAvailable = args.resultAvailableOnlyIfSrcAvailable ?? true;
 
-            if(src == null || string.IsNullOrWhiteSpace(targetBodyName) || string.IsNullOrWhiteSpace(cloneSuffix) || string.IsNullOrWhiteSpace(requiredSrcBodyName))
+            if (src == null || string.IsNullOrWhiteSpace(targetBodyName) || string.IsNullOrWhiteSpace(cloneSuffix) || string.IsNullOrWhiteSpace(requiredSrcBodyName))
             {
                 VAPILog.Warning($"Unable to begin cloning process, src, targetBodyName, requiredSrcBodyName or cloneSuffix values within CloneForOtherBodyArgs are invalid.");
                 return null;
             }
 
-            if(TryGetBodyNameFromSrc(src, out string? bodyName) == false)
+            if (TryGetBodyNameFromSrc(src, out string? bodyName) == false)
             {
                 VAPILog.Warning($"Unable to clone {src} into a variant for {targetBodyName} as VAPI was unable to retrieve {src}'s targetBody's name!");
                 return null;
             }
 
-            if(string.Equals(bodyName, requiredSrcBodyName) == false)
+            if (string.Equals(bodyName, requiredSrcBodyName) == false)
             {
                 VAPILog.Warning($"Unable to clone {src} into a variant for {targetBodyName}. as the source's body name does not match the required src body name name (srcBodyName:{bodyName}|requiredSrcBodyName:{args.requiredSrcBodyName}");
                 return null;
@@ -498,17 +497,17 @@ namespace VAPI
             bodyName = null;
             var targetBody = src.targetBody.targetBody;
 
-            if(targetBody.IsInvalid)
+            if (targetBody.IsInvalid)
             {
                 return false;
             }
 
-            if(targetBody.AssetExists)
+            if (targetBody.AssetExists)
             {
                 bodyName = targetBody.Asset.name;
                 return true;
             }
-            else if(new AssetReferenceT<GameObject>(targetBody.Address).RuntimeKeyIsValid())
+            else if (new AssetReferenceT<GameObject>(targetBody.Address).RuntimeKeyIsValid())
             {
                 bodyName = Addressables.LoadAssetAsync<GameObject>(targetBody.Address).WaitForCompletion().name;
                 return true;

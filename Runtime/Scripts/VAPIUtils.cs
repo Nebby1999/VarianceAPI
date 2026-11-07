@@ -1,5 +1,4 @@
 #nullable enable
-using HG;
 using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
@@ -7,8 +6,6 @@ using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using static VAPI.VAPIUtils;
-using Random = UnityEngine.Random;
 
 namespace VAPI
 {
@@ -28,7 +25,7 @@ namespace VAPI
         /// </summary>
         public static BodyIndex GetBodyIndex(string? bodyName)
         {
-            if(string.IsNullOrWhiteSpace(bodyName))
+            if (string.IsNullOrWhiteSpace(bodyName))
             {
                 return BodyIndex.None;
             }
@@ -53,12 +50,12 @@ namespace VAPI
         /// </summary>
         public static MasterCatalog.MasterIndex GetMasterIndex(string? masterName)
         {
-            if(string.IsNullOrWhiteSpace(masterName))
+            if (string.IsNullOrWhiteSpace(masterName))
             {
                 return MasterCatalog.MasterIndex.none;
             }
 
-            if(MSU.MSUtil.IsModInstalled(DebugToolkit.DebugToolkit.GUID))
+            if (MSU.MSUtil.IsModInstalled(DebugToolkit.DebugToolkit.GUID))
             {
                 return GetMasterIndexDT(masterName);
             }
@@ -86,12 +83,12 @@ namespace VAPI
                 return copy;
 
             var address = other.Address;
-            if(!string.IsNullOrWhiteSpace(address))
+            if (!string.IsNullOrWhiteSpace(address))
             {
                 copy.Address = address;
                 return copy;
             }
-            if(other.AssetExists)
+            if (other.AssetExists)
             {
                 copy.Asset = other.Asset;
                 return copy;
@@ -113,7 +110,7 @@ namespace VAPI
             /// If true, the arrival messages and sfx are supressed. <b>Defaults to false</b>
             /// </summary>
             public bool? supressArrivalMessage;
-            
+
             /// <summary>
             /// An array of <see cref="CharacterVariantDef"/> to set to the body. If left null, the <see cref="VariantSpawnManager"/> will roll for the character's variants. <b>Defaults to null</b>
             /// </summary>
@@ -126,7 +123,7 @@ namespace VAPI
             /// A multiplied that's applied on top of any existing spawn rate multipliers. <b>Defaults to 1</b>
             /// </summary>
             public float? spawnManagerMultiplier;
-            
+
             /// <summary>
             /// If supplied, the DeathRewards for the spawned variant will recieve this's gold and exp rewards. <b>Defaults to null</b>
             /// </summary>
@@ -135,7 +132,7 @@ namespace VAPI
             /// If <see cref="baseDeathRewards"/> is not null, the base gold and exp rewards are multiplied by this value. <b>Defaults to 1</b>
             /// </summary>
             public float? deathRewardsCoefficient;
-            
+
             /// <summary>
             /// If true, the spawned variant will not drop items. <b>Defaults to false</b>
             /// </summary>
@@ -177,9 +174,9 @@ namespace VAPI
                 return;
             }
 
-            if(spawnedInstance.TryGetComponent<CharacterBody>(out CharacterBody spawnedBodyInstance) == false)
+            if (spawnedInstance.TryGetComponent<CharacterBody>(out CharacterBody spawnedBodyInstance) == false)
             {
-                if(spawnedInstance.TryGetComponent(out CharacterMaster spawnedInstanceMaster))
+                if (spawnedInstance.TryGetComponent(out CharacterMaster spawnedInstanceMaster))
                 {
                     spawnedBodyInstance = spawnedInstanceMaster.GetBody();
                 }
@@ -191,13 +188,13 @@ namespace VAPI
                 return;
             }
 
-            if(baseDeathRewards != null && spawnedBodyInstance.TryGetComponent<DeathRewards>(out var deathRewards))
+            if (baseDeathRewards != null && spawnedBodyInstance.TryGetComponent<DeathRewards>(out var deathRewards))
             {
                 baseDeathRewards.expReward = (uint)(baseDeathRewards!.expReward * deathRewardsCoefficient);
                 baseDeathRewards.goldReward = (uint)(baseDeathRewards!.goldReward * deathRewardsCoefficient);
             }
 
-            if(spawnedBodyInstance.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
+            if (spawnedBodyInstance.TryGetComponent<CharacterBodyVariantController>(out var bodyVariantController))
             {
                 bodyVariantController.supressArrivalMessageServer = supressArrivalMessage;
 
@@ -211,7 +208,7 @@ namespace VAPI
                 PreAssignedSpawnData preAssignedSpawnData = new PreAssignedSpawnData { spawnRateMultiplier = spawnManagerMultiplier, additiveVariantDefs = preAssignedVariantDefsAreAdditive ? preAssignedVariantDefs : null };
                 bodyVariantController.preAssignedSpawnDataServer = preAssignedSpawnData;
 
-                if(preAssignedVariantDefs != null && !preAssignedVariantDefsAreAdditive)
+                if (preAssignedVariantDefs != null && !preAssignedVariantDefsAreAdditive)
                 {
                     bodyVariantController.SetCharacterVariantDefsServer(preAssignedVariantDefs);
                     bodyVariantController.doNotRollForVariants = true;
@@ -237,7 +234,7 @@ namespace VAPI
             if (characterVariantDef == null)
                 return false;
 
-            if(VariantSpawnManager.instance == null || VariantSpawnManager.instance.IsVariantAvailable(characterVariantDef.characterVariantIndex) == false)
+            if (VariantSpawnManager.instance == null || VariantSpawnManager.instance.IsVariantAvailable(characterVariantDef.characterVariantIndex) == false)
             {
                 return false;
             }
@@ -246,7 +243,7 @@ namespace VAPI
             {
                 return characterVariantDef.spawnCondition?.IsAvailable() ?? true;
             }
-            catch(Exception ex)
+            catch (Exception ex)
             {
                 VAPILog.Error($"Unable to call {characterVariantDef}'s spawn condition as it threw an exception. Variant will not be available.\r\n{ex}");
                 return false;
@@ -255,7 +252,7 @@ namespace VAPI
 
         public static AssetReferenceT<T> CloneAssetReferenceT<T>(AssetReferenceT<T>? assetRef) where T : UnityEngine.Object
         {
-            if(assetRef == null)
+            if (assetRef == null)
             {
                 return new AssetReferenceT<T>("");
             }
@@ -316,7 +313,7 @@ namespace VAPI
             if (locator == null)
                 return null;
 
-            if(slot == SkillSlot.None)
+            if (slot == SkillSlot.None)
             {
                 if (string.IsNullOrWhiteSpace(fallbackSkillName))
                     return null;

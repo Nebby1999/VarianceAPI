@@ -36,7 +36,7 @@ namespace VAPI
                 if (!_affectedBody || !NetworkServer.active)
                     return;
 
-                if(_buffDefToRemove)
+                if (_buffDefToRemove)
                     _affectedBody.RemoveBuff(_buffDefToRemove);
 
                 int armorBonusCount = _affectedBody.GetBuffCount(VAPIContent.Buffs.VAPILinearArmorBonus.asset);
@@ -61,7 +61,7 @@ namespace VAPI
                 if (_countPairs == null || _countPairs.Length == 0)
                     return;
 
-                for(int i = 0; i < _countPairs.Length; i++)
+                for (int i = 0; i < _countPairs.Length; i++)
                 {
                     _affectedMaster.inventory.RemoveItemChanneled(_countPairs[i].itemDef.itemIndex, _countPairs[i].count);
                 }
@@ -362,7 +362,7 @@ namespace VAPI
                 uncommonItemRewardChance = other.uncommonItemRewardChance,
             };
             args.SetTierBuff(VAPIUtils.CloneAddressReferencedAsset<AddressReferencedBuffDef, BuffDef>(other.tierBuffDef));
-            for(int i = 0; i < other.tierItems.Length; i++)
+            for (int i = 0; i < other.tierItems.Length; i++)
             {
                 args.AddTierItem((AddressableItemCountPair)other.tierItems[i].Clone());
             }

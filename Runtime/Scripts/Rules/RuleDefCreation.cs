@@ -1,8 +1,6 @@
 #nullable enable
-using R2API;
 using RoR2;
 using RoR2.ExpansionManagement;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
@@ -74,7 +72,7 @@ namespace VAPI.Rules
             onChoice.tooltipNameToken = ingameName;
             onChoice.tooltipBodyToken = "VAPI_RULE_BODYVARIANTS_ON";
             onChoice.extraData = bodyComponent;
-            if(requiredExpansion != null)
+            if (requiredExpansion != null)
             {
                 onChoice.requiredExpansionDefs.Add(requiredExpansion);
                 onChoice.requiredChoiceDefs.Add(requiredExpansion.enabledChoice);
@@ -148,7 +146,7 @@ namespace VAPI.Rules
             variantChoice.requiredExpansionDefs = GetRequiredExpansionDefs();
             variantChoice.requiredChoiceDefs.Add(variantChoice.tiedPackEnabledChoice!);
             variantChoice.requiredChoiceDefs.Add(bodyVariantsEnabledChoice);
-            foreach(var expansion in variantChoice.requiredExpansionDefs)
+            foreach (var expansion in variantChoice.requiredExpansionDefs)
             {
                 variantChoice.requiredChoiceDefs.Add(expansion.enabledChoice);
             }
@@ -156,7 +154,7 @@ namespace VAPI.Rules
 
         private static ExpansionDef? GetRequiredExpansion(CharacterBody body)
         {
-            if(body.TryGetComponent<ExpansionRequirementComponent>(out var expansionRequirementComponent))
+            if (body.TryGetComponent<ExpansionRequirementComponent>(out var expansionRequirementComponent))
             {
                 return expansionRequirementComponent.requiredExpansion;
             }
@@ -165,17 +163,17 @@ namespace VAPI.Rules
 
         private static Sprite GetCharacterSprite(CharacterBody? bodyComponent)
         {
-            if(bodyComponent == null)
+            if (bodyComponent == null)
             {
                 return GetMysteryIconSprite();
             }
 
-            if(_bodyIndexToGeneratedSprite.TryGetValue(bodyComponent.bodyIndex, out Sprite generatedSprite))
+            if (_bodyIndexToGeneratedSprite.TryGetValue(bodyComponent.bodyIndex, out Sprite generatedSprite))
             {
                 return generatedSprite;
             }
 
-            if(bodyComponent.portraitIcon != null && bodyComponent.portraitIcon is Texture2D icon)
+            if (bodyComponent.portraitIcon != null && bodyComponent.portraitIcon is Texture2D icon)
             {
                 generatedSprite = Sprite.Create(icon, new Rect(0, 0, icon.width, icon.height), new Vector2(0.5f, 0.5f), 100);
 
@@ -193,7 +191,7 @@ namespace VAPI.Rules
             if (body == null)
                 return "???";
 
-            if(variantDef == null || variantDef.variantNameProvider == null)
+            if (variantDef == null || variantDef.variantNameProvider == null)
             {
                 return Language.GetString(body.baseNameToken);
             }

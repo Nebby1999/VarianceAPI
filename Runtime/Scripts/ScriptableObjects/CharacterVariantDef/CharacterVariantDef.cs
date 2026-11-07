@@ -1,16 +1,9 @@
-using System;
-using UnityEngine;
-using UnityEngine.UIElements;
-using EntityStates;
-using HG;
-using UnityEngine.Networking;
-using R2API.AddressReferencedAssets;
-using RoR2;
-using MSU;
-using System.Collections.Generic;
-using BepInEx.Configuration;
 using BepInEx;
-using VAPI.AddressReferencedAssets;
+using BepInEx.Configuration;
+using RoR2;
+using System;
+using System.Collections.Generic;
+using UnityEngine;
 #nullable enable
 
 namespace VAPI
@@ -121,11 +114,11 @@ namespace VAPI
             spawnCondition?.Validate();
             variantNameProvider?.Validate();
             statModifier?.Validate();
-            foreach(var masterModifier in masterModifiers)
+            foreach (var masterModifier in masterModifiers)
             {
                 masterModifier?.Validate();
             }
-            foreach(var bodyModifier in bodyModifiers)
+            foreach (var bodyModifier in bodyModifiers)
             {
                 bodyModifier?.Validate();
             }
@@ -159,15 +152,15 @@ namespace VAPI
             variantDef.spawnRate = other.spawnRate;
             variantDef.arrivalToken = other.arrivalToken;
 
-            if(other.spawnCondition != null)
+            if (other.spawnCondition != null)
             {
                 variantDef.spawnCondition = (IVariantSpawnCondition?)other.spawnCondition.Clone();
             }
 
             List<IVariantMasterModifier> masterModifiers = new List<IVariantMasterModifier>();
-            foreach(var otherMasterModifier in other.masterModifiers)
+            foreach (var otherMasterModifier in other.masterModifiers)
             {
-                if(otherMasterModifier != null)
+                if (otherMasterModifier != null)
                 {
                     masterModifiers.Add((IVariantMasterModifier)otherMasterModifier.Clone());
                 }
@@ -176,34 +169,34 @@ namespace VAPI
             variantDef.inventoryDefinition = (VariantInventoryDefinition)other.inventoryDefinition.Clone();
 
             List<IVariantBodyModifier> bodyModifiers = new List<IVariantBodyModifier>();
-            foreach(var otherBodyModifier in other.bodyModifiers)
+            foreach (var otherBodyModifier in other.bodyModifiers)
             {
-                if(otherBodyModifier != null)
+                if (otherBodyModifier != null)
                 {
                     bodyModifiers.Add((IVariantBodyModifier)otherBodyModifier.Clone());
                 }
             }
             variantDef.bodyModifiers = bodyModifiers.ToArray();
-            if(other.variantNameProvider != null)
+            if (other.variantNameProvider != null)
             {
                 variantDef.variantNameProvider = (IVariantNameProvider?)other.variantNameProvider.Clone();
             }
             variantDef.deathStateOverride = (VariantDeathStateOverride)other.deathStateOverride.Clone();
             List<VariantSkillReplacement> skillReplacements = new List<VariantSkillReplacement>();
-            foreach(var otherSkillReplacement in other.skillReplacements)
+            foreach (var otherSkillReplacement in other.skillReplacements)
             {
-                if(otherSkillReplacement != null)
+                if (otherSkillReplacement != null)
                 {
                     skillReplacements.Add((VariantSkillReplacement)otherSkillReplacement.Clone());
                 }
             }
             variantDef.skillReplacements = skillReplacements.ToArray();
-            if(other.statModifier != null)
+            if (other.statModifier != null)
             {
                 variantDef.statModifier = (IVariantStatModifier?)other.statModifier.Clone();
             }
             variantDef.variantBuffs = (VariantBuffStorage)other.variantBuffs.Clone();
-            if(other.visualModifier != null)
+            if (other.visualModifier != null)
             {
                 variantDef.visualModifier = other.visualModifier;
             }

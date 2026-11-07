@@ -49,12 +49,12 @@ namespace VAPI
         /// <param name="gipVariant">The Gip character variant def</param>
         public static void AddGupVariantRelation(CharacterVariantDef gupVariant, CharacterVariantDef geepVariant, CharacterVariantDef gipVariant)
         {
-            if(_gupToGeepVariantRelation.TryAdd(gupVariant, geepVariant) == false)
+            if (_gupToGeepVariantRelation.TryAdd(gupVariant, geepVariant) == false)
             {
                 VAPILog.Warning($"Unable to add a Gup Variant Relation from {gupVariant} to {geepVariant}. As there's already a pre-existing relation between {gupVariant} and {_gupToGeepVariantRelation[gupVariant]}");
             }
 
-            if(_geepToGipVariantRelation.TryAdd(geepVariant, gipVariant) == false)
+            if (_geepToGipVariantRelation.TryAdd(geepVariant, gipVariant) == false)
             {
                 VAPILog.Warning($"Unable to add a Gup Variant Relation from {geepVariant} to {gipVariant}. As there's already a pre-existing relation between {geepVariant} and {_geepToGipVariantRelation[geepVariant]}");
             }
@@ -76,7 +76,7 @@ namespace VAPI
             //First we'll get our cursor right before BodySplitter perform.
             bool matchBeforeBodySplitterPerform = cursor.TryGotoNext(x => x.MatchCallOrCallvirt<BodySplitter>(nameof(BodySplitter.Perform)));
 
-            if(!matchBeforeBodySplitterPerform)
+            if (!matchBeforeBodySplitterPerform)
             {
                 VAPILog.Fatal($"Failed to hook BaseSplitDeath.FixedUpdate(). Dictionaries inside the GupVariantHelper class won't be used to properly propagate variants!");
                 return;
@@ -100,7 +100,7 @@ namespace VAPI
             bool noItemReward = false;
             bool noGoldExpModifications = false;
 
-            if(baseSplitDeath.characterBody.TryGetComponent<VariantDeathRewards>(out var variantDeathRewards))
+            if (baseSplitDeath.characterBody.TryGetComponent<VariantDeathRewards>(out var variantDeathRewards))
             {
                 noItemReward = variantDeathRewards.noItemRewardServer;
                 noGoldExpModifications = variantDeathRewards.noGoldExpModificationsServer;
@@ -125,14 +125,14 @@ namespace VAPI
             getVariantDefsBuffer.Clear();
 
             BodyIndex splittingResultBodyIndex = BodyIndex.None;
-            if(masterPrefabToSplitTo.TryGetComponent<CharacterMaster>(out var masterToSplitTo) 
+            if (masterPrefabToSplitTo.TryGetComponent<CharacterMaster>(out var masterToSplitTo)
                 && masterToSplitTo.bodyPrefab
                 && masterToSplitTo.bodyPrefab.TryGetComponent<CharacterBody>(out var bodyToSplitTo))
             {
                 splittingResultBodyIndex = bodyToSplitTo.bodyIndex;
             }
 
-            foreach(var variantDef in splittingBodyVariantDefs)
+            foreach (var variantDef in splittingBodyVariantDefs)
             {
                 //Do not pass this VariantDef
                 if (_blacklistedVariants.Contains(variantDef))
@@ -142,21 +142,21 @@ namespace VAPI
                 }
 
                 //If it's splitting into more of itself, add the variantDef directly.
-                if(splittingResultBodyIndex == splittingBodyIndex)
+                if (splittingResultBodyIndex == splittingBodyIndex)
                 {
                     LogMessage($"Passing over {variantDef} from {masterPrefabToSplitTo} to {BodyCatalog.GetBodyName(splittingBodyIndex)}");
                     getVariantDefsBuffer.Add(variantDef);
                     continue;
                 }
 
-                if(_gupToGeepVariantRelation.TryGetValue(variantDef, out var geepVariantDef))
+                if (_gupToGeepVariantRelation.TryGetValue(variantDef, out var geepVariantDef))
                 {
                     LogMessage($"Passing over {geepVariantDef} from {masterPrefabToSplitTo} to {BodyCatalog.GetBodyName(splittingBodyIndex)}");
                     getVariantDefsBuffer.Add(geepVariantDef);
                     continue;
                 }
 
-                if(_geepToGipVariantRelation.TryGetValue(variantDef, out var gipVariantDef))
+                if (_geepToGipVariantRelation.TryGetValue(variantDef, out var gipVariantDef))
                 {
                     LogMessage($"Passing over {gipVariantDef} from {masterPrefabToSplitTo} to {BodyCatalog.GetBodyName(splittingBodyIndex)}");
                     getVariantDefsBuffer.Add(gipVariantDef);

@@ -72,7 +72,7 @@ namespace VAPI
 
         private static string FormatVariantName(CharacterBody body, string bodyName)
         {
-            if(body.TryGetComponent<CharacterBodyVariantController>(out var characterBodyVariantController))
+            if (body.TryGetComponent<CharacterBodyVariantController>(out var characterBodyVariantController))
             {
                 //Return the cachedVariantName from the controller, when variants are applied it creates the new character string.
                 return characterBodyVariantController.cachedVariantName;
@@ -128,7 +128,7 @@ namespace VAPI
         /// </summary>
         public string GetVariantName(string input)
         {
-            if(string.IsNullOrWhiteSpace(formatToken))
+            if (string.IsNullOrWhiteSpace(formatToken))
             {
 #if DEBUG
                 VAPILog.Warning($"VariantNameFormatter's formatToken value is null, empty or whitespace!");
@@ -144,7 +144,7 @@ namespace VAPI
         /// </summary>
         public void Validate()
         {
-            if(string.IsNullOrWhiteSpace(formatToken))
+            if (string.IsNullOrWhiteSpace(formatToken))
             {
                 VAPILog.Warning($"formatToken cannot be null, empty or whitespace");
             }
@@ -166,7 +166,7 @@ namespace VAPI
 
         public string GetVariantName(string input)
         {
-            if(string.IsNullOrWhiteSpace(prefixToken))
+            if (string.IsNullOrWhiteSpace(prefixToken))
             {
 #if DEBUG
                 VAPILog.Warning($"VariantNamePrefix's prefixToken value is null, empty or whitespace!");
@@ -233,7 +233,7 @@ namespace VAPI
 
         public string GetVariantName(string input)
         {
-            if(string.IsNullOrWhiteSpace(overrideToken))
+            if (string.IsNullOrWhiteSpace(overrideToken))
             {
 #if DEBUG
                 VAPILog.Warning($"VariantNameOverride's overrideToken value is null, empty or whitespace!");

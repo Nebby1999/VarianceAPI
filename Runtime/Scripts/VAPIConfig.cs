@@ -63,9 +63,9 @@ namespace VAPI
             rewardsConfig = configFactory.CreateConfigFile(REWARDS, false);
 
             //Set stuff for ROO
-            using(var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texVarianceAPIExpansionIcon"))
+            using (var iconRequest = VAPIAssets.LoadAssetAsync<Sprite>("texVarianceAPIExpansionIcon"))
             {
-                while(!iconRequest.isComplete)
+                while (!iconRequest.isComplete)
                 {
                     yield return null;
                 }
@@ -142,8 +142,8 @@ namespace VAPI
                 configFile = generalConfig,
             }
             .WithConfigChange(b =>
-            {   
-                if(b)
+            {
+                if (b)
                 {
                     IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate -= GupVariantHelper.HandleDeathState;
                     IL.EntityStates.Gup.BaseSplitDeath.FixedUpdate += GupVariantHelper.HandleDeathState;

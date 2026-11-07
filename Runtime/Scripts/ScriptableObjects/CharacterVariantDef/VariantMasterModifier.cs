@@ -4,9 +4,7 @@ using RoR2.CharacterAI;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using UnityEngine.Networking;
-using VAPI.AddressReferencedAssets;
 
 namespace VAPI
 {
@@ -71,7 +69,7 @@ namespace VAPI
                 if (undoData == null)
                     return;
 
-                for(int i = 0; i < undoData.Count; i++)
+                for (int i = 0; i < undoData.Count; i++)
                 {
                     AISkillDriver skillDriver = undoData[i].skillDriver;
                     if (!skillDriver)
@@ -110,7 +108,7 @@ namespace VAPI
             UnstableAIModifierResult result = new UnstableAIModifierResult();
             foreach (BaseAI? baseAI in master.AiComponents)
             {
-                if(!baseAI)
+                if (!baseAI)
                 {
                     continue;
                 }
@@ -125,9 +123,9 @@ namespace VAPI
 
         private void SetThresholds(AISkillDriver[] drivers, ref UnstableAIModifierResult result)
         {
-            foreach(AISkillDriver? skillDriver in drivers)
+            foreach (AISkillDriver? skillDriver in drivers)
             {
-                if(!skillDriver)
+                if (!skillDriver)
                 {
                     continue;
                 }
@@ -209,7 +207,7 @@ namespace VAPI
         }
         public IDisposable? ModifyMaster(CharacterMaster master)
         {
-            if(!NetworkServer.active)
+            if (!NetworkServer.active)
             {
                 return null;
             }
@@ -339,12 +337,12 @@ namespace VAPI
             }
 
             DisposableCollectionHelper helper = new DisposableCollectionHelper(true);
-            for(int i = 0; i < master.AiComponents.Length; i++)
+            for (int i = 0; i < master.AiComponents.Length; i++)
             {
                 var aiComponent = master.aiComponents[i];
-                foreach(var skillDriver in aiComponent.skillDrivers)
+                foreach (var skillDriver in aiComponent.skillDrivers)
                 {
-                    if(skillDriver.customName == aiSkillDriverTarget || skillDriver.skillSlot == targetSkillSlot)
+                    if (skillDriver.customName == aiSkillDriverTarget || skillDriver.skillSlot == targetSkillSlot)
                     {
 
                         var result = new AISkillDriverAimVectorModifierResult
@@ -377,7 +375,7 @@ namespace VAPI
 
         public void Validate()
         {
-            if(string.IsNullOrWhiteSpace(aiSkillDriverTarget) && targetSkillSlot == SkillSlot.None)
+            if (string.IsNullOrWhiteSpace(aiSkillDriverTarget) && targetSkillSlot == SkillSlot.None)
             {
                 VAPILog.Warning($"Ai skill driver target should not be empty, null or whitespace when the targetSkillSlot is set to SkillSlot.None!");
             }
@@ -463,9 +461,9 @@ namespace VAPI
 
             var result = new BaseAIDampModifierResult(baseAIDampBonus, _baseAIDampMultiplier);
 
-            foreach(BaseAI? baseAI in master.AiComponents)
+            foreach (BaseAI? baseAI in master.AiComponents)
             {
-                if(!baseAI)
+                if (!baseAI)
                 {
                     continue;
                 }
@@ -521,12 +519,12 @@ namespace VAPI
 
             public void Dispose()
             {
-                if(_modifiedBaseAI)
+                if (_modifiedBaseAI)
                 {
                     _modifiedBaseAI.ReplaceSkillDrivers(_origSkillDrivers);
                 }
 
-                if(_customSkillDriversContainer)
+                if (_customSkillDriversContainer)
                 {
                     UnityEngine.Object.Destroy(_customSkillDriversContainer);
                 }
@@ -555,7 +553,7 @@ namespace VAPI
             if (!master)
                 return null;
 
-            if(skillDriversPrefab == null)
+            if (skillDriversPrefab == null)
             {
 #if DEBUG
                 VAPILog.Warning($"Not applying ReplaceSkillDrivers modifier as there's no skillDriversPrefab assigned");
@@ -563,7 +561,7 @@ namespace VAPI
                 return null;
             }
 
-            if(!master.TryGetComponent<BaseAI>(out var modifiedBaseAI))
+            if (!master.TryGetComponent<BaseAI>(out var modifiedBaseAI))
             {
 #if DEBUG
                 VAPILog.Warning($"Not applying ReplaceSkillDrivers modifier as the master is not an AI");
@@ -571,7 +569,7 @@ namespace VAPI
                 return null;
             }
 
-            if(!skillDriversPrefab.TryGetComponent<AISkillDriver>(out _))
+            if (!skillDriversPrefab.TryGetComponent<AISkillDriver>(out _))
             {
 #if DEBUG
                 VAPILog.Warning($"Not applying ReplaceSkillDrivers modifier as the skillDriversPrefab has no AISkillDriver components");
@@ -594,13 +592,13 @@ namespace VAPI
 
         public void Validate()
         {
-            if(skillDriversPrefab == null)
+            if (skillDriversPrefab == null)
             {
                 VAPILog.Warning($"Cannot have a null skillDriversPrefab on a ReplaceSkillDrivers Master Modifier");
                 return;
             }
 
-            if(skillDriversPrefab.TryGetComponent<AISkillDriver>(out _))
+            if (skillDriversPrefab.TryGetComponent<AISkillDriver>(out _))
             {
                 VAPILog.Warning($"Assigned skillDriverPrefab has no AISkillDrivers");
                 return;

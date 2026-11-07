@@ -1,14 +1,12 @@
 #nullable enable
-using System;
-using System.Collections;
-using System.Collections.Generic;
-using System.Linq;
 using HG;
-using MSU;
 using R2API;
 using R2API.AddressReferencedAssets;
 using RoR2;
 using RoR2.ExpansionManagement;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace VAPI
@@ -65,12 +63,12 @@ namespace VAPI
         {
             get
             {
-                if(requiredUnlock == null || requiredUnlock.IsInvalid)
+                if (requiredUnlock == null || requiredUnlock.IsInvalid)
                 {
                     return null;
                 }
 
-                if(requiredUnlock.AssetExists)
+                if (requiredUnlock.AssetExists)
                 {
                     return requiredUnlock.Asset;
                 }
@@ -83,12 +81,12 @@ namespace VAPI
             get
             {
                 List<ExpansionDef> expansionDefs = new List<ExpansionDef>();
-                foreach(var expansion in requiredExpansionDefs)
+                foreach (var expansion in requiredExpansionDefs)
                 {
                     if (expansion == null || expansion.IsInvalid)
                         continue;
 
-                    if(expansion.AssetExists)
+                    if (expansion.AssetExists)
                     {
                         expansionDefs.Add(expansion.Asset);
                     }
@@ -144,7 +142,7 @@ namespace VAPI
         /// </summary>
         public virtual void Validate()
         {
-            for(int i = 0; i < customStages.Length; i++)
+            for (int i = 0; i < customStages.Length; i++)
             {
                 customStages[i] = customStages[i].ToLowerInvariant();
             }
@@ -169,14 +167,14 @@ namespace VAPI
             if (!Run.instance)
                 return false;
 
-            foreach(var addressReferencedExpansion in requiredExpansionDefs)
+            foreach (var addressReferencedExpansion in requiredExpansionDefs)
             {
-                if(!addressReferencedExpansion.AssetExists)
+                if (!addressReferencedExpansion.AssetExists)
                 {
                     continue;
                 }
 
-                if(!Run.instance.IsExpansionEnabled(addressReferencedExpansion.Asset))
+                if (!Run.instance.IsExpansionEnabled(addressReferencedExpansion.Asset))
                 {
                     return false;
                 }
@@ -209,13 +207,13 @@ namespace VAPI
 
             DirectorAPI.StageInfo stageInfo = DirectorAPI.StageInfo.ParseInternalStageName(SceneInfo.instance.sceneDef.baseSceneName);
 
-            if(stageInfo.stage == DirectorAPI.Stage.Custom)
+            if (stageInfo.stage == DirectorAPI.Stage.Custom)
             {
                 //Return true if customStages is empty, otherwise, check if the current stage is in the custom stages array.
                 return customStages.Length == 0 || customStages.Contains(stageInfo.CustomStageName.ToLowerInvariant());
             }
 
-            if(stages == 0L)
+            if (stages == 0L)
             {
                 return true;
             }
@@ -238,7 +236,7 @@ namespace VAPI
             result.forbiddenUnlock = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedUnlockableDef, UnlockableDef>(forbiddenUnlock);
             result.requiredUnlock = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedUnlockableDef, UnlockableDef>(requiredUnlock);
             HG.ArrayUtils.EnsureCapacity(ref result.requiredExpansionDefs, requiredExpansionDefs.Length);
-            for(int i = 0; i < result.requiredExpansionDefs.Length; i++)
+            for (int i = 0; i < result.requiredExpansionDefs.Length; i++)
             {
                 result.requiredExpansionDefs[i] = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedExpansionDef, ExpansionDef>(requiredExpansionDefs[i]);
             }
@@ -263,14 +261,14 @@ namespace VAPI
             this.stages = stages ?? ((DirectorAPI.Stage)0L);
             this.customStages = customStages ?? Array.Empty<string>();
 
-            if(forbiddenUnlockableKeyOrReference.HasValue)
+            if (forbiddenUnlockableKeyOrReference.HasValue)
             {
 
-                if(forbiddenUnlockableKeyOrReference.Value.isA)
+                if (forbiddenUnlockableKeyOrReference.Value.isA)
                 {
                     forbiddenUnlock.Address = forbiddenUnlockableKeyOrReference.Value.a;
                 }
-                else if(forbiddenUnlockableKeyOrReference.Value.b)
+                else if (forbiddenUnlockableKeyOrReference.Value.b)
                 {
                     forbiddenUnlock.Asset = forbiddenUnlockableKeyOrReference.Value.b;
                 }
@@ -350,7 +348,7 @@ namespace VAPI
             get
             {
                 var variantDef = dependantVariantDef.GetCharacterVariantDef();
-                if(variantDef != null && variantDef.spawnCondition != null)
+                if (variantDef != null && variantDef.spawnCondition != null)
                 {
                     return variantDef.spawnCondition.requiredUnlock;
                 }
@@ -363,7 +361,7 @@ namespace VAPI
             get
             {
                 var variantDef = dependantVariantDef.GetCharacterVariantDef();
-                if(variantDef != null && variantDef.spawnCondition != null)
+                if (variantDef != null && variantDef.spawnCondition != null)
                 {
                     return variantDef.spawnCondition.requiredExpansionDefs;
                 }
@@ -385,7 +383,7 @@ namespace VAPI
                 return false;
 
             CharacterVariantDef? variantDef = dependantVariantDef.GetCharacterVariantDef();
-            if(variantDef == null)
+            if (variantDef == null)
             {
                 return true;
             }
@@ -395,7 +393,7 @@ namespace VAPI
 
         public void Validate()
         {
-            if(dependantVariantDef.IsValid() == false)
+            if (dependantVariantDef.IsValid() == false)
             {
                 VAPILog.Warning($"VariantDependantCondition {this} has an invalid dependantVariantDef field");
             }

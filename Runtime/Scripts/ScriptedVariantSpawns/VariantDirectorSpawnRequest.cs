@@ -2,7 +2,6 @@
 
 using RoR2;
 using System;
-using UnityEngine;
 
 namespace VAPI
 {
@@ -96,11 +95,11 @@ namespace VAPI
         /// Event called when any DirectorSpawnRequest is performed, and it's result is turned into a variant
         /// </summary>
         public static event Action<VariantDirectorSpawnResult>? onServerVariantSpawnedGlobal;
-        
+
         private void OnCharacterSpawnedServer(SpawnCard.SpawnResult spawnCardResult)
         {
             //If the spawn request that just happened is the one stored in this, unhook from the event and turn the result into a variant
-            if(spawnCardResult.spawnRequest == spawnRequest)
+            if (spawnCardResult.spawnRequest == spawnRequest)
             {
                 VAPIUtils.TransformSpawnedInstanceIntoVariant(new VAPIUtils.TransformSpawnedInstanceIntoVariantArgs
                 {

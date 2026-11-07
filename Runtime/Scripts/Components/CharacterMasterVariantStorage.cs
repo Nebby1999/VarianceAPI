@@ -1,11 +1,9 @@
 #nullable enable
-using HG;
 using RoR2;
 using RoR2.ConVar;
 using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Networking;
 
 namespace VAPI
 {
@@ -72,9 +70,9 @@ namespace VAPI
         //This ensures stuff like inventory is properly disposed of
         private void OnBodyStart(CharacterBody obj)
         {
-            if(obj.bodyIndex != _bodyIndexOfAppliedVariants)
+            if (obj.bodyIndex != _bodyIndexOfAppliedVariants)
             {
-                if(_bodyIndexOfAppliedVariants != BodyIndex.None)
+                if (_bodyIndexOfAppliedVariants != BodyIndex.None)
                 {
                     VAPILog.Info($"{this} switched from {BodyCatalog.GetBodyName(_bodyIndexOfAppliedVariants) ?? "None"} to {BodyCatalog.GetBodyName(obj.bodyIndex)}. Unapplying variants.");
                 }
@@ -129,16 +127,16 @@ namespace VAPI
         public bool HasVariantsForBody(BodyIndex bodyIndex)
         {
             bool result = GetVariantStorageIndex(bodyIndex) != -1;
-            if(!result)
+            if (!result)
             {
                 Log($"There's no Variants for body {BodyCatalog.GetBodyName(bodyIndex)}");
             }
             return result;
-        } 
+        }
 
         private void PushVariantsForCharacter(in BodyIndex bodyIndex, in CharacterVariantDef[] variantDefs)
         {
-            if(bodyIndex == BodyIndex.None || variantDefs == null)
+            if (bodyIndex == BodyIndex.None || variantDefs == null)
             {
                 return;
             }

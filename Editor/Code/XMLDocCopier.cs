@@ -1,7 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
 using System.IO;
-using System.Xml;
 using UnityEditor;
 using UnityEngine;
 
@@ -19,14 +16,14 @@ namespace VAPI.Editor
 
         private static void CopyIfChanged()
         {
-            if(!File.Exists(SRC_FILE))
+            if (!File.Exists(SRC_FILE))
             {
                 return;
             }
 
             var destPath = AssetDatabase.GUIDToAssetPath(XML_DOC_GUID);
 
-            if(File.GetLastWriteTimeUtc(destPath) >= File.GetLastWriteTimeUtc(SRC_FILE))
+            if (File.GetLastWriteTimeUtc(destPath) >= File.GetLastWriteTimeUtc(SRC_FILE))
             {
                 return;
             }

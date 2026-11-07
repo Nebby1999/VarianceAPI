@@ -1,5 +1,4 @@
-﻿using RoR2;
-using System;
+﻿using System;
 using UnityEngine;
 
 namespace VAPI.Legacy

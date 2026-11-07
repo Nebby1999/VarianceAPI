@@ -1,3 +1,4 @@
+#nullable enable
 using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
@@ -9,7 +10,7 @@ namespace VAPI.AddressReferencedAssets
     /// <summary>
     /// An <see cref="AddressReferencedAsset{T}"/> that loads GameObjects, and has support for loading via the Body Catalog.
     /// <br></br>
-    /// Like other uses of AddressReferencedAsset, it is not recommended to reuse an instance across various <see cref="CharacterVariantTarget"/>, instead clone them via <see cref="VAPIUtils.CloneAddressReferencedAsset{T1, T2}(T1?)"/>
+    /// Like other uses of AddressReferencedAsset, it is not recommended to reuse an instance across various <see cref="CharacterVariantTarget"/>, instead clone them via <see cref="VAPIUtils.CloneAddressReferencedAsset{T1, T2}(T1)"/>
     /// </summary>
     [Serializable]
     public sealed class AddressReferencedBody : AddressReferencedAsset<GameObject>
@@ -25,6 +26,11 @@ namespace VAPI.AddressReferencedAssets
         [SerializeField, HideInInspector]
         private bool _canLoadFromCatalog = true;
 
+        //protected override bool IsCatalogAvailable()
+        //{
+        //    return BodyCatalog.availability.available;
+        //}
+
         /// <summary>
         /// Loads the body asynchronously via a coroutine.
         /// <br></br>
@@ -32,17 +38,17 @@ namespace VAPI.AddressReferencedAssets
         /// </summary>
         protected override IEnumerator LoadAsyncCoroutine()
         {
-            if(CanLoadFromCatalog)
+            if (CanLoadFromCatalog)
             {
                 BodyIndex bodyIndex = BodyCatalog.FindBodyIndex(Address);
-                if(bodyIndex != BodyIndex.None)
+                if (bodyIndex != BodyIndex.None)
                 {
                     Asset = BodyCatalog.GetBodyPrefab(bodyIndex);
                     yield break;
                 }
             }
             var subroutine = LoadFromAddressAsyncCoroutine();
-            while(subroutine.MoveNext())
+            while (subroutine.MoveNext())
             {
                 yield return null;
             }
@@ -78,7 +84,7 @@ namespace VAPI.AddressReferencedAssets
         /// <summary>
         /// Implicitly converts this into a GameObject
         /// </summary>
-        public static implicit operator GameObject(AddressReferencedBody addressReferencedAsset)
+        public static implicit operator GameObject?(AddressReferencedBody addressReferencedAsset)
         {
             return addressReferencedAsset?.Asset;
         }

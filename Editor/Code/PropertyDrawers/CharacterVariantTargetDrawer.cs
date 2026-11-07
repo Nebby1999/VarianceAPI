@@ -1,7 +1,5 @@
-using RoR2.Editor;
 using UnityEditor;
 using UnityEditor.UIElements;
-using UnityEngine;
 using UnityEngine.UIElements;
 
 namespace VAPI.Editor.PropertyDrawers

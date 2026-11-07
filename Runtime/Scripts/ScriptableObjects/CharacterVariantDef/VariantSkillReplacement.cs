@@ -64,7 +64,7 @@ namespace VAPI
             genericSkillTarget = skillLocator.GetOrFindSkill(slot, slotName);
 
             SkillDef overrideSkillDef = GetOverrideSkillDef();
-            if(!genericSkillTarget)
+            if (!genericSkillTarget)
             {
                 LogWarning($"Unable to apply skill {overrideSkillDef} to {skillLocator.gameObject} as the GenericSkill was unable to be found.");
                 return null;
@@ -79,7 +79,7 @@ namespace VAPI
         private static LazyLoader<SkillDef> goToMainSkillDef = new LazyLoader<SkillDef>("GoToMain");
         private SkillDef GetOverrideSkillDef()
         {
-            if(skillDef)
+            if (skillDef)
             {
                 return skillDef!;
             }
@@ -91,7 +91,7 @@ namespace VAPI
         /// </summary>
         public object Clone()
         {
-            if(slot == SkillSlot.None)
+            if (slot == SkillSlot.None)
             {
                 return new VariantSkillReplacement(skillDef, slotName);
             }

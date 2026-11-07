@@ -14,11 +14,21 @@ namespace VAPI
     /// </summary>
     public readonly struct ReadOnlyVariantPack
     {
+        /// <summary>
+        /// An <see cref="IEqualityComparer{T}"/> implementation for <see cref="ReadOnlyVariantPack"/> that compares <see cref="identifier"/>s
+        /// </summary>
         public struct IdentifierComparer : IEqualityComparer<ReadOnlyVariantPack>
         {
+            /// <summary>
+            /// Returns true if the Identifiers on <paramref name="x"/> and <paramref name="y"/> are equal.
+            /// <br></br>
+            /// If either <paramref name="x"/> or <paramref name="y"/> point to an invalid VariantPack, it returns false
+            /// </summary>
+            /// <param name="x">A Read only variant pack</param>
+            /// <param name="y">A read only variant pack</param>
             public bool Equals(ReadOnlyVariantPack x, ReadOnlyVariantPack y)
             {
-                if(!x.isValid || !y.isValid)
+                if (!x.isValid || !y.isValid)
                 {
                     return false;
                 }
@@ -29,9 +39,15 @@ namespace VAPI
                 return string.Equals(xIdentifier, yIdentifier);
             }
 
+            /// <summary>
+            /// Returns the HashCode for <paramref name="obj"/>, by calling the GetHashCode() method of <see cref="identifier"/>
+            /// <br></br>
+            /// If <paramref name="obj"/> points to an invalid VariantPack, it returns -1
+            /// </summary>
+            /// <param name="obj">The ReadOnlyVariantPack to obtain it's hash code</param>
             public int GetHashCode(ReadOnlyVariantPack obj)
             {
-                if(!obj.isValid)
+                if (!obj.isValid)
                 {
                     return -1;
                 }
@@ -95,6 +111,7 @@ namespace VAPI
         /// Access to this pack's <see cref="CharacterVariantTierDef"/>s
         /// </summary>
         public ReadOnlyNamedAssetCollection<CharacterVariantTierDef> characterVariantTierDefs => src.characterVariantTierDefs;
+
         /// <summary>
         /// Access to this pack's <see cref="CharacterVariantDef"/>
         /// </summary>
@@ -211,7 +228,7 @@ namespace VAPI
             identifier = _identifier ?? throw new ArgumentNullException(nameof(_identifier));
 
             nameToken = _nameToken ?? throw new ArgumentNullException(nameof(_nameToken));
-            tooltipToken = _tooltipToken ?? throw new ArgumentNullException( nameof(_tooltipToken));
+            tooltipToken = _tooltipToken ?? throw new ArgumentNullException(nameof(_tooltipToken));
             descriptionToken = _descriptionToken ?? throw new ArgumentNullException(nameof(_descriptionToken));
             packIcon = _packIcon ?? throw new ArgumentNullException(nameof(_packIcon));
 

@@ -1,6 +1,5 @@
 #nullable enable
 using HG;
-using KinematicCharacterController;
 using RoR2;
 using System;
 using System.Runtime.CompilerServices;
@@ -28,7 +27,7 @@ namespace VAPI
         /// </summary>
         public void Dispose()
         {
-            if(!NetworkServer.active || _characterBody == null || _usedBuffDef == null)
+            if (!NetworkServer.active || _characterBody == null || _usedBuffDef == null)
             {
                 return;
             }
@@ -106,7 +105,7 @@ namespace VAPI
             }
 
             float sizeMultiplier = 1;
-            foreach(var variantDef in variantDefs)
+            foreach (var variantDef in variantDefs)
             {
                 if (variantDef.scaleMultiplier <= 0)
                 {
@@ -117,7 +116,7 @@ namespace VAPI
                 sizeMultiplier *= variantDef.scaleMultiplier;
             }
 
-            if(float.IsInfinity(sizeMultiplier))
+            if (float.IsInfinity(sizeMultiplier))
             {
                 LogWarning($"SizeModifier for {targetBody} with {variantDefs.Length} variants computed to an infinity size multiplier! setting size coefficient to 1");
                 _computedSizeCoefficient = 1;
@@ -126,7 +125,7 @@ namespace VAPI
 
             _computedSizeCoefficient = Mathf.Max(float.Epsilon, sizeMultiplier);
 
-            if(targetBody.TryGetComponent<ModelLocator>(out var mdlLocator))
+            if (targetBody.TryGetComponent<ModelLocator>(out var mdlLocator))
             {
                 _modelLocator = mdlLocator;
             }

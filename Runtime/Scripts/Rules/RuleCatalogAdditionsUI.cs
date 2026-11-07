@@ -1,8 +1,6 @@
 using MSU;
 using RoR2;
 using RoR2.UI;
-using RoR2BepInExPack;
-using System;
 using System.Collections;
 using System.Linq;
 using UnityEngine;
@@ -26,7 +24,7 @@ namespace VAPI.Rules
             parallelCoroutine.Add(spriteRequest);
             parallelCoroutine.Add(lockSpriteRequest);
 
-            while(!parallelCoroutine.isDone)
+            while (!parallelCoroutine.isDone)
             {
                 yield return null;
             }
@@ -43,7 +41,7 @@ namespace VAPI.Rules
         private static void RuleCategoryController_SetData(On.RoR2.UI.RuleCategoryController.orig_SetData orig, RoR2.UI.RuleCategoryController self, RuleCategoryDef categoryDef, RuleChoiceMask availability, RuleBook ruleBook)
         {
             orig(self, categoryDef, availability, ruleBook);
-            if(categoryDef is VAPIRuleCategoryDef vapiCategoryDef && vapiCategoryDef.associatedBodyIndex != BodyIndex.None)
+            if (categoryDef is VAPIRuleCategoryDef vapiCategoryDef && vapiCategoryDef.associatedBodyIndex != BodyIndex.None)
             {
                 CharacterBody bodyComponent = BodyCatalog.GetBodyPrefabBodyComponent(vapiCategoryDef.associatedBodyIndex);
 

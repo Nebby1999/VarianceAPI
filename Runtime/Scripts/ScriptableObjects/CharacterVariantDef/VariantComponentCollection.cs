@@ -1,11 +1,9 @@
 #nullable enable
 using HG;
-using MSU;
 using RoR2;
 using System;
 using System.Collections.Generic;
 using System.Reflection;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -69,8 +67,8 @@ namespace VAPI
             _initializationSharedComponents.Clear();
 
             _initialized = true;
-        
-            for(int i = 0; i < variantComponents.Length; i++)
+
+            for (int i = 0; i < variantComponents.Length; i++)
             {
                 SerializableSystemType serializableSystemType = variantComponents[i];
 
@@ -87,7 +85,7 @@ namespace VAPI
                     continue;
                 }
 
-                if(componentType.IsAbstract)
+                if (componentType.IsAbstract)
                 {
                     VAPILog.Warning($"SerializableSystemType at index {i} represents a VariantComponent that's abstract, this is not allowed.");
                     continue;
@@ -102,7 +100,7 @@ namespace VAPI
 
                 var targetObject = attribute.targetObject;
 
-                if(attribute.useOnClient == false && attribute.useOnServer == false)
+                if (attribute.useOnClient == false && attribute.useOnServer == false)
                 {
                     VAPILog.Warning($"SerialiableSystemType at index {i} represents a VariantComponent Type. However it's TargetComponentObjectAttribute has useOnClient and useOnServer set to false! This component will not be added to objects at all.");
                     continue;
@@ -112,11 +110,11 @@ namespace VAPI
                 {
                     _initializationSharedComponents.Add(new ComponentTypeData { targetObject = targetObject, componentType = componentType });
                 }
-                if(attribute.useOnServer)
+                if (attribute.useOnServer)
                 {
                     _initializationServerComponents.Add(new ComponentTypeData { targetObject = targetObject, componentType = componentType });
                 }
-                if(attribute.useOnClient)
+                if (attribute.useOnClient)
                 {
                     _initializationClientComponents.Add(new ComponentTypeData { targetObject = targetObject, componentType = componentType });
                 }
@@ -181,7 +179,7 @@ namespace VAPI
                 return null;
 
             DisposableVariantComponentCollectionModification disposableModification = new DisposableVariantComponentCollectionModification();
-            for(int i = 0; i < componentTypeDatas.Length; i++)
+            for (int i = 0; i < componentTypeDatas.Length; i++)
             {
                 if (componentTypeDatas[i].targetObject == targetObjectValue)
                 {
@@ -198,15 +196,15 @@ namespace VAPI
             bool serverActive = NetworkServer.active;
             bool clientActive = NetworkClient.active;
 
-            if(serverActive)
+            if (serverActive)
             {
-                if(clientActive)
+                if (clientActive)
                 {
                     return _sharedComponents;
                 }
                 return _serverComponents;
             }
-            if(clientActive)
+            if (clientActive)
             {
                 return _clientComponents;
             }
@@ -258,9 +256,9 @@ namespace VAPI
         public static VariantComponentCollection Create(params Type[] variantComponentTypes)
         {
             _createParamsTypeHelper.Clear();
-            foreach(Type type in variantComponentTypes)
+            foreach (Type type in variantComponentTypes)
             {
-                if(type.IsSubclassOf(typeof(VariantComponent)))
+                if (type.IsSubclassOf(typeof(VariantComponent)))
                 {
                     _createParamsTypeHelper.Add((SerializableSystemType)type);
                 }

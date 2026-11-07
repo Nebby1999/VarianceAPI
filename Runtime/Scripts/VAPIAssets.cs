@@ -26,7 +26,7 @@ namespace VAPI
                 return Path.Combine(Path.GetDirectoryName(VAPIMain.instance!.Info.Location), ASSET_BUNDLE_FOLDER_NAME);
             }
         }
-        
+
         /// <summary>
         /// Resource availability that becomes available when VAPI initializes this class
         /// </summary>
@@ -245,7 +245,7 @@ namespace VAPI
 
         private static VAPIAssetRequest<TAsset> GetExistingOrCreateRequest()
         {
-            if(_stack.TryPop(out var assetRequest))
+            if (_stack.TryPop(out var assetRequest))
             {
                 return assetRequest;
             }
@@ -303,7 +303,7 @@ namespace VAPI
             else
             {
                 _assets = new TAsset[request.allAssets.Length];
-                for(int i = 0; i < request.allAssets.Length; i++)
+                for (int i = 0; i < request.allAssets.Length; i++)
                 {
                     _assets[i] = (TAsset)request.allAssets[i];
                 }

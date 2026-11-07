@@ -26,7 +26,7 @@ namespace VAPI
             get => _cachedName;
             set
             {
-                if(string.IsNullOrWhiteSpace(value))
+                if (string.IsNullOrWhiteSpace(value))
                 {
                     throw new ArgumentException("The value set to cachedName cannot be null, empty or whitespace.");
                 }

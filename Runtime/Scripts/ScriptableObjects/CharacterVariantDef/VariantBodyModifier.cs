@@ -9,7 +9,7 @@ namespace VAPI
     /// <summary>
     /// A <see cref="IVariantBodyModifier"/> is a <see cref="IValidatable"/> and <see cref="ICloneable"/> interface used to define new Body modifiers. These implementations can be serialized in the editor via the <see cref="SerializeReference"/> attribute.
     /// <br></br>
-    /// Modifications are done via the <see cref="ModifyBody(CharacterMaster)"/> method.
+    /// Modifications are done via the <see cref="ModifyBody(CharacterBody)"/> method.
     /// <br></br>
     /// Must support cloning via the <see cref="ICloneable"/> implementation.
     /// <para></para>

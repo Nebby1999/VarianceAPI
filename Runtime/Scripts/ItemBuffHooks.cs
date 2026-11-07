@@ -19,7 +19,7 @@ namespace VAPI
         private static void MakeHealthBarGreen(On.RoR2.UI.HealthBar.orig_UpdateBarInfos orig, RoR2.UI.HealthBar self)
         {
             orig(self);
-            if(self.source && self.source.body && self.source.body.HasItem(VAPIContent.Items.GreenHealthbar.asset))
+            if (self.source && self.source.body && self.source.body.HasItem(VAPIContent.Items.GreenHealthbar.asset))
             {
                 self.barInfoCollection.trailingOverHealthbarInfo.color = VAPIConfig._variantHealthBarColor;
             }

@@ -1,6 +1,5 @@
 #nullable enable
 using BepInEx.Logging;
-using System;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
 using UDebug = UnityEngine.Debug;
@@ -92,7 +91,7 @@ namespace VAPI
 
         public static void BreakWhen(bool condition)
         {
-            if(condition)
+            if (condition)
             {
                 Break();
             }

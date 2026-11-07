@@ -1,5 +1,4 @@
 #nullable enable
-using HG;
 using MSU;
 using R2API.AddressReferencedAssets;
 using RoR2;
@@ -20,7 +19,7 @@ namespace VAPI
     ///     These enums suck, both in concept and in terms of performance, technically speaking we can check if theyre still needed.
     ///     If we do still need them, the code from VAPI 2.0 only modified the bones array from the skinned mesh renderer, so we can use our disposable system to dispose of those changes and revert it back to how it's meant to be,
     /// </summary>*/
-    
+
     /// <summary>
     /// The <see cref="CharacterVariantVisualModifier"/> is a "Skin like" system for applying visuals to a variant.
     /// </summary>
@@ -44,7 +43,7 @@ namespace VAPI
 
             public void Dispose()
             {
-                if(_skinController)
+                if (_skinController)
                 {
                     bool isPlayerControlled = _skinController.characterModel && _skinController.characterModel.body && _skinController.characterModel.body.isPlayerControlled;
 
@@ -252,7 +251,7 @@ namespace VAPI
 
                 if (prefabDirectReference != null)
                     return prefabDirectReference;
-                else if(prefabAddress != null && prefabAddress.RuntimeKeyIsValid())
+                else if (prefabAddress != null && prefabAddress.RuntimeKeyIsValid())
                 {
                     loadedPrefabHandle = AssetAsyncReferenceManager<GameObject>.LoadAsset(prefabAddress, AsyncReferenceHandleUnloadType.OnSceneUnload);
                     return loadedPrefabHandle.Value.WaitForCompletion();
@@ -263,7 +262,7 @@ namespace VAPI
             internal bool TryGetChildLocatorTransform(CharacterModel characterModel, out Transform? resultTransform)
             {
                 resultTransform = null;
-                if(!string.IsNullOrWhiteSpace(childLocatorEntry) && characterModel.childLocator && characterModel.childLocator.TryFindChild(childLocatorEntry, out resultTransform))
+                if (!string.IsNullOrWhiteSpace(childLocatorEntry) && characterModel.childLocator && characterModel.childLocator.TryFindChild(childLocatorEntry, out resultTransform))
                 {
                     return true;
                 }
@@ -309,7 +308,7 @@ namespace VAPI
         /// <param name="appliedMeshReplacements">Becomes true if any mesh replacement is applied.</param>
         public IDisposable ApplyVisualModifiers(CharacterModel characterModel, CharacterBodyVariantController characterBodyVariantController, out bool appliedMeshReplacements)
         {
-            if(!characterModel.TryGetComponent<ModelSkinController>(out var mdlSkinController))
+            if (!characterModel.TryGetComponent<ModelSkinController>(out var mdlSkinController))
             {
                 VAPILog.Warning($"{characterModel} does not have a ModelSkinController! Characters require ModelSkinControllers and at the very least a BaseSkin since Memopt. Applying new variants to this character will not undo the skin changes.");
             }
@@ -325,23 +324,23 @@ namespace VAPI
 
         private void ApplyMaterialReplacements(CharacterModel characterModel)
         {
-            for(int i = 0; i < materialReplacements.Length; i++)
+            for (int i = 0; i < materialReplacements.Length; i++)
             {
                 ref RendererTargetedReplacement<Material> rendererTargetedReplacement = ref materialReplacements[i];
 
-                if(!rendererTargetedReplacement.replacement)
+                if (!rendererTargetedReplacement.replacement)
                 {
                     VAPILog.Warning($"Material Replacement at index {i} of {this} lacks a Material. Not applying material replacement");
                     continue;
                 }
 
                 rendererTargetedReplacement.UpgradeTransformPathToRendererIndex(characterModel);
-                if(rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
+                if (rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
                 {
                     ref CharacterModel.RendererInfo rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
                     rendererInfo.defaultMaterial = rendererTargetedReplacement.replacement;
                 }
-                else if(rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
+                else if (rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
                 {
                     renderer!.sharedMaterial = rendererTargetedReplacement.replacement;
                 }
@@ -355,7 +354,7 @@ namespace VAPI
         private bool ApplyMeshReplacements(CharacterModel characterModel)
         {
             bool success = false;
-            if(!VAPIConfig._activateMeshReplacementSystem)
+            if (!VAPIConfig._activateMeshReplacementSystem)
             {
                 return success;
             }
@@ -379,20 +378,20 @@ namespace VAPI
             for (int i = 0; i < meshReplacements.Length; i++)
             {
                 ref RendererTargetedReplacement<Mesh> rendererTargetedReplacement = ref meshReplacements[i];
-                if(!rendererTargetedReplacement.replacement)
+                if (!rendererTargetedReplacement.replacement)
                 {
                     VAPILog.Warning($"Mesh Replacement at index {i} of {this} lacks a Mesh. Not applying mesh replacement.");
                     continue;
                 }
 
                 rendererTargetedReplacement.UpgradeTransformPathToRendererIndex(characterModel);
-                if(rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
+                if (rendererTargetedReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseRendererInfos, rendererTargetedReplacement.rendererIndex))
                 {
                     ref CharacterModel.RendererInfo rendererInfo = ref characterModel.baseRendererInfos[rendererTargetedReplacement.rendererIndex];
                     SetMesh(rendererInfo.renderer, rendererTargetedReplacement.replacement!);
                     success = true;
                 }
-                else if(rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
+                else if (rendererTargetedReplacement.TryGetRenderer(characterModel, out var renderer))
                 {
                     SetMesh(renderer!, rendererTargetedReplacement.replacement!);
                     success = true;
@@ -407,17 +406,17 @@ namespace VAPI
 
         private void ApplyLightReplacements(CharacterModel characterModel)
         {
-            for(int i = 0; i < lightReplacements.Length; i++)
+            for (int i = 0; i < lightReplacements.Length; i++)
             {
                 ref LightReplacement lightReplacement = ref lightReplacements[i];
                 lightReplacement.UpgradeTransformPathToLightIndex(characterModel);
 
-                if(lightReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseLightInfos, lightReplacement.lightIndex))
+                if (lightReplacement.useIndex && HG.ArrayUtils.IsInBounds(characterModel.baseLightInfos, lightReplacement.lightIndex))
                 {
                     ref var lightInfo = ref characterModel.baseLightInfos[lightReplacement.lightIndex];
                     lightInfo.defaultColor = lightReplacement.lightColor;
                 }
-                else if(lightReplacement.TryGetLight(characterModel, out var lightComponent))
+                else if (lightReplacement.TryGetLight(characterModel, out var lightComponent))
                 {
                     lightComponent!.color = lightReplacement.lightColor;
                 }
@@ -444,7 +443,7 @@ namespace VAPI
                 ref PrefabInstantiationData prefabInstantiationData = ref prefabInstantiationDatas[i];
 
                 GameObject? prefab = prefabInstantiationData.GetPrefabToInstantiate(out var handle);
-                if(!prefab)
+                if (!prefab)
                 {
                     VAPILog.Error($"Failed to Instantiate Prefab at index {i} of {this}. There's no GameObject to spawn.");
                     if (handle.HasValue)
@@ -475,19 +474,19 @@ namespace VAPI
                 }
 
                 //If the handle is not null, add the addressable prefab instance component so it gets released when destroyed
-                if(handle.HasValue)
+                if (handle.HasValue)
                 {
                     instantiatedPrefab!.AddComponent<AddressablePrefabInstance>()
                         .assetReference = prefabInstantiationData.prefabAddress;
                 }
 
-                if(instantiatedPrefab != null && instantiatedPrefab.TryGetComponent<CustomGameObjectActivationInfoContainer>(out var infoContainer))
+                if (instantiatedPrefab != null && instantiatedPrefab.TryGetComponent<CustomGameObjectActivationInfoContainer>(out var infoContainer))
                 {
-                    if(infoContainer.rendererInfos.Length > 0)
+                    if (infoContainer.rendererInfos.Length > 0)
                     {
                         characterModel.baseRendererInfos = HG.ArrayUtils.Join(characterModel.baseRendererInfos, infoContainer.rendererInfos);
                     }
-                    if(infoContainer.lightInfos.Length > 0)
+                    if (infoContainer.lightInfos.Length > 0)
                     {
                         characterModel.baseLightInfos = HG.ArrayUtils.Join(characterModel.baseLightInfos, infoContainer.lightInfos);
                     }
@@ -620,19 +619,19 @@ namespace VAPI
         {
             CreateInstanceArgs args = new CreateInstanceArgs();
             args.SetName(newName);
-            for(int i = 0; i < other.materialReplacements.Length; i++)
+            for (int i = 0; i < other.materialReplacements.Length; i++)
             {
                 args.AddMaterialReplacement((RendererTargetedReplacement<Material>)other.materialReplacements[i].Clone());
             }
-            for(int i = 0; i < other.meshReplacements.Length; i++)
+            for (int i = 0; i < other.meshReplacements.Length; i++)
             {
                 args.AddMeshReplacement((RendererTargetedReplacement<Mesh>)other.meshReplacements[i].Clone());
             }
-            for(int i = 0; i < other.lightReplacements.Length; i++)
+            for (int i = 0; i < other.lightReplacements.Length; i++)
             {
                 args.AddLightReplacement((LightReplacement)other.lightReplacements[i].Clone());
             }
-            for(int i = 0; i < other.prefabInstantiationDatas.Length; i++)
+            for (int i = 0; i < other.prefabInstantiationDatas.Length; i++)
             {
                 args.AddPrefabInstantiationData((PrefabInstantiationData)other.prefabInstantiationDatas[i].Clone());
             }

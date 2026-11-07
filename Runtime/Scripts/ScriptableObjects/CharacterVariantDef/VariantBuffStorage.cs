@@ -57,7 +57,14 @@ namespace VAPI
     /// </summary>
     public struct BuffCountPair
     {
+        /// <summary>
+        /// The BuffDef to grant
+        /// </summary>
         public BuffDef buffDef;
+
+        /// <summary>
+        /// The amount of buffs to grant
+        /// </summary>
         public int buffCount;
     }
 
@@ -85,15 +92,15 @@ namespace VAPI
         /// </summary>
         public bool TryGetBuffCountPair(out BuffCountPair asBuffCountPair)
         {
-            if(_buffCountPair.HasValue)
+            if (_buffCountPair.HasValue)
             {
                 asBuffCountPair = _buffCountPair.Value;
                 return true;
             }
 
             asBuffCountPair = default;
-            
-            if(_buffDefFailedToLoad)
+
+            if (_buffDefFailedToLoad)
             {
                 return false;
             }
@@ -125,7 +132,7 @@ namespace VAPI
             {
                 count = count,
             };
-            if(timedApplicationImpl != null)
+            if (timedApplicationImpl != null)
             {
                 result.timedApplicationImpl = (IVariantBuffInfoTimedApplication)timedApplicationImpl.Clone();
             }
@@ -163,14 +170,14 @@ namespace VAPI
 
             public void Dispose()
             {
-                if(!_characterBody)
+                if (!_characterBody)
                 {
                     return;
                 }
 
-                for(int i = 0; i < _buffCountPairs.Length; i++)
+                for (int i = 0; i < _buffCountPairs.Length; i++)
                 {
-                    for(int j = 0; j < _buffCountPairs[i].buffCount; j++)
+                    for (int j = 0; j < _buffCountPairs[i].buffCount; j++)
                     {
                         _characterBody.RemoveBuff(_buffCountPairs[j].buffDef);
                     }
@@ -198,7 +205,7 @@ namespace VAPI
                 return null;
 
             _appliedBuffCountPairs.Clear();
-            for(int i = 0; i< buffInfos.Length; i++)
+            for (int i = 0; i < buffInfos.Length; i++)
             {
                 if (!buffInfos[i].TryGetBuffCountPair(out var buffCountPair))
                 {
@@ -212,7 +219,7 @@ namespace VAPI
                     continue;
                 }
 
-                for(int j = 0; j < buffCountPair.buffCount; j++)
+                for (int j = 0; j < buffCountPair.buffCount; j++)
                 {
                     characterBody.AddBuff(buffCountPair.buffDef);
                 }
@@ -228,7 +235,7 @@ namespace VAPI
         public object Clone()
         {
             var result = new VariantBuffStorage(new VariantBuffInfo[buffInfos.Length]);
-            for(int i = 0; i < result.buffInfos.Length; i++)
+            for (int i = 0; i < result.buffInfos.Length; i++)
             {
                 result.buffInfos[i] = (VariantBuffInfo)buffInfos[i].Clone();
             }

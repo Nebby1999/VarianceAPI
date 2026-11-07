@@ -1,12 +1,8 @@
 ﻿using EntityStates;
 using HG;
-using MSU.Config;
-using R2API;
 using RoR2;
-using RoR2.ExpansionManagement;
 using RoR2.Skills;
 using System;
-using System.Linq;
 using UnityEngine;
 using UnityEngine.Serialization;
 using VAPI.Legacy.Components;

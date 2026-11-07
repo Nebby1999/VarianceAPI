@@ -1,10 +1,8 @@
 using R2API;
 using RoR2;
-using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Runtime.CompilerServices;
-using UnityEngine;
 
 namespace VAPI.Rules
 {
@@ -46,7 +44,7 @@ namespace VAPI.Rules
             }
 
             coroutine = AddPerBodyVariantCategoryAndRules();
-            while(coroutine.MoveNext())
+            while (coroutine.MoveNext())
             {
                 yield return null;
             }
@@ -58,7 +56,7 @@ namespace VAPI.Rules
             VAPILog.Info($"VAPI Rulebook initialized");
 
             coroutine = RuleCatalogAdditionsUI.Init();
-            while(coroutine.MoveNext())
+            while (coroutine.MoveNext())
             {
                 yield return null;
             }
@@ -76,7 +74,7 @@ namespace VAPI.Rules
                 ruleDef.FindChoice("Off").tooltipNameToken = variantName;
             }
 
-            foreach(var (bodyIndex, ruleDef) in bodyIndexToRule)
+            foreach (var (bodyIndex, ruleDef) in bodyIndexToRule)
             {
                 CharacterBody bodyComponent = BodyCatalog.GetBodyPrefabBodyComponent(bodyIndex);
                 string bodyName = RuleDefCreation.GetInGameName(bodyComponent, null);
@@ -92,7 +90,7 @@ namespace VAPI.Rules
         public static void GenerateCharacterVariantMask(this RuleBook ruleBook, CharacterVariantMask variantMask)
         {
             variantMask.Clear();
-            foreach(var (variantIndex, rule) in variantToRule)
+            foreach (var (variantIndex, rule) in variantToRule)
             {
                 ExtendedRuleChoiceDef onChoice = (ExtendedRuleChoiceDef)rule.FindChoice("On");
 
@@ -118,10 +116,10 @@ namespace VAPI.Rules
 
             yield return null;
 
-            for(int i = 0; i < VariantPackManager.registeredVariantPacks.Length; i++)
+            for (int i = 0; i < VariantPackManager.registeredVariantPacks.Length; i++)
             {
                 ReadOnlyVariantPack variantPack = VariantPackManager.registeredVariantPacks[i];
-                
+
                 yield return null;
 
                 RuleDef packRule = RuleDefCreation.CreateRuleDefFromVariantPack(variantPackCategory, variantPack, variantPack.isHidden);
@@ -138,7 +136,7 @@ namespace VAPI.Rules
 
             LogMessage($"Added Character Variant Group Category");
             //We will iterate thru the body components
-            foreach(var bodyComponent in BodyCatalog.allBodyPrefabBodyBodyComponents)
+            foreach (var bodyComponent in BodyCatalog.allBodyPrefabBodyBodyComponents)
             {
                 yield return null;
 
@@ -164,7 +162,7 @@ namespace VAPI.Rules
                 bodyToVariantCategories.Add(bodyComponent.bodyIndex, categoryForBodyComponentVariants);
 
                 //Iterate thru each variant from the body
-                foreach(var variant in variantProviderForBody.allVariants)
+                foreach (var variant in variantProviderForBody.allVariants)
                 {
                     yield return null;
 
@@ -179,9 +177,9 @@ namespace VAPI.Rules
 
         private static bool HasAllVariantsHidden(CharacterVariantProvider provider)
         {
-            foreach(var variant in provider.allVariants)
+            foreach (var variant in provider.allVariants)
             {
-                if(variant.isHidden == false)
+                if (variant.isHidden == false)
                 {
                     return false;
                 }

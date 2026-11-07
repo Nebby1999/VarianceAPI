@@ -60,7 +60,7 @@ namespace VAPI
             coroutine.Add(wispWaveRequest);
             coroutine.Add(assetCollectionRequest);
 
-            while(!coroutine.isDone)
+            while (!coroutine.isDone)
             {
                 yield return null;
             }

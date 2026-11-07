@@ -1,7 +1,6 @@
 #nullable enable
 using RoR2;
 using RoR2.CharacterAI;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -18,10 +17,7 @@ namespace VAPI
         /// </summary>
         public const float TIME_BETWEEN_ATTEMPTS = 0.25f;
 
-        /// <summary>
-        /// Data for the equipment
-        /// </summary>
-        public struct EquipmentData
+        private struct EquipmentData
         {
             public EquipmentIndex requiredIndex;
             public float aiMaxUseHealthFraction;
@@ -107,7 +103,7 @@ namespace VAPI
             }
 
             //Switch equipment
-            if(_switchTimeStamp.hasPassed)
+            if (_switchTimeStamp.hasPassed)
             {
                 SwitchEquipment();
                 _switchTimeStamp = Run.FixedTimeStamp.now + GetTimeUntilEquipmentSwitch();
@@ -147,9 +143,9 @@ namespace VAPI
                 return;
 
             BaseAI[] aiComponents = body.master.aiComponents;
-            foreach(BaseAI aiComponent in aiComponents)
+            foreach (BaseAI aiComponent in aiComponents)
             {
-                if(aiComponent.currentEnemy.bestHurtBox && Vector3.Distance(body.corePosition, aiComponent.currentEnemy.bestHurtBox.transform.position) > maxUseDistance)
+                if (aiComponent.currentEnemy.bestHurtBox && Vector3.Distance(body.corePosition, aiComponent.currentEnemy.bestHurtBox.transform.position) > maxUseDistance)
                 {
                     return;
                 }
@@ -164,10 +160,10 @@ namespace VAPI
 
         private float GetTimeUntilEquipmentSwitch()
         {
-            if(HG.ListUtils.IsInBounds(_equipmentDatas, _currentDataIndex))
+            if (HG.ListUtils.IsInBounds(_equipmentDatas, _currentDataIndex))
             {
                 var data = _equipmentDatas[_currentDataIndex];
-                if(Mathf.Approximately(data.timeUntilEquipmentSwitch, 0f))
+                if (Mathf.Approximately(data.timeUntilEquipmentSwitch, 0f))
                 {
                     return float.PositiveInfinity;
                 }
@@ -178,7 +174,7 @@ namespace VAPI
 
         private float GetAIMaxUseHealthFraction()
         {
-            if(HG.ListUtils.IsInBounds(_equipmentDatas, _currentDataIndex))
+            if (HG.ListUtils.IsInBounds(_equipmentDatas, _currentDataIndex))
             {
                 return _equipmentDatas[_currentDataIndex].aiMaxUseHealthFraction;
             }
@@ -187,7 +183,7 @@ namespace VAPI
 
         private float GetAiMaxUseDistance()
         {
-            if(HG.ListUtils.IsInBounds(_equipmentDatas, _currentDataIndex))
+            if (HG.ListUtils.IsInBounds(_equipmentDatas, _currentDataIndex))
             {
                 return _equipmentDatas[_currentDataIndex].aiMaxUseDistance;
             }

@@ -1,7 +1,5 @@
 #nullable enable
-using MonoMod.Utils;
 using RoR2;
-using RoR2.Items;
 using RoR2BepInExPack.Utilities;
 using System;
 
@@ -29,7 +27,7 @@ namespace VAPI
         private static void CallVariantMasterSummonMethodIfApplicable(MasterSummon.MasterSummonReport obj)
         {
             var masterSummon = obj.masterSummon;
-            if(_masterSummonToVariantMasterSummon.TryGetValue(masterSummon, out var variantMasterSummon))
+            if (_masterSummonToVariantMasterSummon.TryGetValue(masterSummon, out var variantMasterSummon))
             {
                 variantMasterSummon.OnMasterSummonReportGenerated(obj);
             }

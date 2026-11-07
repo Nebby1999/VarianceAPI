@@ -1,7 +1,5 @@
 #nullable enable
-using BepInEx.Configuration;
 using HG;
-using HG.Coroutines;
 using MSU;
 using MSU.Config;
 using RiskOfOptions.OptionConfigs;
@@ -59,7 +57,7 @@ namespace VAPI
         {
             ThrowIfUnavailable();
 
-            if(HG.ArrayUtils.TryGetSafe(_characterVariantTierDefs!, (int)index, out CharacterVariantTierDef result))
+            if (HG.ArrayUtils.TryGetSafe(_characterVariantTierDefs!, (int)index, out CharacterVariantTierDef result))
             {
                 return result;
             }
@@ -78,13 +76,13 @@ namespace VAPI
         {
             ThrowIfUnavailable();
 
-            if(string.IsNullOrWhiteSpace(characterVariantTierName))
+            if (string.IsNullOrWhiteSpace(characterVariantTierName))
             {
                 LogWarning($"Cannot find a CharacterVariantTierIndex with an empty name, returning CharacterVariantTierIndex.None");
                 return CharacterVariantTierIndex.None;
             }
 
-            if(_characterVariantTierNametoIndex.TryGetValue(characterVariantTierName, out var index))
+            if (_characterVariantTierNametoIndex.TryGetValue(characterVariantTierName, out var index))
             {
                 return index;
             }
@@ -100,7 +98,7 @@ namespace VAPI
 
             using (var coroutineWithResult = HG.Coroutines.CoroutineWithResult<CharacterVariantTierDef[]>.Rent(RegisterTierDefs(VariantPackManager.characterVariantTierDefs)))
             {
-                while(coroutineWithResult.MoveNext())
+                while (coroutineWithResult.MoveNext())
                 {
                     yield return null;
                 }
@@ -288,7 +286,7 @@ namespace VAPI
                     tierDef.bonusArmor = f;
                 }).DoConfigure();
             }
-            catch(Exception e)
+            catch (Exception e)
             {
                 VAPILog.Error($"Error configuring tier {tierDef}: {e}");
                 InitializationExceptionWatcher.AddException(e, tierDef.ownerPlugin);

@@ -114,7 +114,7 @@ namespace VAPI
             args.attackSpeedTotalMult *= _attackSpeedMultiplier;
             args.damageTotalMult *= _damageMultiplier;
             args.armorAdd += armorBonus;
-            args.armorTotalMult *= _armorMultiplier; 
+            args.armorTotalMult *= _armorMultiplier;
         }
 
         /// <summary>

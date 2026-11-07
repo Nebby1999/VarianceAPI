@@ -8,7 +8,7 @@ namespace EntityStates
         public override void FixedUpdate()
         {
             base.FixedUpdate();
-            if(isAuthority)
+            if (isAuthority)
             {
                 outer.SetNextStateToMain();
             }

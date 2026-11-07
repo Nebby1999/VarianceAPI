@@ -1,11 +1,8 @@
 #nullable enable
-using HG;
-using MSU;
 using R2API.AddressReferencedAssets;
 using RoR2;
 using System;
 using UnityEngine;
-using UnityEngine.AddressableAssets;
 using VAPI.AddressReferencedAssets;
 
 namespace VAPI
@@ -46,13 +43,13 @@ namespace VAPI
         /// </summary>
         public CharacterBody? LoadCharacterComponent()
         {
-            if(BodyCatalog.availability.available == false)
+            if (BodyCatalog.availability.available == false)
             {
                 VAPILog.Error($"Cannot load character component for {targetBody} as the body catalog is not initialized!");
                 return null;
             }
 
-            if(_cachedBody)
+            if (_cachedBody)
             {
                 return _cachedBody;
             }
@@ -61,12 +58,12 @@ namespace VAPI
                 return null;
 
             var bodyPrefab = targetBody.LoadAssetNow();
-            if(!bodyPrefab)
+            if (!bodyPrefab)
             {
                 return null;
             }
 
-            if(bodyPrefab.TryGetComponent<CharacterBody>(out var body))
+            if (bodyPrefab.TryGetComponent<CharacterBody>(out var body))
             {
                 _cachedBody = body;
                 return _cachedBody;

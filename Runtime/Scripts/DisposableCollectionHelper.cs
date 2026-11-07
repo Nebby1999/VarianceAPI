@@ -28,7 +28,7 @@ namespace VAPI
         /// <param name="disposable">The disposable instance, can be null</param>
         public void AddDisposable(IDisposable? disposable)
         {
-            if(disposable != null)
+            if (disposable != null)
                 _disposables.Add(disposable);
         }
 
@@ -37,7 +37,7 @@ namespace VAPI
         /// </summary>
         public void Dispose()
         {
-            if(_reverseForLoop)
+            if (_reverseForLoop)
             {
                 DisposeReverse();
             }
@@ -58,7 +58,7 @@ namespace VAPI
 
         private void DisposeForward()
         {
-            for(int i = 0; i < _disposables.Count; i++)
+            for (int i = 0; i < _disposables.Count; i++)
             {
                 _disposables[i].Dispose();
             }

@@ -25,7 +25,7 @@ namespace VAPI
 
             public void Dispose()
             {
-                if(_characterDeathBehaviour != null)
+                if (_characterDeathBehaviour != null)
                 {
                     _characterDeathBehaviour.deathState = _originalDeathState;
                 }
@@ -49,7 +49,7 @@ namespace VAPI
             if (type == null)
             {
 #if DEBUG
-                if(!string.IsNullOrWhiteSpace(deathStateOverride.typeName))
+                if (!string.IsNullOrWhiteSpace(deathStateOverride.typeName))
                 {
                     VAPILog.Warning($"SerializableEntityStateType {deathStateOverride.typeName} resolved to a null Type.");
                 }

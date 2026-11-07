@@ -1,4 +1,3 @@
-using NUnit.Framework;
 using R2API.AddressReferencedAssets;
 using RoR2;
 using RoR2.Editor;
@@ -6,7 +5,6 @@ using RoR2.ExpansionManagement;
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Collections.ObjectModel;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -126,7 +124,7 @@ This method of loading is more foolproof as item names may change but guids do n
         protected override void Cleanup(string coroutineName)
         {
             base.Cleanup(coroutineName);
-            if(coroutineName == "Run")
+            if (coroutineName == "Run")
             {
                 _addressableBodyPaths.Clear();
                 _addressableItemPaths.Clear();
@@ -146,7 +144,7 @@ This method of loading is more foolproof as item names may change but guids do n
 
             using (var entryLookup = new AddressablesPathDictionary.EntryLookup())
             {
-                if(typeof(T).IsSubclassOf(typeof(MonoBehaviour)))
+                if (typeof(T).IsSubclassOf(typeof(MonoBehaviour)))
                 {
                     entryLookup.WithComponentRequirement(typeof(T), false)
                         .WithTypeRestriction(typeof(GameObject));
@@ -160,7 +158,7 @@ This method of loading is more foolproof as item names may change but guids do n
                     .WithLookupType(AddressablesPathDictionary.EntryType.Path)
                     .PerformLookupAsync();
 
-                while(subroutine.MoveNext())
+                while (subroutine.MoveNext())
                 {
                     yield return null;
                 }
@@ -228,7 +226,7 @@ This method of loading is more foolproof as item names may change but guids do n
 
         private IEnumerator MigrateAddressReferencedVariants()
         {
-            using(new AssetDatabaseUtil.AssetEditingSaveScope())
+            using (new AssetDatabaseUtil.AssetEditingSaveScope())
             {
                 yield return 0;
                 for (int i = 0; i < variantDefs.Length; i++)
@@ -238,13 +236,13 @@ This method of loading is more foolproof as item names may change but guids do n
                     yield return R2EKMath.Remap(i, 0, variantDefs.Length, 0, 1);
 
                     CharacterVariantTarget target = variantDef.targetBody;
-                    if(ShouldTryToUpgradeAddressReferencedAsset(target.targetBody) && TryGetMatchingAssetFromAddressablePath(_addressableBodyPaths, target.targetBody.Address, out string bodyGUID))
+                    if (ShouldTryToUpgradeAddressReferencedAsset(target.targetBody) && TryGetMatchingAssetFromAddressablePath(_addressableBodyPaths, target.targetBody.Address, out string bodyGUID))
                     {
                         target.targetBody = new AddressReferencedBody(bodyGUID);
                         modified = true;
                     }
 
-                    if(variantDef.spawnCondition is BasicSpawnCondition basicSpawnCondition)
+                    if (variantDef.spawnCondition is BasicSpawnCondition basicSpawnCondition)
                     {
                         UpgradeBasicSpawnCondition(basicSpawnCondition);
                         modified = true;
@@ -267,7 +265,7 @@ This method of loading is more foolproof as item names may change but guids do n
         {
             bool result = false;
 
-            if(ShouldTryToUpgradeAddressReferencedAsset(basicSpawnCondition.requiredUnlock) && TryGetMatchingAssetFromAddressablePath(_addressableUnlockablePaths, basicSpawnCondition.requiredUnlock.Address, out string guid))
+            if (ShouldTryToUpgradeAddressReferencedAsset(basicSpawnCondition.requiredUnlock) && TryGetMatchingAssetFromAddressablePath(_addressableUnlockablePaths, basicSpawnCondition.requiredUnlock.Address, out string guid))
             {
                 basicSpawnCondition.requiredUnlock = new AddressReferencedUnlockableDef(guid);
                 result = true;
@@ -279,7 +277,7 @@ This method of loading is more foolproof as item names may change but guids do n
                 result = true;
             }
 
-            for(int i = 0; i < basicSpawnCondition.requiredExpansionDefs.Length; i++)
+            for (int i = 0; i < basicSpawnCondition.requiredExpansionDefs.Length; i++)
             {
                 if (ShouldTryToUpgradeAddressReferencedAsset(basicSpawnCondition.requiredExpansionDefs[i]) && TryGetMatchingAssetFromAddressablePath(_addressableExpansionPaths, basicSpawnCondition.requiredExpansionDefs[i].Address, out guid))
                 {
@@ -295,11 +293,11 @@ This method of loading is more foolproof as item names may change but guids do n
         {
             bool result = false;
             string guid = "";
-            for(int i = 0; i < inventoryDefinition.itemsToGrant.Length; i++)
+            for (int i = 0; i < inventoryDefinition.itemsToGrant.Length; i++)
             {
                 var itemCountPair = inventoryDefinition.itemsToGrant[i];
 
-                if(ShouldTryToUpgradeAddressReferencedAsset(itemCountPair.itemDef) && TryGetMatchingAssetFromAddressablePath(_addressableItemPaths, itemCountPair.itemDef.Address, out guid))
+                if (ShouldTryToUpgradeAddressReferencedAsset(itemCountPair.itemDef) && TryGetMatchingAssetFromAddressablePath(_addressableItemPaths, itemCountPair.itemDef.Address, out guid))
                 {
                     itemCountPair.itemDef = new AddressReferencedItemDef(guid);
                     result = true;
@@ -308,7 +306,7 @@ This method of loading is more foolproof as item names may change but guids do n
                 inventoryDefinition.itemsToGrant[i] = itemCountPair;
             }
 
-            if(ShouldTryToUpgradeAddressReferencedAsset(inventoryDefinition.equipmentInfo.equipmentDef) && TryGetMatchingAssetFromAddressablePath(_addressableEquipmentPaths, inventoryDefinition.equipmentInfo.equipmentDef.Address, out guid))
+            if (ShouldTryToUpgradeAddressReferencedAsset(inventoryDefinition.equipmentInfo.equipmentDef) && TryGetMatchingAssetFromAddressablePath(_addressableEquipmentPaths, inventoryDefinition.equipmentInfo.equipmentDef.Address, out guid))
             {
                 var eqpInfo = inventoryDefinition.equipmentInfo;
 
@@ -323,11 +321,11 @@ This method of loading is more foolproof as item names may change but guids do n
         private bool UpgradeVariantBuffStorage(VariantBuffStorage buffStorage)
         {
             bool result = false;
-            for(int i = 0; i < buffStorage.buffInfos.Length; i++)
+            for (int i = 0; i < buffStorage.buffInfos.Length; i++)
             {
                 var buffCountPair = buffStorage.buffInfos[i];
 
-                if(ShouldTryToUpgradeAddressReferencedAsset(buffCountPair.buffDef) && TryGetMatchingAssetFromAddressablePath(_addressableBuffPaths, buffCountPair.buffDef.Address, out string guid))
+                if (ShouldTryToUpgradeAddressReferencedAsset(buffCountPair.buffDef) && TryGetMatchingAssetFromAddressablePath(_addressableBuffPaths, buffCountPair.buffDef.Address, out string guid))
                 {
                     buffCountPair.buffDef = new AddressReferencedBuffDef(guid);
                     result = true;
@@ -354,16 +352,16 @@ This method of loading is more foolproof as item names may change but guids do n
         private bool TryGetMatchingAssetFromAddressablePath(List<string> paths, string toMatch, out string guid)
         {
             guid = string.Empty;
-            if(string.IsNullOrWhiteSpace(toMatch))
+            if (string.IsNullOrWhiteSpace(toMatch))
             {
                 return false;
             }
 
-            foreach(string path in paths)
+            foreach (string path in paths)
             {
                 var assetNameWithExtension = path.Substring(path.LastIndexOf('/') + 1);
 
-                if(assetNameWithExtension.StartsWith(toMatch) && AddressablesPathDictionary.instance.TryGetGUIDFromPath(path, out guid))
+                if (assetNameWithExtension.StartsWith(toMatch) && AddressablesPathDictionary.instance.TryGetGUIDFromPath(path, out guid))
                 {
                     return true;
                 }

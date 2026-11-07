@@ -8,7 +8,7 @@
             <summary>
             An <see cref="T:R2API.AddressReferencedAssets.AddressReferencedAsset`1"/> that loads GameObjects, and has support for loading via the Body Catalog.
             <br></br>
-            Like other uses of AddressReferencedAsset, it is not recommended to reuse an instance across various <see cref="T:VAPI.CharacterVariantTarget"/>, instead clone them via <see cref="!:VAPIUtils.CloneAddressReferencedAsset&lt;T1, T2&gt;(T1?)"/>
+            Like other uses of AddressReferencedAsset, it is not recommended to reuse an instance across various <see cref="T:VAPI.CharacterVariantTarget"/>, instead clone them via <see cref="M:VAPI.VAPIUtils.CloneAddressReferencedAsset``2(``0)"/>
             </summary>
         </member>
         <member name="P:VAPI.AddressReferencedAssets.AddressReferencedBody.CanLoadFromCatalog">
@@ -232,7 +232,33 @@
         </member>
         <member name="T:VAPI.CharacterVariantMask.Enumerator">
             <summary>
-            Enumerator
+            Enumerator for CharacterVariantMask
+            </summary>
+        </member>
+        <member name="P:VAPI.CharacterVariantMask.Enumerator.Current">
+            <summary>
+            The current CharacterVariantIndex that was enumerated
+            </summary>
+        </member>
+        <member name="M:VAPI.CharacterVariantMask.Enumerator.#ctor(System.Boolean[])">
+            <summary>
+            Constructor
+            </summary>
+            <param name="array">The array being enumerated</param>
+        </member>
+        <member name="M:VAPI.CharacterVariantMask.Enumerator.Dispose">
+            <summary>
+            Dispose method
+            </summary>
+        </member>
+        <member name="M:VAPI.CharacterVariantMask.Enumerator.MoveNext">
+            <summary>
+            Moves to the next CharacterVariantIndex
+            </summary>
+        </member>
+        <member name="M:VAPI.CharacterVariantMask.Enumerator.Reset">
+            <summary>
+            Resets the enumerator
             </summary>
         </member>
         <member name="P:VAPI.CharacterVariantMask.Count">
@@ -291,6 +317,13 @@
             <summary>
             Clones this mask to <paramref name="other"/>
             </summary>
+        </member>
+        <member name="M:VAPI.CharacterVariantMask.Swap(VAPI.CharacterVariantMask,VAPI.CharacterVariantMask)">
+            <summary>
+            Swaps the values from <paramref name="maskA"/> to <paramref name="maskB"/>
+            </summary>
+            <param name="maskA">The mask to swap it's values to <paramref name="maskB"/></param>
+            <param name="maskB">The mask to swap it's values to <paramref name="maskA"/></param>
         </member>
         <member name="M:VAPI.CharacterVariantMask.GetEnumerator">
             <summary>
@@ -510,6 +543,11 @@
         <member name="F:VAPI.CharacterVariantProvider.RollVariantDefsArgs.additiveVariantDefs">
             <summary>
             an array of VariantDefs that are guaranteed to be included on the final array.
+            </summary>
+        </member>
+        <member name="M:VAPI.CharacterVariantProvider.RollVariantDefsArgs.ToString">
+            <summary>
+            Returns a human readable representation of the current arguments
             </summary>
         </member>
         <member name="M:VAPI.CharacterVariantProvider.RollVariantDefs(VAPI.CharacterVariantProvider.RollVariantDefsArgs)">
@@ -878,11 +916,6 @@
             The time between attempts of firing the equipment
             </summary>
         </member>
-        <member name="T:VAPI.VariantEquipmentHandler.EquipmentData">
-            <summary>
-            Data for the equipment
-            </summary>
-        </member>
         <member name="P:VAPI.VariantEquipmentHandler.characterMaster">
             <summary>
             The CharacterMaster that's firing the equipment
@@ -1023,7 +1056,7 @@
         </member>
         <member name="M:VAPI.LazyLoader`1.op_Explicit(VAPI.LazyLoader{`0})~`0">
             <summary>
-            Explicitly converts this into <see cref="!:T"/>
+            Explicitly converts this into <typeparamref name="T"/>
             <br></br>
             May be null if the asset doesnt exist
             </summary>
@@ -1472,7 +1505,7 @@
             <summary>
             A <see cref="T:VAPI.IVariantBodyModifier"/> is a <see cref="T:VAPI.IValidatable"/> and <see cref="T:System.ICloneable"/> interface used to define new Body modifiers. These implementations can be serialized in the editor via the <see cref="T:UnityEngine.SerializeReference"/> attribute.
             <br></br>
-            Modifications are done via the <see cref="!:ModifyBody(CharacterMaster)"/> method.
+            Modifications are done via the <see cref="M:VAPI.IVariantBodyModifier.ModifyBody(RoR2.CharacterBody)"/> method.
             <br></br>
             Must support cloning via the <see cref="T:System.ICloneable"/> implementation.
             <para></para>
@@ -1551,6 +1584,16 @@
         <member name="T:VAPI.BuffCountPair">
             <summary>
             Represents a pair of <see cref="T:RoR2.BuffDef"/>, alongside a specific integer value for it's <see cref="F:VAPI.BuffCountPair.buffCount"/>
+            </summary>
+        </member>
+        <member name="F:VAPI.BuffCountPair.buffDef">
+            <summary>
+            The BuffDef to grant
+            </summary>
+        </member>
+        <member name="F:VAPI.BuffCountPair.buffCount">
+            <summary>
+            The amount of buffs to grant
             </summary>
         </member>
         <member name="T:VAPI.VariantBuffInfo">
@@ -3176,6 +3219,28 @@
             <summary>
             A read only representation of a <see cref="T:VAPI.VariantPack"/>
             </summary>
+        </member>
+        <member name="T:VAPI.ReadOnlyVariantPack.IdentifierComparer">
+            <summary>
+            An <see cref="T:System.Collections.Generic.IEqualityComparer`1"/> implementation for <see cref="T:VAPI.ReadOnlyVariantPack"/> that compares <see cref="P:VAPI.ReadOnlyVariantPack.identifier"/>s
+            </summary>
+        </member>
+        <member name="M:VAPI.ReadOnlyVariantPack.IdentifierComparer.Equals(VAPI.ReadOnlyVariantPack,VAPI.ReadOnlyVariantPack)">
+            <summary>
+            Returns true if the Identifiers on <paramref name="x"/> and <paramref name="y"/> are equal.
+            <br></br>
+            If either <paramref name="x"/> or <paramref name="y"/> point to an invalid VariantPack, it returns false
+            </summary>
+            <param name="x">A Read only variant pack</param>
+            <param name="y">A read only variant pack</param>
+        </member>
+        <member name="M:VAPI.ReadOnlyVariantPack.IdentifierComparer.GetHashCode(VAPI.ReadOnlyVariantPack)">
+            <summary>
+            Returns the HashCode for <paramref name="obj"/>, by calling the GetHashCode() method of <see cref="P:VAPI.ReadOnlyVariantPack.identifier"/>
+            <br></br>
+            If <paramref name="obj"/> points to an invalid VariantPack, it returns -1
+            </summary>
+            <param name="obj">The ReadOnlyVariantPack to obtain it's hash code</param>
         </member>
         <member name="P:VAPI.ReadOnlyVariantPack.isValid">
             <summary>

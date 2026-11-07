@@ -1,6 +1,5 @@
 using HG;
 using RoR2;
-using System.Runtime.CompilerServices;
 using UnityEngine;
 
 namespace VAPI
@@ -27,7 +26,7 @@ namespace VAPI
 
         private void OnDestroy()
         {
-            if(_modelLocator != null && _modelLocator.modelTransform != null)
+            if (_modelLocator != null && _modelLocator.modelTransform != null)
             {
                 _modelLocator.modelTransform.localScale = _origScale;
             }
@@ -38,7 +37,7 @@ namespace VAPI
             if (!_modelLocator)
                 return;
 
-            if(_modelLocator.enabled == false || _modelLocator.autoUpdateModelTransform == false)
+            if (_modelLocator.enabled == false || _modelLocator.autoUpdateModelTransform == false)
             {
                 UpdateModelLocatorSize(Time.deltaTime);
             }
