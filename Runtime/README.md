@@ -4,7 +4,9 @@ VarianceAPI is a library designed to add "Character Variants" to existing Charac
 
 The original concept can be found [here]() by Rob, the mod's features plus this [addon]()'s features merged together to become VarianceAPI.
 
-Want a Lemurian that's twice the size and spits out lasers? Want a golem that's blazing fast and spawns mini golems when clapping? All of this and more are possible with VarianceAPI.
+Want a Lemurian that's twice the size and spits flames like a Flamethrower? Want a golem that fires lasers nonstop? All of this and more are possible with VarianceAPI.
+
+!["VariantShowcase"](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/VariantShowcase.png)
 
 ## Features
 
@@ -13,6 +15,8 @@ Want a Lemurian that's twice the size and spits out lasers? Want a golem that's 
 VarianceAPI has support for developing new Variants either inside the Unity Editor utilizing Thunderkit, or entirely at Runtime.
 
 Support for creating variants entirely at runtime is via the utilization of the ``CharacterVariantDefBuilder``.
+
+While VarianceAPI has ``MoonstormSharedUtils`` as a dependency, it is not necessary to interact with it majorly to add variants, it is used mostly to avoid having code duplication between both libraries.
 
 Regardless if you utilize Thunderkit or not, VarianceAPI can be used in your workflow.
 
@@ -28,11 +32,11 @@ This allows for Devoted Lemurians to keep the CharacterVariantDefs assigned to t
 
 When you create new Variants, they're added to ``VariantPacks``. An end user can afterwards disable or enable your pack at will, similar to ExpansionDefs.
 
-![GIF]
+![PackShowcase](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/VariantPackSelection.gif)
 
 Furthermore, individual variants can be toggled on and off further if enabled in the config file
 
-![gif]
+![VariantSelection](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/IndividualVariantSelection.gif)
 
 
 ### Powered by Serialize Reference
@@ -72,16 +76,13 @@ The following console commands can be used to test your variants in development:
 * ``vapi_spawn_ai``: Summons a CharacterMaster with the specified Variants.
 * ``vapi_spawn_as``: Respawns the sender as the specified CharacterBody with the specified Variants.
 
-
-[![ko-fi](MarkdownFiles~/Readme/KofiButton.png)](https://ko-fi.com/nebby1999)
-
 ## Official Variant Packs
 
 (Note: click the icon to open a new tab to the variant pack)
 | Icon/URL | Name | Description |
 |--|--|--|
-| [![TO30Icon](MarkdownFiles~/Readme/TO30Icon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_TheOriginal30) | The Original 30 | The Original Thirty Variants developed by Rob, ported and modified to VarianceAPI. |
-| [![NWIcon](MarkdownFiles~/Readme/NWIcon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_NebbysWrath/) | Nebby's Wrath | 87 Variants spread across Base Game, Survivors of the Void, Seekers of the Storm and Alloyed Collective enemies. |
+| [![TO30Icon](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/TO30Icon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_TheOriginal30) | The Original 30 | The Original Thirty Variants developed by Rob, ported and modified to VarianceAPI. |
+| [![NWIcon](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/NWIcon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_NebbysWrath/) | Nebby's Wrath | 87 Variants spread across Base Game, Survivors of the Void, Seekers of the Storm and Alloyed Collective enemies. |
 
 ## Donations
 
@@ -89,7 +90,9 @@ VarianceAPI is made with no AI assistance and is completely free.
 
 If you wish to support the work I do, consider buying me a Ko-fi, button below.
 
-[![ko-fi](KOFI_BUTTON)](https://ko-fi.com/nebby1999)
+
+[![ko-fi](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/KofiButton.png)](https://ko-fi.com/nebby1999)
+
 
 ## Special Thanks
 
