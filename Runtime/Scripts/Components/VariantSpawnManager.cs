@@ -7,6 +7,7 @@ using RoR2.ConVar;
 using System;
 using UnityEngine;
 using UnityEngine.Networking;
+using VAPI.Rules;
 using static MSU.Config.ConfiguredVariable;
 
 namespace VAPI

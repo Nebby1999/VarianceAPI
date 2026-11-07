@@ -290,7 +290,7 @@ namespace VAPI
             ParallelCoroutine.ReturnToPool(parallelCoroutine);
 
             //Initialize the pack
-            variantPack = new VariantPack(identifier, iconRequest.asset!, VAPIConfig.rewardsConfig!, VAPIMain.instance!);
+            variantPack = new VariantPack(identifier, "VAPI_BASEPACK_NAME", "VAPI_BASEPACK_TOOLTIP", "VAPI_BASEPACK_DESC", iconRequest.asset!, VAPIMain.instance!, VAPIConfig.rewardsConfig, null, true);
             variantPack.characterVariantTierDefs.Add(variantTierDefRequest.assets!);
 
             LogMessage($"Finished populating VarianceAPI's VariantPack");

@@ -54,12 +54,18 @@
         "VAPI_GENERIC_ARRIVAL": "A {0} with unique properties has appeared!",
 
         "VAPI_RULE_HEADER_VARIANTPACKS": "Variant Packs",
-        "VAPI_RULE_HEADER_VARIANTPACKS_SUBTITLE": "Variant Packs are custom Packages of Variants that will provide custom and unique variants to enemies in the game, Each pack can be enabled or disabled.",
+        "VAPI_RULE_HEADER_VARIANTPACKS_SUBTITLE": "Enable or Disable all variants from a mod appearing this run.",
         "VAPI_RULE_HEADER_VARIANTPACKS_EMPTY": "There are no Variant Packs installed.",
         
-        "VAPI_RULE_HEADER_VARIANTS": "Individual Variants",
-        "VAPI_RULE_HEADER_VARIANTS_EMPTY": "There are no available Variants.",
-        "VAPI_RULE_HEADER_VARIANTS_SUBTITLE": "Individual Variants that can spawn in the Run. Each variant may cause you misfortune, fun, or a gruesome death.",
+        "VAPI_RULE_HEADER_VARIANTS": "Character Variants",
+        "VAPI_RULE_HEADER_VARIANTS_EMPTY": "There are no available Character Variants.",
+        "VAPI_RULE_HEADER_VARIANTS_SUBTITLE": "Control what variants can naturally spawn for this run",
+        "VAPI_RULE_BODYVARIANTS_ON": "Variants for this character are enabled",
+        "VAPI_RULE_BODYVARIANTS_OFF": "Variants for this character are disabled",
+		"VAPI_VARIANT_CHOICE_ON": "\n+{0}",
+		"VAPI_VARIANT_CHOICE_OFF": "\n<style=cStack><s>+{0}</s></style>",
+
+        "VAPI_RULE_HEADER_BODY_VARIANTS_SUBTITLE": "Control which specific variants for this character can spawn naturally in the run.",
         "VAPI_RULE_VARIANT_ON_DESCRIPTION": "This variant will be able to spawn in the Run.",
         "VAPI_RULE_VARIANT_OFF_DESCRIPTION": "This variant cannot spawn in the Run.",
 
