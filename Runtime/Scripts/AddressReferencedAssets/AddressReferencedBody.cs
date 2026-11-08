@@ -26,10 +26,10 @@ namespace VAPI.AddressReferencedAssets
         [SerializeField, HideInInspector]
         private bool _canLoadFromCatalog = true;
 
-        //protected override bool IsCatalogAvailable()
-        //{
-        //    return BodyCatalog.availability.available;
-        //}
+        protected override bool IsCatalogAvailable()
+        {
+            return BodyCatalog.availability.available;
+        }
 
         /// <summary>
         /// Loads the body asynchronously via a coroutine.
