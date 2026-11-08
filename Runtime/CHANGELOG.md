@@ -1,3 +1,11 @@
+# '3.1.0' - This shit is not even a day old and already has something deprecated
+
+* Updated to use R2API_Addressables version 1.1.4
+* Fixed some unecessary logging done during initialization relating to AddressReferencedBodyPrefabs
+* Removed the ability to add new equipment sets on the fly
+    * This system was pretty much untested and trying to support this proves to be more trouble than its worth
+    * EquipmentInfo can now either specify a single equipment. It can also override existing equipment if necessary.
+
 # '3.0.1' - Hotfix
 
 * Fixed an issue where the API would try to configure a variant's spawn are and uniqueness even when there was no provider, causing a NRE.

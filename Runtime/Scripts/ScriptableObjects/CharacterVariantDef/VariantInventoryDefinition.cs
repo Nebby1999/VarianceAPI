@@ -106,11 +106,14 @@ namespace VAPI
             private ItemCountPair[]? _channeledItemCountPairs;
             private EquipmentDef? _addedEquipment;
 
-            public DisposableVariantInventoryDefintionModification(Inventory modifiedInventory, ItemCountPair[]? channeledItemCountPairs, EquipmentDef? addedEquipment)
+            private EquipmentIndex? _originalIndex;
+
+            public DisposableVariantInventoryDefintionModification(Inventory modifiedInventory, ItemCountPair[]? channeledItemCountPairs, EquipmentDef? addedEquipment, EquipmentIndex? originalIndex)
             {
                 _modifiedInventory = modifiedInventory;
                 _channeledItemCountPairs = channeledItemCountPairs;
                 _addedEquipment = addedEquipment;
+                _originalIndex = originalIndex;
             }
 
             public void Dispose()
@@ -133,8 +136,15 @@ namespace VAPI
 
                 if (_addedEquipment)
                 {
-                    _modifiedInventory.RemoveEquipment(_addedEquipment!.equipmentIndex);
-                    _modifiedInventory.EnsureComponent<VariantEquipmentHandler>().RemoveEquipmentData(_addedEquipment.equipmentIndex);
+                    if(_originalIndex.HasValue)
+                    {
+                        _modifiedInventory.SetEquipmentIndex(_originalIndex.Value, new EquipmentLocation { set = 0, slot = 0 });
+                    }
+                    else
+                    {
+                        _modifiedInventory.RemoveEquipment(_addedEquipment!.equipmentIndex);
+                    }
+                    _modifiedInventory.EnsureComponent<VariantEquipmentHandler>().RemoveEquipmentData(_addedEquipment!.equipmentIndex);
                 }
             }
         }
@@ -147,13 +157,18 @@ namespace VAPI
             [Tooltip("the equipment to grant")]
             public AddressReferencedEquipmentDef? equipmentDef;
 
+            [Tooltip("Overrides the existing equipment, this will replace elite equipments if set to true.")]
+            public bool overrideEquipment;
+
             [Tooltip("If true, the variant can trigger the equipment")]
             public bool canTriggerEquipment;
             [Tooltip("The maximum amount of health required for the variant to trigger the equipment")]
             public float aiMaxUseHealthFraction;
             [Tooltip("The maximum distance required for the variant to trigger the equipment")]
             public float aiMaxUseDistance;
-            [Tooltip("If non 0, the variant will wait this amount of time between switching equipments.")]
+
+            [Obsolete("The ability to add new equipment sets with variants is not supported, this float is not used")]
+            [HideInInspector]
             public float timeBetweenEquipmentSwitches;
 
 
@@ -167,7 +182,6 @@ namespace VAPI
                     aiMaxUseDistance = aiMaxUseDistance,
                     aiMaxUseHealthFraction = aiMaxUseHealthFraction,
                     canTriggerEquipment = canTriggerEquipment,
-                    timeBetweenEquipmentSwitches = timeBetweenEquipmentSwitches,
                     equipmentDef = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedEquipmentDef, EquipmentDef>(equipmentDef)
                 };
             }
@@ -203,6 +217,7 @@ namespace VAPI
 
             _itemCountPairBuilder.Clear();
             EquipmentDef? equipmentDef = null;
+            EquipmentIndex? originalIndex = null;
 
             targetInventory.InventoryChangedHandler((inv) =>
             {
@@ -223,21 +238,24 @@ namespace VAPI
                     equipmentDef = equipmentInfo.equipmentDef.LoadAssetNow();
                     if (equipmentDef)
                     {
-                        var activeslot = targetInventory.activeEquipmentSlot;
-                        for (uint i = 0; i <= targetInventory.GetEquipmentSetCount(activeslot); i++)
+                        EquipmentLocation defaultLocation = new EquipmentLocation
                         {
-                            var indexForSlot = targetInventory.GetEquipment(activeslot, i).equipmentIndex;
-                            if (indexForSlot == EquipmentIndex.None || indexForSlot == equipmentDef.equipmentIndex)
-                            {
-                                targetInventory.SetEquipmentIndexForSlot(equipmentDef.equipmentIndex, activeslot, i);
-                                break;
-                            }
+                            set = 0,
+                            slot = 0
+                        };
+
+                        EquipmentState state = targetInventory.GetEquipment(defaultLocation);
+
+                        if(equipmentInfo.overrideEquipment == true || state.equipmentIndex == EquipmentIndex.None)
+                        {
+                            originalIndex = state.equipmentIndex;
+                            targetInventory.SetEquipmentIndex(equipmentDef.equipmentIndex, defaultLocation);
                         }
 
-                        if (equipmentInfo.canTriggerEquipment)
+                        if(equipmentInfo.canTriggerEquipment)
                         {
                             VariantEquipmentHandler handler = targetInventory.EnsureComponent<VariantEquipmentHandler>();
-                            handler.AddEquipmentData(equipmentDef.equipmentIndex, equipmentInfo.aiMaxUseHealthFraction, equipmentInfo.aiMaxUseDistance, equipmentInfo.timeBetweenEquipmentSwitches);
+                            handler.SetEquipmentData(equipmentDef.equipmentIndex, equipmentInfo.aiMaxUseHealthFraction, equipmentInfo.aiMaxUseDistance);
                         }
                     }
                     else
@@ -248,7 +266,7 @@ namespace VAPI
             });
 
 
-            return new DisposableVariantInventoryDefintionModification(targetInventory, _itemCountPairBuilder.ToArray(), equipmentDef);
+            return new DisposableVariantInventoryDefintionModification(targetInventory, _itemCountPairBuilder.ToArray(), equipmentDef, originalIndex);
         }
 
         /// <summary>

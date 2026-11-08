@@ -97,12 +97,10 @@ namespace VAPI.Rules
                 //Don't add variants that are explicitly disabled
                 if (ruleBook.IsChoiceActive(onChoice) == false)
                 {
-                    VAPILog.Warning($"Skipping {variantIndex} as it's not active");
                     continue;
                 }
 
                 //Variant is enabled, and the dependencies are active, add
-                VAPILog.Info($"Adding {variantIndex}");
                 variantMask.Add(variantIndex);
             }
         }

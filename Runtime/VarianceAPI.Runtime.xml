@@ -744,7 +744,7 @@
             <para></para>
             It is recommended to use <see cref="T:VAPI.VariantMasterSummon"/>, <see cref="T:VAPI.VariantDirectorSpawnRequest"/> or <see cref="M:VAPI.VAPIUtils.TransformSpawnedInstanceIntoVariant(VAPI.VAPIUtils.TransformSpawnedInstanceIntoVariantArgs)"/> instead of utilizing this method directly.
             <br></br>
-            The array is rejected if <see cref="P:VAPI.CharacterBodyVariantController.variantsApplied"/> is true.
+            The array is rejected if <see cref="P:VAPI.CharacterBodyVariantController.variantsApplied"/> is true, and <paramref name="variantDefs"/>'s length is greater than 0
             </summary>
         </member>
         <member name="P:VAPI.CharacterBodyVariantController.cachedVariantName">
@@ -934,6 +934,15 @@
             <param name="aiMaxUseHealthFraction">The AI's health must be lower than this fraction for the equipment to fire</param>
             <param name="aiMaxUseDistance">The AI's distance to it's target must be lower than this value for the equipment to fire</param>
             <param name="timeBetweenEquipmentSwitches">The time between equipment switches</param>
+        </member>
+        <member name="M:VAPI.VariantEquipmentHandler.SetEquipmentData(RoR2.EquipmentIndex,System.Single,System.Single)">
+            <summary>
+            Sets the equipment data to this behaviour
+            </summary>
+            <param name="equipmentIndex"></param>
+            <param name="forceOverride"></param>
+            <param name="aiMaxUseHealthFraction"></param>
+            <param name="aiMaxUseDistance"></param>
         </member>
         <member name="M:VAPI.VariantEquipmentHandler.RemoveEquipmentData(RoR2.EquipmentIndex)">
             <summary>

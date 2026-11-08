@@ -776,7 +776,6 @@ Overall you should see a decrease in the total amount of ScriptableObjects due t
                     aiMaxUseDistance = legacyInventory.equipmentInfo.aiMaxUseDistance,
                     aiMaxUseHealthFraction = legacyInventory.equipmentInfo.aiMaxUseHealthFraction,
                     canTriggerEquipment = legacyInventory.equipmentInfo.usable,
-                    timeBetweenEquipmentSwitches = float.PositiveInfinity
                 };
             }
 
