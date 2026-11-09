@@ -493,9 +493,9 @@ namespace VAPI
             _bodyApplicator.ApplyVariants(this, characterVariants);
         }
 
-        [Obsolete("This property is no longer used", error: true)]
+        [Obsolete("This property is no longer used")]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public string cachedVariantName { get; set; }
+        public string cachedVariantName { get; set; } = ""
 
         public bool nameModifiersActive { get; set; }
 
