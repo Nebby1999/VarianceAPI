@@ -106,8 +106,6 @@ namespace VAPI
 
                 _defaultMethodImpls.ApplyTierModifications(_characterBodyVariantController, variant, _disguiseSafeDisposables);
 
-                _defaultMethodImpls.ApplyTierModifications(_characterBodyVariantController, variant, _disguiseSafeDisposables);
-
                 for (int bodyModifierIndex = 0; bodyModifierIndex < variant.bodyModifiers.Length; bodyModifierIndex++)
                 {
                     _defaultMethodImpls.ApplyBodyModifiers(_characterBodyVariantController, variant, bodyModifierIndex, _disguiseSafeDisposables);
