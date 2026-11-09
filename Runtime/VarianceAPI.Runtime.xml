@@ -744,14 +744,7 @@
             <para></para>
             It is recommended to use <see cref="T:VAPI.VariantMasterSummon"/>, <see cref="T:VAPI.VariantDirectorSpawnRequest"/> or <see cref="M:VAPI.VAPIUtils.TransformSpawnedInstanceIntoVariant(VAPI.VAPIUtils.TransformSpawnedInstanceIntoVariantArgs)"/> instead of utilizing this method directly.
             <br></br>
-            The array is rejected if <see cref="P:VAPI.CharacterBodyVariantController.variantsApplied"/> is true, and <paramref name="variantDefs"/>'s length is greater than 0
-            </summary>
-        </member>
-        <member name="P:VAPI.CharacterBodyVariantController.cachedVariantName">
-            <summary>
-            The current variant name for this character.
-            <br></br>
-            This is calculated by running the <see cref="T:VAPI.IVariantNameProvider"/> of the applied variants against the <see cref="P:VAPI.CharacterBodyVariantController.characterBody"/>'s name token
+            The array is rejected if <see cref="P:VAPI.CharacterBodyVariantController.variantsApplied"/> is true.
             </summary>
         </member>
         <member name="M:VAPI.CharacterBodyVariantController.ModifyStatArguments(R2API.RecalculateStatsAPI.StatHookEventArgs)">
