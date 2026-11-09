@@ -495,7 +495,7 @@ namespace VAPI
 
         [Obsolete("This property is no longer used")]
         [EditorBrowsable(EditorBrowsableState.Never)]
-        public string cachedVariantName { get; set; } = ""
+        public string cachedVariantName { get; set; } = "";
 
         public bool nameModifiersActive { get; set; }
 
