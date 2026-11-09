@@ -2,6 +2,7 @@
 
 using HG;
 using RoR2;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -54,10 +55,11 @@ namespace VAPI
         private DefaultVariantBodyApplicator.MethodImpls _defaultMethodImpls = new DefaultVariantBodyApplicator.MethodImpls();
         private ReadOnlyArray<CharacterVariantDef>? _variants;
 
-        internal bool isDisguised
+        public event Action? onDisguisedChanged;
+        public bool isDisguised
         {
             get => _isDisguised;
-            set
+            internal set
             {
                 if(_isDisguised != value)
                 {
@@ -155,7 +157,7 @@ namespace VAPI
 
             _defaultMethodImpls.ApplyScaleModifiers(_characterBodyVariantController, _variants.Value, _disguiseUnsafeDisposables);
             _defaultMethodImpls.ApplyVisualModifiersAfterSkin(_characterBodyVariantController, visualModifiers, _disguiseUnsafeDisposables);
-            _defaultMethodImpls.ApplyNameModifiers(_characterBodyVariantController, _variants.Value, _disguiseUnsafeDisposables);
+            _defaultMethodImpls.ActivateNameModifiers(_characterBodyVariantController, _disguiseUnsafeDisposables);
 
             _hasAppliedDisguiseUnsafeModifiers = true;
         }
@@ -186,6 +188,7 @@ namespace VAPI
                     ApplyDisguiseUnsafeModifiers();
                 }
             }
+            onDisguisedChanged?.Invoke();
         }
     }
 }

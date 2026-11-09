@@ -747,13 +747,6 @@
             The array is rejected if <see cref="P:VAPI.CharacterBodyVariantController.variantsApplied"/> is true.
             </summary>
         </member>
-        <member name="P:VAPI.CharacterBodyVariantController.cachedVariantName">
-            <summary>
-            The current variant name for this character.
-            <br></br>
-            This is calculated by running the <see cref="T:VAPI.IVariantNameProvider"/> of the applied variants against the <see cref="P:VAPI.CharacterBodyVariantController.characterBody"/>'s name token
-            </summary>
-        </member>
         <member name="M:VAPI.CharacterBodyVariantController.ModifyStatArguments(R2API.RecalculateStatsAPI.StatHookEventArgs)">
             <summary>
             Method used to apply stat modifiers, you shouldn't call this directly as it's called automatically by MSU's systems.

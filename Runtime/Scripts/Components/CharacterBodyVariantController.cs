@@ -7,6 +7,7 @@ using RoR2.ConVar;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -195,7 +196,6 @@ namespace VAPI
 
             _characterVariantIndices.Callback = SyncListCallback;
             _appliedVariantMask = CharacterVariantMask.Rent();
-            cachedVariantName = Language.GetString(characterBody.baseNameToken);
 
             if(TryGetComponent<IVariantBodyApplicator>(out var bodyApplicator))
             {
@@ -493,12 +493,11 @@ namespace VAPI
             _bodyApplicator.ApplyVariants(this, characterVariants);
         }
 
-        /// <summary>
-        /// The current variant name for this character.
-        /// <br></br>
-        /// This is calculated by running the <see cref="IVariantNameProvider"/> of the applied variants against the <see cref="characterBody"/>'s name token
-        /// </summary>
+        [Obsolete("This property is no longer used", error: true)]
+        [EditorBrowsable(EditorBrowsableState.Never)]
         public string cachedVariantName { get; set; }
+
+        public bool nameModifiersActive { get; set; }
 
         private void UnapplyBodyModifications()
         {

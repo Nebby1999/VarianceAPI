@@ -72,10 +72,14 @@ namespace VAPI
 
         private static string FormatVariantName(CharacterBody body, string bodyName)
         {
-            if (body.TryGetComponent<CharacterBodyVariantController>(out var characterBodyVariantController))
+            if (body.TryGetComponent<CharacterBodyVariantController>(out var characterBodyVariantController) && characterBodyVariantController.nameModifiersActive)
             {
-                //Return the cachedVariantName from the controller, when variants are applied it creates the new character string.
-                return characterBodyVariantController.cachedVariantName;
+                var variantDefs = characterBodyVariantController.GetCharacterVariantDefs();
+                for (int i = 0; i < variantDefs.Length; i++)
+                {
+                    CharacterVariantDef variantDef = variantDefs[i];
+                    bodyName = variantDef.variantNameProvider?.GetVariantName(bodyName) ?? bodyName;
+                }
             }
             return bodyName;
         }

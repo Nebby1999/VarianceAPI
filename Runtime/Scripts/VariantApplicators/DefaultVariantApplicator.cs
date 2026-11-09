@@ -110,49 +110,22 @@ namespace VAPI
                 }
             }
 
-            private struct DisposableNameOverride : IDisposable
+            private struct DisableNameModifiersDisposable : IDisposable
             {
                 public CharacterBodyVariantController src;
-                public string originalName;
                 public void Dispose()
                 {
-                    if(src)
+                    if(src != null)
                     {
-                        src.cachedVariantName = originalName;
+                        src.nameModifiersActive = false;
                     }
                 }
             }
 
-            public void ApplyNameModifiers(CharacterBodyVariantController src, ReadOnlyArray<CharacterVariantDef> variantDefs, DisposableCollectionHelper disposableCollectionHelper)
+            public void ActivateNameModifiers(CharacterBodyVariantController src, DisposableCollectionHelper disposableCollectionHelper)
             {
-                string baseName = Language.GetString(src.characterBody.baseNameToken);
-
-                if (variantDefs.Length == 0)
-                {
-                    src.cachedVariantName = baseName;
-                    return;
-                }
-
-                src.Log($"Applying name modifiers");
-                using var _0 = ListPool<CharacterVariantDef>.RentCollection(out var sortedVariants);
-                sortedVariants.AddRange(variantDefs);
-                sortedVariants.Sort((a, b) =>
-                {
-                    bool aIsOverride = a.variantNameProvider is VariantNameOverride;
-                    bool bIsOverride = b.variantNameProvider is VariantNameOverride;
-
-                    return bIsOverride.CompareTo(aIsOverride);
-                });
-
-                foreach (var variant in sortedVariants)
-                {
-                    if (variant.variantNameProvider != null)
-                    {
-                        baseName = variant.variantNameProvider.GetVariantName(baseName);
-                    }
-                }
-                src.cachedVariantName = baseName;
-                disposableCollectionHelper.AddDisposable(new DisposableNameOverride { src = src, originalName = Language.GetString(src.characterBody.baseNameToken) });
+                src.nameModifiersActive = true;
+                disposableCollectionHelper.AddDisposable(new DisableNameModifiersDisposable() { src = src });
             }
         }
 
@@ -197,7 +170,7 @@ namespace VAPI
 
             _methodImpls.ApplyVisualModifiersAfterSkin(src, _visualModifiers, _disposableCollectionHelper);
 
-            _methodImpls.ApplyNameModifiers(src, variants, _disposableCollectionHelper);
+            _methodImpls.ActivateNameModifiers(src, _disposableCollectionHelper);
         }
 
         public void UnapplyVariants(CharacterBodyVariantController src)
