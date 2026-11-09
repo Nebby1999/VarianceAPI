@@ -9,10 +9,43 @@ using UnityEngine;
 
 namespace VAPI
 {
+    /// <summary>
+    /// Default implementation for applying <see cref="CharacterVariantDef"/> to <see cref="CharacterBody"/>.
+    /// <br></br>
+    /// While this class cannot be inherited, the nested class <see cref="MethodImpls"/> expose a way to reuse the same logic as the default variant body applicator. When writing custom applicators it is recommended to reuse those methods unless you need a custom implementation.
+    /// <para></para>
+    /// <br></br>
+    /// By default it implements the following modifiers when <see cref="IVariantBodyApplicator.ApplyVariants(CharacterBodyVariantController, ReadOnlyArray{CharacterVariantDef})"/> is called:
+    /// <list type="number">
+    /// <item><see cref="CharacterVariantDef.variantTier"/> modifiers</item>
+    /// <item><see cref="CharacterVariantDef.bodyModifiers"/></item>
+    /// <item><see cref="CharacterVariantDef.variantBuffs"/></item>
+    /// <item><see cref="CharacterVariantDef.skillReplacements"/></item>
+    /// <item><see cref="CharacterVariantDef.deathStateOverride"/></item>
+    /// <item><see cref="CharacterVariantDef.additionalVariantComponents"/> that target the <see cref="CharacterBody"/></item>
+    /// <item><see cref="CharacterVariantDef.additionalVariantComponents"/> that target the <see cref="CharacterModel"/></item>
+    /// <item><see cref="CharacterVariantDef.scaleMultiplier"/></item>
+    /// <item><see cref="CharacterVariantDef.visualModifier"/></item>
+    /// <item><see cref="CharacterVariantDef.variantNameProvider"/></item>
+    /// </list>
+    /// <para></para>
+    /// All modifiers are disposed when <see cref="IVariantBodyApplicator.UnapplyVariants(CharacterBodyVariantController)"/>
+    /// </summary>
     public sealed class DefaultVariantBodyApplicator : IVariantBodyApplicator
     {
+        /// <summary>
+        /// Class that contains the default method implementations for applying modifiers.
+        /// <br></br>
+        /// When writing custom <see cref="IVariantBodyApplicator"/>, it is recommended to create an instance of this class and use it to apply modifiers.
+        /// </summary>
         public sealed class MethodImpls
         {
+            /// <summary>
+            /// Applies the Tier Modifiers from <paramref name="variantDef"/>.
+            /// </summary>
+            /// <param name="src">The controller that needs the Tier Modifiers</param>
+            /// <param name="variantDef">The variant to apply it's Tier Modifiers</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyTierModifications(CharacterBodyVariantController src, CharacterVariantDef variantDef, DisposableCollectionHelper disposableCollectionHelper)
             {
                 if(variantDef.variantTier != null)
@@ -22,6 +55,13 @@ namespace VAPI
                 }
             }
 
+            /// <summary>
+            /// Applies the <see cref="IVariantBodyModifier"/>s from <paramref name="variantDef"/>
+            /// </summary>
+            /// <param name="src">The controller that needs the body modification</param>
+            /// <param name="variantDef">The variant to apply one of it's body modifiers</param>
+            /// <param name="bodyModifierIndex">The index of the body modifier to apply</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyBodyModifiers(CharacterBodyVariantController src, CharacterVariantDef variantDef, int bodyModifierIndex, DisposableCollectionHelper disposableCollectionHelper)
             {
                 IVariantBodyModifier bodyModifier = variantDef.bodyModifiers[bodyModifierIndex];
@@ -29,12 +69,25 @@ namespace VAPI
                 disposableCollectionHelper.AddDisposable(bodyModifier?.ModifyBody(src.characterBody));
             }
 
+            /// <summary>
+            /// Applies the <see cref="VariantBuffStorage"/> from <paramref name="variantDef"/>.
+            /// </summary>
+            /// <param name="src">The controller that needs the Buffs applied</param>
+            /// <param name="variantDef">The variant to apply it's <see cref="VariantBuffStorage"/></param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyBuffs(CharacterBodyVariantController src, CharacterVariantDef variantDef, DisposableCollectionHelper disposableCollectionHelper)
             {
                 src.Log($"Applying {variantDef.cachedName}'s VariantBuffStorage");
                 disposableCollectionHelper.AddDisposable(variantDef.variantBuffs.ApplyBuffs(src.characterBody));
             }
 
+            /// <summary>
+            /// Applies the <see cref="VariantSkillReplacement"/>s from <paramref name="variantDef"/>
+            /// </summary>
+            /// <param name="src">The controller that needs the Skill Replacements</param>
+            /// <param name="variantDef">The variant to apply one of it's Skill Replacements</param>
+            /// <param name="skillReplacementIndex">The index of the SkillReplacement to apply</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplySkillReplacement(CharacterBodyVariantController src, CharacterVariantDef variantDef, int skillReplacementIndex, DisposableCollectionHelper disposableCollectionHelper)
             {
                 if (src.characterBody.skillLocator == null)
@@ -45,6 +98,12 @@ namespace VAPI
                 disposableCollectionHelper.AddDisposable(skillReplacement.ApplySkillReplacement(src.characterBody.skillLocator));
             }
 
+            /// <summary>
+            /// Applies the <see cref="VariantDeathStateOverride"/> from <paramref name="variantDef"/>.
+            /// </summary>
+            /// <param name="src">The controller that needs the Death State Override</param>
+            /// <param name="variantDef">The variant to apply it's Death State Override</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyCharacterDeathStateOverride(CharacterBodyVariantController src, CharacterVariantDef variantDef, DisposableCollectionHelper disposableCollectionHelper)
             {
                 if(src.characterDeathBehavior != null)
@@ -54,12 +113,24 @@ namespace VAPI
                 }
             }
 
+            /// <summary>
+            /// Applies the <see cref="VariantComponent"/>s from <paramref name="variantDef"/> that target the <see cref="CharacterBody"/>
+            /// </summary>
+            /// <param name="src">The controller that needs the Variant Components</param>
+            /// <param name="variantDef">The variant to apply it's Components that target the <see cref="CharacterBody"/></param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyBodyComponents(CharacterBodyVariantController src, CharacterVariantDef variantDef, DisposableCollectionHelper disposableCollectionHelper)
             {
                 src.Log($"Applying {variantDef.cachedName}'s body components");
                 disposableCollectionHelper.AddDisposable(variantDef.additionalVariantComponents.ApplyComponents(src.characterBody));
             }
 
+            /// <summary>
+            /// Applies the <see cref="VariantComponent"/>s from <paramref name="variantDef"/> that target the <see cref="CharacterModel"/>
+            /// </summary>
+            /// <param name="src">The controller that needs the Variant Components</param>
+            /// <param name="variantDef">The variant to apply it's Components that target the <see cref="CharacterBody"/></param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyModelComponents(CharacterBodyVariantController src, CharacterVariantDef variantDef, DisposableCollectionHelper disposableCollectionHelper)
             {
                 if(src.characterModel != null)
@@ -69,6 +140,12 @@ namespace VAPI
                 }
             }
 
+            /// <summary>
+            /// Applies the Scale Modifiers from <paramref name="variantDefs"/> to the <see cref="CharacterBody"/> from <paramref name="src"/>
+            /// </summary>
+            /// <param name="src">The controller that needs the Scale Modifiers</param>
+            /// <param name="variantDefs">The variants to apply their scale modifiers</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyScaleModifiers(CharacterBodyVariantController src, ReadOnlyArray<CharacterVariantDef> variantDefs, DisposableCollectionHelper disposableCollectionHelper)
             {
                 src.Log($"Applying scale modifier");
@@ -77,6 +154,14 @@ namespace VAPI
                 disposableCollectionHelper.AddDisposable(scaleModifier);
             }
 
+            /// <summary>
+            /// Applies the Visual Modifiers from <paramref name="visualModifiers"/> to the <see cref="CharacterModel"/> from <paramref name="src"/>
+            /// <br></br>
+            /// This is done via a coroutine that gets assigned to <paramref name="src"/>, it will apply the modifiers after the <see cref="SkinDef"/> has been applied
+            /// </summary>
+            /// <param name="src">The controller that needs the Visual Modifiers</param>
+            /// <param name="visualModifiers">The visual modifiers to apply</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyVisualModifiersAfterSkin(CharacterBodyVariantController src, List<CharacterVariantVisualModifier> visualModifiers, DisposableCollectionHelper disposableCollectionHelper)
             {
                 IEnumerator Coroutine(CharacterBodyVariantController owner, List<CharacterVariantVisualModifier> visualModifiers, DisposableCollectionHelper disposableCollectionHelper)
@@ -122,6 +207,11 @@ namespace VAPI
                 }
             }
 
+            /// <summary>
+            /// Activates the Name Modifiers for <paramref name="src"/>
+            /// </summary>
+            /// <param name="src">The controller to activate the name modifiers</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to</param>
             public void ActivateNameModifiers(CharacterBodyVariantController src, DisposableCollectionHelper disposableCollectionHelper)
             {
                 src.nameModifiersActive = true;
@@ -179,10 +269,37 @@ namespace VAPI
         }
     }
 
+    /// <summary>
+    /// Default implementation for applying <see cref="CharacterVariantDef"/> to <see cref="CharacterMaster"/>.
+    /// <br></br>
+    /// While this class cannot be inherited, the nested class <see cref="MethodImpls"/> expose a way to reuse the same logic as the default variant master applicator. When writing custom applicators it is recommended to reuse those methods unless you need a custom implementation.
+    /// <para></para>
+    /// <br></br>
+    /// By default it implements the following modifiers when <see cref="IVariantMasterApplicator.ApplyVariants(CharacterMasterVariantStorage, ReadOnlyArray{CharacterVariantDef})"/> is called:
+    /// <list type="number">
+    /// <item><see cref="CharacterVariantDef.variantTier"/>'s master modifiers</item>
+    /// <item><see cref="CharacterVariantDef.inventoryDefinition"/></item>
+    /// <item><see cref="CharacterVariantDef.masterModifiers"/></item>
+    /// <item><see cref="CharacterVariantDef.additionalVariantComponents"/> that target the <see cref="CharacterMaster"/></item>
+    /// </list>
+    /// <para></para>
+    /// All modifiers are disposed when <see cref="IVariantMasterApplicator.UnapplyVariants(CharacterMasterVariantStorage, bool)"/>
+    /// </summary>
     public sealed class DefaultVariantMasterApplicator : IVariantMasterApplicator
     {
+        /// <summary>
+        /// Class that contains the default method implementations for applying modifiers.
+        /// <br></br>
+        /// When writing custom <see cref="IVariantMasterApplicator"/>, it is recommended to create an instance of this class and use it to apply modifiers.
+        /// </summary>
         public sealed class MethodImpls
         {
+            /// <summary>
+            /// Applies the tier modifications from <paramref name="variantDef"/>.
+            /// </summary>
+            /// <param name="src">The storage that needs the tier modifications</param>
+            /// <param name="variantDef">The variant to apply it's tier modifications</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyTierModifications(CharacterMasterVariantStorage src, CharacterVariantDef variantDef, DisposableCollectionHelper disposableCollectionHelper)
             {
                 //Apply Tier data.
@@ -194,6 +311,12 @@ namespace VAPI
                 }
             }
 
+            /// <summary>
+            /// Applies the <see cref="VariantInventoryDefinition"/> from <paramref name="variantDef"/>
+            /// </summary>
+            /// <param name="src">The storage that needs the inventory</param>
+            /// <param name="variantDef">The variant to apply it's inventory definition</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyInventoryDefinition(CharacterMasterVariantStorage src, CharacterVariantDef variantDef, DisposableCollectionHelper disposableCollectionHelper)
             {
                 //Apply channeled items && equipment info
@@ -202,6 +325,13 @@ namespace VAPI
                 disposableCollectionHelper.AddDisposable(variantDef.inventoryDefinition.ApplyToInventory(src.characterMaster.inventory));
             }
 
+            /// <summary>
+            /// Applies the <see cref="IVariantMasterModifier"/>s from <paramref name="srcDef"/>
+            /// </summary>
+            /// <param name="src">The storage that needs the master modification</param>
+            /// <param name="srcDef">The variant to apply one of it's master modifiers</param>
+            /// <param name="modifierIndex">The index of the master modifier to apply</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyMasterModifier(CharacterMasterVariantStorage src, CharacterVariantDef srcDef, int modifierIndex, DisposableCollectionHelper disposableCollectionHelper)
             {
                 //Base API modifiers return if not server
@@ -210,6 +340,12 @@ namespace VAPI
                 disposableCollectionHelper.AddDisposable(masterModifier?.ModifyMaster(src.characterMaster));
             }
 
+            /// <summary>
+            /// Applies the <see cref="VariantComponent"/>s stored in <paramref name="variantDef"/> that target the <see cref="CharacterMaster"/> of <paramref name="src"/>
+            /// </summary>
+            /// <param name="src">The storage that needs the components</param>
+            /// <param name="variantDef">The variant to apply it's components to the master</param>
+            /// <param name="disposableCollectionHelper">The DisposableCollectionHelper where the disposable modification will be added to.</param>
             public void ApplyComponents(CharacterMasterVariantStorage src, CharacterVariantDef variantDef, DisposableCollectionHelper disposableCollectionHelper)
             {
                 //Apply components, the collection only adds components depending on the network context.

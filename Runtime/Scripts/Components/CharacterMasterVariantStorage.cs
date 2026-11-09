@@ -13,8 +13,10 @@ namespace VAPI
     /// <para></para>
     /// This component is added automatically to any CharacterMaster prefab whose body prefab has the <see cref="CharacterBodyVariantController"/> component, it is not necessary to add it manually.
     /// <br></br>
-    /// As the name implies, it's main purpose is to store the <see cref="CharacterVariantDef"/>s that are applied to the body. This way the variant is preserved when the body respawns or when being taken to a new stage.
-    /// <br></br>
+    /// As the name implies, it's main purpose is to store the <see cref="CharacterVariantDef"/>s that are applied to the body. This way the variant is preserved when the body respawns or when being taken to a new stage.    
+    /// <para></para>
+    /// The application of <see cref="CharacterVariantDef"/>s on the Master are handled via an implementation of <see cref="IVariantMasterApplicator"/>. The default implementation of this interface is via the <see cref="DefaultVariantMasterApplicator"/>. See <see cref="IVariantMasterApplicator"/> for more information.
+    /// <para></para>
     /// Only one set of variant defs may be applied to the master at a time, if the Master's body index changes, the variants are unapplied.
     /// </summary>
     [AddComponentMenu("")]

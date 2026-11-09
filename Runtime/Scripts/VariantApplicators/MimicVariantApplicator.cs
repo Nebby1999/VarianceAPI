@@ -15,6 +15,7 @@ namespace VAPI
         [SystemInitializer]
         private static void Init()
         {
+            //Use the disguise states to drive the applicator's "isDisguised" property
             On.EntityStates.Mimic.Monster.IsDisguisedState.OnEnter += IsDisguisedState_OnEnter;
             On.EntityStates.Mimic.Monster.RemovedDisguiseState.OnEnter += RemovedDisguiseState_OnEnter;
             BodyCatalog.availability.CallWhenAvailable(() =>
@@ -49,13 +50,34 @@ namespace VAPI
         }
     }
 
+    /// <summary>
+    /// An implementation of <see cref="IVariantBodyApplicator"/> thats assigned to DLC4's Mimic enemy (<see cref="DLC4Content.BodyPrefabs.MimicBody"/>).
+    /// <para></para>
+    /// This implementation opts to apply and unapply modifiers <b>depending</b> on wether the Mimic is currently Disguised as a Chest or not.
+    /// <br></br>
+    /// The modifiers that are applied when the mimic is <b>not</b> disguised are:
+    /// <list type="bullet">
+    /// <item><see cref="CharacterVariantDef.scaleMultiplier"/></item>
+    /// <item><see cref="CharacterVariantDef.variantNameProvider"/>s</item>
+    /// <item><see cref="CharacterVariantDef.visualModifier"/></item>
+    /// </list>
+    /// Once the Mimic goes back into hiding, the modifiers above are <b>unapplied</b>
+    /// </summary>
     public sealed class MimicVariantBodyApplicator : MonoBehaviour, IVariantBodyApplicator
     {
         private CharacterBodyVariantController? _characterBodyVariantController;
+        //Instance of method impls to handle the application of modifiers
         private DefaultVariantBodyApplicator.MethodImpls _defaultMethodImpls = new DefaultVariantBodyApplicator.MethodImpls();
         private ReadOnlyArray<CharacterVariantDef>? _variants;
 
+        /// <summary>
+        /// Event that's fired when <see cref="isDisguised"/> changes value.
+        /// </summary>
         public event Action? onDisguisedChanged;
+
+        /// <summary>
+        /// Wether the mimic is currently disguised or not
+        /// </summary>
         public bool isDisguised
         {
             get => _isDisguised;
@@ -72,14 +94,16 @@ namespace VAPI
 
         public void ApplyVariants(CharacterBodyVariantController src, ReadOnlyArray<CharacterVariantDef> defs)
         {
+            //Store the variants and the controller
             _variants = defs;
             _characterBodyVariantController = src;
 
+            //If we're disguised, apply the disguise safe modifiers
             if(isDisguised)
             {
                 ApplyDisguiseSafeModifiers();
             }
-            else
+            else //We're not disguised, so apply all of them
             {
                 ApplyDisguiseSafeModifiers();
                 ApplyDisguiseUnsafeModifiers();
@@ -88,12 +112,15 @@ namespace VAPI
 
         public void UnapplyVariants(CharacterBodyVariantController src)
         {
+            //Unapply all modifiers 
             UnapplyDisguiseSafeModifiers();
             UnapplyDisguiseUnsafeModifiers();
             _characterBodyVariantController = null;
             _variants = null;
         }
 
+        //"DisguiseSafe" means that the modifier _should not_ give away the fact that the chest is a mimic.
+        //It has it's own DisposableCollectionHelper instance.
         #region DisguiseSafe Modifiers
         private bool _hasAppliedDisguiseSafeModifiers;
         private DisposableCollectionHelper _disguiseSafeDisposables = new DisposableCollectionHelper(disposeInReverseOrder: true);
@@ -136,6 +163,8 @@ namespace VAPI
         }
         #endregion
 
+        //"DisguiseUnsage" means that the modifier will _very likely_ give away the fact that the chest is a mimic.
+        //It has it's own DisposableCollectionHelper, which is disposed of when the mimic becomes disguised
         #region DisguiseUnsafe Modifiers
         private bool _hasAppliedDisguiseUnsafeModifiers;
         private DisposableCollectionHelper _disguiseUnsafeDisposables = new DisposableCollectionHelper(disposeInReverseOrder: true);

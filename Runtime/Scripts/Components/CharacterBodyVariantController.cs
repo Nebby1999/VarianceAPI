@@ -42,6 +42,8 @@ namespace VAPI
     /// <br></br>
     /// When an array of <see cref="CharacterVariantDef"/> is assigned via <see cref="SetCharacterVariantDefsServer(CharacterVariantDef[])"/>, the controller will try and store this array in the <see cref="CharacterMasterVariantStorage"/> on the master. This in turn will apply any master modifications, and store the variants in case the body respawns.
     /// <para></para>
+    /// The application of <see cref="CharacterVariantDef"/>s on the Body are handled via an implementation of <see cref="IVariantBodyApplicator"/>. The default implementation of this interface is via the <see cref="DefaultVariantBodyApplicator"/>. See <see cref="IVariantBodyApplicator"/> for more information.
+    /// <para></para>
     /// If you want to "Script" a variant spawn, it is recommended to utilize <see cref="VariantMasterSummon"/> and <see cref="VariantDirectorSpawnRequest"/>. Alternatively you can use <see cref="VAPIUtils.TransformSpawnedInstanceIntoVariant(VAPIUtils.TransformSpawnedInstanceIntoVariantArgs)"/>.
     /// </summary>
     [AddComponentMenu("")]
@@ -497,6 +499,11 @@ namespace VAPI
         [EditorBrowsable(EditorBrowsableState.Never)]
         public string cachedVariantName { get; set; } = "";
 
+        /// <summary>
+        /// Wether name modifiers from the assigned variants are active or not.
+        /// <br></br>
+        /// This shouldn't be set outside of a class implementing <see cref="IVariantBodyApplicator"/>
+        /// </summary>
         public bool nameModifiersActive { get; set; }
 
         private void UnapplyBodyModifications()
