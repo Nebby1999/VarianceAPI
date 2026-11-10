@@ -67,6 +67,10 @@ VarianceAPI comes bundled with three different ways to simplify the spawns of mo
 * ``VariantDirectorSpawnRequest`` - Wraps an existing ``DirectorSpawnRequest`` instance and modifies the spawned instance to become a variant
 * ``VAPIUtils.TransformSpawnedInstanceIntoVariant()`` - Used to transform any spawned instance into a variant
 
+### Custom Variant Applications
+
+Starting on VarianceAPI 3.1.0, you can create your own Application Logic for Variants. This is used mainly to support Mimic Variants for Hallowed Concepts. Mimic Variants will only announce their arrival, get name changes, visual modifiers and size modifiers while undisguised so they look like regular chests at a glance.
+
 ### Console Commands
 
 The following console commands can be used to test your variants in development:

@@ -17,6 +17,7 @@
             * Scale Modifiers
             * Visual Modifiers
             * Name Modifiers
+            * Arrival announcement is done the first time the mimic undisguises itself
 
 # '3.0.1' - Hotfix
 
