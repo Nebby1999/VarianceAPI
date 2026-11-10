@@ -27,6 +27,14 @@ VarianceAPI will forever be free to use and never gated behind paywalls, however
 | [![TO30Icon](MarkdownFiles~/Readme/TO30Icon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_TheOriginal30) | The Original 30 | The Original Thirty Variants developed by Rob, ported and modified to VarianceAPI. |
 | [![NWIcon](MarkdownFiles~/Readme/NWIcon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_NebbysWrath/) | Nebby's Wrath | 87 Variants spread across Base Game, Survivors of the Void, Seekers of the Storm and Alloyed Collective enemies. |
 
+## Community Made Packs
+
+(Note: click the icon to open a new tab to the variant pack)
+| Icon/URL | Name | Description |
+|--|--|--|
+| [![PhreelVariantsIcon](MarkdownFiles~/Readme/PhreelVariants.png)](https://thunderstore.io/c/riskofrain2/p/Phreel/PhreelVariants/) | Phreel's Variants | Some messed up enemy variants for vanilla and modded monsters alike. |
+| [![HIFUVariants](MarkdownFiles~/Readme/HIFUVariants.png)](https://thunderstore.io/c/riskofrain2/p/Phreel/HIFUVariants/) | HIFUVariants | HIFU's Monster and Boss Variants, revived for VarianceAPI 3.0.0 and Hallowed Concepts |
+
 ## Special Thanks
 
 * KevinFromHPCustomerService for teaching me how to use Thunderkit way back in the day.

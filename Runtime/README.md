@@ -67,6 +67,10 @@ VarianceAPI comes bundled with three different ways to simplify the spawns of mo
 * ``VariantDirectorSpawnRequest`` - Wraps an existing ``DirectorSpawnRequest`` instance and modifies the spawned instance to become a variant
 * ``VAPIUtils.TransformSpawnedInstanceIntoVariant()`` - Used to transform any spawned instance into a variant
 
+### Custom Variant Applications
+
+Starting on VarianceAPI 3.1.0, you can create your own Application Logic for Variants. This is used mainly to support Mimic Variants for Hallowed Concepts. Mimic Variants will only announce their arrival, get name changes, visual modifiers and size modifiers while undisguised so they look like regular chests at a glance.
+
 ### Console Commands
 
 The following console commands can be used to test your variants in development:
@@ -83,6 +87,15 @@ The following console commands can be used to test your variants in development:
 |--|--|--|
 | [![TO30Icon](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/TO30Icon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_TheOriginal30) | The Original 30 | The Original Thirty Variants developed by Rob, ported and modified to VarianceAPI. |
 | [![NWIcon](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/NWIcon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_NebbysWrath/) | Nebby's Wrath | 87 Variants spread across Base Game, Survivors of the Void, Seekers of the Storm and Alloyed Collective enemies. |
+
+
+## Community Made Packs
+
+(Note: click the icon to open a new tab to the variant pack)
+| Icon/URL | Name | Description |
+|--|--|--|
+| [![PhreelVariantsIcon](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/PhreelVariants.png)](https://thunderstore.io/c/riskofrain2/p/Phreel/PhreelVariants/) | Phreel's Variants | Some messed up enemy variants for vanilla and modded monsters alike. |
+| [![HIFUVariants](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/HIFUVariants.png)](https://thunderstore.io/c/riskofrain2/p/Phreel/HIFUVariants/) | HIFUVariants | HIFU's Monster and Boss Variants, revived for VarianceAPI 3.0.0 and Hallowed Concepts |
 
 ## Donations
 

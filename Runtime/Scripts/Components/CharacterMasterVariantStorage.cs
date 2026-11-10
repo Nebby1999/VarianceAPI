@@ -13,8 +13,10 @@ namespace VAPI
     /// <para></para>
     /// This component is added automatically to any CharacterMaster prefab whose body prefab has the <see cref="CharacterBodyVariantController"/> component, it is not necessary to add it manually.
     /// <br></br>
-    /// As the name implies, it's main purpose is to store the <see cref="CharacterVariantDef"/>s that are applied to the body. This way the variant is preserved when the body respawns or when being taken to a new stage.
-    /// <br></br>
+    /// As the name implies, it's main purpose is to store the <see cref="CharacterVariantDef"/>s that are applied to the body. This way the variant is preserved when the body respawns or when being taken to a new stage.    
+    /// <para></para>
+    /// The application of <see cref="CharacterVariantDef"/>s on the Master are handled via an implementation of <see cref="IVariantMasterApplicator"/>. The default implementation of this interface is via the <see cref="DefaultVariantMasterApplicator"/>. See <see cref="IVariantMasterApplicator"/> for more information.
+    /// <para></para>
     /// Only one set of variant defs may be applied to the master at a time, if the Master's body index changes, the variants are unapplied.
     /// </summary>
     [AddComponentMenu("")]
@@ -56,6 +58,7 @@ namespace VAPI
         /// </summary>
         public event Action<CharacterVariantDef[]>? onVariantsApplied;
 
+        private IVariantMasterApplicator _masterApplicator;
         private List<StorageMetadataEntry> _storageMetadataList = new List<StorageMetadataEntry>();
         private BodyIndex _bodyIndexOfAppliedVariants = BodyIndex.None;
 
@@ -63,6 +66,15 @@ namespace VAPI
         {
             characterMaster = GetComponent<CharacterMaster>();
             characterMaster.onBodyStart += OnBodyStart;
+
+            if(TryGetComponent<IVariantMasterApplicator>(out var masterApplicator))
+            {
+                _masterApplicator = masterApplicator;
+            }
+            else
+            {
+                _masterApplicator = new DefaultVariantMasterApplicator();
+            }
             Log("Awake");
         }
 
@@ -77,7 +89,7 @@ namespace VAPI
                     VAPILog.Info($"{this} switched from {BodyCatalog.GetBodyName(_bodyIndexOfAppliedVariants) ?? "None"} to {BodyCatalog.GetBodyName(obj.bodyIndex)}. Unapplying variants.");
                 }
                 Log($"Unapplying Variants as {obj}'s body index doesnt match {BodyCatalog.GetBodyName(_bodyIndexOfAppliedVariants)}");
-                UnapplyVariants();
+                UnapplyVariants(true);
             }
         }
 
@@ -151,7 +163,7 @@ namespace VAPI
                 return;
             }
 
-            UnapplyVariants();
+            UnapplyVariants(true);
             //Override list
             Log($"Overriding existing storage for {BodyCatalog.GetBodyName(bodyIndex)} with {variantDefs.Length} variants.");
             _storageMetadataList[variantStorageListIndex] = new StorageMetadataEntry { relatedBodyIndex = bodyIndex, storedVariants = variantDefs };
@@ -168,8 +180,6 @@ namespace VAPI
             return -1;
         }
 
-        private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
-
         internal void ApplyVariants(BodyIndex bodyIndex, CharacterVariantDef[] fallbackCharacterVariantDefs)
         {
             //If the body index of applied variants is the one that's incoming, return.
@@ -181,54 +191,24 @@ namespace VAPI
 
             PushVariantsForCharacter(bodyIndex, fallbackCharacterVariantDefs);
 
-            for (int i = 0; i < fallbackCharacterVariantDefs.Length; i++)
-            {
-                CharacterVariantDef variantDef = fallbackCharacterVariantDefs[i];
-
-                //Apply Tier data.
-                if (variantDef.variantTier)
-                {
-                    Log($"Applying {variantDef.cachedName}'s Tier's Modifiers (tier:{(!variantDef.variantTier ? "None" : variantDef.variantTier!.cachedName)})");
-                    //Modify master returns if not server
-                    _disposableCollectionHelper.AddDisposable(variantDef.variantTier!.ModifyMaster(characterMaster));
-                }
-
-                //Apply channeled items && equipment info
-                //Inventory definition returns if not server
-                Log($"Applying {variantDef.cachedName}'s inventory definition");
-                _disposableCollectionHelper.AddDisposable(variantDef.inventoryDefinition.ApplyToInventory(characterMaster.inventory));
-
-                //Apply modifiers
-                for (int j = 0; j < fallbackCharacterVariantDefs[i].masterModifiers.Length; j++)
-                {
-                    //Base API modifiers return if not server
-                    IVariantMasterModifier? modifier = fallbackCharacterVariantDefs[i].masterModifiers[j];
-                    Log($"Applying {variantDef.cachedName}'s {(modifier == null ? "NULL" : modifier.GetType().Name)} Master Modifier");
-                    _disposableCollectionHelper.AddDisposable(variantDef.masterModifiers[j]?.ModifyMaster(characterMaster));
-                }
-
-                //Apply components, the collection only adds components depending on the network context.
-                Log($"Applying {variantDef.cachedName}'s master components");
-                _disposableCollectionHelper.AddDisposable(variantDef.additionalVariantComponents.ApplyComponents(characterMaster));
-            }
+            _masterApplicator.ApplyVariants(this, fallbackCharacterVariantDefs);
 
             _bodyIndexOfAppliedVariants = bodyIndex;
             Log($"Finished applying variants");
             onVariantsApplied?.Invoke(fallbackCharacterVariantDefs);
         }
 
-        internal void UnapplyVariants()
+        internal void UnapplyVariants(bool bodyIndexChanged = false)
         {
-            //Dispose Tier Data, modifiers, item inventory, equipment and components.
-            _disposableCollectionHelper.Dispose();
-
+            _masterApplicator.UnapplyVariants(this, bodyIndexChanged);
             //Set the body index of applied variants to none
             _bodyIndexOfAppliedVariants = BodyIndex.None;
 
             Log($"All Variants have been unapplied");
             onVariantsUnapplied?.Invoke();
         }
-        private void Log(object data)
+
+        public void Log(object data)
         {
             if (_logMasterStorage.value)
             {

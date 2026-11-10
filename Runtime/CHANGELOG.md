@@ -1,3 +1,24 @@
+# '3.1.0' - This shit is not even a week old and something's already deprecated.
+
+* Updated to use R2API_Addressables version 1.1.4
+* Fixed some unecessary logging done during initialization relating to AddressReferencedBodyPrefabs
+* Removed the ability to add new equipment sets on the fly
+    * This system was pretty much untested and trying to support this proves to be more trouble than its worth
+    * EquipmentInfo can now either specify a single equipment. It can also override existing equipment if necessary.
+* Deprecated "cachedVariantName"
+* Reworked entirely how variants are applied.
+    * Added ``IVariantBodyApplicator`` and ``IVariantMasterApplicator``
+    * Each interface defines how bodies and masters apply their assigned variants
+    * Default implementations exist in the classes ``DefaultVariantBodyApplicator`` and ``DefaultVariantMasterApplicator``
+    * Each default implementation contains a ``MethodImpls`` nested class, which are the default implementations
+    * New implementations are created by creating a Component that implements either ``IVariantBodyApplicator`` or ``IVariantMasterApplicator`` and adding it to the CharacterBody or CharacterMaster prefab respectively.
+    * Added a custom ``IVariantBodyApplicator`` for DLC4's Mimics
+        * The following modifiers and applied/unapplied depending on wether the mimic's disguised or not:
+            * Scale Modifiers
+            * Visual Modifiers
+            * Name Modifiers
+            * Arrival announcement is done the first time the mimic undisguises itself
+
 # '3.0.1' - Hotfix
 
 * Fixed an issue where the API would try to configure a variant's spawn are and uniqueness even when there was no provider, causing a NRE.

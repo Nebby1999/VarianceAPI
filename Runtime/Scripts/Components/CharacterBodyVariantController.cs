@@ -7,6 +7,7 @@ using RoR2.ConVar;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.ComponentModel;
 using UnityEngine;
 using UnityEngine.Networking;
 
@@ -40,6 +41,8 @@ namespace VAPI
     /// Variants are mainly spawned via the <see cref="VariantSpawnManager"/>, done when the Body calls "Start"
     /// <br></br>
     /// When an array of <see cref="CharacterVariantDef"/> is assigned via <see cref="SetCharacterVariantDefsServer(CharacterVariantDef[])"/>, the controller will try and store this array in the <see cref="CharacterMasterVariantStorage"/> on the master. This in turn will apply any master modifications, and store the variants in case the body respawns.
+    /// <para></para>
+    /// The application of <see cref="CharacterVariantDef"/>s on the Body are handled via an implementation of <see cref="IVariantBodyApplicator"/>. The default implementation of this interface is via the <see cref="DefaultVariantBodyApplicator"/>. See <see cref="IVariantBodyApplicator"/> for more information.
     /// <para></para>
     /// If you want to "Script" a variant spawn, it is recommended to utilize <see cref="VariantMasterSummon"/> and <see cref="VariantDirectorSpawnRequest"/>. Alternatively you can use <see cref="VAPIUtils.TransformSpawnedInstanceIntoVariant(VAPIUtils.TransformSpawnedInstanceIntoVariantArgs)"/>.
     /// </summary>
@@ -175,6 +178,8 @@ namespace VAPI
         /// This gets called twice, once when the body first spawns, and another time when the <see cref="CharacterVariantDef"/> array has been set.
         /// </summary>
         public event Action<CharacterVariantDef[]>? onVariantsApplied;
+
+        private IVariantBodyApplicator _bodyApplicator;
         private MSUContentBehaviour? _msuContentBehaviour;
         private void Awake()
         {
@@ -193,6 +198,18 @@ namespace VAPI
 
             _characterVariantIndices.Callback = SyncListCallback;
             _appliedVariantMask = CharacterVariantMask.Rent();
+
+            if(TryGetComponent<IVariantBodyApplicator>(out var bodyApplicator))
+            {
+                Log($"Utilizing custom body applicator");
+                _bodyApplicator = bodyApplicator;
+            }
+            else
+            {
+                Log($"Utilizing default body applicator");
+                _bodyApplicator = new DefaultVariantBodyApplicator();
+            }
+
             Log("Awake");
         }
 
@@ -364,7 +381,7 @@ namespace VAPI
             if (storage != null)
             {
                 Log("Unapplying variants on master");
-                storage.UnapplyVariants();
+                storage.UnapplyVariants(false);
             }
 
             onVariantsUnapplied?.Invoke();
@@ -392,12 +409,6 @@ namespace VAPI
 
             onVariantsApplied?.Invoke(_fallbackCharacterVariantDefs);
 
-            //If we're not supressing the arrival, and the config lets us send them, send it.
-            if (NetworkServer.active && supressArrivalMessageServer == false && VAPIConfig._sendArrivalMessages)
-            {
-                AnnounceArrivalServer();
-            }
-
             StartCoroutine(MarkStatsDirty());
         }
 
@@ -415,13 +426,17 @@ namespace VAPI
         }
         private static readonly List<string> _possibleArrivalTokensShared = new List<string>();
         private static readonly List<NetworkSoundEventDef> _possibleSpawnSoundsShared = new List<NetworkSoundEventDef>();
-        private void AnnounceArrivalServer()
+        private bool _arrivalAnnouncedServer;
+        internal void AnnounceArrivalServer()
         {
             //Get out if not the server
             if (!NetworkServer.active)
             {
                 return;
             }
+
+            if (_arrivalAnnouncedServer)
+                return;
 
             Log($"Announcing Arrival");
 
@@ -475,120 +490,23 @@ namespace VAPI
         private DisposableCollectionHelper _disposableCollectionHelper = new DisposableCollectionHelper(disposeInReverseOrder: true);
         private void ApplyBodyModifications(ReadOnlyArray<CharacterVariantDef> characterVariants)
         {
-            List<CharacterVariantVisualModifier> visualModifiers = new List<CharacterVariantVisualModifier>();
-
-            for (int i = 0; i < characterVariants.Length; i++)
-            {
-                CharacterVariantDef characterVariantDef = characterVariants[i];
-
-                //Apply tier body modifiers
-                if (characterVariantDef.variantTier)
-                {
-                    Log($"Applying {characterVariantDef.cachedName}'s Tier's Modifiers (tier:{(characterVariantDef.variantTier ? characterVariantDef.variantTier?.cachedName : "None")})");
-                    CharacterVariantTierDef variantTierDef = characterVariantDef.variantTier!;
-                    _disposableCollectionHelper.AddDisposable(variantTierDef.ModifyBody(characterBody));
-                }
-
-                //Apply body modifiers
-                foreach (var bodyModifier in characterVariantDef.bodyModifiers)
-                {
-                    Log($"Applying {characterVariantDef.cachedName}'s {(bodyModifier == null ? "NULL" : bodyModifier.GetType().Name)} Master Modifier");
-                    _disposableCollectionHelper.AddDisposable(bodyModifier?.ModifyBody(characterBody));
-                }
-
-                //Apply buffs
-                Log($"Applying {characterVariantDef.cachedName}'s VariantBuffStorage");
-                _disposableCollectionHelper.AddDisposable(characterVariantDef.variantBuffs.ApplyBuffs(characterBody));
-
-                //Apply skills
-                if (characterBody.skillLocator)
-                {
-                    foreach (var skillReplacement in characterVariantDef.skillReplacements)
-                    {
-                        Log($"Applying {characterVariantDef.cachedName} skill replacement for {characterBody.skillLocator.GetOrFindSkill(skillReplacement.slot, skillReplacement.slotName)}");
-                        _disposableCollectionHelper.AddDisposable(skillReplacement.ApplySkillReplacement(characterBody.skillLocator));
-                    }
-                }
-
-                //Apply death state override
-                if (characterDeathBehavior)
-                {
-                    Log($"Applying {characterVariantDef.cachedName} character death behaviour");
-                    _disposableCollectionHelper.AddDisposable(characterVariantDef.deathStateOverride.ApplyDeathStateOverride(characterDeathBehavior));
-                }
-
-                //Add Body Components
-                Log($"Applying {characterVariantDef.cachedName}'s body components");
-                _disposableCollectionHelper.AddDisposable(characterVariantDef.additionalVariantComponents.ApplyComponents(characterBody));
-
-                if (characterModel)
-                {
-                    //Add CharacterModel Components
-                    Log($"Applying {characterVariantDef.cachedName}'s model components");
-                    _disposableCollectionHelper.AddDisposable(characterVariantDef.additionalVariantComponents.ApplyComponents(characterModel!));
-
-                    //Store visual modifiers in the list, we will apply these in a coroutine since we need to await for the Skin to be applied.
-                    if (characterVariantDef.visualModifier)
-                    {
-                        visualModifiers.Add(characterVariantDef.visualModifier!);
-                    }
-                }
-            }
-
-            //Apply scale modifiers
-            var scaleModifier = new VariantSizeModifierApplicator(characterBody, characterVariants);
-            Log($"Applying scale modifier");
-            scaleModifier.Apply();
-            _disposableCollectionHelper.AddDisposable(scaleModifier);
-
-            if (visualModifiers.Count > 0)
-            {
-                _applyVisualModifiersAfterSkinCoroutine = ApplyVisualModifiersAfterSkin(visualModifiers);
-                StartCoroutine(_applyVisualModifiersAfterSkinCoroutine);
-            }
-
-            RecalculateBodyName(characterVariants);
+            _bodyApplicator.ApplyVariants(this, characterVariants);
         }
+
+        [Obsolete("This property is no longer used")]
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        public string cachedVariantName { get; set; } = "";
 
         /// <summary>
-        /// The current variant name for this character.
+        /// Wether name modifiers from the assigned variants are active or not.
         /// <br></br>
-        /// This is calculated by running the <see cref="IVariantNameProvider"/> of the applied variants against the <see cref="characterBody"/>'s name token
+        /// This shouldn't be set outside of a class implementing <see cref="IVariantBodyApplicator"/>
         /// </summary>
-        public string cachedVariantName { get; private set; } = "";
-        private void RecalculateBodyName(ReadOnlyArray<CharacterVariantDef> appliedVariants)
-        {
-            string baseName = Language.GetString(characterBody.baseNameToken);
-
-            if (appliedVariants.Length == 0)
-            {
-                cachedVariantName = baseName;
-                return;
-            }
-
-            using var _0 = ListPool<CharacterVariantDef>.RentCollection(out var sortedVariants);
-            sortedVariants.AddRange(appliedVariants);
-            sortedVariants.Sort((a, b) =>
-            {
-                bool aIsOverride = a.variantNameProvider is VariantNameOverride;
-                bool bIsOverride = b.variantNameProvider is VariantNameOverride;
-
-                return bIsOverride.CompareTo(aIsOverride);
-            });
-
-            foreach (var variant in sortedVariants)
-            {
-                if (variant.variantNameProvider != null)
-                {
-                    baseName = variant.variantNameProvider.GetVariantName(baseName);
-                }
-            }
-            cachedVariantName = baseName;
-        }
+        public bool nameModifiersActive { get; internal set; }
 
         private void UnapplyBodyModifications()
         {
-            _disposableCollectionHelper.Dispose();
+            _bodyApplicator.UnapplyVariants(this);
 
             if (_applyVisualModifiersAfterSkinCoroutine != null)
             {
@@ -616,29 +534,23 @@ namespace VAPI
 
 
         private IEnumerator? _applyVisualModifiersAfterSkinCoroutine;
-        private IEnumerator ApplyVisualModifiersAfterSkin(List<CharacterVariantVisualModifier> visualModifiers)
+        internal void StartVisualModifierApplicationCoroutine(IEnumerator coroutine)
         {
-            var waitForEndOfFrame = new WaitForEndOfFrame();
-            while ((characterModel ? characterModel!._hasSkinBeenApplied == false : false))
+            IEnumerator Wrapper(IEnumerator coroutine)
             {
-                yield return waitForEndOfFrame;
+                while(coroutine.MoveNext())
+                {
+                    if(coroutine.Current is bool value && value)
+                    {
+                        _applyVisualModifiersAfterSkinCoroutine = null;
+                        yield break;
+                    }
+                    yield return coroutine.Current;
+                }
             }
 
-            Log($"Applying visual modifiers");
-            bool shouldUpdateIDRS = false;
-            foreach (var visualModifier in visualModifiers)
-            {
-                _disposableCollectionHelper.AddDisposable(visualModifier.ApplyVisualModifiers(characterModel!, this, out bool appliedMeshReplacements));
-                shouldUpdateIDRS |= appliedMeshReplacements;
-            }
-
-            if (shouldUpdateIDRS && characterModel != null && characterModel.body != null && characterModel.body.inventory != null)
-            {
-                characterModel.DisableAllItemDisplays();
-                characterModel.UpdateItemDisplay(characterModel.body.inventory);
-            }
-
-            _applyVisualModifiersAfterSkinCoroutine = null;
+            _applyVisualModifiersAfterSkinCoroutine = Wrapper(coroutine);
+            StartCoroutine(_applyVisualModifiersAfterSkinCoroutine);
         }
 
         private IEnumerator? _mdlSkinControllerApplySkinCoroutine;
@@ -669,7 +581,7 @@ namespace VAPI
             CharacterVariantMask.Return(_appliedVariantMask);
         }
 
-        private void Log(object data)
+        public void Log(object data)
         {
             if (_logBodyController.value)
             {
