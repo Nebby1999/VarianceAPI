@@ -187,6 +187,7 @@ namespace VAPI
             _defaultMethodImpls.ApplyScaleModifiers(_characterBodyVariantController, _variants.Value, _disguiseUnsafeDisposables);
             _defaultMethodImpls.ApplyVisualModifiersAfterSkin(_characterBodyVariantController, visualModifiers, _disguiseUnsafeDisposables);
             _defaultMethodImpls.ActivateNameModifiers(_characterBodyVariantController, _disguiseUnsafeDisposables);
+            _defaultMethodImpls.AnnounceArrival(_characterBodyVariantController);
 
             _hasAppliedDisguiseUnsafeModifiers = true;
         }

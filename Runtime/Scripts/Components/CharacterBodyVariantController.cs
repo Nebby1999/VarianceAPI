@@ -409,12 +409,6 @@ namespace VAPI
 
             onVariantsApplied?.Invoke(_fallbackCharacterVariantDefs);
 
-            //If we're not supressing the arrival, and the config lets us send them, send it.
-            if (NetworkServer.active && supressArrivalMessageServer == false && VAPIConfig._sendArrivalMessages)
-            {
-                AnnounceArrivalServer();
-            }
-
             StartCoroutine(MarkStatsDirty());
         }
 
@@ -432,13 +426,17 @@ namespace VAPI
         }
         private static readonly List<string> _possibleArrivalTokensShared = new List<string>();
         private static readonly List<NetworkSoundEventDef> _possibleSpawnSoundsShared = new List<NetworkSoundEventDef>();
-        private void AnnounceArrivalServer()
+        private bool _arrivalAnnouncedServer;
+        internal void AnnounceArrivalServer()
         {
             //Get out if not the server
             if (!NetworkServer.active)
             {
                 return;
             }
+
+            if (_arrivalAnnouncedServer)
+                return;
 
             Log($"Announcing Arrival");
 
@@ -504,7 +502,7 @@ namespace VAPI
         /// <br></br>
         /// This shouldn't be set outside of a class implementing <see cref="IVariantBodyApplicator"/>
         /// </summary>
-        public bool nameModifiersActive { get; set; }
+        public bool nameModifiersActive { get; internal set; }
 
         private void UnapplyBodyModifications()
         {
@@ -536,7 +534,7 @@ namespace VAPI
 
 
         private IEnumerator? _applyVisualModifiersAfterSkinCoroutine;
-        public void StartVisualModifierApplicationCoroutine(IEnumerator coroutine)
+        internal void StartVisualModifierApplicationCoroutine(IEnumerator coroutine)
         {
             IEnumerator Wrapper(IEnumerator coroutine)
             {

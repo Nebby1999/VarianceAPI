@@ -27,6 +27,7 @@ namespace VAPI
     /// <item><see cref="CharacterVariantDef.scaleMultiplier"/></item>
     /// <item><see cref="CharacterVariantDef.visualModifier"/></item>
     /// <item><see cref="CharacterVariantDef.variantNameProvider"/></item>
+    /// <item><see cref="CharacterVariantDef.arrivalToken"/></item>
     /// </list>
     /// <para></para>
     /// All modifiers are disposed when <see cref="IVariantBodyApplicator.UnapplyVariants(CharacterBodyVariantController)"/>
@@ -217,6 +218,18 @@ namespace VAPI
                 src.nameModifiersActive = true;
                 disposableCollectionHelper.AddDisposable(new DisableNameModifiersDisposable() { src = src });
             }
+
+            /// <summary>
+            /// Announces the arrival of the monster. Only gets announced if <paramref name="src"/>'s <see cref="CharacterBodyVariantController.supressArrivalMessageServer"/> is set to false and <see cref="VAPIConfig._sendArrivalMessages"/> is set to true
+            /// </summary>
+            /// <param name="src"></param>
+            public void AnnounceArrival(CharacterBodyVariantController src)
+            {
+                if(src.supressArrivalMessageServer == false && VAPIConfig._sendArrivalMessages)
+                {
+                    src.AnnounceArrivalServer();
+                }
+            }
         }
 
         private MethodImpls _methodImpls = new MethodImpls();
@@ -261,6 +274,8 @@ namespace VAPI
             _methodImpls.ApplyVisualModifiersAfterSkin(src, _visualModifiers, _disposableCollectionHelper);
 
             _methodImpls.ActivateNameModifiers(src, _disposableCollectionHelper);
+
+            _methodImpls.AnnounceArrival(src);
         }
 
         public void UnapplyVariants(CharacterBodyVariantController src)
