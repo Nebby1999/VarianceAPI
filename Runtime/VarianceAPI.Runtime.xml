@@ -2087,6 +2087,7 @@
             <list type="bullet">
             <item><see cref="T:VAPI.BasicSpawnCondition"/>: The Reimplementation of VAPI2.0's VariantSpawnCondition.</item>
             <item><see cref="T:VAPI.VariantDependantCondition"/>: A dependant condition, the variant can only spawn if <see cref="F:VAPI.VariantDependantCondition.dependantVariantDef"/> can also spawn. This is used mainly by the <see cref="T:VAPI.VariantCloning"/> class.</item>
+            <item><see cref="T:VAPI.ExpansionRequirementCondition"/>: A VariantSpawnCondition that's a simple ExpansionDef check, if all the ExpansionDefs are enabled then the variant can spawn.</item>
             </list>
             </summary>
         </member>
@@ -2210,6 +2211,16 @@
         <member name="M:VAPI.VariantDependantCondition.#ctor(VAPI.CharacterVariantDef)">
             <summary>
             Constructor
+            </summary>
+        </member>
+        <member name="T:VAPI.ExpansionRequirementCondition">
+            <summary>
+            A basic spawn condition that just checks that a specific ExpansionDef is enabled in the run.
+            </summary>
+        </member>
+        <member name="M:VAPI.ExpansionRequirementCondition.Clone">
+            <summary>
+            Returns a clone of this as an instance of <see cref="T:VAPI.ExpansionRequirementCondition"/>
             </summary>
         </member>
         <member name="T:VAPI.IVariantStatModifier">
@@ -3031,6 +3042,24 @@
             <br></br>
             If no spawn condition exists and the variant is available in the rulebook, it returns true.
             </summary>
+        </member>
+        <member name="M:VAPI.VAPIUtils.CloneAssetReferenceT``1(UnityEngine.AddressableAssets.AssetReferenceT{``0})">
+            <summary>
+            Method utilized to clone an <see cref="T:R2API.AddressReferencedAssets.AddressReferencedAsset"/>.
+            <br></br>
+            returns an empty <see cref="T:R2API.AddressReferencedAssets.AddressReferencedAsset"/> if <paramref name="other"/> is null
+            </summary>
+            <typeparam name="T1">The type of AddressReferencedAsset we're cloning</typeparam>
+            <typeparam name="T2">The type of asset that <see cref="T:R2API.AddressReferencedAssets.AddressReferencedAsset"/> is loading</typeparam>
+            <param name="other">The <see cref="T:R2API.AddressReferencedAssets.AddressReferencedAsset"/> that we're copying</param>
+            
+            <summary>
+            Method utilized to clone an <see cref="T:UnityEngine.AddressableAssets.AssetReferenceT`1"/>.
+            <br></br>
+            Returns an empty <see cref="T:UnityEngine.AddressableAssets.AssetReferenceT`1"/> if <paramref name="assetRef"/> is null
+            </summary>
+            <typeparam name="T">The type of asset that the AssetReference is referencing</typeparam>
+            <param name="assetRef">The <see cref="T:UnityEngine.AddressableAssets.AssetReferenceT`1"/> that we're copying</param>
         </member>
         <member name="T:VAPI.DefaultVariantBodyApplicator">
             <summary>
