@@ -1,5 +1,6 @@
 #nullable enable
 using BepInEx;
+using MSU;
 using R2API.Utils;
 using RoR2;
 using System;
@@ -14,6 +15,7 @@ namespace VAPI
     [BepInDependency(R2API.RuleCatalogExtras.PluginGUID)]
     [BepInDependency(R2API.PrefabAPI.PluginGUID)]
     [BepInDependency(DebugToolkit.DebugToolkit.GUID, BepInDependency.DependencyFlags.SoftDependency)]
+    [BepInDependency(ProperSave.ProperSavePlugin.GUID, BepInDependency.DependencyFlags.SoftDependency)]
     [NetworkCompatibility(CompatibilityLevel.EveryoneMustHaveMod, VersionStrictness.EveryoneNeedSameModVersion)]
     [BepInPlugin(GUID, MOD_NAME, VERSION)]
     public sealed class VAPIMain : BaseUnityPlugin
@@ -29,12 +31,15 @@ namespace VAPI
         /// <summary>
         /// The Mod's version
         /// </summary>
-        public const string VERSION = "3.1.0";
+        public const string VERSION = "3.1.1";
 
         /// <summary>
         /// Access to the instance of VAPI's main class
         /// </summary>
         public static VAPIMain? instance { get; private set; }
+
+        public static bool debugToolkitInstalled { get; private set; }
+        public static bool properSaveInstalled { get; private set; }
 
         private void Awake()
         {
@@ -45,6 +50,9 @@ namespace VAPI
             new VAPIContent();
 
             SystemInitializerInjector.InjectDependency<RuleBook>(typeof(VAPI.Rules.RuleCatalogAdditions));
+
+            debugToolkitInstalled = MSUtil.IsModInstalled(DebugToolkit.DebugToolkit.GUID);
+            properSaveInstalled = MSUtil.IsModInstalled(ProperSave.ProperSavePlugin.GUID);
 
             VAPILog.Info($"VarianceAPI Awake called");
         }

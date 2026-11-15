@@ -43,7 +43,8 @@
         "Ak.Wwise.Api.WAAPI.dll",
         "AK.Wwise.Unity.API.dll",
         "AK.Wwise.Unity.MonoBehaviour.dll",
-        "AK.Wwise.Unity.API.WwiseTypes.dll"
+        "AK.Wwise.Unity.API.WwiseTypes.dll",
+        "ProperSave.dll"
     ],
     "autoReferenced": true,
     "defineConstraints": [

@@ -30,7 +30,7 @@ namespace VAPI
                 return BodyIndex.None;
             }
 
-            if (MSU.MSUtil.IsModInstalled(DebugToolkit.DebugToolkit.GUID))
+            if (VAPIMain.debugToolkitInstalled)
             {
                 return GetBodyIndexDT(bodyName);
             }
@@ -55,7 +55,7 @@ namespace VAPI
                 return MasterCatalog.MasterIndex.none;
             }
 
-            if (MSU.MSUtil.IsModInstalled(DebugToolkit.DebugToolkit.GUID))
+            if (VAPIMain.debugToolkitInstalled)
             {
                 return GetMasterIndexDT(masterName);
             }
