@@ -139,7 +139,7 @@ namespace VAPI
                 }
                 else
                 {
-                    Log($"Initialized RNG via ProperSaveHelper")
+                    Log($"Initialized RNG via ProperSaveHelper");
                 }
 
                 variantRng = _variantRNG;
@@ -214,7 +214,7 @@ namespace VAPI
                             rollType = values.additiveVariantDefs == null ? CharacterVariantProvider.RollType.Default : CharacterVariantProvider.RollType.NonUnique,
                         };
                         Log($"Rolling Variants for {body} with the following arguments:\r\n{args.ToString()}");
-                        CharacterVariantDef[] rolledVariants = values.variantProvider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
+                        CharacterVariantDef[] rolledVariants = values.variantProvider!.RollVariantDefs(args);
                         Log($"Assigning {rolledVariants.Length} variants to {body}");
                         values.bodyController!.SetCharacterVariantDefsServer(rolledVariants);
                         return;
