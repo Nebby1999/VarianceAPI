@@ -140,6 +140,10 @@ namespace VAPI
     /// <summary>
     /// The <see cref="VariantPack"/> is a class used to store and specify which <see cref="CharacterVariantDef"/>s and which <see cref="CharacterVariantTierDef"/>s are from your mod.
     /// <br></br>
+    /// VarianceAPI will automatically generate configurations for your <see cref="CharacterVariantDef"/>s and <see cref="CharacterVariantTierDef"/>s using risk of options, a token is required for the description of your mod's configuration, it's key is "VAPI_RISKOFOPTIONS_" followed by the value in <see cref="identifier"/>, in all uppercase.
+    /// <br></br>
+    /// For example, VAPI's token is <b>"VAPI_RISKOFOPTIONS_COM.NEBBY.VAPI"</b>.
+    /// <para></para>
     /// A ReadOnly version of this can be exposed via the <see cref="ReadOnlyVariantPack"/>
     /// </summary>
     public sealed class VariantPack
@@ -180,7 +184,7 @@ namespace VAPI
         public readonly string descriptionToken = "";
 
         /// <summary>
-        /// The icon for this pack, this is used in the rulebook for enabling/disabling variant packs.
+        /// The icon for this pack, this is used in the rulebook for enabling/disabling variant packs and in Risk of Options.
         /// </summary>
         public readonly Sprite packIcon;
 

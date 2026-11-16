@@ -3646,6 +3646,10 @@
             <summary>
             The <see cref="T:VAPI.VariantPack"/> is a class used to store and specify which <see cref="T:VAPI.CharacterVariantDef"/>s and which <see cref="T:VAPI.CharacterVariantTierDef"/>s are from your mod.
             <br></br>
+            VarianceAPI will automatically generate configurations for your <see cref="T:VAPI.CharacterVariantDef"/>s and <see cref="T:VAPI.CharacterVariantTierDef"/>s using risk of options, a token is required for the description of your mod's configuration, it's key is "VAPI_RISKOFOPTIONS_" followed by the value in <see cref="F:VAPI.VariantPack.identifier"/>, in all uppercase.
+            <br></br>
+            For example, VAPI's token is <b>"VAPI_RISKOFOPTIONS_COM.NEBBY.VAPI"</b>.
+            <para></para>
             A ReadOnly version of this can be exposed via the <see cref="T:VAPI.ReadOnlyVariantPack"/>
             </summary>
         </member>
@@ -3686,7 +3690,7 @@
         </member>
         <member name="F:VAPI.VariantPack.packIcon">
             <summary>
-            The icon for this pack, this is used in the rulebook for enabling/disabling variant packs.
+            The icon for this pack, this is used in the rulebook for enabling/disabling variant packs and in Risk of Options.
             </summary>
         </member>
         <member name="F:VAPI.VariantPack.characterVariantTierDefs">

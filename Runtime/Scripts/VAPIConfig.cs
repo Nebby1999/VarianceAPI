@@ -70,12 +70,6 @@ namespace VAPI
                     yield return null;
                 }
                 _riskOfOptionsSprite = iconRequest.asset;
-
-                VariantPackManager.managerAvailability.CallWhenAvailable(() =>
-                {
-                    ModSettingsManager.SetModIcon(_riskOfOptionsSprite!, bup.Info.Metadata.GUID, bup.Info.Metadata.Name);
-                    ModSettingsManager.SetModDescriptionToken("VAPI_RISKOFOPTIONS_DESC", bup.Info.Metadata.GUID, bup.Info.Metadata.Name);
-                });
             }
 
             //Initialize configs

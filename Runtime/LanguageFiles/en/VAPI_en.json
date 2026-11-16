@@ -77,6 +77,6 @@
         "VAPI_BASEPACK_NAME": "VarianceAPI Base Variant Pack",
         "VAPI_BASEPACK_TOOLTIP": "The base Variant Pack containing the built in Variant Tiers.",
         "VAPI_BASEPACK_DESC": "The base Variant Pack containing the built in Variant Tiers. If you somehow see this, do not disable this pack.",
-        "VAPI_RISKOFOPTIONS_DESC": "General configuration for VarianceAPI"
+        "VAPI_RISKOFOPTIONS_COM.NEBBY.VAPI": "General configuration for VarianceAPI"
     }
 }
