@@ -4,6 +4,8 @@ using MSU.Config;
 using RiskOfOptions.OptionConfigs;
 using RoR2;
 using RoR2.ConVar;
+using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 using UnityEngine.Networking;
 using VAPI.Rules;
@@ -83,6 +85,13 @@ namespace VAPI
         private void Awake()
         {
             Run.instance.networkRuleBookComponent.onRuleBookUpdated += OnRulebookUpdated;
+
+            ProperSaveHelper.SubscribeToProperSaveEvent();
+            if(MSUtil.IsModInstalled(ProperSave.ProperSavePlugin.GUID))
+            {
+                ProperSaveHelper.SubscribeToProperSaveEvent();
+            }
+
             availableVariants = CharacterVariantMask.Rent();
             Log("Awake");
         }
@@ -103,6 +112,12 @@ namespace VAPI
             {
                 Run.instance.networkRuleBookComponent.onRuleBookUpdated -= OnRulebookUpdated;
             }
+
+            if (MSUtil.IsModInstalled(ProperSave.ProperSavePlugin.GUID))
+            {
+                ProperSaveHelper.UnsubscribeToProperSaveEvent();
+            }
+
             CharacterVariantMask.Return(availableVariants);
             Log("Destroyed");
         }
@@ -111,11 +126,25 @@ namespace VAPI
         {
             if (NetworkServer.active)
             {
-                ulong seed = Run.instance.seed;
-                variantRng = new Xoroshiro128Plus(seed);
-                Log($"VariantRNG Seed: {seed}");
-                variantSpawnRng = new Xoroshiro128Plus(variantRng.nextUlong);
-                variantRewardRng = new Xoroshiro128Plus(variantRng.nextUlong);
+                Xoroshiro128Plus? _variantRNG = null;
+                Xoroshiro128Plus? _variantSpawnRNG = null;
+                Xoroshiro128Plus? _variantRewardRNG = null;
+                if(!ProperSaveHelper.TryInitRNG(ref _variantRNG, ref _variantSpawnRNG, ref _variantRewardRNG))
+                {
+                    ulong seed = Run.instance.seed;
+                    _variantRNG = new Xoroshiro128Plus(seed);
+                    Log($"VariantRNG Seed: {seed}");
+                    _variantSpawnRNG = new Xoroshiro128Plus(_variantRNG.nextUlong);
+                    _variantRewardRNG = new Xoroshiro128Plus(_variantRNG.nextUlong);
+                }
+                else
+                {
+                    Log($"Initialized RNG via ProperSaveHelper");
+                }
+
+                variantRng = _variantRNG;
+                variantSpawnRng = _variantSpawnRNG;
+                variantRewardRng = _variantRewardRNG;
             }
 
             OnRulebookUpdated(Run.instance.networkRuleBookComponent);
@@ -185,7 +214,7 @@ namespace VAPI
                             rollType = values.additiveVariantDefs == null ? CharacterVariantProvider.RollType.Default : CharacterVariantProvider.RollType.NonUnique,
                         };
                         Log($"Rolling Variants for {body} with the following arguments:\r\n{args.ToString()}");
-                        CharacterVariantDef[] rolledVariants = values.variantProvider!.RollVariantDefs(new CharacterVariantProvider.RollVariantDefsArgs { rng = variantSpawnRng!, spawnChanceMultiplier = GetSpawnRateMultiplier() });
+                        CharacterVariantDef[] rolledVariants = values.variantProvider!.RollVariantDefs(args);
                         Log($"Assigning {rolledVariants.Length} variants to {body}");
                         values.bodyController!.SetCharacterVariantDefsServer(rolledVariants);
                         return;

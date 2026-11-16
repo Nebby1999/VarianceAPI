@@ -22,6 +22,7 @@ namespace VAPI
     /// <list type="bullet">
     /// <item><see cref="BasicSpawnCondition"/>: The Reimplementation of VAPI2.0's VariantSpawnCondition.</item>
     /// <item><see cref="VariantDependantCondition"/>: A dependant condition, the variant can only spawn if <see cref="VariantDependantCondition.dependantVariantDef"/> can also spawn. This is used mainly by the <see cref="VariantCloning"/> class.</item>
+    /// <item><see cref="ExpansionRequirementCondition"/>: A VariantSpawnCondition that's a simple ExpansionDef check, if all the ExpansionDefs are enabled then the variant can spawn.</item>
     /// </list>
     /// </summary>
     public interface IVariantSpawnCondition : IValidatable, ICloneable
@@ -217,7 +218,7 @@ namespace VAPI
             {
                 return true;
             }
-            return (stages & stageInfo.stage) == 0;
+            return (stages & stageInfo.stage) != 0;
         }
 
         /// <summary>
@@ -424,6 +425,112 @@ namespace VAPI
         {
             dependantVariantDef = new CataloguedVariantReference(_dependantVariantDef);
             cannotSpawn = false;
+        }
+    }
+
+    /// <summary>
+    /// A basic spawn condition that just checks that a specific ExpansionDef is enabled in the run.
+    /// </summary>
+    [Serializable]
+    public struct ExpansionRequirementCondition : IVariantSpawnCondition
+    {
+        UnlockableDef? IVariantSpawnCondition.requiredUnlock => null;
+
+        IEnumerable<ExpansionDef>? IVariantSpawnCondition.requiredExpansionDefs
+        {
+            get
+            {
+                List<ExpansionDef> expansionDefs = new List<ExpansionDef>();
+                foreach (var expansion in requiredExpansionDefs)
+                {
+                    if (expansion == null || expansion.IsInvalid)
+                        continue;
+
+                    if (expansion.AssetExists)
+                    {
+                        expansionDefs.Add(expansion.Asset);
+                    }
+
+                    expansionDefs.Add(expansion.LoadAssetNow());
+                }
+                return expansionDefs;
+            }
+        }
+
+        [Tooltip("An array of ExpansionDefs that must be enabled in the run for the variant to spawn")]
+        public AddressReferencedExpansionDef[] requiredExpansionDefs;
+
+        /// <summary>
+        /// Returns a clone of this as an instance of <see cref="ExpansionRequirementCondition"/>
+        /// </summary>
+        public object Clone()
+        {
+            if(requiredExpansionDefs == null)
+            {
+                return new ExpansionRequirementCondition
+                {
+                    requiredExpansionDefs = Array.Empty<AddressReferencedExpansionDef>()
+                };
+            }
+
+            var result = new ExpansionRequirementCondition()
+            {
+                requiredExpansionDefs = new AddressReferencedExpansionDef[requiredExpansionDefs.Length]
+            };
+
+            for(int i = 0; i < requiredExpansionDefs.Length; i++)
+            {
+                result.requiredExpansionDefs[i] = VAPIUtils.CloneAddressReferencedAsset<AddressReferencedExpansionDef, ExpansionDef>(requiredExpansionDefs[i]);
+            }
+
+            return result;
+        }
+
+        public bool IsAvailable()
+        {
+            if (!Run.instance)
+                return false;
+
+            foreach (var addressReferencedExpansion in requiredExpansionDefs)
+            {
+                if (!addressReferencedExpansion.AssetExists)
+                {
+                    continue;
+                }
+
+                if (!Run.instance.IsExpansionEnabled(addressReferencedExpansion.Asset))
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+
+        public void Validate()
+        {
+
+        }
+
+        /// <summary>
+        /// Constructor, wraps <paramref name="expansionNameOrAddress"/> inside an <see cref="AddressReferencedExpansionDef"/> ands assigns it to <see cref="requiredExpansionDefs"/>
+        /// </summary>
+        /// <param name="expansionNameOrAddress">The expansion name or address to act as a condition</param>
+        public ExpansionRequirementCondition(string expansionNameOrAddress) : this(new AddressReferencedExpansionDef(expansionNameOrAddress)) { }
+
+        /// <summary>
+        /// Constructor, wraps <paramref name="expansionDef"/> inside an <see cref="AddressReferencedExpansionDef"/> ands assigns it to <see cref="requiredExpansionDefs"/>
+        /// </summary>
+        /// <param name="expansionDef">The ExpansionDef to act as a condition</param>
+        public ExpansionRequirementCondition(ExpansionDef expansionDef) : this(new AddressReferencedExpansionDef(expansionDef)) { }
+
+        /// <summary>
+        /// Constructor, creates an array of <see cref="AddressReferencedExpansionDef"/> of length 1 and assigns the first index the value of <paramref name="expansionDef"/>
+        /// </summary>
+        /// <param name="expansionDef">The ExpansionDef to act as a condition</param>
+        public ExpansionRequirementCondition(AddressReferencedExpansionDef expansionDef)
+        {
+            requiredExpansionDefs = new AddressReferencedExpansionDef[] { expansionDef };
         }
     }
 }

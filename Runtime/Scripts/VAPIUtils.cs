@@ -30,7 +30,7 @@ namespace VAPI
                 return BodyIndex.None;
             }
 
-            if (MSU.MSUtil.IsModInstalled(DebugToolkit.DebugToolkit.GUID))
+            if (VAPIMain.debugToolkitInstalled)
             {
                 return GetBodyIndexDT(bodyName);
             }
@@ -55,7 +55,7 @@ namespace VAPI
                 return MasterCatalog.MasterIndex.none;
             }
 
-            if (MSU.MSUtil.IsModInstalled(DebugToolkit.DebugToolkit.GUID))
+            if (VAPIMain.debugToolkitInstalled)
             {
                 return GetMasterIndexDT(masterName);
             }
@@ -250,6 +250,22 @@ namespace VAPI
             }
         }
 
+        /// <summary>
+        /// Method utilized to clone an <see cref="AddressReferencedAsset"/>.
+        /// <br></br>
+        /// returns an empty <see cref="AddressReferencedAsset"/> if <paramref name="other"/> is null
+        /// </summary>
+        /// <typeparam name="T1">The type of AddressReferencedAsset we're cloning</typeparam>
+        /// <typeparam name="T2">The type of asset that <see cref="AddressReferencedAsset"/> is loading</typeparam>
+        /// <param name="other">The <see cref="AddressReferencedAsset"/> that we're copying</param>
+        /// 
+        /// <summary>
+        /// Method utilized to clone an <see cref="AssetReferenceT{TObject}"/>.
+        /// <br></br>
+        /// Returns an empty <see cref="AssetReferenceT{TObject}"/> if <paramref name="assetRef"/> is null
+        /// </summary>
+        /// <typeparam name="T">The type of asset that the AssetReference is referencing</typeparam>
+        /// <param name="assetRef">The <see cref="AssetReferenceT{TObject}"/> that we're copying</param>
         public static AssetReferenceT<T> CloneAssetReferenceT<T>(AssetReferenceT<T>? assetRef) where T : UnityEngine.Object
         {
             if (assetRef == null)
