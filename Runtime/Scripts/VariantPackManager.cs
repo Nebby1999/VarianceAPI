@@ -225,7 +225,7 @@ namespace VAPI
 
                 //Set the mod's icon in ROO
                 ModSettingsManager.SetModIcon(pack.packIcon, pack.ownerPlugin.Info.Metadata.GUID, pack.ownerPlugin.Info.Metadata.Name);
-                ModSettingsManager.SetModDescription(pack.descriptionToken, pack.ownerPlugin.Info.Metadata.GUID, pack.ownerPlugin.Info.Metadata.Name);
+                ModSettingsManager.SetModDescriptionToken(pack.descriptionToken, pack.ownerPlugin.Info.Metadata.GUID, pack.ownerPlugin.Info.Metadata.Name);
 
                 //Associate each variant and tier with the specified config files, add them to the manager
                 foreach (var variant in pack.characterVariantDefs)

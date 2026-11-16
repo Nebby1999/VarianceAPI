@@ -506,14 +506,6 @@
             A ReadOnlyList of the <see cref="T:VAPI.CharacterVariantDef"/>s that are not unique and can spawn on the current stage
             </summary>
         </member>
-        <member name="M:VAPI.CharacterVariantProvider.RetrieveVariantsWhere(System.Collections.Generic.List{VAPI.CharacterVariantDef}@,System.Predicate{VAPI.CharacterVariantDef})">
-            <summary>
-            Retrieves a list of <see cref="T:VAPI.CharacterVariantDef"/> that matches the given <paramref name="predicate"/>
-            </summary>
-            <param name="retrievedVariants">The retrieved variants that match the <paramref name="predicate"/></param>
-            <param name="predicate">If this predicate returns false, the variant is not retrieved</param>
-            <returns>A DisposableRental used to return <paramref name="retrievedVariants"/> to the ListPool</returns>
-        </member>
         <member name="M:VAPI.CharacterVariantProvider.FilterVariants">
             <summary>
             Filtes the variant for the current stage, this is called automatically on stage start

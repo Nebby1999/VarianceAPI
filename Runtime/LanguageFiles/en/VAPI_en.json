@@ -72,6 +72,11 @@
         "VAPI_INFINITETOWER_WAVE_COUNTER_VARIANCE":  "Wave {0} - Augment of Variety",
         
         "VAPI_SKILL_GENERIC_GOTOMAIN_NAME": "Unavailable",
-        "VAPI_SKILL_GENERIC_GOTOMAIN_DESC": "Your current <style=cHumanObjective>body</style> state <style=cDeath>forbids</style> you from using this <style=cIsUtility>ability</style>."
+        "VAPI_SKILL_GENERIC_GOTOMAIN_DESC": "Your current <style=cHumanObjective>body</style> state <style=cDeath>forbids</style> you from using this <style=cIsUtility>ability</style>.",
+
+        "VAPI_BASEPACK_NAME": "VarianceAPI Base Variant Pack",
+        "VAPI_BASEPACK_TOOLTIP": "The base Variant Pack containing the built in Variant Tiers.",
+        "VAPI_BASEPACK_DESC": "The base Variant Pack containing the built in Variant Tiers. If you somehow see this, do not disable this pack.",
+        "VAPI_RISKOFOPTIONS_DESC": "General configuration for VarianceAPI"
     }
 }
