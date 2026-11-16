@@ -3,7 +3,7 @@
 * Added SoftDependency for ``ProperSave``
     * ``VariantSpawnManager``'s RNG states are now saved properly.
 * Added an ``ExpansionRequirementCondition``, a ``IVariantSpawnCondition`` that simply requires the chosen expansions to be enabled on the run
-* Fixed a bug where the ``BasicSpawnCondition``'s stage check would make the variant unavailable
+* Fixed a bug where the ``BasicSpawnCondition``'s stage check would make variants unavailable even if the stage enum was set properly.
 * Fixed an issue where the ``VariantSpawnManager`` was not using the proper "roll variant args" struct metadata
 
 # '3.1.0' - This shit is not even a week old and something's already deprecated.

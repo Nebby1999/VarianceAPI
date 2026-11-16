@@ -2223,6 +2223,24 @@
             Returns a clone of this as an instance of <see cref="T:VAPI.ExpansionRequirementCondition"/>
             </summary>
         </member>
+        <member name="M:VAPI.ExpansionRequirementCondition.#ctor(System.String)">
+            <summary>
+            Constructor, wraps <paramref name="expansionNameOrAddress"/> inside an <see cref="T:R2API.AddressReferencedAssets.AddressReferencedExpansionDef"/> ands assigns it to <see cref="F:VAPI.ExpansionRequirementCondition.requiredExpansionDefs"/>
+            </summary>
+            <param name="expansionNameOrAddress">The expansion name or address to act as a condition</param>
+        </member>
+        <member name="M:VAPI.ExpansionRequirementCondition.#ctor(RoR2.ExpansionManagement.ExpansionDef)">
+            <summary>
+            Constructor, wraps <paramref name="expansionDef"/> inside an <see cref="T:R2API.AddressReferencedAssets.AddressReferencedExpansionDef"/> ands assigns it to <see cref="F:VAPI.ExpansionRequirementCondition.requiredExpansionDefs"/>
+            </summary>
+            <param name="expansionDef">The ExpansionDef to act as a condition</param>
+        </member>
+        <member name="M:VAPI.ExpansionRequirementCondition.#ctor(R2API.AddressReferencedAssets.AddressReferencedExpansionDef)">
+            <summary>
+            Constructor, creates an array of <see cref="T:R2API.AddressReferencedAssets.AddressReferencedExpansionDef"/> of length 1 and assigns the first index the value of <paramref name="expansionDef"/>
+            </summary>
+            <param name="expansionDef">The ExpansionDef to act as a condition</param>
+        </member>
         <member name="T:VAPI.IVariantStatModifier">
             <summary>
             A <see cref="T:VAPI.IVariantStatModifier"/> is a <see cref="T:VAPI.IValidatable"/> and <see cref="T:System.ICloneable"/> interface used to define stat modifiers for a Variant. These implementations can be serialized in the editor via the <see cref="T:UnityEngine.SerializeReference"/> attribute.

@@ -431,6 +431,7 @@ namespace VAPI
     /// <summary>
     /// A basic spawn condition that just checks that a specific ExpansionDef is enabled in the run.
     /// </summary>
+    [Serializable]
     public struct ExpansionRequirementCondition : IVariantSpawnCondition
     {
         UnlockableDef? IVariantSpawnCondition.requiredUnlock => null;
@@ -509,6 +510,27 @@ namespace VAPI
         public void Validate()
         {
 
+        }
+
+        /// <summary>
+        /// Constructor, wraps <paramref name="expansionNameOrAddress"/> inside an <see cref="AddressReferencedExpansionDef"/> ands assigns it to <see cref="requiredExpansionDefs"/>
+        /// </summary>
+        /// <param name="expansionNameOrAddress">The expansion name or address to act as a condition</param>
+        public ExpansionRequirementCondition(string expansionNameOrAddress) : this(new AddressReferencedExpansionDef(expansionNameOrAddress)) { }
+
+        /// <summary>
+        /// Constructor, wraps <paramref name="expansionDef"/> inside an <see cref="AddressReferencedExpansionDef"/> ands assigns it to <see cref="requiredExpansionDefs"/>
+        /// </summary>
+        /// <param name="expansionDef">The ExpansionDef to act as a condition</param>
+        public ExpansionRequirementCondition(ExpansionDef expansionDef) : this(new AddressReferencedExpansionDef(expansionDef)) { }
+
+        /// <summary>
+        /// Constructor, creates an array of <see cref="AddressReferencedExpansionDef"/> of length 1 and assigns the first index the value of <paramref name="expansionDef"/>
+        /// </summary>
+        /// <param name="expansionDef">The ExpansionDef to act as a condition</param>
+        public ExpansionRequirementCondition(AddressReferencedExpansionDef expansionDef)
+        {
+            requiredExpansionDefs = new AddressReferencedExpansionDef[] { expansionDef };
         }
     }
 }
