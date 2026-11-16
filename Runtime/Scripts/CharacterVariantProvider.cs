@@ -53,31 +53,6 @@ namespace VAPI
         private readonly List<CharacterVariantDef> _filteredNonUniqueVariants;
 
         /// <summary>
-        /// Retrieves a list of <see cref="CharacterVariantDef"/> that matches the given <paramref name="predicate"/>
-        /// </summary>
-        /// <param name="retrievedVariants">The retrieved variants that match the <paramref name="predicate"/></param>
-        /// <param name="predicate">If this predicate returns false, the variant is not retrieved</param>
-        /// <returns>A DisposableRental used to return <paramref name="retrievedVariants"/> to the ListPool</returns>
-        public ListPool<CharacterVariantDef>.DisposableRental RetrieveVariantsWhere(out List<CharacterVariantDef> retrievedVariants, Predicate<CharacterVariantDef> predicate)
-        {
-            if(predicate == null)
-            {
-                VAPILog.Warning($"A null predicate was passed to CharacterVariantProvider.RetrieveVariantsWhere()");
-                return ListPool<CharacterVariantDef>.RentCollection(out retrievedVariants);
-            }
-
-            var result = ListPool<CharacterVariantDef>.RentCollection(out retrievedVariants);
-            foreach(var variant in allVariants)
-            {
-                if(predicate(variant))
-                {
-                    retrievedVariants.Add(variant);
-                }
-            }
-
-            return result;
-        }
-        /// <summary>
         /// Filtes the variant for the current stage, this is called automatically on stage start
         /// </summary>
         public void FilterVariants()
