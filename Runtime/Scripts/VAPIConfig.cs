@@ -50,7 +50,7 @@ namespace VAPI
         internal static ConfiguredFloat? _hiddenRealmsRollChance;
 
         private bool _initialized;
-
+        private Sprite? _riskOfOptionsSprite;
         internal IEnumerator InitializeAsync(BaseUnityPlugin bup)
         {
             if (_initialized) //Don't initialize twice
@@ -69,9 +69,7 @@ namespace VAPI
                 {
                     yield return null;
                 }
-
-                ModSettingsManager.SetModIcon(iconRequest.asset!, bup.Info.Metadata.GUID, bup.Info.Metadata.Name);
-                ModSettingsManager.SetModDescription("General configuration for VarianceAPI.", bup.Info.Metadata.GUID, bup.Info.Metadata.Name);
+                _riskOfOptionsSprite = iconRequest.asset;
             }
 
             //Initialize configs

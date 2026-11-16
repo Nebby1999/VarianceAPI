@@ -86,7 +86,7 @@ The following console commands can be used to test your variants in development:
 | Icon/URL | Name | Description |
 |--|--|--|
 | [![TO30Icon](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/TO30Icon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_TheOriginal30) | The Original 30 | The Original Thirty Variants developed by Rob, ported and modified to VarianceAPI. |
-| [![NWIcon](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/NWIcon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_NebbysWrath/) | Nebby's Wrath | 87 Variants spread across Base Game, Survivors of the Void, Seekers of the Storm and Alloyed Collective enemies. |
+| [![NWIcon](https://raw.githubusercontent.com/Nebby1999/VarianceAPI/refs/heads/Main/MarkdownFiles%7E/Readme/NWIcon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_NebbysWrath/) | Nebby's Wrath | Adds 90+ Variants, spread across Base Game, Survivors of the Void, Seekers of the Storm, Alloyed Collective and Hallowed Concepts enemies. |
 
 
 ## Community Made Packs
