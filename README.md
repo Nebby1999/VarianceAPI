@@ -25,7 +25,7 @@ VarianceAPI will forever be free to use and never gated behind paywalls, however
 | Icon/URL | Name | Description |
 |--|--|--|
 | [![TO30Icon](MarkdownFiles~/Readme/TO30Icon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_TheOriginal30) | The Original 30 | The Original Thirty Variants developed by Rob, ported and modified to VarianceAPI. |
-| [![NWIcon](MarkdownFiles~/Readme/NWIcon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_NebbysWrath/) | Nebby's Wrath | 87 Variants spread across Base Game, Survivors of the Void, Seekers of the Storm and Alloyed Collective enemies. |
+| [![NWIcon](MarkdownFiles~/Readme/NWIcon.png)](https://thunderstore.io/c/riskofrain2/p/Nebby/VariantPack_NebbysWrath/) | Nebby's Wrath | Adds 90+ Variants, spread across Base Game, Survivors of the Void, Seekers of the Storm, Alloyed Collective and Hallowed Concepts enemies. |
 
 ## Community Made Packs
 
