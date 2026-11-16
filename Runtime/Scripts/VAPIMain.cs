@@ -31,7 +31,7 @@ namespace VAPI
         /// <summary>
         /// The Mod's version
         /// </summary>
-        public const string VERSION = "3.1.1";
+        public const string VERSION = "3.1.2";
 
         /// <summary>
         /// Access to the instance of VAPI's main class

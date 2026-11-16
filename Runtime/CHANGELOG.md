@@ -1,3 +1,10 @@
+# '3.1.2' - Pool Enforcement
+
+* ``CharacterVariantCatalog.RetrieveDependantSpawnVariants`` methods have been deprecated as they did not enforce pooling properly.
+* Added a version of ``CharacterVariantCatalog.RetrieveDependantSpawnVariants`` that return a ``ListPool<CharacterVariantDef>.DisposableRental`` and have an ``out List<CharacterVariantDef>`` parameter
+* ``CharacterVariantProvider`` now has a ``ReadOnlyList<CharacterVariantDef> filteredVariants``, which is all the variants that are available, regardless wether they're marked as unique or not.
+* Added ``CharacterVariantProvider.RetrieveVariantsWhere()`` method, used to retrieve a list of ``CharacterVariantDef``s that match a given predicate.
+
 # '3.1.1' - Proper Save
 
 * Added SoftDependency for ``ProperSave``

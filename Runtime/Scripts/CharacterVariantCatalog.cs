@@ -393,32 +393,48 @@ namespace VAPI
         /// </summary>
         public static ResourceAvailability catalogAvailability;
 
-        /// <summary>
-        /// Retrieves a list of dependant spawn variants for <paramref name="characterVariantIndex"/>.
-        /// <br></br>
-        /// Retrieved list is null if <paramref name="characterVariantIndex"/> points to an invalid index, or if there are no dependant variants associated with <paramref name="characterVariantIndex"/>.
-        /// <br></br>
-        /// If not null, the list is taken from a <see cref="ListPool{TElement}"/> of <see cref="CharacterVariantDef"/>. consider returning the list to the pool manually once youre done with it.
-        /// </summary>
-        public static List<CharacterVariantDef>? RetrieveDependantSpawnVariants(CharacterVariantIndex characterVariantIndex) => RetrieveDependantSpawnVariants(GetCharacterVariantDef(characterVariantIndex));
+        [Obsolete("This method does not enforce the pooling of List<CharacterVariantDef>, utilize \"ListPool<CharacterVariantDef>.DisposableRental RetrieveDependantSpawnVariants(CharacterVariantIndex, out List<CharacterVariantDef>)\" instead")]
+        public static List<CharacterVariantDef>? RetrieveDependantSpawnVariants(CharacterVariantIndex characterVariantIndex)
+        {
+            _ = RetrieveDependantSpawnVariants(GetCharacterVariantDef(characterVariantIndex), out var result);
+            return result;
+        }
 
         /// <summary>
-        /// Retrieves a list of dependant spawn variants for <paramref name="dependee"/>.
+        /// Retrieves a list of dependant spawn variants for <paramref name="characterVariantIndex"/>
         /// <br></br>
-        /// Retrieved list is null if <paramref name="dependee"/> is null, or if there are no dependant variants associated with <paramref name="dependee"/>.
-        /// <br></br>
-        /// If not null, the list is taken from a <see cref="ListPool{TElement}"/> of <see cref="CharacterVariantDef"/>. consider returning the list to the pool manually once youre done with it.
+        /// Returns a DisposableRental that needs to be disposed of when you finish utilizing <paramref name="dependantSpawnVariants"/>
         /// </summary>
+        /// <param name="characterVariantIndex">The variant to retrieve it's dependant variants</param>
+        /// <param name="dependantSpawnVariants">The list of dependant variants</param>
+        /// <returns>A DisposableRental used to return <paramref name="dependantSpawnVariants"/> to the ListPool</returns>
+        public static ListPool<CharacterVariantDef>.DisposableRental RetrieveDependantSpawnVariants(CharacterVariantIndex characterVariantIndex, out List<CharacterVariantDef> dependantSpawnVariants) => RetrieveDependantSpawnVariants(GetCharacterVariantDef(characterVariantIndex), out dependantSpawnVariants);
+
+        [Obsolete("This method does not enforce the pooling of List<CharacterVariantDef>, utilize \"ListPool<CharacterVariantDef>.DisposableRental RetrieveDependantSpawnVariants(CharacterVariantDef?, out List<CharacterVariantDef>)\" instead")]
         public static List<CharacterVariantDef>? RetrieveDependantSpawnVariants(CharacterVariantDef? dependee)
         {
-            if (dependee == null || _dependeeVariantToDependantVariants.TryGetValue(dependee, out var dependants) == false)
+            _ = RetrieveDependantSpawnVariants(dependee, out var result);
+            return result;
+        }
+
+        /// <summary>
+        /// Retrieves a list of dependant spawn variants for <paramref name="dependee"/>
+        /// <br></br>
+        /// Returns a DisposableRental that needs to be disposed of when you finish utilizing <paramref name="dependantSpawnVariants"/>
+        /// </summary>
+        /// <param name="dependee">The variant to retrieve it's dependant variants</param>
+        /// <param name="dependantSpawnVariants">The list of dependant variants</param>
+        /// <returns>A DisposableRental used to return <paramref name="dependantSpawnVariants"/> to the ListPool</returns>
+        public static ListPool<CharacterVariantDef>.DisposableRental RetrieveDependantSpawnVariants(CharacterVariantDef? dependee, out List<CharacterVariantDef> dependantSpawnVariants)
+        {
+            if(dependee == null || _dependeeVariantToDependantVariants.TryGetValue(dependee, out var dependants) == false)
             {
                 LogWarning($"{dependee} has no Dependant Spawn Variants");
-                return null;
+                return ListPool<CharacterVariantDef>.RentCollection(out dependantSpawnVariants);
             }
 
-            List<CharacterVariantDef> result = ListPool<CharacterVariantDef>.RentCollection();
-            result.AddRange(dependants);
+            var result = ListPool<CharacterVariantDef>.RentCollection(out dependantSpawnVariants);
+            dependantSpawnVariants.AddRange(dependants);
             return result;
         }
 

@@ -355,23 +355,25 @@
             Catalog availability. Catalog initializes after <see cref="T:RoR2.BodyCatalog"/>, and <see cref="T:VAPI.VariantPackManager"/>
             </summary>
         </member>
-        <member name="M:VAPI.CharacterVariantCatalog.RetrieveDependantSpawnVariants(VAPI.CharacterVariantIndex)">
+        <member name="M:VAPI.CharacterVariantCatalog.RetrieveDependantSpawnVariants(VAPI.CharacterVariantIndex,System.Collections.Generic.List{VAPI.CharacterVariantDef}@)">
             <summary>
-            Retrieves a list of dependant spawn variants for <paramref name="characterVariantIndex"/>.
+            Retrieves a list of dependant spawn variants for <paramref name="characterVariantIndex"/>
             <br></br>
-            Retrieved list is null if <paramref name="characterVariantIndex"/> points to an invalid index, or if there are no dependant variants associated with <paramref name="characterVariantIndex"/>.
-            <br></br>
-            If not null, the list is taken from a <see cref="T:HG.ListPool`1"/> of <see cref="T:VAPI.CharacterVariantDef"/>. consider returning the list to the pool manually once youre done with it.
+            Returns a DisposableRental that needs to be disposed of when you finish utilizing <paramref name="dependantSpawnVariants"/>
             </summary>
+            <param name="characterVariantIndex">The variant to retrieve it's dependant variants</param>
+            <param name="dependantSpawnVariants">The list of dependant variants</param>
+            <returns>A DisposableRental used to return <paramref name="dependantSpawnVariants"/> to the ListPool</returns>
         </member>
-        <member name="M:VAPI.CharacterVariantCatalog.RetrieveDependantSpawnVariants(VAPI.CharacterVariantDef)">
+        <member name="M:VAPI.CharacterVariantCatalog.RetrieveDependantSpawnVariants(VAPI.CharacterVariantDef,System.Collections.Generic.List{VAPI.CharacterVariantDef}@)">
             <summary>
-            Retrieves a list of dependant spawn variants for <paramref name="dependee"/>.
+            Retrieves a list of dependant spawn variants for <paramref name="dependee"/>
             <br></br>
-            Retrieved list is null if <paramref name="dependee"/> is null, or if there are no dependant variants associated with <paramref name="dependee"/>.
-            <br></br>
-            If not null, the list is taken from a <see cref="T:HG.ListPool`1"/> of <see cref="T:VAPI.CharacterVariantDef"/>. consider returning the list to the pool manually once youre done with it.
+            Returns a DisposableRental that needs to be disposed of when you finish utilizing <paramref name="dependantSpawnVariants"/>
             </summary>
+            <param name="dependee">The variant to retrieve it's dependant variants</param>
+            <param name="dependantSpawnVariants">The list of dependant variants</param>
+            <returns>A DisposableRental used to return <paramref name="dependantSpawnVariants"/> to the ListPool</returns>
         </member>
         <member name="M:VAPI.CharacterVariantCatalog.GetCharacterVariantDef(VAPI.CharacterVariantIndex)">
             <summary>
@@ -468,21 +470,30 @@
             A class that provides <see cref="T:VAPI.CharacterVariantDef"/>s for <see cref="T:RoR2.BodyIndex"/>es
             </summary>
         </member>
+        <member name="F:VAPI.CharacterVariantProvider.associatedBodyIndex">
+            <summary>
+            The <see cref="T:RoR2.BodyIndex"/> associated with this provider, the <see cref="T:VAPI.CharacterVariantDef"/>s stored here is for this body
+            </summary>
+        </member>
         <member name="P:VAPI.CharacterVariantProvider.totalVariantCount">
             <summary>
-            The total amount of variants stored in this provider
+            The total amount of variants stored in this provider. This is effectively <see cref="P:VAPI.CharacterVariantProvider.allVariants"/>'s length.
             </summary>
         </member>
         <member name="P:VAPI.CharacterVariantProvider.allVariants">
             <summary>
             A ReadOnlyArray of all the variants stored in this provider. Keep in mind that these are not filtered by availability.
             <br></br>
-            If you wish to get variants by their current availability, check <see cref="P:VAPI.CharacterVariantProvider.filteredUniqueVariants"/> and <see cref="P:VAPI.CharacterVariantProvider.filteredNonUniqueVariants"/> respectively.
+            If you wish to get all variants that are currently available, check <see cref="P:VAPI.CharacterVariantProvider.filteredVariants"/>.
+            <br></br>
+            If you wish to get all variants that are currently available and are <b>unique</b>, check <see cref="P:VAPI.CharacterVariantProvider.filteredUniqueVariants"/>
+            <br></br>
+            If you wish to get all variants that are currently available and are <b>not unique</b>, check <see cref="P:VAPI.CharacterVariantProvider.filteredNonUniqueVariants"/>
             </summary>
         </member>
-        <member name="F:VAPI.CharacterVariantProvider.associatedBodyIndex">
+        <member name="P:VAPI.CharacterVariantProvider.filteredVariants">
             <summary>
-            The <see cref="T:RoR2.BodyIndex"/> associated with this provider, the <see cref="T:VAPI.CharacterVariantDef"/>s stored here is for this body
+            A ReadOnlyList of the <see cref="T:VAPI.CharacterVariantDef"/> that can spawn on the current stage.
             </summary>
         </member>
         <member name="P:VAPI.CharacterVariantProvider.filteredUniqueVariants">
@@ -494,6 +505,14 @@
             <summary>
             A ReadOnlyList of the <see cref="T:VAPI.CharacterVariantDef"/>s that are not unique and can spawn on the current stage
             </summary>
+        </member>
+        <member name="M:VAPI.CharacterVariantProvider.RetrieveVariantsWhere(System.Collections.Generic.List{VAPI.CharacterVariantDef}@,System.Predicate{VAPI.CharacterVariantDef})">
+            <summary>
+            Retrieves a list of <see cref="T:VAPI.CharacterVariantDef"/> that matches the given <paramref name="predicate"/>
+            </summary>
+            <param name="retrievedVariants">The retrieved variants that match the <paramref name="predicate"/></param>
+            <param name="predicate">If this predicate returns false, the variant is not retrieved</param>
+            <returns>A DisposableRental used to return <paramref name="retrievedVariants"/> to the ListPool</returns>
         </member>
         <member name="M:VAPI.CharacterVariantProvider.FilterVariants">
             <summary>
